@@ -1,6 +1,6 @@
 import struct,re
 import numpy as np
-from typing import Tuple
+from typing import Tuple,Dict
 
 class nek5000_header_c:
     word_size:int=4  # word size in bytes
@@ -17,7 +17,7 @@ class nek5000_header_c:
     variables:str=""
     passive_scalar_num:int=0
     endian_mode:str=""
-    data_range:np.ndarray=None
+    data_range:Dict={}
 
 def read_nek5000_header(f)->nek5000_header_c:
     header=f.read(132).split()
