@@ -1,17 +1,19 @@
-import yaml,time
+import yaml,time,os
 import numpy as np
-from plotly import graph_objects as go
 from concurrent.futures import ProcessPoolExecutor
 from read_nek5000_header import read_nek5000_header
 from partition import partition
 
-multi_thread=False
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # If no coordinates are present in the main file, use a separate coordinate file
 coordinate_file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 read_cache_size=128*1024*1024
 block_size=128*1024*1024
 
+if os.environ.get("SLURM_NTASKS") is not None:
+    thread_num=int(os.environ.get("SLURM_NTASKS"))
+else:
+    thread_num=1
 f=open(file_path,"rb")
 header=read_nek5000_header(f)
 block_element_num=block_size//(header.element_size*header.word_size*4) # During each compression, using xyz and 1 variable
@@ -19,176 +21,195 @@ print(f"block_element_num={block_element_num}")
 
 ######## skip element map ########
 element_map=f.seek(header.file_element_num*4,1)
+
 ######## partition ########
 print("Generating partition...")
 start_time=time.time()
 x=np.zeros((header.file_element_num,3),dtype=header.np_dtype)
-block_id=np.zeros((header.file_element_num,),dtype=np.int32)
+element2block=np.zeros((header.file_element_num,),dtype=np.int32)
 if "X" in header.variables:
-    if multi_thread:
-        file_pos=f.tell()
-        def read_chunk(args):
-            start,end=args
-            size=(end-start)*3*header.element_size*header.word_size
-            f=open(file_path,"rb")
+    file_pos=f.tell()
+    elements_per_read=read_cache_size//(3*header.element_size*header.word_size)
+    chunks=[(i,min(i+elements_per_read,header.file_element_num))
+            for i in range(0,header.file_element_num,elements_per_read)]
+    def read_coordinate_chunk_and_mean(args):
+        start,end=args
+        data_num=(end-start)*3*header.element_size
+        with open(file_path,"rb") as f:
             f.seek(file_pos+start*3*header.element_size*header.word_size)
-            cache=f.read(size)
-            arr=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,3)+header.element_shape)
-            return arr.mean(axis=(2,3,4))
-        elements_per_read=read_cache_size//(3*header.element_size*header.word_size)
-        chunks=[(i,min(i+elements_per_read,header.file_element_num))
-                for i in range(0,header.file_element_num,elements_per_read)]
-        with ProcessPoolExecutor() as exe:
-            results=list(exe.map(read_chunk,chunks))
-        x=np.concatenate(results,axis=0)
-    else:
-        elements_per_read=read_cache_size//(3*header.element_size*header.word_size)
-        for i in range(0,header.file_element_num,elements_per_read):
-            elements_in_this_read=min(elements_per_read,(header.file_element_num-i))
-            cache=f.read(elements_in_this_read*3*header.element_size*header.word_size)
-            temp_x=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,3)+header.element_shape)
-            temp_x=np.mean(temp_x,axis=(2,3,4))
-            x[i:i+temp_x.shape[0],:]=temp_x
-    block_num=partition(x,block_id,np.arange(header.file_element_num),1,block_element_num)
+            cache=np.fromfile(f,dtype=header.np_dtype,count=data_num)
+        return cache.reshape((-1,3)+header.element_shape).mean(axis=(2,3,4))
+    with ProcessPoolExecutor(max_workers=thread_num) as exe:
+        results=list(exe.map(read_coordinate_chunk_and_mean,chunks))
+    x=np.concatenate(results,axis=0)
+    block_num=partition(x,element2block,np.arange(header.file_element_num),1,block_element_num)
+    block2element=[[] for _ in range(block_num)]
+    for i in range(header.file_element_num):
+        block2element[element2block[i]].append(i)
+    f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
 else:
-    f2=open(coordinate_file_path,"rb")
-    coordinate_header=read_nek5000_header(f2)
-    f2.read(coordinate_header.file_element_num*4)
-    raise NotImplementedError("Coordinate file reading not implemented yet.")
+    raise NotImplementedError("Alternative coordinate file reading not implemented yet.")
 print(f"time= {time.time()-start_time} s")
-exit()
     
 ######## save partitioned element map ########
 print(f"Saving element map...")
 start_time=time.time()
 f.seek(-header.file_element_num*(4+3*header.element_size*header.word_size),1)
-element_map=f.read(header.file_element_num*4)
-element_map=np.frombuffer(element_map,dtype=np.int32)
+element_map=np.fromfile(f,dtype=np.int32,count=header.file_element_num)
 for i in range(block_num):
-    indices=np.where(block_id==i)[0]
-    f_element_map=open(f"{file_path}.block_{i}.element_map","wb")
-    f_element_map.write(element_map[indices].tobytes())
-    f_element_map.close()
+    indices=np.where(element2block==i)[0]
+    with open(f"{file_path}.block_{i}.element_map","wb") as f_element_map:
+        f_element_map.write(element_map[indices].tobytes())
 print(f"time= {time.time()-start_time} s")
+
 ######## save partitioned coordinates ########
 print(f"Saving coordinate...")
 start_time=time.time()
 if "X" in header.variables:
     header.data_range["X"]=[[float('inf'),float('-inf')] for _ in range(3)]
-    for i in range(block_num):
-        f_coordinate=open(f"{file_path}.block_{i}.coordinate","wb")
-        f_coordinate.close()
-    elements_per_read=read_cache_size//(3*header.element_size*header.word_size)
-    for i in range(0,header.file_element_num,elements_per_read):
-        elements_in_this_read=min(elements_per_read,(header.file_element_num-i))
-        cache=f.read(elements_in_this_read*3*header.element_size*header.word_size)
-        cache=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,3)+header.element_shape)
-        for dim in range(3):
-            header.data_range["X"][dim][0]=min(header.data_range["X"][dim][0],float(np.min(cache[:,dim])))
-            header.data_range["X"][dim][1]=max(header.data_range["X"][dim][1],float(np.max(cache[:,dim])))
-        for j in range(elements_in_this_read):
-            f_coordinate=open(f"{file_path}.block_{block_id[i+j]}.coordinate","ab")
-            f_coordinate.write(cache[j].tobytes())
-            f_coordinate.close()
-    for i in range(block_num):
-        f_coordinate=open(f"{file_path}.block_{i}.coordinate","rb")
-        cache=f_coordinate.read()
-        f_coordinate.close()
-        cache=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,3)+header.element_shape)
+    file_pos=f.tell()
+    block_per_round=thread_num*read_cache_size//(block_size*3//4)
+    def read_and_save_coordinate_block(block_id):
+        cache=np.zeros((len(block2element[block_id]),3)+header.element_shape,dtype=header.np_dtype)
+        with open(file_path,"rb") as f:
+            for cache_pos,element_id in enumerate(block2element[block_id]):
+                f.seek(file_pos+element_id*3*header.element_size*header.word_size)
+                cache2=np.fromfile(f,dtype=header.np_dtype,count=3*header.element_size)
+                cache[cache_pos]=cache2.reshape((3,)+header.element_shape)
         cache=cache.transpose((1,0,2,3,4))
-        f_coordinate=open(f"{file_path}.block_{i}.coordinate","wb")
-        f_coordinate.write(cache.tobytes())
-        f_coordinate.close()
-else:
-    raise NotImplementedError("Coordinate file saving not implemented yet.")
-print(f"time= {time.time()-start_time} s")
-######## save velocity ########
-print(f"Saving velocity...")
-start_time=time.time()
-if "U" in header.variables:
-    header.data_range["U"]=[[float('inf'),float('-inf')] for _ in range(3)]
-    for i in range(block_num):
-        f_velocityx=open(f"{file_path}.block_{i}.velocityx","wb")
-        f_velocityy=open(f"{file_path}.block_{i}.velocityy","wb")
-        f_velocityz=open(f"{file_path}.block_{i}.velocityz","wb")
-        f_velocityx.close()
-        f_velocityy.close()
-        f_velocityz.close()
-    elements_per_read=read_cache_size//(3*header.element_size*header.word_size)
-    for i in range(0,header.file_element_num,elements_per_read):
-        elements_in_this_read=min(elements_per_read,(header.file_element_num-i))
-        cache=f.read(elements_in_this_read*3*header.element_size*header.word_size)
-        cache=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,3)+header.element_shape)
+        with open(f"{file_path}.block_{block_id}.coordinate","wb") as f_coordinate:
+            f_coordinate.write(cache.tobytes())
+        data_range=[[float('inf'),float('-inf')] for _ in range(3)]
         for dim in range(3):
-            header.data_range["U"][dim][0]=min(header.data_range["U"][dim][0],float(np.min(cache[:,dim])))
-            header.data_range["U"][dim][1]=max(header.data_range["U"][dim][1],float(np.max(cache[:,dim])))
-        for j in range(elements_in_this_read):
-            f_velocityx=open(f"{file_path}.block_{block_id[i+j]}.velocityx","ab")
-            f_velocityx.write(cache[j,0].tobytes())
-            f_velocityx.close()
-            f_velocityy=open(f"{file_path}.block_{block_id[i+j]}.velocityy","ab")
-            f_velocityy.write(cache[j,1].tobytes())
-            f_velocityy.close()
-            f_velocityz=open(f"{file_path}.block_{block_id[i+j]}.velocityz","ab")
-            f_velocityz.write(cache[j,2].tobytes())
-            f_velocityz.close()
+            data_range[dim][0]=float(np.min(cache[dim]))
+            data_range[dim][1]=float(np.max(cache[dim]))
+        return data_range
+    for block_id_start in range(0,block_num,block_per_round):
+        block_id_end=min(block_id_start+block_per_round,block_num)
+        with ProcessPoolExecutor(max_workers=thread_num) as exe:
+            results=list(exe.map(read_and_save_coordinate_block,range(block_id_start,block_id_end)))
+        for dim in range(3):
+            header.data_range["X"][dim][0]=min(header.data_range["X"][dim][0],min([r[dim][0] for r in results]))
+            header.data_range["X"][dim][1]=max(header.data_range["X"][dim][1],max([r[dim][1] for r in results]))
+    f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
+else:
+    raise NotImplementedError("Alternative coordinate file saving not implemented yet.")
 print(f"time= {time.time()-start_time} s")
-######## save P and T ########
-print(f"Saving pressure and temperature...")
-start_time=time.time()
+
+######## save velocity ########
+if "U" in header.variables:
+    start_time=time.time()
+    print(f"Saving velocity...")
+    header.data_range["U"]=[[float('inf'),float('-inf')] for _ in range(3)]
+    file_pos=f.tell()
+    block_per_round=thread_num*read_cache_size//(block_size*3//4)
+    def read_and_save_velocity_block(block_id):
+        cache=np.zeros((len(block2element[block_id]),3)+header.element_shape,dtype=header.np_dtype)
+        with open(file_path,"rb") as f:
+            for cache_pos,element_id in enumerate(block2element[block_id]):
+                f.seek(file_pos+element_id*3*header.element_size*header.word_size)
+                cache2=np.fromfile(f,dtype=header.np_dtype,count=3*header.element_size)
+                cache[cache_pos]=cache2.reshape((3,)+header.element_shape)
+        cache=cache.transpose((1,0,2,3,4))
+        with open(f"{file_path}.block_{block_id}.velocityx","wb") as f_coordinate:
+            f_coordinate.write(cache[0].tobytes())
+        with open(f"{file_path}.block_{block_id}.velocityy","wb") as f_coordinate:
+            f_coordinate.write(cache[1].tobytes())
+        with open(f"{file_path}.block_{block_id}.velocityz","wb") as  f_coordinate:
+            f_coordinate.write(cache[2].tobytes())
+        data_range=[[float('inf'),float('-inf')] for _ in range(3)]
+        for dim in range(3):
+            data_range[dim][0]=float(np.min(cache[dim]))
+            data_range[dim][1]=float(np.max(cache[dim]))
+        return data_range
+    for block_id_start in range(0,block_num,block_per_round):
+        block_id_end=min(block_id_start+block_per_round,block_num)
+        with ProcessPoolExecutor(max_workers=thread_num) as exe:
+            results=list(exe.map(read_and_save_velocity_block,range(block_id_start,block_id_end)))
+        for dim in range(3):
+            header.data_range["U"][dim][0]=min(header.data_range["U"][dim][0],min([r[dim][0] for r in results]))
+            header.data_range["U"][dim][1]=max(header.data_range["U"][dim][1],max([r[dim][1] for r in results]))
+    f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
+    print(f"time= {time.time()-start_time} s")
+
+######## save P ########
 if "P" in header.variables:
+    print(f"Saving pressure...")
+    start_time=time.time()
     header.data_range["P"]=[float('inf'),float('-inf')]
-    for i in range(block_num):
-        f_pressure=open(f"{file_path}.block_{i}.pressure","wb")
-        f_pressure.close()
-    elements_per_read=read_cache_size//(header.element_size*header.word_size)
-    for i in range(0,header.file_element_num,elements_per_read):
-        elements_in_this_read=min(elements_per_read,(header.file_element_num-i))
-        cache=f.read(elements_in_this_read*header.element_size*header.word_size)
-        cache=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,1)+header.element_shape)
-        header.data_range["P"][0]=min(header.data_range["P"][0],float(np.min(cache)))
-        header.data_range["P"][1]=max(header.data_range["P"][1],float(np.max(cache)))
-        for j in range(elements_in_this_read):
-            f_pressure=open(f"{file_path}.block_{block_id[i+j]}.pressure","ab")
-            f_pressure.write(cache[j].tobytes())
-            f_pressure.close()
+    file_pos=f.tell()
+    block_per_round=thread_num*read_cache_size//(block_size//4)
+    def read_and_save_pressure_block(block_id):
+        cache=np.zeros((len(block2element[block_id]),1)+header.element_shape,dtype=header.np_dtype)
+        with open(file_path,"rb") as f:
+            for cache_pos,element_id in enumerate(block2element[block_id]):
+                f.seek(file_pos+element_id*header.element_size*header.word_size)
+                cache2=np.fromfile(f,dtype=header.np_dtype,count=header.element_size)
+                cache[cache_pos]=cache2.reshape((1,)+header.element_shape)
+        with open(f"{file_path}.block_{block_id}.pressure","wb") as f_pressure:
+            f_pressure.write(cache.tobytes())
+        return [float(np.min(cache)),float(np.max(cache))]
+    for block_id_start in range(0,block_num,block_per_round):
+        block_id_end=min(block_id_start+block_per_round,block_num)
+        with ProcessPoolExecutor(max_workers=thread_num) as exe:
+            results=list(exe.map(read_and_save_pressure_block,range(block_id_start,block_id_end)))
+        header.data_range["P"][0]=min(header.data_range["P"][0],min([r[0] for r in results]))
+        header.data_range["P"][1]=max(header.data_range["P"][1],max([r[1] for r in results]))
+    f.seek(header.file_element_num*header.element_size*header.word_size,1)
+    print(f"time= {time.time()-start_time} s")
+
+######## save T ########
 if "T" in header.variables:
+    print(f"Saving temperature...")
+    start_time=time.time()
     header.data_range["T"]=[float('inf'),float('-inf')]
-    for i in range(block_num):
-        f_temperature=open(f"{file_path}.block_{i}.temperature","wb")
-        f_temperature.close()
-    elements_per_read=read_cache_size//(header.element_size*header.word_size)
-    for i in range(0,header.file_element_num,elements_per_read):
-        elements_in_this_read=min(elements_per_read,(header.file_element_num-i))
-        cache=f.read(elements_in_this_read*header.element_size*header.word_size)
-        cache=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,1)+header.element_shape)
-        header.data_range["T"][0]=min(header.data_range["T"][0],float(np.min(cache)))
-        header.data_range["T"][1]=max(header.data_range["T"][1],float(np.max(cache)))
-        for j in range(elements_in_this_read):
-            f_temperature=open(f"{file_path}.block_{block_id[i+j]}.temperature","ab")
-            f_temperature.write(cache[j].tobytes())
-            f_temperature.close()
-print(f"time= {time.time()-start_time} s")
+    file_pos=f.tell()
+    block_per_round=thread_num*read_cache_size//(block_size//4)
+    def read_and_save_temperature_block(block_id):
+        cache=np.zeros((len(block2element[block_id]),1)+header.element_shape,dtype=header.np_dtype)
+        with open(file_path,"rb") as f:
+            for cache_pos,element_id in enumerate(block2element[block_id]):
+                f.seek(file_pos+element_id*header.element_size*header.word_size)
+                cache2=np.fromfile(f,dtype=header.np_dtype,count=header.element_size)
+                cache[cache_pos]=cache2.reshape((1,)+header.element_shape)
+        with open(f"{file_path}.block_{block_id}.temperature","wb") as f_temperature:
+            f_temperature.write(cache.tobytes())
+        return [float(np.min(cache)),float(np.max(cache))]
+    for block_id_start in range(0,block_num,block_per_round):
+        block_id_end=min(block_id_start+block_per_round,block_num)
+        with ProcessPoolExecutor(max_workers=thread_num) as exe:
+            results=list(exe.map(read_and_save_temperature_block,range(block_id_start,block_id_end)))
+        header.data_range["T"][0]=min(header.data_range["T"][0],min([r[0] for r in results]))
+        header.data_range["T"][1]=max(header.data_range["T"][1],max([r[1] for r in results]))
+    f.seek(header.file_element_num*header.element_size*header.word_size,1)
+    print(f"time= {time.time()-start_time} s")
+
 ######## save passive scalars ########
 print(f"Saving passive scalars...")
 start_time=time.time()
 header.data_range["S"]=[[float('inf'),float('-inf')] for _ in range(header.passive_scalar_num)]
 for passive_scalar_id in range(header.passive_scalar_num):
-    for i in range(block_num):
-        f_passive_scalar=open(f"{file_path}.block_{i}.s{passive_scalar_id:02d}","wb")
-        f_passive_scalar.close()
-    elements_per_read=read_cache_size//(header.element_size*header.word_size)
-    for i in range(0,header.file_element_num,elements_per_read):
-        elements_in_this_read=min(elements_per_read,(header.file_element_num-i))
-        cache=f.read(elements_in_this_read*header.element_size*header.word_size)
-        cache=np.frombuffer(cache,dtype=header.np_dtype).reshape((-1,1)+header.element_shape)
-        header.data_range["S"][passive_scalar_id][0]=min(header.data_range["S"][passive_scalar_id][0],float(np.min(cache)))
-        header.data_range["S"][passive_scalar_id][1]=max(header.data_range["S"][passive_scalar_id][1],float(np.max(cache)))
-        for j in range(elements_in_this_read):
-            f_passive_scalar=open(f"{file_path}.block_{block_id[i+j]}.s{passive_scalar_id:02d}","ab")
-            f_passive_scalar.write(cache[j].tobytes())
-            f_passive_scalar.close()
+    file_pos=f.tell()
+    block_per_round=thread_num*read_cache_size//(block_size//4)
+    def read_and_save_passive_scalar_block(block_id):
+        cache=np.zeros((len(block2element[block_id]),1)+header.element_shape,dtype=header.np_dtype)
+        with open(file_path,"rb") as f:
+            for cache_pos,element_id in enumerate(block2element[block_id]):
+                f.seek(file_pos+element_id*header.element_size*header.word_size)
+                cache2=np.fromfile(f,dtype=header.np_dtype,count=header.element_size)
+                cache[cache_pos]=cache2.reshape((1,)+header.element_shape)
+        with open(f"{file_path}.block_{block_id}.s{passive_scalar_id:02d}","wb") as f_passive_scalar:
+            f_passive_scalar.write(cache.tobytes())
+        return [float(np.min(cache)),float(np.max(cache))]
+    for block_id_start in range(0,block_num,block_per_round):
+        block_id_end=min(block_id_start+block_per_round,block_num)
+        with ProcessPoolExecutor(max_workers=thread_num) as exe:
+            results=list(exe.map(read_and_save_passive_scalar_block,range(block_id_start,block_id_end)))
+        header.data_range["S"][passive_scalar_id][0]=min(header.data_range["S"][passive_scalar_id][0],min([r[0] for r in results]))
+        header.data_range["S"][passive_scalar_id][1]=max(header.data_range["S"][passive_scalar_id][1],max([r[1] for r in results]))
+    f.seek(header.file_element_num*header.element_size*header.word_size,1)
 print(f"time= {time.time()-start_time} s")
+
 ######## save header ########
 print(f"Saving header...")
 start_time=time.time()
