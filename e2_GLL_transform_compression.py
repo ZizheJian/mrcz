@@ -1,4 +1,4 @@
-import yaml,struct,os,random
+import yaml,struct,os,time
 import numpy as np
 import zstandard as zstd
 from dahuffman import HuffmanCodec
@@ -27,13 +27,18 @@ with open(f"{file_path}.header.yaml","r") as f_header:
     blocks=header_and_block_info["blocks"]
 
 # rel_eb=1e-5
-# abs_eb=(header.data_range["P"][1]-header.data_range["P"][0])*rel_eb
 abs_eb=1e-5
-rel_eb=abs_eb/(header.data_range["P"][1]-header.data_range["P"][0])
+try:
+    rel_eb # type: ignore
+except:
+    rel_eb=abs_eb/(header.data_range["P"][1]-header.data_range["P"][0])
+else:
+    abs_eb=rel_eb*(header.data_range["P"][1]-header.data_range["P"][0]) # type: ignore
 param_eb=2*rel_eb*0.5
 max_err=0
 mse=0
 print(f"presure_min={header.data_range['P'][0]}, presure_max={header.data_range['P'][1]}")
+print(f"rel_eb={rel_eb}")
 print(f"abs_eb={abs_eb}")
 print(f"param_eb={param_eb}")
 
@@ -82,74 +87,77 @@ def compress_chunk(args):
         mse+=np.sum((new_element-element)**2)
     return f_qb_list,qb_list,max_err,mse
 
-f_qb_list=[]
+def lossless_encode_block(args):
+    f_qb_list,qb_list=args
+    f_qb=np.array(f_qb_list).flatten()
+    f_qb=f_qb[f_qb!=0]
+    qb=np.array(qb_list).flatten()
+    ######## Huffman f ########
+    f_hf_bs=b""
+    f_values,f_counts=np.unique(f_qb,return_counts=True)
+    f_freq=dict(zip(f_values,f_counts))
+    f_hf_bs+=struct.pack("<Q",len(f_values))
+    max_f=np.abs(f_values).max().item()
+    if max_f<=2**15-1:
+        f_hf_bs+=struct.pack("<b",15)
+        f_hf_bs+=struct.pack(f"<{len(f_values)}h",*f_values.tolist())
+    else:
+        f_hf_bs+=struct.pack("<b",31)
+        f_hf_bs+=struct.pack(f"<{len(f_values)}i",*f_values.tolist())
+    f_hf_bs+=struct.pack(f"<{len(f_values)}Q",*f_counts.tolist())
+    f_codec=HuffmanCodec.from_frequencies(f_freq)
+    temp_bs=f_codec.encode(f_qb.flatten().tolist())
+    f_hf_bs+=struct.pack("<Q",len(temp_bs))
+    f_hf_bs+=temp_bs
+    ######## Huffman qb ########
+    hf_bs=b""
+    qb_values,qb_counts=np.unique(qb,return_counts=True)
+    qb_freq=dict(zip(qb_values,qb_counts))
+    hf_bs+=struct.pack("<Q",len(qb_values))
+    max_qb=np.abs(qb_values).max().item()
+    if max_qb<=2**15-1:
+        hf_bs+=struct.pack("<b",15)
+        hf_bs+=struct.pack(f"<{len(qb_values)}h",*qb_values.tolist())
+    else:
+        hf_bs+=struct.pack("<b",31)
+        hf_bs+=struct.pack(f"<{len(qb_values)}i",*qb_values.tolist())
+    hf_bs+=struct.pack(f"<{len(qb_values)}Q",*qb_counts.tolist())
+    qb_codec=HuffmanCodec.from_frequencies(qb_freq)
+    temp_bs=qb_codec.encode(qb.flatten().tolist())
+    hf_bs+=struct.pack("<Q",len(temp_bs))
+    hf_bs+=temp_bs
+    ######## Zstd ########
+    cctx=zstd.ZstdCompressor()
+    zstd_bs=cctx.compress(f_hf_bs+hf_bs)
+    return len(zstd_bs)
+
 qb_list=[]
 selected_element_num=0
 with ProcessPoolExecutor(max_workers=thread_num) as exe:
+    start_time=time.time()
     for block in blocks:
-        # if random.random()>0.1:
-        #     continue
         print(f"block {block['block_id']+1}/{block_num}")
         block_element_num=os.path.getsize(block["pressure_path"])//(header.word_size*header.element_size)
-        selected_element_num+=block_element_num
         exe_input=[(block,(block_element_num*i)//thread_num,(block_element_num*(i+1))//thread_num)
                      for i in range(thread_num)]
         results=list(exe.map(compress_chunk,exe_input))
+        qb_list.append(([],[]))
         for local_f_qb_list,local_qb_list,local_max_err,local_mse in results:
-            f_qb_list.extend(local_f_qb_list)
-            qb_list.extend(local_qb_list)
+            qb_list[-1][0].extend(local_f_qb_list)
+            qb_list[-1][1].extend(local_qb_list)
             if local_max_err>max_err:
                 max_err=local_max_err
             mse+=local_mse
-f_qb=np.array(f_qb_list).flatten()
-f_qb=f_qb[f_qb!=0]
-qb=np.array(qb_list).flatten()
-print(f_qb.shape,qb.shape)
+    print(f"有损时间: {time.time()-start_time} s")
+    
+    start_time=time.time()
+    results=list(exe.map(lossless_encode_block,qb_list))
+    zstd_bs_len=sum(results)
+    print(f"无损时间: {time.time()-start_time} s")
 
-######## Huffman f ########
-f_hf_bs=b""
-f_values,f_counts=np.unique(f_qb,return_counts=True)
-f_freq=dict(zip(f_values,f_counts))
-f_hf_bs+=struct.pack("<Q",len(f_values))
-max_f=np.abs(f_values).max().item()
-if max_f<=2**15-1:
-    f_hf_bs+=struct.pack("<b",15)
-    f_hf_bs+=struct.pack(f"<{len(f_values)}h",*f_values.tolist())
-else:
-    f_hf_bs+=struct.pack("<b",31)
-    f_hf_bs+=struct.pack(f"<{len(f_values)}i",*f_values.tolist())
-f_hf_bs+=struct.pack(f"<{len(f_values)}Q",*f_counts.tolist())
-f_codec=HuffmanCodec.from_frequencies(f_freq)
-temp_bs=f_codec.encode(f_qb.flatten().tolist())
-f_hf_bs+=struct.pack("<Q",len(temp_bs))
-f_hf_bs+=temp_bs
-print(f"频率编码长度: {len(f_hf_bs)}")
-######## Huffman qb ########
-hf_bs=b""
-qb_values,qb_counts=np.unique(qb,return_counts=True)
-qb_freq=dict(zip(qb_values,qb_counts))
-hf_bs+=struct.pack("<Q",len(qb_values))
-max_qb=np.abs(qb_values).max().item()
-if max_qb<=2**15-1:
-    hf_bs+=struct.pack("<b",15)
-    hf_bs+=struct.pack(f"<{len(qb_values)}h",*qb_values.tolist())
-else:
-    hf_bs+=struct.pack("<b",31)
-    hf_bs+=struct.pack(f"<{len(qb_values)}i",*qb_values.tolist())
-hf_bs+=struct.pack(f"<{len(qb_values)}Q",*qb_counts.tolist())
-qb_codec=HuffmanCodec.from_frequencies(qb_freq)
-temp_bs=qb_codec.encode(qb.flatten().tolist())
-hf_bs+=struct.pack("<Q",len(temp_bs))
-hf_bs+=temp_bs
-print(f"qb编码长度: {len(hf_bs)}")
-######## Zstd ########
-cctx=zstd.ZstdCompressor()
-zstd_bs=cctx.compress(f_hf_bs+hf_bs)
-print(f"Zstd编码长度: {len(zstd_bs)}")
-print(f"原始数据大小: {selected_element_num*header.element_size*header.word_size} bytes")
-print(f"压缩比: {selected_element_num*header.element_size*header.word_size/len(zstd_bs)}")
-# print(f"原始数据大小: {header.file_element_num*header.element_size*header.word_size} bytes")
-# print(f"压缩比: {header.file_element_num*header.element_size*header.word_size/len(zstd_bs)}")
+print(f"Zstd编码长度: {zstd_bs_len}")
+print(f"原始数据大小: {header.file_element_num*header.element_size*header.word_size} bytes")
+print(f"压缩比: {header.file_element_num*header.element_size*header.word_size/zstd_bs_len}")
 
 print(f"max_err= {max_err}({max_err*100/abs_eb}%)")
 mse/=(header.file_element_num*header.element_size)
