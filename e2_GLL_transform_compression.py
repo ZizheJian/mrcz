@@ -11,7 +11,7 @@ from py_funcs.quantize_ndarray import quantize_ndarray1,quantize_ndarray2
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # rel_eb=1e-5
 abs_eb=1.778e-7
-param_eb_scale=1
+param_eb_scale=0.05
 zstd_separate_compress=True
 
 if os.environ.get("SLURM_NTASKS") is not None:
@@ -27,12 +27,12 @@ with open(f"{file_path}.header.yaml","r") as f_header:
     blocks=header_and_block_info["blocks"]
 
 try:
-    rel_eb # type: ignore
+    abs_eb
 except:
-    rel_eb=abs_eb/(header.data_range["P"][1]-header.data_range["P"][0])
-else:
     abs_eb=rel_eb*(header.data_range["P"][1]-header.data_range["P"][0]) # type: ignore
-param_eb=2*rel_eb*param_eb_scale #改成使用abs_eb
+else:
+    rel_eb=abs_eb/(header.data_range["P"][1]-header.data_range["P"][0])
+param_eb=abs_eb*param_eb_scale #改成使用abs_eb
 max_err=0
 mse=0
 print(f"presure_min={header.data_range['P'][0]}, presure_max={header.data_range['P'][1]}")
@@ -141,7 +141,6 @@ with ProcessPoolExecutor(max_workers=thread_num) as exe:
         block_element_num=os.path.getsize(block["pressure_path"])//(header.word_size*header.element_size)
         with open(block["pressure_path"],"rb") as f_pressure:
             cache=np.fromfile(f_pressure,dtype=header.np_dtype,count=block_element_num*header.element_size).reshape(1,-1,*header.element_shape)
-        
         start_element_id=[(block_element_num*i)//thread_num for i in range(thread_num)]
         end_element_id=[(block_element_num*(i+1))//thread_num for i in range(thread_num)]
         exe_input=[cache[:,start_element_id[i]:end_element_id[i]] for i in range(thread_num)]
