@@ -52,6 +52,18 @@ def calc_smoothness(chunk):
         l2_err+=np.sum(err0**2+err1**2+err2**2,axis=(1,2))
     return l1_err,l2_err
 
+def calc_smoothness_v2(chunk):
+    l1_err=np.zeros(header.element_shape[0]-2,dtype=np.float64)
+    l2_err=np.zeros(header.element_shape[0]-2,dtype=np.float64)
+    for element_id in range(chunk.shape[1]):
+        element=chunk[0,element_id]
+        err0=element[1:-1,:,:]-(element[:-2,:,:]*(x[2:]-x[1:-1])[:,None,None]+(element[2:,:,:]* (x[1:-1]-x[:-2])[:,None,None]))/(x[2:]-x[:-2])[:,None,None]
+        err1=(element[:,1:-1,:]-(element[:,:-2,:]*(x[2:]-x[1:-1])[None,:,None]+(element[:,2:,:]* (x[1:-1]-x[:-2])[None,:,None]))/(x[2:]-x[:-2])[None,:,None]).transpose(1,0,2)
+        err2=(element[:,:,1:-1]-(element[:,:,:-2]*(x[2:]-x[1:-1])[None,None,:]+(element[:,:,2:]* (x[1:-1]-x[:-2])[None,None,:]))/(x[2:]-x[:-2])[None,None,:]).transpose(2,0,1)
+        l1_err+=np.sum(np.abs(err0)+np.abs(err1)+np.abs(err2),axis=(1,2))
+        l2_err+=np.sum(err0**2+err1**2+err2**2,axis=(1,2))
+    return l1_err,l2_err
+
 with ProcessPoolExecutor(max_workers=thread_num) as exe:
     l1_err=np.zeros(header.element_shape[0]-2,dtype=np.float64)
     l2_err=np.zeros(header.element_shape[0]-2,dtype=np.float64)
@@ -62,7 +74,7 @@ with ProcessPoolExecutor(max_workers=thread_num) as exe:
         start_element_id=[(block_element_num*i)//thread_num for i in range(thread_num)]
         end_element_id=[(block_element_num*(i+1))//thread_num for i in range(thread_num)]
         exe_input=[cache[:,start_element_id[i]:end_element_id[i]] for i in range(thread_num)]
-        results=list(exe.map(calc_smoothness,exe_input))
+        results=list(exe.map(calc_smoothness_v2,exe_input))
         l1_err+=np.sum([res[0] for res in results],axis=0)
         l2_err+=np.sum([res[1] for res in results],axis=0)
     l1_err/=3*header.file_element_num*(header.element_shape[0]**2)

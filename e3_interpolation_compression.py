@@ -6,11 +6,10 @@ from concurrent.futures import ProcessPoolExecutor
 from read_nek5000_header import nek5000_header_c
 from py_funcs.interpolation_compress_element import interpolation_compress_element
 from py_funcs.predict_and_overwrite_linear import predict_and_overwrite_linear_dim0,predict_and_overwrite_linear_dim1,predict_and_overwrite_linear_dim2
-from py_funcs.predict_and_overwrite_linear import predict_and_overwrite_linear_dim0_v2,predict_and_overwrite_linear_dim1_v2,predict_and_overwrite_linear_dim2_v2
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # rel_eb=1e-5
-abs_eb=1e-8
+abs_eb=3.162e-8
 
 if os.environ.get("SLURM_NTASKS") is not None:
     thread_num=int(os.environ.get("SLURM_NTASKS"))
@@ -36,7 +35,8 @@ print(f"presure_min= {header.data_range['P'][0]}, presure_max= {header.data_rang
 print(f"rel_eb= {rel_eb}")
 print(f"abs_eb= {abs_eb}")
 
-x=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(header.element_shape[0]-1).deriv().roots(),[1]))
+# x=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(header.element_shape[0]-1).deriv().roots(),[1]))
+x=np.linspace(-1,1,header.element_shape[0])
 
 def compress_chunk(chunk):
     qb_list=[]
@@ -63,42 +63,6 @@ def compress_chunk(chunk):
             mse+=local_mse
             local_qb,local_max_err,local_mse=predict_and_overwrite_linear_dim0(element,x,abs_eb,previous_indices,new_indices,next_indices)
             qb=np.concatenate((qb,local_qb))
-            max_err=max(max_err,local_max_err)
-            mse+=local_mse
-        qb_list.append(qb)
-    return qb_list,max_err,mse
-
-def compress_chunk_v2(chunk):
-    qb_list=[]
-    max_err=0
-    mse=0
-    for element_id in range(chunk.shape[1]):
-        element=chunk[0,element_id]
-        qb=np.zeros_like(element,dtype=np.int32)
-        lvs=math.ceil(np.log2(element.shape[0]-1))
-        for lv in range(lvs):
-            if lv==0:
-                previous_indices=[0,9]
-            else:
-                previous_indices=next_indices
-            new_indices=[(previous_indices[i]+previous_indices[i+1])//2 if previous_indices[i+1]-previous_indices[i]>1 else None for i in range(len(previous_indices)-1)]
-            next_indices=sorted(previous_indices+[i for i in new_indices if i is not None])
-            local_qb,local_max_err,local_mse=predict_and_overwrite_linear_dim2_v2(element,x,abs_eb,previous_indices,new_indices,next_indices)
-            if np.any(np.logical_and(qb!=0,local_qb!=0)):
-                raise ValueError("Overlap in qb!")
-            qb+=local_qb
-            max_err=max(max_err,local_max_err)
-            mse+=local_mse
-            local_qb,local_max_err,local_mse=predict_and_overwrite_linear_dim1_v2(element,x,abs_eb,previous_indices,new_indices,next_indices)
-            if np.any(np.logical_and(qb!=0,local_qb!=0)):
-                raise ValueError("Overlap in qb!")
-            qb+=local_qb
-            max_err=max(max_err,local_max_err)
-            mse+=local_mse
-            local_qb,local_max_err,local_mse=predict_and_overwrite_linear_dim0_v2(element,x,abs_eb,previous_indices,new_indices,next_indices)
-            if np.any(np.logical_and(qb!=0,local_qb!=0)):
-                raise ValueError("Overlap in qb!")
-            qb+=local_qb
             max_err=max(max_err,local_max_err)
             mse+=local_mse
         qb_list.append(qb)
@@ -170,7 +134,7 @@ with ProcessPoolExecutor(max_workers=thread_num) as exe:
         end_element_id=[(block_element_num*(i+1))//thread_num for i in range(thread_num)]
         exe_input=[cache[:,start_element_id[i]:end_element_id[i]] for i in range(thread_num)]
         start_time=time.time()
-        results=list(exe.map(compress_chunk_v2,exe_input))
+        results=list(exe.map(compress_chunk,exe_input))
         total_lossy_time+=time.time()-start_time
         qb_list.append(([],))
         for local_qb_list,local_max_err,local_mse in results:

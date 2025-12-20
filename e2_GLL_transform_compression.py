@@ -10,9 +10,9 @@ from py_funcs.quantize_ndarray import quantize_ndarray1,quantize_ndarray2
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # rel_eb=1e-5
-abs_eb=1.778e-7
-param_eb_scale=0.05
-zstd_separate_compress=True
+abs_eb=1e-6
+param_eb_scale=0.1414
+zstd_separate_compress=False
 
 if os.environ.get("SLURM_NTASKS") is not None:
     thread_num=int(os.environ.get("SLURM_NTASKS"))
@@ -32,13 +32,14 @@ except:
     abs_eb=rel_eb*(header.data_range["P"][1]-header.data_range["P"][0]) # type: ignore
 else:
     rel_eb=abs_eb/(header.data_range["P"][1]-header.data_range["P"][0])
-param_eb=abs_eb*param_eb_scale #改成使用abs_eb
+param_eb=abs_eb*param_eb_scale
+# param_eb=2*rel_eb*param_eb_scale
 max_err=0
 mse=0
-print(f"presure_min={header.data_range['P'][0]}, presure_max={header.data_range['P'][1]}")
-print(f"rel_eb={rel_eb}")
-print(f"abs_eb={abs_eb}")
-print(f"param_eb={param_eb}")
+print(f"presure_min= {header.data_range['P'][0]}, presure_max= {header.data_range['P'][1]}")
+print(f"rel_eb= {rel_eb}")
+print(f"abs_eb= {abs_eb}")
+print(f"param_eb= {param_eb}")
 
 p=np.zeros((header.element_shape[0],header.element_shape[0]),dtype=np.float64)
 x=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(header.element_shape[0]-1).deriv().roots(),[1]))

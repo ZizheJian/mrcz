@@ -6,15 +6,16 @@ from matplotlib import pyplot as plt
 from dahuffman import HuffmanCodec
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
+block_id=0
 element_id=0
-lossy=True
+lossy=False
 
 with open(f"{file_path}.header.yaml","r") as f_header:
     header_and_block_info=yaml.load(f_header,Loader=yaml.UnsafeLoader)
     header=header_and_block_info["header"]
     block_num=header_and_block_info["block_num"]
     blocks=header_and_block_info["blocks"]
-block=blocks[2]
+block=blocks[block_id]
 
 with open(block["pressure_path"],"rb") as f:
     pressure=np.fromfile(f,dtype=header["np_dtype"]).reshape((1,-1)+header["element_shape"])
@@ -25,21 +26,22 @@ center=pressure[0,0,4:6,4:6,4:6].sum()/8
 pressure-=center
 print(f"pressure max={pressure.max()}, min={pressure.min()}")
 
-p=np.zeros((header["element_shape"][0],header["element_shape"][0]),dtype=pressure.dtype)
+L=np.zeros((header["element_shape"][0],header["element_shape"][0]),dtype=pressure.dtype)
 x=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(header["element_shape"][0]-1).deriv().roots(),[1]))
-p[0]=1
-p[1]=x
+L[0]=1
+L[1]=x
 for i in range(2,header["element_shape"][0]):
-    p[i]=((2*i-1)*x*p[i-1]-(i-1)*p[i-2])/i
-w=2/(header["element_shape"][0]*(header["element_shape"][0]-1)*p[-1]**2)
-d=np.einsum("ia,a,ia->i",p,w,p)
-print("p=",p)
+    L[i]=((2*i-1)*x*L[i-1]-(i-1)*L[i-2])/i
+w=2/(header["element_shape"][0]*(header["element_shape"][0]-1)*L[-1]**2)
+d=np.einsum("ia,a,ia->i",L,w,L)
+# d=2/(2*np.arange(header["element_shape"][0])+1)
+print("p=",L)
 print("w=",w)
 print("d=",d)
 
-f=np.einsum("abc,ia,a->ibc",pressure[0,0],p,w)/d.reshape(-1,1,1)
-f=np.einsum("ibc,jb,b->ijc",f,p,w)/d.reshape(1,-1,1)
-f=np.einsum("ijc,kc,c->ijk",f,p,w)/d.reshape(1,1,-1)
+f=np.einsum("abc,ia,a->ibc",pressure[0,0],L,w)/d.reshape(-1,1,1)
+f=np.einsum("ibc,jb,b->ijc",f,L,w)/d.reshape(1,-1,1)
+f=np.einsum("ijc,kc,c->ijk",f,L,w)/d.reshape(1,1,-1)
 print(f"f.max()={f.max()}, f.min()={f.min()}")
 
 # fig,axes=plt.subplots(2,5,figsize=(50,20))
@@ -63,9 +65,9 @@ if lossy:
     f_qb,f_quantized=quantize_ndarray(f.copy(),parameter_eb)
     f=f_quantized
 
-pressure2=np.einsum("ijk,kc->ijc",f,p)
-pressure2=np.einsum("ijc,jb->ibc",pressure2,p)
-pressure2=np.einsum("ibc,ia->abc",pressure2,p)
+pressure2=np.einsum("ijk,kc->ijc",f,L)
+pressure2=np.einsum("ijc,jb->ibc",pressure2,L)
+pressure2=np.einsum("ibc,ia->abc",pressure2,L)
 
 if lossy:
     hf_bs=b""
@@ -111,6 +113,7 @@ if lossy:
     print(len(zstd_bs))
     pressure2=pressure_quantized
 
-print(f"abs_eb= {abs_eb}")
+if lossy:
+    print(f"abs_eb= {abs_eb}")
 print(f"max_err= {np.abs(pressure2-pressure[0,0]).max()}")
 print(f"PSNR= {10*np.log10((pressure[0,0].max()-pressure[0,0].min())**2/np.mean((pressure2-pressure[0,0])**2))} dB")
