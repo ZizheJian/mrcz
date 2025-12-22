@@ -1,3 +1,10 @@
+# TODO: 尝试主要利用element间连续性进行压缩，而不是element内连续性
+# TODO: 3阶样条插值、改变预测顺序
+# TODO: 使用支持向量机在element内划分
+# TODO: 对element按照连续性进行分类
+# TODO: tune各种参数
+# TODO: 所有huffman共用一个字典
+
 import yaml,struct,os,time
 import numpy as np
 import zstandard as zstd
@@ -6,13 +13,13 @@ from concurrent.futures import ProcessPoolExecutor
 from matplotlib import pyplot as plt
 from plotly import graph_objects as go
 from read_nek5000_header import nek5000_header_c
-from py_funcs.quantize_ndarray import quantize_ndarray1,quantize_ndarray2
+from py_funcs.quantize import quantize_ndarray1,quantize_ndarray2
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # rel_eb=1e-5
 abs_eb=1e-6
-param_eb_scale=0.1414
-zstd_separate_compress=False
+param_eb_scale=0.05
+zstd_separate_compress=True
 
 if os.environ.get("SLURM_NTASKS") is not None:
     thread_num=int(os.environ.get("SLURM_NTASKS"))
@@ -24,7 +31,9 @@ with open(f"{file_path}.header.yaml","r") as f_header:
     header=nek5000_header_c()
     header.__dict__.update(header_and_block_info["header"])
     block_num=header_and_block_info["block_num"]
+    block_num=10
     blocks=header_and_block_info["blocks"]
+    blocks=blocks[:block_num]
 
 try:
     abs_eb
@@ -33,7 +42,6 @@ except:
 else:
     rel_eb=abs_eb/(header.data_range["P"][1]-header.data_range["P"][0])
 param_eb=abs_eb*param_eb_scale
-# param_eb=2*rel_eb*param_eb_scale
 max_err=0
 mse=0
 print(f"presure_min= {header.data_range['P'][0]}, presure_max= {header.data_range['P'][1]}")
@@ -41,14 +49,14 @@ print(f"rel_eb= {rel_eb}")
 print(f"abs_eb= {abs_eb}")
 print(f"param_eb= {param_eb}")
 
-p=np.zeros((header.element_shape[0],header.element_shape[0]),dtype=np.float64)
+L=np.zeros((header.element_shape[0],header.element_shape[0]),dtype=np.float64)
 x=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(header.element_shape[0]-1).deriv().roots(),[1]))
-p[0]=1
-p[1]=x
+L[0]=1
+L[1]=x
 for i in range(2,header.element_shape[0]):
-    p[i]=((2*i-1)*x*p[i-1]-(i-1)*p[i-2])/i
-w=2/(header.element_shape[0]*(header.element_shape[0]-1)*p[-1]**2)
-d=np.einsum("ia,a,ia->i",p,w,p)
+    # L[i]=((2*i-1)*x*L[i-1]-(i-1)*L[i-2])/i
+    L[i]=2*x*L[i-1]-L[i-2]
+neg_L=np.linalg.inv(L)
 element_base_weight=np.ones((8,*header.element_shape),dtype=np.float64)
 element_base_weight[0]=np.einsum("a,b,c->abc",1-x,1-x,1-x)/8
 element_base_weight[1]=np.einsum("a,b,c->abc",1-x,1-x,x+1)/8
@@ -71,16 +79,16 @@ def compress_chunk(chunk):
                      element[-1,0,0]*element_base_weight[4]+element[-1,0,-1]*element_base_weight[5]+\
                      element[-1,-1,0]*element_base_weight[6]+element[-1,-1,-1]*element_base_weight[7]
         element-=element_base
-        f=np.einsum("abc,ia,a->ibc",element,p,w)/d.reshape(-1,1,1)
-        f=np.einsum("ibc,jb,b->ijc",f,p,w)/d.reshape(1,-1,1)
-        f=np.einsum("ijc,kc,c->ijk",f,p,w)/d.reshape(1,1,-1)
+        f=np.einsum("abc,ai->ibc",element,neg_L)
+        f=np.einsum("ibc,bj->ijc",f,neg_L)
+        f=np.einsum("ijc,ck->ijk",f,neg_L)
         f_qb,f_quantized=quantize_ndarray1(f,param_eb)
         f_qb[(-1<=f_qb) & (f_qb<=1)]=0
         f_quantized=f_qb*2*param_eb
         f_qb_list.append(f_qb)
-        new_element=np.einsum("ijk,kc->ijc",f_quantized,p)
-        new_element=np.einsum("ijc,jb->ibc",new_element,p)
-        new_element=np.einsum("ibc,ia->abc",new_element,p)
+        new_element=np.einsum("ijk,kc->ijc",f_quantized,L)
+        new_element=np.einsum("ijc,jb->ibc",new_element,L)
+        new_element=np.einsum("ibc,ia->abc",new_element,L)
         qb,new_element=quantize_ndarray2(new_element,element,abs_eb)
         qb_list.append(qb)
         max_err=max(max_err,np.abs(new_element-element).max())
