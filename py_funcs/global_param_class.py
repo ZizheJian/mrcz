@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from typing import Any
 from py_funcs.read_nekrs_header import nekrs_header_c
+from py_funcs.plot import plot_curves
 
 class global_param_class:
     def __init__(self):
@@ -93,6 +94,7 @@ class global_param_class:
                 cr_dict[abs_eb]=self.header.word_size/br_dict[abs_eb]
                 mse_dict[abs_eb]/=total_element_num[abs_eb]
                 psnr_dict[abs_eb]=10*np.log10((self.data_range["P"][1]-self.data_range["P"][0])**2/mse_dict[abs_eb])
+            plot_curves(self.experiment_id,[(f"{self.experiment_id:04d}",list(br_dict.values()),list(psnr_dict.values()))])
         with open(f"history/conclusion{self.experiment_id:04d}.txt","w") as f_conclusion:
             content=f"conclusion= {conclusion}\n"
             content+=f"state= {self.current_state}\n"

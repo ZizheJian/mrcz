@@ -1,6 +1,7 @@
 import os,math
 import pandas as pd
 from py_funcs.global_param_class import global_param_class
+from py_funcs.plot import plot_curves
 
 def distance_point_line(cr:float,psnr:float,cr1:float,psnr1:float,cr2:float,psnr2:float)->float:
     dx=cr2-cr1
@@ -31,10 +32,12 @@ def judge_point_curve(cr:float,psnr:float,reference_cr_list:list[float],referenc
     if A[0]>B[0] or A[1]>B[1] or (A[0]==B[0] and A[1]==B[1]):
         return "uncertain"
     cross=(B[0]-A[0])*(P[1]-A[1])-(B[1]-A[1])*(P[0]-A[0])
-    
-    
-    
-
+    if cross>0:
+        return "better"
+    elif cross<0:
+        return "worse"
+    else:
+        return "uncertain"
 
 def compare_with_best(global_param:global_param_class):
     index=0
@@ -45,13 +48,33 @@ def compare_with_best(global_param:global_param_class):
             if "best" in lines[0]:
                 best_index=index
         index+=1
-    cr_list=[]
-    best_cr_list=[]
+    block_list=[]
+    br_list=[]
+    best_br_list=[]
     psnr_list=[]
     best_psnr_list=[]
+    ######## 计算新实验的cr、psnr并记录每个abs_eb对应的blocks ########
+    for abs_eb in global_param.abs_eb_list:
+        df=pd.read_csv(f"history/history{global_param.experiment_id:04d}.csv")
+        rows=[row for _,row in df.iterrows() if (row["abs_eb"]==abs_eb)]
+        br=0
+        mse=0
+        total_num=0
+        block_list.append([])
+        for row in rows:
+            block_list[-1].append(int(row["block_id"]))
+            num=global_param.blocks[int(row["block_id"])]["element_num"]*global_param.header.element_size    
+            br+=row["br"]*num
+            mse+=row["mse"]*num
+            total_num+=num
+        br/=total_num
+        mse/=total_num
+        br_list.append(br)
+        psnr_list.append(10*math.log10((global_param.data_range["P"][1]-global_param.data_range["P"][0])**2/mse))
+    ######## 计算史上最佳实验在记录的blocks上的cr、psnr ########
     for abs_eb in global_param.abs_eb_list:
         df=pd.read_csv(f"history/history{best_index:04d}.csv")
-        rows=[row for _,row in df.iterrows() if (row["abs_eb"]==abs_eb) and (row["block_id"] in global_param.block_list)]
+        rows=[row for _,row in df.iterrows() if (row["abs_eb"]==abs_eb) and (row["block_id"] in block_list[global_param.abs_eb_list.index(abs_eb)])]
         br=0
         mse=0
         total_num=0
@@ -62,23 +85,32 @@ def compare_with_best(global_param:global_param_class):
             total_num+=num
         br/=total_num
         mse/=total_num
-        best_cr_list.append(global_param.header.word_size/br)
+        best_br_list.append(br)
         best_psnr_list.append(10*math.log10((global_param.data_range["P"][1]-global_param.data_range["P"][0])**2/mse))
-    with open(f"history/conclusion{global_param.experiment_id:04d}.txt","r") as f:
-        lines=f.readlines()[2:]
-        for line in lines:
-            if not line.startswith("abs_eb="):
-                break
-            cr_list.append(float(line.split()[5].strip()))
-            psnr_list.append(float(line.split()[9].strip()))
-    print(best_cr_list)
-    print(cr_list)
-    print(best_psnr_list)
-    print(psnr_list)
-    exit()
-    if cr_list[0]>=cr_list[-1] or psnr_list[0]>=psnr_list[-1]:
+    
+    plot_curves(global_param.experiment_id,[(f"{global_param.experiment_id:04d}",br_list,psnr_list),(f"Best{best_index:04d}",best_br_list,best_psnr_list)])
+
+    if br_list[0]>=br_list[-1] or psnr_list[0]>=psnr_list[-1]:
         return "uncertain"
     score=0
-    for i in range(len(cr_list)):
-        judge_point_curve(cr_list[i],psnr_list[i],best_cr_list,best_psnr_list)
+    for i in range(len(br_list)):
+        res=judge_point_curve(br_list[i],psnr_list[i],best_br_list,best_psnr_list)
+        print(res)
+        if res=="better":
+            score+=1
+        elif res=="worse":
+            score-=1
+    for i in range(len(best_br_list)):
+        res=judge_point_curve(best_br_list[i],best_psnr_list[i],br_list,psnr_list)
+        print(res)
+        if res=="better":
+            score-=1
+        elif res=="worse":
+            score+=1
+    if score>2*len(global_param.abs_eb_list)/3:
+        return "better"
+    elif score<-2*len(global_param.abs_eb_list)/3:
+        return "worse"
+    else:
+        return "uncertain"
         

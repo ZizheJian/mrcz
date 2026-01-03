@@ -29,12 +29,14 @@ def get_global_param(global_param:global_param_class):
         else:
             index=best_index
         global_param.read(index)
-        if global_param.conclusion=="baseline" or global_param.conclusion=="best":
+        if global_param.conclusion=="baseline":
+            global_param.current_state=0
+            global_param.experiment_id=0
+        if global_param.conclusion=="best":
             global_param.current_state=0
             global_param.experiment_id=next_index
 
 def generate_baseline_history(global_param:global_param_class):
-    
     if not os.path.exists("history"):
         os.makedirs("history", exist_ok=True)
     if not os.path.exists("history/history0000.csv"):

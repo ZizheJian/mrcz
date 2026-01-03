@@ -50,7 +50,8 @@ while True:
             df=append_history(df,block_list,abs_eb,br_list,cr_list,mse_list,psnr_list)
             df.to_csv(f"history/history{global_param.experiment_id:04d}.csv",index=False)
         global_param.write("incomplete")
-        compare_with_best(global_param)
+        print(compare_with_best(global_param))
+        exit()
     elif global_param.current_state==2:
         pass
     elif global_param.current_state==3:
