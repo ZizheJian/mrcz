@@ -1,8 +1,8 @@
 import yaml,time,os
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor
-from read_nek5000_header import read_nek5000_header
-from partition import partition
+from py_funcs.read_nek5000_header import read_nek5000_header
+from py_funcs.partition import partition
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # If no coordinates are present in the main file, use a separate coordinate file
@@ -16,6 +16,7 @@ else:
     thread_num=1
 f=open(file_path,"rb")
 header=read_nek5000_header(f)
+data_range={}
 block_element_num=block_size//(header.element_size*header.word_size*4) # During each compression, using xyz and 1 variable
 print(f"block_element_num={block_element_num}")
 
@@ -66,7 +67,7 @@ print(f"time= {time.time()-start_time} s")
 print(f"Saving coordinate...")
 start_time=time.time()
 if "X" in header.variables:
-    header.data_range["X"]=[[float('inf'),float('-inf')] for _ in range(3)]
+    data_range["X"]=[[float('inf'),float('-inf')] for _ in range(3)]
     file_pos=f.tell()
     block_per_round=thread_num*read_cache_size//(block_size*3//4)
     def read_and_save_coordinate_block(block_id):
@@ -89,8 +90,8 @@ if "X" in header.variables:
         with ProcessPoolExecutor(max_workers=thread_num) as exe:
             results=list(exe.map(read_and_save_coordinate_block,range(block_id_start,block_id_end)))
         for dim in range(3):
-            header.data_range["X"][dim][0]=min(header.data_range["X"][dim][0],min([r[dim][0] for r in results]))
-            header.data_range["X"][dim][1]=max(header.data_range["X"][dim][1],max([r[dim][1] for r in results]))
+            data_range["X"][dim][0]=min(data_range["X"][dim][0],min([r[dim][0] for r in results]))
+            data_range["X"][dim][1]=max(data_range["X"][dim][1],max([r[dim][1] for r in results]))
     f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
 else:
     raise NotImplementedError("Alternative coordinate file saving not implemented yet.")
@@ -100,7 +101,7 @@ print(f"time= {time.time()-start_time} s")
 if "U" in header.variables:
     start_time=time.time()
     print(f"Saving velocity...")
-    header.data_range["U"]=[[float('inf'),float('-inf')] for _ in range(3)]
+    data_range["U"]=[[float('inf'),float('-inf')] for _ in range(3)]
     file_pos=f.tell()
     block_per_round=thread_num*read_cache_size//(block_size*3//4)
     def read_and_save_velocity_block(block_id):
@@ -127,8 +128,8 @@ if "U" in header.variables:
         with ProcessPoolExecutor(max_workers=thread_num) as exe:
             results=list(exe.map(read_and_save_velocity_block,range(block_id_start,block_id_end)))
         for dim in range(3):
-            header.data_range["U"][dim][0]=min(header.data_range["U"][dim][0],min([r[dim][0] for r in results]))
-            header.data_range["U"][dim][1]=max(header.data_range["U"][dim][1],max([r[dim][1] for r in results]))
+            data_range["U"][dim][0]=min(data_range["U"][dim][0],min([r[dim][0] for r in results]))
+            data_range["U"][dim][1]=max(data_range["U"][dim][1],max([r[dim][1] for r in results]))
     f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
     print(f"time= {time.time()-start_time} s")
 
@@ -136,7 +137,7 @@ if "U" in header.variables:
 if "P" in header.variables:
     print(f"Saving pressure...")
     start_time=time.time()
-    header.data_range["P"]=[float('inf'),float('-inf')]
+    data_range["P"]=[float('inf'),float('-inf')]
     file_pos=f.tell()
     block_per_round=thread_num*read_cache_size//(block_size//4)
     def read_and_save_pressure_block(block_id):
@@ -153,8 +154,8 @@ if "P" in header.variables:
         block_id_end=min(block_id_start+block_per_round,block_num)
         with ProcessPoolExecutor(max_workers=thread_num) as exe:
             results=list(exe.map(read_and_save_pressure_block,range(block_id_start,block_id_end)))
-        header.data_range["P"][0]=min(header.data_range["P"][0],min([r[0] for r in results]))
-        header.data_range["P"][1]=max(header.data_range["P"][1],max([r[1] for r in results]))
+        data_range["P"][0]=min(data_range["P"][0],min([r[0] for r in results]))
+        data_range["P"][1]=max(data_range["P"][1],max([r[1] for r in results]))
     f.seek(header.file_element_num*header.element_size*header.word_size,1)
     print(f"time= {time.time()-start_time} s")
 
@@ -162,7 +163,7 @@ if "P" in header.variables:
 if "T" in header.variables:
     print(f"Saving temperature...")
     start_time=time.time()
-    header.data_range["T"]=[float('inf'),float('-inf')]
+    data_range["T"]=[float('inf'),float('-inf')]
     file_pos=f.tell()
     block_per_round=thread_num*read_cache_size//(block_size//4)
     def read_and_save_temperature_block(block_id):
@@ -179,15 +180,15 @@ if "T" in header.variables:
         block_id_end=min(block_id_start+block_per_round,block_num)
         with ProcessPoolExecutor(max_workers=thread_num) as exe:
             results=list(exe.map(read_and_save_temperature_block,range(block_id_start,block_id_end)))
-        header.data_range["T"][0]=min(header.data_range["T"][0],min([r[0] for r in results]))
-        header.data_range["T"][1]=max(header.data_range["T"][1],max([r[1] for r in results]))
+        data_range["T"][0]=min(data_range["T"][0],min([r[0] for r in results]))
+        data_range["T"][1]=max(data_range["T"][1],max([r[1] for r in results]))
     f.seek(header.file_element_num*header.element_size*header.word_size,1)
     print(f"time= {time.time()-start_time} s")
 
 ######## save passive scalars ########
 print(f"Saving passive scalars...")
 start_time=time.time()
-header.data_range["S"]=[[float('inf'),float('-inf')] for _ in range(header.passive_scalar_num)]
+data_range["S"]=[[float('inf'),float('-inf')] for _ in range(header.passive_scalar_num)]
 for passive_scalar_id in range(header.passive_scalar_num):
     file_pos=f.tell()
     block_per_round=thread_num*read_cache_size//(block_size//4)
@@ -205,22 +206,24 @@ for passive_scalar_id in range(header.passive_scalar_num):
         block_id_end=min(block_id_start+block_per_round,block_num)
         with ProcessPoolExecutor(max_workers=thread_num) as exe:
             results=list(exe.map(read_and_save_passive_scalar_block,range(block_id_start,block_id_end)))
-        header.data_range["S"][passive_scalar_id][0]=min(header.data_range["S"][passive_scalar_id][0],min([r[0] for r in results]))
-        header.data_range["S"][passive_scalar_id][1]=max(header.data_range["S"][passive_scalar_id][1],max([r[1] for r in results]))
+        data_range["S"][passive_scalar_id][0]=min(data_range["S"][passive_scalar_id][0],min([r[0] for r in results]))
+        data_range["S"][passive_scalar_id][1]=max(data_range["S"][passive_scalar_id][1],max([r[1] for r in results]))
     f.seek(header.file_element_num*header.element_size*header.word_size,1)
 print(f"time= {time.time()-start_time} s")
 
 ######## save header ########
 print(f"Saving header...")
 start_time=time.time()
-header.data_range=dict(header.data_range)
+data_range=dict(data_range)
 header_and_block_info={}
 header_and_block_info["header"]=header.__dict__
+header_and_block_info["data_range"]=data_range
 header_and_block_info["block_num"]=block_num
 header_and_block_info["blocks"]=[]
 for i in range(block_num):
     block_info={}
     block_info["block_id"]=i
+    block_info["element_num"]=len(block2element[i])
     block_info["element_map_path"]=f"{file_path}.block_{i}.element_map"
     block_info["coordinate_path"]=f"{file_path}.block_{i}.coordinate"
     if "U" in header.variables:

@@ -5,7 +5,7 @@ from dahuffman import HuffmanCodec
 from concurrent.futures import ProcessPoolExecutor
 from matplotlib import pyplot as plt
 from plotly import graph_objects as go
-from read_nek5000_header import nek5000_header_c
+from py_funcs.read_nek5000_header import nekrs_header_c
 from py_funcs.quantize_ndarray import quantize_ndarray1,quantize_ndarray2
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
@@ -17,7 +17,7 @@ else:
 
 with open(f"{file_path}.header.yaml","r") as f_header:
     header_and_block_info=yaml.load(f_header,Loader=yaml.UnsafeLoader)
-    header=nek5000_header_c()
+    header=nekrs_header_c()
     header.__dict__.update(header_and_block_info["header"])
     block_num=header_and_block_info["block_num"]
     blocks=header_and_block_info["blocks"]

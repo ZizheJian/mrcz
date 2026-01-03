@@ -2,7 +2,7 @@ import struct,re
 import numpy as np
 from typing import Tuple,Dict
 
-class nek5000_header_c:
+class nekrs_header_c:
     word_size:int=4  # word size in bytes
     realtype:str="" # "f" for float32, "d" for float64
     np_dtype=np.float32
@@ -17,9 +17,8 @@ class nek5000_header_c:
     variables:str=""
     passive_scalar_num:int=0
     endian_mode:str=""
-    data_range:Dict={}
 
-def read_nek5000_header(f)->nek5000_header_c:
+def read_nek5000_header(f)->nekrs_header_c:
     header=f.read(132).split()
     if len(header)<12:
         raise IOError("Header of the file was too short.")
@@ -32,7 +31,7 @@ def read_nek5000_header(f)->nek5000_header_c:
         endian_mode=">"
     else:
         raise ValueError("Could not interpret endianness")
-    ret=nek5000_header_c()
+    ret=nekrs_header_c()
     ret.word_size=int(header[1])
     if ret.word_size==4:
         ret.realtype="f"

@@ -3,7 +3,7 @@ import numpy as np
 import zstandard as zstd
 from dahuffman import HuffmanCodec
 from concurrent.futures import ProcessPoolExecutor
-from read_nek5000_header import nek5000_header_c
+from py_funcs.read_nek5000_header import nekrs_header_c
 from py_funcs.interpolation_compress_element import interpolation_compress_element
 from py_funcs.predict_and_overwrite_linear import predict_and_overwrite_linear_dim0,predict_and_overwrite_linear_dim1,predict_and_overwrite_linear_dim2
 
@@ -18,7 +18,7 @@ else:
 
 with open(f"{file_path}.header.yaml","r") as f_header:
     header_and_block_info=yaml.load(f_header,Loader=yaml.UnsafeLoader)
-    header=nek5000_header_c()
+    header=nekrs_header_c()
     header.__dict__.update(header_and_block_info["header"])
     block_num=header_and_block_info["block_num"]
     blocks=header_and_block_info["blocks"]

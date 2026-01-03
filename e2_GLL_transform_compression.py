@@ -1,9 +1,8 @@
-# TODO: 尝试主要利用element间连续性进行压缩，而不是element内连续性
 # TODO: 3阶样条插值、改变预测顺序
-# TODO: 使用支持向量机在element内划分
 # TODO: 对element按照连续性进行分类
 # TODO: tune各种参数
 # TODO: 所有huffman共用一个字典
+# TODO: 根据error bound选择数据类型
 
 import yaml,struct,os,time
 import numpy as np
@@ -12,14 +11,21 @@ from dahuffman import HuffmanCodec
 from concurrent.futures import ProcessPoolExecutor
 from matplotlib import pyplot as plt
 from plotly import graph_objects as go
-from read_nek5000_header import nek5000_header_c
-from py_funcs.quantize import quantize_ndarray1,quantize_ndarray2
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.svm import SVC
+from py_funcs.read_nekrs_header import nekrs_header_c
+from py_funcs.quantize import quantize_ndarray1,quantize_ndarray2,quantize_ndarray3
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # rel_eb=1e-5
-abs_eb=1e-6
+abs_eb=3.162e-4
 param_eb_scale=0.05
-zstd_separate_compress=True
+zero_freq_bound:float=3
+zero_f_qb_bound:int=1
+svm=False
+# svm="per_block"
+# svm="shared"
+zstd_separate_compress=False
 
 if os.environ.get("SLURM_NTASKS") is not None:
     thread_num=int(os.environ.get("SLURM_NTASKS"))
@@ -28,23 +34,22 @@ else:
 
 with open(f"{file_path}.header.yaml","r") as f_header:
     header_and_block_info=yaml.load(f_header,Loader=yaml.UnsafeLoader)
-    header=nek5000_header_c()
+    header=nekrs_header_c()
     header.__dict__.update(header_and_block_info["header"])
+    data_range=header_and_block_info["data_range"]
     block_num=header_and_block_info["block_num"]
-    block_num=10
     blocks=header_and_block_info["blocks"]
-    blocks=blocks[:block_num]
 
 try:
     abs_eb
 except:
-    abs_eb=rel_eb*(header.data_range["P"][1]-header.data_range["P"][0]) # type: ignore
+    abs_eb=rel_eb*(data_range["P"][1]-data_range["P"][0]) # type: ignore
 else:
-    rel_eb=abs_eb/(header.data_range["P"][1]-header.data_range["P"][0])
+    rel_eb=abs_eb/(data_range["P"][1]-data_range["P"][0])
 param_eb=abs_eb*param_eb_scale
 max_err=0
 mse=0
-print(f"presure_min= {header.data_range['P'][0]}, presure_max= {header.data_range['P'][1]}")
+print(f"presure_min= {data_range['P'][0]}, presure_max= {data_range['P'][1]}")
 print(f"rel_eb= {rel_eb}")
 print(f"abs_eb= {abs_eb}")
 print(f"param_eb= {param_eb}")
@@ -54,7 +59,6 @@ x=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(header.element_shap
 L[0]=1
 L[1]=x
 for i in range(2,header.element_shape[0]):
-    # L[i]=((2*i-1)*x*L[i-1]-(i-1)*L[i-2])/i
     L[i]=2*x*L[i-1]-L[i-2]
 neg_L=np.linalg.inv(L)
 element_base_weight=np.ones((8,*header.element_shape),dtype=np.float64)
@@ -82,9 +86,10 @@ def compress_chunk(chunk):
         f=np.einsum("abc,ai->ibc",element,neg_L)
         f=np.einsum("ibc,bj->ijc",f,neg_L)
         f=np.einsum("ijc,ck->ijk",f,neg_L)
-        f_qb,f_quantized=quantize_ndarray1(f,param_eb)
-        f_qb[(-1<=f_qb) & (f_qb<=1)]=0
-        f_quantized=f_qb*2*param_eb
+        if svm==False:
+            f_qb,f_quantized=quantize_ndarray3(f,param_eb,zero_freq_bound) # 如果不使用SVM，则修改f_qb==0的范围
+        else:
+            f_qb,f_quantized=quantize_ndarray1(f,param_eb)
         f_qb_list.append(f_qb)
         new_element=np.einsum("ijk,kc->ijc",f_quantized,L)
         new_element=np.einsum("ijc,jb->ibc",new_element,L)
@@ -96,9 +101,18 @@ def compress_chunk(chunk):
     return f_qb_list,qb_list,max_err,mse
 
 def lossless_encode_block(args):
-    f_qb_list,qb_list=args
-    f_qb=np.array(f_qb_list).transpose(1,2,3,0).flatten()
-    qb=np.array(qb_list).flatten()
+    if svm==False:
+        f_qb_list,qb_list=args
+        f_qb=np.array(f_qb_list).transpose(1,2,3,0).flatten()
+        qb=np.array(qb_list).flatten()
+    elif svm=="per_block":
+        f_qb_list,qb_list,clf=args
+        if clf is None:
+            f_qb=np.array(f_qb_list).transpose(1,2,3,0).flatten()
+        else:
+            f_qb=np.array(f_qb_list)
+            f_qb=f_qb[:,clf<=0].transpose(1,0).flatten()
+        qb=np.array(qb_list).flatten()
     ######## Huffman f ########
     f_hf_bs=b""
     f_values,f_counts=np.unique(f_qb,return_counts=True)
@@ -108,9 +122,12 @@ def lossless_encode_block(args):
     if max_f<=2**15-1:
         f_hf_bs+=struct.pack("<b",15)
         f_hf_bs+=struct.pack(f"<{len(f_values)}h",*f_values.tolist())
-    else:
+    elif max_f<=2**31-1:
         f_hf_bs+=struct.pack("<b",31)
         f_hf_bs+=struct.pack(f"<{len(f_values)}i",*f_values.tolist())
+    else:
+        f_hf_bs+=struct.pack("<b",63)
+        f_hf_bs+=struct.pack(f"<{len(f_values)}q",*f_values.tolist())
     f_hf_bs+=struct.pack(f"<{len(f_values)}Q",*f_counts.tolist())
     f_codec=HuffmanCodec.from_frequencies(f_freq)
     temp_bs=f_codec.encode(f_qb.flatten().tolist())
@@ -125,9 +142,12 @@ def lossless_encode_block(args):
     if max_qb<=2**15-1:
         hf_bs+=struct.pack("<b",15)
         hf_bs+=struct.pack(f"<{len(qb_values)}h",*qb_values.tolist())
-    else:
+    elif max_qb<=2**31-1:
         hf_bs+=struct.pack("<b",31)
         hf_bs+=struct.pack(f"<{len(qb_values)}i",*qb_values.tolist())
+    else:
+        hf_bs+=struct.pack("<b",63)
+        hf_bs+=struct.pack(f"<{len(qb_values)}q",*qb_values.tolist())
     hf_bs+=struct.pack(f"<{len(qb_values)}Q",*qb_counts.tolist())
     qb_codec=HuffmanCodec.from_frequencies(qb_freq)
     temp_bs=qb_codec.encode(qb.flatten().tolist())
@@ -144,12 +164,13 @@ def lossless_encode_block(args):
         return len(zstd_bs)
 
 qb_list=[]
+clf_list=[]
 with ProcessPoolExecutor(max_workers=thread_num) as exe:
     total_lossy_time=0
     for block in blocks:
         block_element_num=os.path.getsize(block["pressure_path"])//(header.word_size*header.element_size)
         with open(block["pressure_path"],"rb") as f_pressure:
-            cache=np.fromfile(f_pressure,dtype=header.np_dtype,count=block_element_num*header.element_size).reshape(1,-1,*header.element_shape)
+            cache=np.fromfile(f_pressure,dtype=header.np_dtype,count=block_element_num*header.element_size).reshape(1,-1,*header.element_shape).astype(np.float64)
         start_element_id=[(block_element_num*i)//thread_num for i in range(thread_num)]
         end_element_id=[(block_element_num*(i+1))//thread_num for i in range(thread_num)]
         exe_input=[cache[:,start_element_id[i]:end_element_id[i]] for i in range(thread_num)]
@@ -165,9 +186,35 @@ with ProcessPoolExecutor(max_workers=thread_num) as exe:
             mse+=local_mse
     print(f"有损时间: {total_lossy_time} s")
 
-    # for block_id,(f_qb_list,qb_list) in enumerate(qb_list):
-    #     print(f"Block {block_id}")
-    #     f_qb=np.array(f_qb_list)
+    if svm=="per_block":
+        X,Y,Z=np.meshgrid(np.arange(header.element_shape[0]),np.arange(header.element_shape[0]),np.arange(header.element_shape[0]),indexing="ij")
+        coords=np.c_[X.flatten(),Y.flatten(),Z.flatten()]
+        poly=PolynomialFeatures(degree=2,include_bias=True)
+        X_poly=poly.fit_transform(coords)
+        for block_id,(local_f_qb_list,local_qb_list) in enumerate(qb_list):
+            print(f"Processing SVM visualization for block {block_id}...")
+            f_qb=np.array(local_f_qb_list)
+            f_qb_0_freq=np.sum(f_qb==0,axis=0)/f_qb.shape[0]
+            y_labels=np.all(f_qb<=zero_f_qb_bound,axis=0).flatten().astype(np.int32)
+            if y_labels.sum()==0 or y_labels.sum()==y_labels.shape[0]:
+                print(f"block {block_id} 只有一种类别，跳过SVM训练")
+                clf_list.append(None)
+                continue
+            clf=SVC(kernel="linear",class_weight={0:1,1:0.1},C=1.0,random_state=0)
+            clf.fit(X_poly,y_labels)
+            decision_values=clf.decision_function(X_poly).reshape(header.element_shape)
+            clf_list.append(decision_values)
+            # fig=go.Figure()
+            # fig.add_trace(go.Volume(x=X.flatten(),y=Y.flatten(),z=Z.flatten(),value=f_qb_0_freq.flatten(),isomin=0,isomax=1,
+            #                         opacity=0.1,surface_count=40,colorscale="Greys_r",showscale=True,
+            #                         colorbar=dict(tickmode="array",tickvals=[0,1],ticktext=["No Zero","All Zero"])))
+            # fig.add_trace(go.Isosurface(x=X.flatten(),y=Y.flatten(),z=Z.flatten(),value=decision_values.flatten(),isomin=0,isomax=0,
+            #                             opacity=0.6,surface_count=1,colorscale="Reds",showscale=False))
+            # fig.update_layout(scene=dict(aspectmode="cube"),width=800,height=800)
+            # fig.write_html(f"fig/SVM_0_freq_{block_id}.html")
+
+    # for block_id,(local_f_qb_list,local_qb_list) in enumerate(qb_list):
+    #     f_qb=np.array(local_f_qb_list)
     #     f_qb_0_freq=np.sum(f_qb==0,axis=0)/f_qb.shape[0]
 
     #     fig,axes=plt.subplots(2,5,figsize=(50,20))
@@ -187,13 +234,17 @@ with ProcessPoolExecutor(max_workers=thread_num) as exe:
     #     X,Y,Z=np.meshgrid(x,y,z,indexing="ij")
     #     fig=go.Figure()
     #     fig.add_trace(go.Volume(x=X.flatten(),y=Y.flatten(),z=Z.flatten(),value=f_qb_0_freq.flatten(),isomin=0,isomax=1,
-    #                             opacity=0.1,surface_count=40,colorscale="Greys",showscale=True,
+    #                             opacity=0.1,surface_count=40,colorscale="Greys_r",showscale=True,
     #                             colorbar=dict(tickmode="array",tickvals=[0,1],ticktext=["No Zero","All Zero"])))
     #     fig.update_layout(scene=dict(aspectmode="cube"),width=800,height=800)
     #     fig.write_html(f"fig/0_freq_{block_id}.html")
     
     start_time=time.time()
-    results=list(exe.map(lossless_encode_block,qb_list))
+    if svm==False:
+        results=list(exe.map(lossless_encode_block,qb_list))
+    elif svm=="per_block":
+        exe_input=[(qb_list[i][0],qb_list[i][1],clf_list[i]) for i in range(block_num)]
+        results=list(exe.map(lossless_encode_block,exe_input))
     print(f"无损时间: {time.time()-start_time} s")
     if zstd_separate_compress:
         zstd_f_qb_len=sum([res[0] for res in results])
@@ -213,5 +264,5 @@ else:
 
 print(f"max_err= {max_err}({max_err*100/abs_eb}%)")
 mse/=(header.file_element_num*header.element_size)
-psnr=10*np.log10((header.data_range["P"][1]-header.data_range["P"][0])**2/mse)
+psnr=10*np.log10((data_range["P"][1]-data_range["P"][0])**2/mse)
 print(f"MSE= {mse} , PSNR= {psnr} dB")
