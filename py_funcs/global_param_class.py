@@ -1,9 +1,9 @@
-import os,copy,random
+import os,copy,random,itertools
 import numpy as np
-import pandas as pd
 from typing import Any
 from py_funcs.read_nekrs_header import nekrs_header_c
-from py_funcs.plot import plot_curves
+from py_funcs.read_rate_distortion import read_rate_distortion_from_history
+from py_funcs.compare_with_best import compare_with_best
 
 class global_param_class:
     def __init__(self):
@@ -68,33 +68,7 @@ class global_param_class:
 
     def write(self,conclusion):
         os.makedirs("history",exist_ok=True)
-        br_dict={}
-        cr_dict={}
-        mse_dict={}
-        psnr_dict={}
-        if os.path.exists(f"history/history{self.experiment_id:04d}.csv"):
-            total_element_num={}
-            with open(f"history/history{self.experiment_id:04d}.csv","r") as f_history:
-                df=pd.read_csv(f_history)
-                for _,row in df.iterrows():
-                    block_id=int(row["block_id"])
-                    abs_eb=float(row["abs_eb"])
-                    br=float(row["br"])
-                    mse=float(row["mse"])
-                    if abs_eb not in br_dict:
-                        br_dict[abs_eb]=br*self.blocks[block_id]["element_num"]*self.header.element_size
-                        mse_dict[abs_eb]=mse*self.blocks[block_id]["element_num"]*self.header.element_size
-                        total_element_num[abs_eb]=self.blocks[block_id]["element_num"]*self.header.element_size
-                    else:
-                        br_dict[abs_eb]+=br*self.blocks[block_id]["element_num"]*self.header.element_size
-                        mse_dict[abs_eb]+=mse*self.blocks[block_id]["element_num"]*self.header.element_size
-                        total_element_num[abs_eb]+=self.blocks[block_id]["element_num"]*self.header.element_size
-            for abs_eb in br_dict:
-                br_dict[abs_eb]/=total_element_num[abs_eb]
-                cr_dict[abs_eb]=self.header.word_size/br_dict[abs_eb]
-                mse_dict[abs_eb]/=total_element_num[abs_eb]
-                psnr_dict[abs_eb]=10*np.log10((self.data_range["P"][1]-self.data_range["P"][0])**2/mse_dict[abs_eb])
-            plot_curves(self.experiment_id,[(f"{self.experiment_id:04d}",list(br_dict.values()),list(psnr_dict.values()))])
+        br_dict,cr_dict,mse_dict,psnr_dict=read_rate_distortion_from_history(self.experiment_id,None,self)
         with open(f"history/conclusion{self.experiment_id:04d}.txt","w") as f_conclusion:
             content=f"conclusion= {conclusion}\n"
             content+=f"state= {self.current_state}\n"
@@ -108,19 +82,86 @@ class global_param_class:
             f_conclusion.write(content)
 
 def generate_new_global_param(global_param:global_param_class)->global_param_class:
-    index=0
-    while os.path.exists(f"history/conclusion{index:04d}.txt"):
-        index+=1
-    conclusion_num=index
-    if conclusion_num==1:
+    if global_param.experiment_id<=20:
         new_global_param=copy.deepcopy(global_param)
         new_global_param.current_state=1
-        new_global_param.experiment_id=conclusion_num
-        new_global_param.param["param_eb_scale"]*=(1+random.uniform(-1e-3,1e-3))
-        new_global_param.param["zero_freq_bound"]*=(1+random.uniform(-1e-3,1e-3))
-        new_global_param.param["L"]+=np.random.uniform(-1e-3,1e-3,new_global_param.param["L"].shape)
+        if global_param.experiment_id==1:
+            new_global_param.param["param_eb_scale"]=0.05
+            new_global_param.param["L"]=np.zeros((new_global_param.header.element_shape[0],new_global_param.header.element_shape[0]),dtype=np.float64)
+            new_global_param.param["L"][0]=1
+            new_global_param.param["L"][1]=new_global_param.x
+            for i in range(2,new_global_param.header.element_shape[0]):
+                new_global_param.param["L"][i]=((2*i-1)*new_global_param.x*new_global_param.param["L"][i-1]-(i-1)*new_global_param.param["L"][i-2])/i
+            L_norm=(new_global_param.param["L"]**2).sum()**0.5
+            new_global_param.param["param_eb_scale"]*=(L_norm**3)
+            new_global_param.param["L"]/=L_norm
+            new_global_param.param["neg_L"]=np.linalg.inv(new_global_param.param["L"])
+        else:
+            new_global_param.param["param_eb_scale"]*=(1+random.uniform(-1e-3,1e-3))
+            new_global_param.param["zero_freq_bound"]*=(1+random.uniform(-1e-3,1e-3))
+            new_global_param.param["L"]+=np.random.uniform(-1e-3,1e-3,new_global_param.param["L"].shape)
+            L_norm=(new_global_param.param["L"]**2).sum()**0.5
+            print(f"L_norm= {L_norm}")
+            new_global_param.param["L"]/=L_norm
+            new_global_param.param["neg_L"]=np.linalg.inv(new_global_param.param["L"])
         if random.random()<0.1:
             new_global_param.param["f_qb_postprocessing_method"]="bitmap" if new_global_param.param["f_qb_postprocessing_method"]=="None" else "None"
         return new_global_param
     else:
-        raise NotImplementedError("Only support generating new parameters based on the initial parameters.")
+        index=0
+        best_param_list=[]
+        while os.path.exists(f"history/conclusion{index:04d}.txt"):
+            temp_global_param=copy.deepcopy(global_param)
+            temp_global_param.read(index)
+            if temp_global_param.conclusion=="best":
+                best_param_list.append(temp_global_param)
+            index+=1
+        best_param_list.reverse()
+        monotonic=copy.deepcopy(global_param)
+        max_monotonic=0
+        for param_name in ["param_eb_scale","zero_freq_bound"]:
+            monotonic.param[param_name]=0
+            for param_index in range(len(best_param_list)-2):
+                param0=best_param_list[param_index].param[param_name]
+                param1=best_param_list[param_index+1].param[param_name]
+                param2=best_param_list[param_index+2].param[param_name]
+                if param0>=param1>=param2 or param0<=param1<=param2:
+                    monotonic.param[param_name]+=1
+                    continue
+                break
+            if monotonic.param[param_name]>max_monotonic:
+                max_monotonic=monotonic.param[param_name]
+        for pos in itertools.product(range(global_param.header.element_shape[0]),range(global_param.header.element_shape[0])):
+            monotonic.param["L"][pos]=0
+            for param_index in range(len(best_param_list)-2):
+                param0=best_param_list[param_index].param["L"][pos]
+                param1=best_param_list[param_index+1].param["L"][pos]
+                param2=best_param_list[param_index+2].param["L"][pos]
+                if param0>=param1>=param2 or param0<=param1<=param2:
+                    monotonic.param["L"][pos]+=1
+                    continue
+                break
+            if monotonic.param["L"][pos]>max_monotonic:
+                max_monotonic=monotonic.param["L"][pos]
+        lr_base=0.001*(0.9**global_param.experiment_id)*(1.1**(len(best_param_list)-1))
+        print(f"global_param.experiment_id= {global_param.experiment_id}, len(best_param_list)= {len(best_param_list)}, lr_base= {lr_base}")
+        print(f"max_monotonic= {max_monotonic}")
+        print(f"monotonic.param[\"param_eb_scale\"]= {monotonic.param['param_eb_scale']}, monotonic.param[\"zero_freq_bound\"]= {monotonic.param['zero_freq_bound']}")
+        print(f"monotonic.param[\"L\"]= {monotonic.param['L']}")
+        monotonic.param["param_eb_scale"]=lr_base*0.5**(max_monotonic-monotonic.param["param_eb_scale"])
+        monotonic.param["zero_freq_bound"]=lr_base*0.5**(max_monotonic-monotonic.param["zero_freq_bound"])
+        for pos in zip(range(global_param.header.element_shape[0]),range(global_param.header.element_shape[0])):
+            monotonic.param["L"][pos]=lr_base*0.5**(max_monotonic-monotonic.param["L"][pos])
+        new_global_param=copy.deepcopy(global_param)
+        new_global_param.current_state=1
+        new_global_param.param["param_eb_scale"]*=(1+random.uniform(-monotonic.param["param_eb_scale"],monotonic.param["param_eb_scale"]))
+        new_global_param.param["zero_freq_bound"]*=(1+random.uniform(-monotonic.param["zero_freq_bound"],monotonic.param["zero_freq_bound"]))
+        for pos in zip(range(global_param.header.element_shape[0]),range(global_param.header.element_shape[0])):
+            new_global_param.param["L"]+=random.uniform(-monotonic.param["L"][pos],monotonic.param["L"][pos])/global_param.header.element_shape[0]
+        L_norm=(new_global_param.param["L"]**2).sum()**0.5
+        print(f"L_norm= {L_norm}")
+        new_global_param.param["L"]/=L_norm
+        new_global_param.param["neg_L"]=np.linalg.inv(new_global_param.param["L"])
+        if random.random()<0.1:
+            new_global_param.param["f_qb_postprocessing_method"]="bitmap" if new_global_param.param["f_qb_postprocessing_method"]=="None" else "None"
+        return new_global_param

@@ -55,6 +55,7 @@ def lossless_encode_block(args):
             f_qb=np.array(f_qb_list).transpose(1,2,3,0).flatten()
         else:
             head_bs+=struct.pack("B",2)
+            head_bs+=np.packbits(bitmap.flatten()).tobytes()
             f_qb=np.array(f_qb_list)
             f_qb=f_qb[:,bitmap==False].transpose(1,0).flatten()
         qb=np.array(qb_list).flatten()
@@ -153,8 +154,8 @@ def run_multiblock_1eb(global_param:global_param_class,block_list:list[int],abs_
 
     if max_err>abs_eb*1.001:
         raise ValueError(f"Compression error {max_err} exceeds the absolute error bound {abs_eb}!")
-    br_list=[zstd_len_list[i]/(global_param.blocks[block_list[i]]["element_num"]*header.element_size) for i in range(len(block_list))]
-    cr_list=[header.word_size/br for br in br_list]
+    br_list=[zstd_len_list[i]*8/(global_param.blocks[block_list[i]]["element_num"]*header.element_size) for i in range(len(block_list))]
+    cr_list=[header.word_size*8/br for br in br_list]
     mse_list=[mse_list[i]/(global_param.blocks[block_list[i]]["element_num"]*header.element_size) for i in range(len(block_list))]
     psnr_list=[10*np.log10((global_param.data_range["P"][1]-global_param.data_range["P"][0])**2/mse) for mse in mse_list]
     return br_list,cr_list,mse_list,psnr_list

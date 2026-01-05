@@ -1,6 +1,5 @@
 import os,math
 import pandas as pd
-from py_funcs.global_param_class import global_param_class
 from py_funcs.plot import plot_curves
 
 def distance_point_line(cr:float,psnr:float,cr1:float,psnr1:float,cr2:float,psnr2:float)->float:
@@ -23,23 +22,49 @@ def distance_point_line(cr:float,psnr:float,cr1:float,psnr1:float,cr2:float,psnr
         proj_psnr=psnr1+t*dy
         return math.sqrt((cr-proj_cr)**2+(psnr-proj_psnr)**2)
 
-def judge_point_curve(cr:float,psnr:float,reference_cr_list:list[float],reference_psnr_list:list[float])->str:
-    dist_list=[distance_point_line(cr,psnr,reference_cr_list[i],reference_psnr_list[i],reference_cr_list[i+1],reference_psnr_list[i+1]) for i in range(len(reference_cr_list)-1)]
+def judge_point_curve(abs_eb_list,cr:float,psnr:float,reference_cr_dict:dict,reference_psnr_dict:dict)->str:
+    dist_list=[distance_point_line(cr,psnr,
+                                   reference_cr_dict[abs_eb_list[i]],reference_psnr_dict[abs_eb_list[i]],
+                                   reference_cr_dict[abs_eb_list[i+1]],reference_psnr_dict[abs_eb_list[i+1]]) for i in range(len(abs_eb_list)-1)]
     min_line_index=dist_list.index(min(dist_list))
-    A=(reference_cr_list[min_line_index],reference_psnr_list[min_line_index])
-    B=(reference_cr_list[min_line_index+1],reference_psnr_list[min_line_index+1])
+    A=(reference_cr_dict[abs_eb_list[min_line_index]],reference_psnr_dict[abs_eb_list[min_line_index]])
+    B=(reference_cr_dict[abs_eb_list[min_line_index+1]],reference_psnr_dict[abs_eb_list[min_line_index+1]])
     P=(cr,psnr)
-    if A[0]>B[0] or A[1]>B[1] or (A[0]==B[0] and A[1]==B[1]):
-        return "uncertain"
     cross=(B[0]-A[0])*(P[1]-A[1])-(B[1]-A[1])*(P[0]-A[0])
-    if cross>0:
-        return "better"
-    elif cross<0:
-        return "worse"
-    else:
+    if A[0]==B[0] and A[1]==B[1]:
+        if P[0]==A[0] and P[1]==A[1]:
+            return "uncertain"
+        if P[0]<=A[0] and P[1]>=A[1]:
+            return "better"
+        if P[0]>=A[0] and P[1]<=A[1]:
+            return "worse"
         return "uncertain"
+    if A[0]<=B[0] and A[1]<=B[1]:# AB朝向右上
+        if cross>0:
+            return "better"
+        elif cross<0:
+            return "worse"
+        else:
+            return "uncertain"
+    if A[0]>=B[0] and A[1]<=B[1]:# AB朝向左上
+        if P[1]>=A[1] and (cross>=0 or P[0]<=B[0]):
+            return "better"
+        if P[1]<=B[1] and (cross<=0 or P[0]>=A[0]):
+            return "worse"
+        return "uncertain"
+    if A[0]<=B[0] and A[1]>=B[1]:# AB朝向右下
+        if P[0]<=B[0] and (cross>=0 or P[1]>=A[1]):
+            return "better"
+        if P[0]>=A[0] and (cross<=0 or P[1]<=B[1]):
+            return "worse"
+        return "uncertain"
+    if P[0]<=B[0] and P[1]>=A[1]:
+        return "better"
+    if P[0]>=A[0] and P[1]<=B[1]:
+        return "worse"
+    return "uncertain"
 
-def compare_with_best(global_param:global_param_class):
+def compare_with_best(global_param):
     index=0
     best_index=0
     while os.path.exists(f"history/conclusion{index:04d}.txt"):
@@ -48,11 +73,11 @@ def compare_with_best(global_param:global_param_class):
             if "best" in lines[0]:
                 best_index=index
         index+=1
-    block_list=[]
-    br_list=[]
-    best_br_list=[]
-    psnr_list=[]
-    best_psnr_list=[]
+    block_dict={}
+    br_dict={}
+    best_br_dict={}
+    psnr_dict={}
+    best_psnr_dict={}
     ######## 计算新实验的cr、psnr并记录每个abs_eb对应的blocks ########
     for abs_eb in global_param.abs_eb_list:
         df=pd.read_csv(f"history/history{global_param.experiment_id:04d}.csv")
@@ -60,21 +85,21 @@ def compare_with_best(global_param:global_param_class):
         br=0
         mse=0
         total_num=0
-        block_list.append([])
+        block_dict[abs_eb]=[]
         for row in rows:
-            block_list[-1].append(int(row["block_id"]))
+            block_dict[abs_eb].append(int(row["block_id"]))
             num=global_param.blocks[int(row["block_id"])]["element_num"]*global_param.header.element_size    
             br+=row["br"]*num
             mse+=row["mse"]*num
             total_num+=num
         br/=total_num
         mse/=total_num
-        br_list.append(br)
-        psnr_list.append(10*math.log10((global_param.data_range["P"][1]-global_param.data_range["P"][0])**2/mse))
+        br_dict[abs_eb]=br
+        psnr_dict[abs_eb]=10*math.log10((global_param.data_range["P"][1]-global_param.data_range["P"][0])**2/mse)
     ######## 计算史上最佳实验在记录的blocks上的cr、psnr ########
     for abs_eb in global_param.abs_eb_list:
         df=pd.read_csv(f"history/history{best_index:04d}.csv")
-        rows=[row for _,row in df.iterrows() if (row["abs_eb"]==abs_eb) and (row["block_id"] in block_list[global_param.abs_eb_list.index(abs_eb)])]
+        rows=[row for _,row in df.iterrows() if (row["abs_eb"]==abs_eb) and (row["block_id"] in block_dict[abs_eb])]
         br=0
         mse=0
         total_num=0
@@ -85,24 +110,22 @@ def compare_with_best(global_param:global_param_class):
             total_num+=num
         br/=total_num
         mse/=total_num
-        best_br_list.append(br)
-        best_psnr_list.append(10*math.log10((global_param.data_range["P"][1]-global_param.data_range["P"][0])**2/mse))
+        best_br_dict[abs_eb]=br
+        best_psnr_dict[abs_eb]=10*math.log10((global_param.data_range["P"][1]-global_param.data_range["P"][0])**2/mse)
     
-    plot_curves(global_param.experiment_id,[(f"{global_param.experiment_id:04d}",br_list,psnr_list),(f"Best{best_index:04d}",best_br_list,best_psnr_list)])
+    plot_curves(global_param.experiment_id,[(f"{global_param.experiment_id:04d}",br_dict,psnr_dict),(f"Best{best_index:04d}",best_br_dict,best_psnr_dict)])
 
-    if br_list[0]>=br_list[-1] or psnr_list[0]>=psnr_list[-1]:
+    if br_dict[global_param.abs_eb_list[0]]>=br_dict[global_param.abs_eb_list[-1]] or psnr_dict[global_param.abs_eb_list[0]]>=psnr_dict[global_param.abs_eb_list[-1]]:
         return "uncertain"
     score=0
-    for i in range(len(br_list)):
-        res=judge_point_curve(br_list[i],psnr_list[i],best_br_list,best_psnr_list)
-        print(res)
+    for abs_eb in global_param.abs_eb_list:
+        res=judge_point_curve(global_param.abs_eb_list,br_dict[abs_eb],psnr_dict[abs_eb],best_br_dict,best_psnr_dict)
         if res=="better":
             score+=1
         elif res=="worse":
             score-=1
-    for i in range(len(best_br_list)):
-        res=judge_point_curve(best_br_list[i],best_psnr_list[i],br_list,psnr_list)
-        print(res)
+    for abs_eb in global_param.abs_eb_list:
+        res=judge_point_curve(global_param.abs_eb_list,best_br_dict[abs_eb],best_psnr_dict[abs_eb],br_dict,psnr_dict)
         if res=="better":
             score-=1
         elif res=="worse":

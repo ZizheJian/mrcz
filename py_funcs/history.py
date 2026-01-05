@@ -2,11 +2,11 @@ import os
 import numpy as np
 import pandas as pd
 from py_funcs.global_param_class import global_param_class
-from py_funcs.read_nekrs_header import nekrs_header_c
-from py_funcs.run_1block_1eb import run_1block_1eb
 from py_funcs.run_multiblock_1eb import run_multiblock_1eb
+from py_funcs.plot import plot_curves
+from py_funcs.read_rate_distortion import read_rate_distortion_from_conclusion
 
-def get_global_param(global_param:global_param_class):
+def select_global_param(global_param:global_param_class):
     # 如果有imcomplete的记录，则读取该记录
     # 否则，如果有best（包括baseline）的记录，则读取该记录，并修正current_state和experiment_id
     print("Reading latest conclusion...")
@@ -29,10 +29,10 @@ def get_global_param(global_param:global_param_class):
         else:
             index=best_index
         global_param.read(index)
-        if global_param.conclusion=="baseline":
+        if (global_param.conclusion=="baseline" and next_index==1):
             global_param.current_state=0
             global_param.experiment_id=0
-        if global_param.conclusion=="best":
+        if (global_param.conclusion=="baseline" and next_index>1) or (global_param.conclusion=="best"):
             global_param.current_state=0
             global_param.experiment_id=next_index
 
@@ -49,13 +49,14 @@ def generate_baseline_history(global_param:global_param_class):
         remaining_blocks=[block_id for block_id in global_param.block_list if block_id not in tested_blocks]
         if len(remaining_blocks)==0:
             continue
-        if global_param.experiment_id!=0:
-            raise ValueError("生成baseline history时使用的不是初始参数")
         print(f"Running blocks {remaining_blocks} with eb {abs_eb}")
         br_list,cr_list,mse_list,psnr_list=run_multiblock_1eb(global_param,remaining_blocks,abs_eb)
         df=append_history(df,remaining_blocks,abs_eb,br_list,cr_list,mse_list,psnr_list)
         df.to_csv(f"history/history0000.csv",index=False)
+    
     global_param.write("baseline")
+    br_dict,_,_,psnr_dict=read_rate_distortion_from_conclusion(0)
+    plot_curves(0,[("Baseline0000",br_dict,psnr_dict)])
 
 def append_history(df:pd.DataFrame,block_list:list,abs_eb:float,br_list:list,cr_list:list,mse_list:list,psnr_list:list):
     for i,block_id in enumerate(block_list):
