@@ -1,7 +1,7 @@
 import yaml,time,os
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor
-from py_funcs.read_nek5000_header import read_nek5000_header
+from py_funcs.read_nekrs_header import read_nekrs_header
 from py_funcs.partition import partition
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
@@ -15,7 +15,7 @@ if os.environ.get("SLURM_NTASKS") is not None:
 else:
     thread_num=1
 f=open(file_path,"rb")
-header=read_nek5000_header(f)
+header=read_nekrs_header(f)
 data_range={}
 block_element_num=block_size//(header.element_size*header.word_size*4) # During each compression, using xyz and 1 variable
 print(f"block_element_num={block_element_num}")

@@ -18,7 +18,7 @@ class nekrs_header_c:
     passive_scalar_num:int=0
     endian_mode:str=""
 
-def read_nek5000_header(f)->nekrs_header_c:
+def read_nekrs_header(f)->nekrs_header_c:
     header=f.read(132).split()
     if len(header)<12:
         raise IOError("Header of the file was too short.")

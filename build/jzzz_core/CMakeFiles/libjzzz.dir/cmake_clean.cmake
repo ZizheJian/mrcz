@@ -1,0 +1,17 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o"
+  "CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o.d"
+  "CMakeFiles/libjzzz.dir/read_block_info.cpp.o"
+  "CMakeFiles/libjzzz.dir/read_block_info.cpp.o.d"
+  "CMakeFiles/libjzzz.dir/read_data_range.cpp.o"
+  "CMakeFiles/libjzzz.dir/read_data_range.cpp.o.d"
+  "CMakeFiles/libjzzz.dir/read_header_file.cpp.o"
+  "CMakeFiles/libjzzz.dir/read_header_file.cpp.o.d"
+  "liblibjzzz.a"
+  "liblibjzzz.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/libjzzz.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

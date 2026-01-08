@@ -18,7 +18,7 @@ from py_funcs.quantize import quantize_ndarray1,quantize_ndarray2,quantize_ndarr
 
 file_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 # rel_eb=1e-5
-abs_eb=3.162e-4
+abs_eb=1e-6
 param_eb_scale=0.05
 zero_freq_bound:float=3
 zero_f_qb_bound:int=1

@@ -1,0 +1,14 @@
+/home/x-zjian1/unsz/build/CMakeFiles/jzzz.dir
+/home/x-zjian1/unsz/build/CMakeFiles/edit_cache.dir
+/home/x-zjian1/unsz/build/CMakeFiles/rebuild_cache.dir
+/home/x-zjian1/unsz/build/CMakeFiles/list_install_components.dir
+/home/x-zjian1/unsz/build/CMakeFiles/install.dir
+/home/x-zjian1/unsz/build/CMakeFiles/install/local.dir
+/home/x-zjian1/unsz/build/CMakeFiles/install/strip.dir
+/home/x-zjian1/unsz/build/jzzz_core/CMakeFiles/libjzzz.dir
+/home/x-zjian1/unsz/build/jzzz_core/CMakeFiles/edit_cache.dir
+/home/x-zjian1/unsz/build/jzzz_core/CMakeFiles/rebuild_cache.dir
+/home/x-zjian1/unsz/build/jzzz_core/CMakeFiles/list_install_components.dir
+/home/x-zjian1/unsz/build/jzzz_core/CMakeFiles/install.dir
+/home/x-zjian1/unsz/build/jzzz_core/CMakeFiles/install/local.dir
+/home/x-zjian1/unsz/build/jzzz_core/CMakeFiles/install/strip.dir

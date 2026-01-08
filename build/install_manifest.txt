@@ -1,0 +1,3 @@
+/home/x-zjian1/unsz/install/bin/jzzz
+/home/x-zjian1/unsz/install/lib/liblibjzzz.a
+/home/x-zjian1/unsz/install/include/jzzz_core/jzzz_param.hpp
