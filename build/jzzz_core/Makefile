@@ -175,6 +175,30 @@ libjzzz/fast:
 	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/build
 .PHONY : libjzzz/fast
 
+compress.o: compress.cpp.o
+.PHONY : compress.o
+
+# target to build an object file
+compress.cpp.o:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.o
+.PHONY : compress.cpp.o
+
+compress.i: compress.cpp.i
+.PHONY : compress.i
+
+# target to preprocess a source file
+compress.cpp.i:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.i
+.PHONY : compress.cpp.i
+
+compress.s: compress.cpp.s
+.PHONY : compress.s
+
+# target to generate assembly for a file
+compress.cpp.s:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.s
+.PHONY : compress.cpp.s
+
 get_full_field_name.o: get_full_field_name.cpp.o
 .PHONY : get_full_field_name.o
 
@@ -271,6 +295,30 @@ read_header_file.cpp.s:
 	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.s
 .PHONY : read_header_file.cpp.s
 
+simple_matrix_tools.o: simple_matrix_tools.cpp.o
+.PHONY : simple_matrix_tools.o
+
+# target to build an object file
+simple_matrix_tools.cpp.o:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o
+.PHONY : simple_matrix_tools.cpp.o
+
+simple_matrix_tools.i: simple_matrix_tools.cpp.i
+.PHONY : simple_matrix_tools.i
+
+# target to preprocess a source file
+simple_matrix_tools.cpp.i:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.i
+.PHONY : simple_matrix_tools.cpp.i
+
+simple_matrix_tools.s: simple_matrix_tools.cpp.s
+.PHONY : simple_matrix_tools.s
+
+# target to generate assembly for a file
+simple_matrix_tools.cpp.s:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.s
+.PHONY : simple_matrix_tools.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -284,6 +332,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... libjzzz"
+	@echo "... compress.o"
+	@echo "... compress.i"
+	@echo "... compress.s"
 	@echo "... get_full_field_name.o"
 	@echo "... get_full_field_name.i"
 	@echo "... get_full_field_name.s"
@@ -296,6 +347,9 @@ help:
 	@echo "... read_header_file.o"
 	@echo "... read_header_file.i"
 	@echo "... read_header_file.s"
+	@echo "... simple_matrix_tools.o"
+	@echo "... simple_matrix_tools.i"
+	@echo "... simple_matrix_tools.s"
 .PHONY : help
 
 

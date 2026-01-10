@@ -17,6 +17,17 @@ namespace jzzz
         for (line_index=0;;line_index++)
         {
             getline(header_file,line);
+            if (line.find("block_num: ")!=string::npos)
+            {
+                line.erase(0,string("block_num: ").size());
+                this->block_num=stoi(line);
+                line_index++;
+                break;
+            }
+        }
+        for (line_index=0;;line_index++)
+        {
+            getline(header_file,line);
             if (line.find("blocks:")!=string::npos)
             {
                 line_index++;
@@ -67,10 +78,28 @@ namespace jzzz
         header_file.close();
 
         if (this->all_blocks_to_process)
-            for (int i=0;i<int(this->blocks.size());i++)
+            for (uint64_t i=0;i<this->blocks.size();i++)
                 this->blocks_to_process.push_back(this->blocks[i].block_id);
-        
-        
+
+        bool no_last_block=true;
+        uint64_t last_block_id=0;
+        for (auto i:this->blocks_to_process)
+        {
+            if (no_last_block)
+            {
+                this->blocks[i].begin_index=0;
+                this->blocks[i].end_index=this->blocks[i].element_num;
+            }
+            else
+            {
+                this->blocks[i].begin_index=this->blocks[last_block_id].end_index;
+                this->blocks[i].end_index=this->blocks[i].begin_index+this->blocks[i].element_num;
+            }
+            last_block_id=i;
+            no_last_block=false;
+        }
+
+        this->element_num_to_process=this->blocks[this->blocks_to_process.back()].end_index;
     }
 }
 

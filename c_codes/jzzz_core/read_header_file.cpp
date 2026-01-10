@@ -78,12 +78,12 @@ namespace jzzz
         header_file.close();
 
         if (this->all_fields_to_process)
-            for (int i=0;i<int(this->header.variables.size());i++)
+            for (uint32_t i=0;i<this->header.variables.size();i++)
             {
                 char c=this->header.variables[i];
                 if (c=='S')
                 {
-                    for (int j=1;j<=this->header.passive_scalar_num;j++)
+                    for (uint32_t j=1;j<=this->header.passive_scalar_num;j++)
                         if (j<10)
                             this->fields_to_process.push_back("S0"+to_string(j));
                         else

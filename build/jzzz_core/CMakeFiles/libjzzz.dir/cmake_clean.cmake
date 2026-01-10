@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/libjzzz.dir/compress.cpp.o"
+  "CMakeFiles/libjzzz.dir/compress.cpp.o.d"
   "CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o"
   "CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o.d"
   "CMakeFiles/libjzzz.dir/read_block_info.cpp.o"
@@ -7,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/libjzzz.dir/read_data_range.cpp.o.d"
   "CMakeFiles/libjzzz.dir/read_header_file.cpp.o"
   "CMakeFiles/libjzzz.dir/read_header_file.cpp.o.d"
+  "CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o"
+  "CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o.d"
   "liblibjzzz.a"
   "liblibjzzz.pdb"
 )

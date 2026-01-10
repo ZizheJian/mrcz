@@ -1,2 +1,2 @@
-/usr/bin/ar qc liblibjzzz.a CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o CMakeFiles/libjzzz.dir/read_block_info.cpp.o CMakeFiles/libjzzz.dir/read_data_range.cpp.o CMakeFiles/libjzzz.dir/read_header_file.cpp.o
+/usr/bin/ar qc liblibjzzz.a CMakeFiles/libjzzz.dir/compress.cpp.o CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o CMakeFiles/libjzzz.dir/read_block_info.cpp.o CMakeFiles/libjzzz.dir/read_data_range.cpp.o CMakeFiles/libjzzz.dir/read_header_file.cpp.o CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o
 /usr/bin/ranlib liblibjzzz.a

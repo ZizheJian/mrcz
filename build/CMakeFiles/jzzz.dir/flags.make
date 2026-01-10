@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/x-zjian1/unsz/c_codes/jzzz_core
 
-CXX_FLAGS =  -Wall -Ofast -march=native -std=gnu++11
+CXX_FLAGS =  -Wall -Ofast -march=native -fopenmp -mavx2 -mfma -std=gnu++11
 

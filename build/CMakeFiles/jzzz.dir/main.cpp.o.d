@@ -130,6 +130,8 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/cxxabi_init_exception.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/typeinfo \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/nested_exception.h \
+ /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cstring \
+ /usr/include/string.h /usr/include/strings.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/fstream \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/istream \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ios \

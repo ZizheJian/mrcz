@@ -103,7 +103,7 @@ CMakeFiles/jzzz.dir/all: jzzz_core/CMakeFiles/libjzzz.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/jzzz.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/jzzz.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 0
 .PHONY : CMakeFiles/jzzz.dir/rule
@@ -124,12 +124,12 @@ CMakeFiles/jzzz.dir/clean:
 jzzz_core/CMakeFiles/libjzzz.dir/all:
 	$(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/depend
 	$(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=5,6,7,8,9 "Built target libjzzz"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=5,6,7,8,9,10,11 "Built target libjzzz"
 .PHONY : jzzz_core/CMakeFiles/libjzzz.dir/all
 
 # Build rule for subdir invocation for target.
 jzzz_core/CMakeFiles/libjzzz.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz_core/CMakeFiles/libjzzz.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 0
 .PHONY : jzzz_core/CMakeFiles/libjzzz.dir/rule

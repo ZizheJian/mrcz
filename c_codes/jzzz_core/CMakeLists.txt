@@ -1,8 +1,10 @@
 add_library(libjzzz STATIC
+    compress.cpp
     get_full_field_name.cpp
     read_block_info.cpp
     read_data_range.cpp
     read_header_file.cpp
+    simple_matrix_tools.cpp
 )
 
 # 设置 C++ 标准（与根项目一致）
