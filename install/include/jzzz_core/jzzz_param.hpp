@@ -38,9 +38,9 @@ namespace jzzz
             string header_path;
             string eb_mode;
             float eb;
-            bool all_blocks_to_process=true;
+            bool all_blocks_to_process=false;
             vector<uint64_t> blocks_to_process;
-            bool all_fields_to_process=true;
+            bool all_fields_to_process=false;
             vector<string> fields_to_process;
 
             header_class header;
@@ -50,7 +50,8 @@ namespace jzzz
 
             uint64_t element_num_to_process; // 实际需要压缩的element数量
             vector<float> data;
-            vector<int64_t> f_qb,qb;
+            vector<vector<unsigned char>> zstd_bs;
+            vector<float> decompressed_data;
 
             float param_eb_scale=0.05;
             float param_eb;
@@ -66,6 +67,10 @@ namespace jzzz
             void read_block_info();
             string get_full_field_name(string field);
             void compress();
+            void decompress();
+            void quantize_and_overwrite_number(float &x,int64_t &y,float eb,float neg_2_eb);
+            void quantize_err(float *pred,float *truth,int64_t *qb,uint32_t size,float eb,float neg_2_eb);
+            void quantize_and_overwrite2(float *data,int64_t *qb,uint32_t size,float eb,float neg_2_eb,float zero_freq_bound);
 
             param_class():
                 x{-1,-0.91953391,-0.73877387,-0.47792495,-0.16527896,0.16527896,0.47792495,0.73877387,0.91953391,1}

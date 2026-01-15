@@ -22,6 +22,7 @@ if method=="my":
             os.system("make")
             os.system("make install")
             os.chdir("..")
+            # os.system(f"./build/jzzz -i {data_path}.header.yaml -M ABS {abs_eb} -blocks [0]")
             os.system(f"./build/jzzz -i {data_path}.header.yaml -M ABS {abs_eb}")
         except Exception as e:
             exit(0)

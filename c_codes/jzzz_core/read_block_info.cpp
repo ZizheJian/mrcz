@@ -89,6 +89,7 @@ namespace jzzz
             {
                 this->blocks[i].begin_index=0;
                 this->blocks[i].end_index=this->blocks[i].element_num;
+                printf("blocks[%lu]: begin_index= %lu, end_index= %lu\n",i,this->blocks[i].begin_index,this->blocks[i].end_index);
             }
             else
             {

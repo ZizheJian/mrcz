@@ -83,10 +83,24 @@ jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libjzzz.dir/compress.cpp.s"
 	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/x-zjian1/unsz/c_codes/jzzz_core/compress.cpp -o CMakeFiles/libjzzz.dir/compress.cpp.s
 
+jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
+jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/decompress.cpp
+jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o -MF CMakeFiles/libjzzz.dir/decompress.cpp.o.d -o CMakeFiles/libjzzz.dir/decompress.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/decompress.cpp
+
+jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/libjzzz.dir/decompress.cpp.i"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/x-zjian1/unsz/c_codes/jzzz_core/decompress.cpp > CMakeFiles/libjzzz.dir/decompress.cpp.i
+
+jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libjzzz.dir/decompress.cpp.s"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/x-zjian1/unsz/c_codes/jzzz_core/decompress.cpp -o CMakeFiles/libjzzz.dir/decompress.cpp.s
+
 jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
 jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/get_full_field_name.cpp
 jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o"
 	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o -MF CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o.d -o CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/get_full_field_name.cpp
 
 jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.i: cmake_force
@@ -97,10 +111,38 @@ jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libjzzz.dir/get_full_field_name.cpp.s"
 	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/x-zjian1/unsz/c_codes/jzzz_core/get_full_field_name.cpp -o CMakeFiles/libjzzz.dir/get_full_field_name.cpp.s
 
+jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
+jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/huffman.cpp
+jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o -MF CMakeFiles/libjzzz.dir/huffman.cpp.o.d -o CMakeFiles/libjzzz.dir/huffman.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/huffman.cpp
+
+jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/libjzzz.dir/huffman.cpp.i"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/x-zjian1/unsz/c_codes/jzzz_core/huffman.cpp > CMakeFiles/libjzzz.dir/huffman.cpp.i
+
+jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libjzzz.dir/huffman.cpp.s"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/x-zjian1/unsz/c_codes/jzzz_core/huffman.cpp -o CMakeFiles/libjzzz.dir/huffman.cpp.s
+
+jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
+jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/quantize.cpp
+jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o -MF CMakeFiles/libjzzz.dir/quantize.cpp.o.d -o CMakeFiles/libjzzz.dir/quantize.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/quantize.cpp
+
+jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/libjzzz.dir/quantize.cpp.i"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/x-zjian1/unsz/c_codes/jzzz_core/quantize.cpp > CMakeFiles/libjzzz.dir/quantize.cpp.i
+
+jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libjzzz.dir/quantize.cpp.s"
+	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/x-zjian1/unsz/c_codes/jzzz_core/quantize.cpp -o CMakeFiles/libjzzz.dir/quantize.cpp.s
+
 jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
 jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/read_block_info.cpp
 jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o"
 	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o -MF CMakeFiles/libjzzz.dir/read_block_info.cpp.o.d -o CMakeFiles/libjzzz.dir/read_block_info.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/read_block_info.cpp
 
 jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.i: cmake_force
@@ -114,7 +156,7 @@ jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.s: cmake_force
 jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
 jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/read_data_range.cpp
 jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o"
 	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o -MF CMakeFiles/libjzzz.dir/read_data_range.cpp.o.d -o CMakeFiles/libjzzz.dir/read_data_range.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/read_data_range.cpp
 
 jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.i: cmake_force
@@ -128,7 +170,7 @@ jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.s: cmake_force
 jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
 jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/read_header_file.cpp
 jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o"
 	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o -MF CMakeFiles/libjzzz.dir/read_header_file.cpp.o.d -o CMakeFiles/libjzzz.dir/read_header_file.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/read_header_file.cpp
 
 jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.i: cmake_force
@@ -142,7 +184,7 @@ jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.s: cmake_force
 jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/flags.make
 jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o: /home/x-zjian1/unsz/c_codes/jzzz_core/simple_matrix_tools.cpp
 jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o: jzzz_core/CMakeFiles/libjzzz.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o"
 	cd /home/x-zjian1/unsz/build/jzzz_core && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o -MF CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o.d -o CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o -c /home/x-zjian1/unsz/c_codes/jzzz_core/simple_matrix_tools.cpp
 
 jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.i: cmake_force
@@ -156,7 +198,10 @@ jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.s: cmake_force
 # Object files for target libjzzz
 libjzzz_OBJECTS = \
 "CMakeFiles/libjzzz.dir/compress.cpp.o" \
+"CMakeFiles/libjzzz.dir/decompress.cpp.o" \
 "CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o" \
+"CMakeFiles/libjzzz.dir/huffman.cpp.o" \
+"CMakeFiles/libjzzz.dir/quantize.cpp.o" \
 "CMakeFiles/libjzzz.dir/read_block_info.cpp.o" \
 "CMakeFiles/libjzzz.dir/read_data_range.cpp.o" \
 "CMakeFiles/libjzzz.dir/read_header_file.cpp.o" \
@@ -166,14 +211,17 @@ libjzzz_OBJECTS = \
 libjzzz_EXTERNAL_OBJECTS =
 
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.o
+jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o
+jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o
+jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/build.make
 jzzz_core/liblibjzzz.a: jzzz_core/CMakeFiles/libjzzz.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX static library liblibjzzz.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX static library liblibjzzz.a"
 	cd /home/x-zjian1/unsz/build/jzzz_core && $(CMAKE_COMMAND) -P CMakeFiles/libjzzz.dir/cmake_clean_target.cmake
 	cd /home/x-zjian1/unsz/build/jzzz_core && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/libjzzz.dir/link.txt --verbose=$(VERBOSE)
 

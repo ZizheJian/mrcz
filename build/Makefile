@@ -187,6 +187,45 @@ libjzzz/fast:
 	$(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/build
 .PHONY : libjzzz/fast
 
+#=============================================================================
+# Target rules for targets named clean-all
+
+# Build rule for target.
+clean-all: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean-all
+.PHONY : clean-all
+
+# fast build rule for target.
+clean-all/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/CMakeFiles/clean-all.dir/build.make third_party/zstd/build/cmake/CMakeFiles/clean-all.dir/build
+.PHONY : clean-all/fast
+
+#=============================================================================
+# Target rules for targets named libzstd_static
+
+# Build rule for target.
+libzstd_static: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libzstd_static
+.PHONY : libzstd_static
+
+# fast build rule for target.
+libzstd_static/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/build
+.PHONY : libzstd_static/fast
+
+#=============================================================================
+# Target rules for targets named uninstall
+
+# Build rule for target.
+uninstall: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
+.PHONY : uninstall
+
+# fast build rule for target.
+uninstall/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/build
+.PHONY : uninstall/fast
+
 compress.o: compress.cpp.o
 .PHONY : compress.o
 
@@ -271,8 +310,11 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... clean-all"
+	@echo "... uninstall"
 	@echo "... jzzz"
 	@echo "... libjzzz"
+	@echo "... libzstd_static"
 	@echo "... compress.o"
 	@echo "... compress.i"
 	@echo "... compress.s"

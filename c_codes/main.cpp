@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include <stdexcept>
 #include <fstream>
+#include <sstream>
 
 int main(int argc,char **argv)
 {
@@ -14,6 +15,29 @@ int main(int argc,char **argv)
                 params.header_path=argv[++i];
             else
                 throw runtime_error("缺少-i参数后的输入文件路径");
+            continue;
+        }
+        if (arg=="-blocks")
+        {
+            if (i+1<argc)
+            {
+                string blocks_str=argv[++i];
+                blocks_str=blocks_str.substr(1,blocks_str.size()-2);
+                stringstream ss(blocks_str);
+                string block_id_str;
+                while (getline(ss,block_id_str,','))
+                    try
+                    {
+                        uint64_t block_id=stoull(block_id_str);
+                        params.blocks_to_process.push_back(block_id);
+                    }
+                    catch (const std::exception& e)
+                    {
+                        throw runtime_error("块编号必须为非负整数");
+                    }
+            }
+            else
+                throw runtime_error("缺少-blocks参数后的块编号列表");
             continue;
         }
         if (arg=="-M")
@@ -37,8 +61,12 @@ int main(int argc,char **argv)
         throw runtime_error("误差值必须为正数");
     if (params.blocks_to_process.empty())
         params.all_blocks_to_process=true;
+    else
+        params.all_blocks_to_process=false;
     if (params.fields_to_process.empty())
         params.all_fields_to_process=true;
+    else
+        params.all_fields_to_process=false;
     
     params.read_header_file();
     params.read_data_range();

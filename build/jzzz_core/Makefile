@@ -199,6 +199,30 @@ compress.cpp.s:
 	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.s
 .PHONY : compress.cpp.s
 
+decompress.o: decompress.cpp.o
+.PHONY : decompress.o
+
+# target to build an object file
+decompress.cpp.o:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o
+.PHONY : decompress.cpp.o
+
+decompress.i: decompress.cpp.i
+.PHONY : decompress.i
+
+# target to preprocess a source file
+decompress.cpp.i:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.i
+.PHONY : decompress.cpp.i
+
+decompress.s: decompress.cpp.s
+.PHONY : decompress.s
+
+# target to generate assembly for a file
+decompress.cpp.s:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.s
+.PHONY : decompress.cpp.s
+
 get_full_field_name.o: get_full_field_name.cpp.o
 .PHONY : get_full_field_name.o
 
@@ -222,6 +246,54 @@ get_full_field_name.s: get_full_field_name.cpp.s
 get_full_field_name.cpp.s:
 	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.s
 .PHONY : get_full_field_name.cpp.s
+
+huffman.o: huffman.cpp.o
+.PHONY : huffman.o
+
+# target to build an object file
+huffman.cpp.o:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o
+.PHONY : huffman.cpp.o
+
+huffman.i: huffman.cpp.i
+.PHONY : huffman.i
+
+# target to preprocess a source file
+huffman.cpp.i:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.i
+.PHONY : huffman.cpp.i
+
+huffman.s: huffman.cpp.s
+.PHONY : huffman.s
+
+# target to generate assembly for a file
+huffman.cpp.s:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.s
+.PHONY : huffman.cpp.s
+
+quantize.o: quantize.cpp.o
+.PHONY : quantize.o
+
+# target to build an object file
+quantize.cpp.o:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o
+.PHONY : quantize.cpp.o
+
+quantize.i: quantize.cpp.i
+.PHONY : quantize.i
+
+# target to preprocess a source file
+quantize.cpp.i:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.i
+.PHONY : quantize.cpp.i
+
+quantize.s: quantize.cpp.s
+.PHONY : quantize.s
+
+# target to generate assembly for a file
+quantize.cpp.s:
+	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.s
+.PHONY : quantize.cpp.s
 
 read_block_info.o: read_block_info.cpp.o
 .PHONY : read_block_info.o
@@ -335,9 +407,18 @@ help:
 	@echo "... compress.o"
 	@echo "... compress.i"
 	@echo "... compress.s"
+	@echo "... decompress.o"
+	@echo "... decompress.i"
+	@echo "... decompress.s"
 	@echo "... get_full_field_name.o"
 	@echo "... get_full_field_name.i"
 	@echo "... get_full_field_name.s"
+	@echo "... huffman.o"
+	@echo "... huffman.i"
+	@echo "... huffman.s"
+	@echo "... quantize.o"
+	@echo "... quantize.i"
+	@echo "... quantize.s"
 	@echo "... read_block_info.o"
 	@echo "... read_block_info.i"
 	@echo "... read_block_info.s"
