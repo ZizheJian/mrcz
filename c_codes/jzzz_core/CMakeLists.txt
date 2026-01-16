@@ -1,7 +1,7 @@
 add_library(libjzzz STATIC
     compress.cpp
     decompress.cpp
-    get_full_field_name.cpp
+    get_data_range.cpp
     huffman.cpp
     quantize.cpp
     read_block_info.cpp

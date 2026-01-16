@@ -81,17 +81,29 @@ namespace jzzz
             for (uint32_t i=0;i<this->header.variables.size();i++)
             {
                 char c=this->header.variables[i];
-                if (c=='S')
+                if (c=='U')
                 {
-                    for (uint32_t j=1;j<=this->header.passive_scalar_num;j++)
+                    this->fields_to_process.push_back("velocityx");
+                    this->fields_to_process.push_back("velocityy");
+                    this->fields_to_process.push_back("velocityz");
+                }
+                else if (c=='P')
+                {
+                    this->fields_to_process.push_back("pressure");
+                }
+                else if (c=='T')
+                {
+                    this->fields_to_process.push_back("temperature");
+                }
+                else if (c=='S')
+                {
+                    for (uint32_t j=0;j<this->header.passive_scalar_num;j++)
                         if (j<10)
-                            this->fields_to_process.push_back("S0"+to_string(j));
+                            this->fields_to_process.push_back("s0"+to_string(j));
                         else
-                            this->fields_to_process.push_back("S"+to_string(j));
+                            this->fields_to_process.push_back("s"+to_string(j));
                     break;
                 }
-                else
-                    this->fields_to_process.push_back(string(1,c));
             }
     }
 }

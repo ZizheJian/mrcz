@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <stdexcept>
 #include <cstring>
+#include <type_traits>
+
 using namespace std;
 
 namespace jzzz
@@ -66,6 +68,7 @@ namespace jzzz
             void read_data_range();
             void read_block_info();
             string get_full_field_name(string field);
+            float get_data_range(string field);
             void compress();
             void decompress();
             void quantize_and_overwrite_number(float &x,int64_t &y,float eb,float neg_2_eb);
@@ -75,6 +78,8 @@ namespace jzzz
             param_class():
                 x{-1,-0.91953391,-0.73877387,-0.47792495,-0.16527896,0.16527896,0.47792495,0.73877387,0.91953391,1}
             {
+                // if ((!std::is_same<float,float>::value) && (!std::is_same<float,double>::value))
+                //     throw runtime_error("仅能以float或double类型处理数据");
                 uint32_t n=x.size();
                 for (uint32_t i=0;i<n;i++)
                 {

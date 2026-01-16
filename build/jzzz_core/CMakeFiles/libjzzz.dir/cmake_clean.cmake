@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/libjzzz.dir/compress.cpp.o.d"
   "CMakeFiles/libjzzz.dir/decompress.cpp.o"
   "CMakeFiles/libjzzz.dir/decompress.cpp.o.d"
+  "CMakeFiles/libjzzz.dir/get_data_range.cpp.o"
+  "CMakeFiles/libjzzz.dir/get_data_range.cpp.o.d"
   "CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o"
   "CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o.d"
   "CMakeFiles/libjzzz.dir/huffman.cpp.o"

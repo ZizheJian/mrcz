@@ -80,9 +80,10 @@ int main(int argc,char **argv)
         auto result=decompress(params,field);
         float field_br=get<0>(result);
         float field_cr=get<1>(result);
-        float field_mse=get<2>(result);
-        float field_psnr=get<3>(result);
-        printf("Field= %s , %s_EB= %f , BR= %f , CR= %f , MSE= %f , PSNR= %f dB\n",
-               field.c_str(),params.eb_mode.c_str(),params.eb,field_br,field_cr,field_mse,field_psnr);
+        float field_max_err=get<2>(result);
+        float field_mse=get<3>(result);
+        float field_psnr=get<4>(result);
+        printf("Field= %s , %s_EB= %f , BR= %f , CR= %f , max_err= %f (%f%%) , MSE= %f , PSNR= %f dB\n",
+               field.c_str(),params.eb_mode.c_str(),params.eb,field_br,field_cr,field_max_err,field_max_err/params.eb*100,field_mse,field_psnr);
     }
 }

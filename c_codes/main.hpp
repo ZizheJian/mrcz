@@ -8,6 +8,6 @@
 using namespace std;
 
 void compress(jzzz::param_class &params,string field);
-tuple<float,float,float,float> decompress(jzzz::param_class &params,string field);
+tuple<float,float,float,float,float> decompress(jzzz::param_class &params,string field);
 
 #endif

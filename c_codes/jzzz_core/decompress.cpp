@@ -20,20 +20,19 @@ namespace jzzz
             throw runtime_error("没有获取到每个task可用的cpu数量");
         printf("Available cpus per task= %d\n",available_cpus);
         uint32_t n=header.element_shape[0];
+        uint32_t n2=n*n;
+        uint32_t n3=n2*n;
         param_eb=eb*param_eb_scale;
-        float zero_freq_bound=param_eb*zero_f_qb_bound;
-        float neg_2_param_eb=1/(2*param_eb);
-        float neg_2_eb=1/(2*eb);
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
         int64_t *f_qb=new int64_t[element_num_to_process*header.element_size];
-        int64_t *err_qb=new int64_t[element_num_to_process*header.element_size];
+        int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(header.element_size-8)];
         decompressed_data.resize(element_num_to_process*header.element_size);
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(available_cpus)
         for (uint64_t fake_block_id=0;fake_block_id<blocks_to_process.size();fake_block_id++) //这个block_id是假的，指的是在需要处理的blocks中的编号，而不是header文件中的编号
         {
             uint64_t block_id=blocks_to_process[fake_block_id];
-            printf("CPU %d decompressing block %ld\n",omp_get_thread_num(),block_id);
+            // printf("CPU %d decompressing block %ld\n",omp_get_thread_num(),block_id);
             uint64_t begin_index=blocks[block_id].begin_index;
             uint64_t end_index=blocks[block_id].end_index;
             // 先无损解压
@@ -44,19 +43,13 @@ namespace jzzz
             const unsigned char *huffman_bs=huffman_bs_vec.data();
             huffman_encoder_class<int64_t> corner_encoder;
             corner_encoder.load(huffman_bs);
-            printf("huffman_bs_len= %lu\n",huffman_bs-huffman_bs_vec.data());
             corner_encoder.decode(huffman_bs,corner_qb+8*begin_index,8*(end_index-begin_index));
-            printf("huffman_bs_len= %lu\n",huffman_bs-huffman_bs_vec.data());
             huffman_encoder_class<int64_t> f_encoder;
             f_encoder.load(huffman_bs);
-            printf("huffman_bs_len= %lu\n",huffman_bs-huffman_bs_vec.data());
             f_encoder.decode(huffman_bs,f_qb+header.element_size*begin_index,header.element_size*(end_index-begin_index));
-            printf("huffman_bs_len= %lu\n",huffman_bs-huffman_bs_vec.data());
             huffman_encoder_class<int64_t> err_encoder;
             err_encoder.load(huffman_bs);
-            printf("huffman_bs_len= %lu\n",huffman_bs-huffman_bs_vec.data());
-            err_encoder.decode(huffman_bs,err_qb+header.element_size*begin_index,header.element_size*(end_index-begin_index));
-            printf("huffman_bs_len= %lu\n",huffman_bs-huffman_bs_vec.data());
+            err_encoder.decode(huffman_bs,no_corner_err_qb+(header.element_size-8)*begin_index,(header.element_size-8)*(end_index-begin_index));
             // 重构每个element角上的数据
             for (uint64_t i=begin_index;i<end_index;i++)
             {
@@ -67,8 +60,8 @@ namespace jzzz
                 element[(n-1)*n]=element_corner_qb[2]*2*eb;
                 element[n*n-1]=element_corner_qb[3]*2*eb;
                 element[(n-1)*n*n]=element_corner_qb[4]*2*eb;
-                element[(n-1)*n*n+n-1]=element_corner_qb[5]*2*eb;
-                element[(n-1)*n*n+(n-1)*n]=element_corner_qb[6]*2*eb;
+                element[(n-1)*(n*n+1)]=element_corner_qb[5]*2*eb;
+                element[(n-1)*n*(n+1)]=element_corner_qb[6]*2*eb;
                 element[n*n*n-1]=element_corner_qb[7]*2*eb;
             }
             // 然后重构剩余的数据
@@ -76,8 +69,8 @@ namespace jzzz
             {
                 float *element=decompressed_data.data()+i*header.element_size;
                 int64_t *element_f_qb=f_qb+i*header.element_size;
-                int64_t *element_err_qb=err_qb+i*header.element_size;
-                __m256 vec_corner_numbers=_mm256_set_ps(element[n*n*n-1],element[(n-1)*n*n+(n-1)*n],element[(n-1)*n*n+n-1],element[(n-1)*n*n],
+                int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(header.element_size-8);
+                __m256 vec_corner_numbers=_mm256_set_ps(element[n*n*n-1],element[(n-1)*n*(n+1)],element[(n-1)*(n*n+1)],element[(n-1)*n*n],
                                                     element[n*n-1],element[(n-1)*n],element[n-1],element[0]);
                 for (uint32_t i0=0;i0<n;i0++)
                     for (uint32_t i1=0;i1<n;i1++)
@@ -100,8 +93,8 @@ namespace jzzz
                 element[(n-1)*n]/=2;
                 element[n*n-1]/=2;
                 element[(n-1)*n*n]/=2;
-                element[(n-1)*n*n+n-1]/=2;
-                element[(n-1)*n*n+(n-1)*n]/=2;
+                element[(n-1)*(n*n+1)]/=2;
+                element[(n-1)*n*(n+1)]/=2;
                 element[n*n*n-1]/=2;
                 vector<float> temp_element1(n*n*n,0),temp_element2(n*n*n,0);
                 for (uint32_t i=0;i<n*n*n;i++)
@@ -123,11 +116,26 @@ namespace jzzz
                         for (uint32_t b=0;b<n;b++)
                             for (uint32_t c=0;c<n;c++)
                                 temp_element2[a*n*n+b*n+c]+=temp_element1[i*n*n+b*n+c]*L[i*n+a];
-                for (uint32_t j=0;j<n*n*n;j++)
-                    element[j]+=(temp_element2[j]-element_err_qb[j]*2*eb);
+                for (uint32_t j=1;j<n-1;j++)
+                    element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-1]*2*eb);
+                for (uint32_t j=n;j<n2-n;j++)
+                    element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-2]*2*eb);
+                for (uint32_t j=n2-n+1;j<n2-1;j++)
+                    element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-3]*2*eb);
+                for (uint32_t j=n2;j<n3-n2;j++)
+                    element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-4]*2*eb);
+                for (uint32_t j=n3-n2+1;j<n3-n2+n-1;j++)
+                    element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-5]*2*eb);
+                for (uint32_t j=n3-n2+n;j<n3-n;j++)
+                    element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-6]*2*eb);
+                for (uint32_t j=n3-n+1;j<n3-1;j++)
+                    element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-7]*2*eb);
             }
         }
         double end_time=omp_get_wtime();
+        delete[] corner_qb;
+        delete[] f_qb;
+        delete[] no_corner_err_qb;
         printf("Decompression time= %f seconds\n",end_time-start_time);
         printf("Bandwidth per cpu= %f MB/s\n",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*available_cpus));
     }

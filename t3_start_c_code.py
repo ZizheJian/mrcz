@@ -12,7 +12,7 @@ import os
 method="my"
 
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
-abs_eb=1e-6
+abs_eb=100
 
 if method=="my":
     if os.path.exists(f"{data_path}.header.yaml"):
