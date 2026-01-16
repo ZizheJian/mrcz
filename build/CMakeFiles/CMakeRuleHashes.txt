@@ -1,3 +1,11 @@
 # Hashes of file build rules.
 02ffe4ed4876e356c986689f9d519315 third_party/zstd/build/cmake/CMakeFiles/clean-all
 adb14370abb723f0da0799aa5dc4d2d6 third_party/zstd/build/cmake/lib/CMakeFiles/uninstall
+c328c0b5b537c3f4096c46bfc2bce4f8 third_party/zstd/build/cmake/programs/CMakeFiles/unzstd
+daf8fd33c8dc21c9d76ac4d08acbd297 third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1
+32274e73527a8ab3ce8a411a82e6e5ce third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1
+5784ded4c767e34df78a6dbc5ab2d39e third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat
+4a4eedef1321a989c9425684c85aa1ce third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1
+0eda801c835edd8fc007d45de7d7d0be third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1
+e7f99b6041324f71c1a88ef76a678d18 third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1
+8ba18aea5fe1c601b706c8f7f309dd3e third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt

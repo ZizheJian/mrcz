@@ -201,6 +201,19 @@ clean-all/fast:
 .PHONY : clean-all/fast
 
 #=============================================================================
+# Target rules for targets named libzstd_shared
+
+# Build rule for target.
+libzstd_shared: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libzstd_shared
+.PHONY : libzstd_shared
+
+# fast build rule for target.
+libzstd_shared/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/build
+.PHONY : libzstd_shared/fast
+
+#=============================================================================
 # Target rules for targets named libzstd_static
 
 # Build rule for target.
@@ -226,53 +239,135 @@ uninstall/fast:
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/build
 .PHONY : uninstall/fast
 
-compress.o: compress.cpp.o
-.PHONY : compress.o
+#=============================================================================
+# Target rules for targets named zstd
 
-# target to build an object file
-compress.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/compress.cpp.o
-.PHONY : compress.cpp.o
+# Build rule for target.
+zstd: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstd
+.PHONY : zstd
 
-compress.i: compress.cpp.i
-.PHONY : compress.i
+# fast build rule for target.
+zstd/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/build
+.PHONY : zstd/fast
 
-# target to preprocess a source file
-compress.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/compress.cpp.i
-.PHONY : compress.cpp.i
+#=============================================================================
+# Target rules for targets named zstdcat
 
-compress.s: compress.cpp.s
-.PHONY : compress.s
+# Build rule for target.
+zstdcat: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstdcat
+.PHONY : zstdcat
 
-# target to generate assembly for a file
-compress.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/compress.cpp.s
-.PHONY : compress.cpp.s
+# fast build rule for target.
+zstdcat/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/build
+.PHONY : zstdcat/fast
 
-decompress.o: decompress.cpp.o
-.PHONY : decompress.o
+#=============================================================================
+# Target rules for targets named unzstd
 
-# target to build an object file
-decompress.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/decompress.cpp.o
-.PHONY : decompress.cpp.o
+# Build rule for target.
+unzstd: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unzstd
+.PHONY : unzstd
 
-decompress.i: decompress.cpp.i
-.PHONY : decompress.i
+# fast build rule for target.
+unzstd/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/build
+.PHONY : unzstd/fast
 
-# target to preprocess a source file
-decompress.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/decompress.cpp.i
-.PHONY : decompress.cpp.i
+#=============================================================================
+# Target rules for targets named zstd.1
 
-decompress.s: decompress.cpp.s
-.PHONY : decompress.s
+# Build rule for target.
+zstd.1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstd.1
+.PHONY : zstd.1
 
-# target to generate assembly for a file
-decompress.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/decompress.cpp.s
-.PHONY : decompress.cpp.s
+# fast build rule for target.
+zstd.1/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/build
+.PHONY : zstd.1/fast
+
+#=============================================================================
+# Target rules for targets named zstdgrep.1
+
+# Build rule for target.
+zstdgrep.1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstdgrep.1
+.PHONY : zstdgrep.1
+
+# fast build rule for target.
+zstdgrep.1/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/build
+.PHONY : zstdgrep.1/fast
+
+#=============================================================================
+# Target rules for targets named zstdless.1
+
+# Build rule for target.
+zstdless.1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstdless.1
+.PHONY : zstdless.1
+
+# fast build rule for target.
+zstdless.1/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/build
+.PHONY : zstdless.1/fast
+
+#=============================================================================
+# Target rules for targets named zstdcat.1
+
+# Build rule for target.
+zstdcat.1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstdcat.1
+.PHONY : zstdcat.1
+
+# fast build rule for target.
+zstdcat.1/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/build
+.PHONY : zstdcat.1/fast
+
+#=============================================================================
+# Target rules for targets named unzstd.1
+
+# Build rule for target.
+unzstd.1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unzstd.1
+.PHONY : unzstd.1
+
+# fast build rule for target.
+unzstd.1/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/build
+.PHONY : unzstd.1/fast
+
+#=============================================================================
+# Target rules for targets named zstd-frugal
+
+# Build rule for target.
+zstd-frugal: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstd-frugal
+.PHONY : zstd-frugal
+
+# fast build rule for target.
+zstd-frugal/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/build
+.PHONY : zstd-frugal/fast
+
+#=============================================================================
+# Target rules for targets named zstdmt
+
+# Build rule for target.
+zstdmt: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 zstdmt
+.PHONY : zstdmt
+
+# fast build rule for target.
+zstdmt/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build
+.PHONY : zstdmt/fast
 
 main.o: main.cpp.o
 .PHONY : main.o
@@ -312,15 +407,20 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... clean-all"
 	@echo "... uninstall"
+	@echo "... unzstd"
+	@echo "... unzstd.1"
+	@echo "... zstd.1"
+	@echo "... zstdcat"
+	@echo "... zstdcat.1"
+	@echo "... zstdgrep.1"
+	@echo "... zstdless.1"
+	@echo "... zstdmt"
 	@echo "... jzzz"
 	@echo "... libjzzz"
+	@echo "... libzstd_shared"
 	@echo "... libzstd_static"
-	@echo "... compress.o"
-	@echo "... compress.i"
-	@echo "... compress.s"
-	@echo "... decompress.o"
-	@echo "... decompress.i"
-	@echo "... decompress.s"
+	@echo "... zstd"
+	@echo "... zstd-frugal"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

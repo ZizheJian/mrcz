@@ -1,12 +1,12 @@
-#ifndef __COMPRESS_CPP__
-#define __COMPRESS_CPP__
+#pragma once
 
 #include <fstream>
 #include "jzzz_core/jzzz_param.hpp"
 
 using namespace std;
 
-void compress(jzzz::param_class &params,string field)
+template<typename T>
+void compress(jzzz::param_class<T> &params,string field)
 {
     params.data.resize(params.element_num_to_process*params.header.element_size);
     string temp_name=field+"_path";
@@ -16,7 +16,15 @@ void compress(jzzz::param_class &params,string field)
         string data_path=block.field_paths[temp_name];
         printf("Reading %s data in block %ld\r",field.c_str(),block_id);
         ifstream file(data_path,ios::binary);
-        file.read(reinterpret_cast<char*>(params.data.data()+block.begin_index*params.header.element_size),block.element_num*params.header.element_size*params.header.word_size);
+        if (params.header.word_size==4 && sizeof(T)==8)
+        {
+            vector<float> temp_data(block.element_num*params.header.element_size);
+            file.read(reinterpret_cast<char*>(temp_data.data()),block.element_num*params.header.element_size*params.header.word_size);
+            for (uint64_t i=0;i<block.element_num*params.header.element_size;i++)
+                params.data[block.begin_index*params.header.element_size+i]=temp_data[i];
+        }
+        else
+            file.read(reinterpret_cast<char*>(params.data.data()+block.begin_index*params.header.element_size),block.element_num*params.header.element_size*params.header.word_size);
         file.close();
     }
     printf("\n");
@@ -38,5 +46,3 @@ void compress(jzzz::param_class &params,string field)
     params.zstd_bs.clear();
     params.zstd_bs.shrink_to_fit();
 }
-
-#endif

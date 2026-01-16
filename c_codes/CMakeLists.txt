@@ -16,12 +16,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 优化标志
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast -march=native -flto")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast -march=native -fopenmp -mavx2 -mfma")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -march=native -fopenmp -mavx2 -mfma")
 
 add_subdirectory(jzzz_core)  # 你的子目录
 add_subdirectory(third_party/zstd)
 
-add_executable(jzzz main.cpp compress.cpp decompress.cpp)
+add_executable(jzzz main.cpp)
 target_link_libraries(jzzz libjzzz libzstd_static)
 
 install(TARGETS jzzz DESTINATION bin)

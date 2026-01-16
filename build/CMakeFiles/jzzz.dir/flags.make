@@ -6,5 +6,5 @@ CXX_DEFINES = -DZSTD_MULTITHREAD
 
 CXX_INCLUDES = -I/home/x-zjian1/unsz/c_codes/jzzz_core -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib
 
-CXX_FLAGS =  -Wall -Ofast -march=native -fopenmp -mavx2 -mfma -O3 -DNDEBUG -std=gnu++11
+CXX_FLAGS =  -Wall -O3 -march=native -fopenmp -mavx2 -mfma -O3 -DNDEBUG -std=gnu++11
 

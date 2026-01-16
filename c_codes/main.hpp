@@ -1,5 +1,4 @@
-#ifndef __MAIN_HPP__
-#define __MAIN_HPP__
+#pragma once
 
 #include <tuple>
 #include <string>
@@ -7,7 +6,10 @@
 
 using namespace std;
 
-void compress(jzzz::param_class &params,string field);
-tuple<float,float,float,float,float> decompress(jzzz::param_class &params,string field);
+template<typename T>
+void compress(jzzz::param_class<T> &params,string field);
+template<typename T>
+tuple<double,double,double,double,double> decompress(jzzz::param_class<T> &params,string field);
 
-#endif
+#include "compress.tpp"
+#include "decompress.tpp"

@@ -8,8 +8,6 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/x-zjian1/unsz/c_codes/compress.cpp" "CMakeFiles/jzzz.dir/compress.cpp.o" "gcc" "CMakeFiles/jzzz.dir/compress.cpp.o.d"
-  "/home/x-zjian1/unsz/c_codes/decompress.cpp" "CMakeFiles/jzzz.dir/decompress.cpp.o" "gcc" "CMakeFiles/jzzz.dir/decompress.cpp.o.d"
   "/home/x-zjian1/unsz/c_codes/main.cpp" "CMakeFiles/jzzz.dir/main.cpp.o" "gcc" "CMakeFiles/jzzz.dir/main.cpp.o.d"
   )
 

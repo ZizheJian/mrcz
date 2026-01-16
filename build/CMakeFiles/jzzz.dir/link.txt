@@ -1,1 +1,1 @@
-/apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC  -Wall -Ofast -march=native -fopenmp -mavx2 -mfma -O3 -DNDEBUG CMakeFiles/jzzz.dir/main.cpp.o CMakeFiles/jzzz.dir/compress.cpp.o CMakeFiles/jzzz.dir/decompress.cpp.o -o jzzz  jzzz_core/liblibjzzz.a third_party/zstd/build/cmake/lib/libzstd.a 
+/apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC  -Wall -O3 -march=native -fopenmp -mavx2 -mfma -O3 -DNDEBUG CMakeFiles/jzzz.dir/main.cpp.o -o jzzz  jzzz_core/liblibjzzz.a third_party/zstd/build/cmake/lib/libzstd.a 

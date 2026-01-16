@@ -1,12 +1,11 @@
-#ifndef __READ_HEADER_FILE_CPP__
-#define __READ_HEADER_FILE_CPP__
+#pragma once
 
-#include "jzzz_param.hpp"
 #include <fstream>
 
 namespace jzzz
 {
-    void param_class::read_header_file()
+    template<typename T>
+    void param_class<T>::read_header_file()
     {
         ifstream header_file(this->header_path);
         if (!header_file.is_open())
@@ -83,9 +82,9 @@ namespace jzzz
                 char c=this->header.variables[i];
                 if (c=='U')
                 {
-                    this->fields_to_process.push_back("velocityx");
-                    this->fields_to_process.push_back("velocityy");
-                    this->fields_to_process.push_back("velocityz");
+                    // this->fields_to_process.push_back("velocityx");
+                    // this->fields_to_process.push_back("velocityy");
+                    // this->fields_to_process.push_back("velocityz");
                 }
                 else if (c=='P')
                 {
@@ -107,5 +106,3 @@ namespace jzzz
             }
     }
 }
-
-#endif

@@ -1,12 +1,12 @@
-#ifndef __READ_BLOCK_INFO_CPP__
-#define __READ_BLOCK_INFO_CPP__
+#pragma once
 
 #include "jzzz_param.hpp"
 #include <fstream>
 
 namespace jzzz
 {
-    void param_class::read_block_info()
+    template<typename T>
+    void param_class<T>::read_block_info()
     {
         ifstream header_file(header_path);
         if (!header_file.is_open())
@@ -102,5 +102,3 @@ namespace jzzz
         this->element_num_to_process=this->blocks[this->blocks_to_process.back()].end_index;
     }
 }
-
-#endif

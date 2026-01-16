@@ -25,6 +25,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/CMakeModules/ZstdVersion.cmake"
   "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/lib/CMakeLists.txt"
   "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/lib/cmake_uninstall.cmake.in"
+  "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/programs/CMakeLists.txt"
   "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/zstdConfig.cmake.in"
   "/home/x-zjian1/unsz/c_codes/third_party/zstd/lib/libzstd.pc.in"
   "/usr/share/cmake/Modules/BasicConfigVersion-SameMajorVersion.cmake.in"
@@ -84,6 +85,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "third_party/zstd/build/cmake/lib/libzstd.pc"
   "third_party/zstd/build/cmake/lib/cmake_uninstall.cmake"
   "third_party/zstd/build/cmake/lib/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -91,6 +93,17 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/jzzz.dir/DependInfo.cmake"
   "jzzz_core/CMakeFiles/libjzzz.dir/DependInfo.cmake"
   "third_party/zstd/build/cmake/CMakeFiles/clean-all.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/DependInfo.cmake"
   "third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/DependInfo.cmake"
   "third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/DependInfo.cmake"
+  "third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/DependInfo.cmake"
   )

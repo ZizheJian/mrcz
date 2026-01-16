@@ -175,78 +175,6 @@ libjzzz/fast:
 	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/build
 .PHONY : libjzzz/fast
 
-compress.o: compress.cpp.o
-.PHONY : compress.o
-
-# target to build an object file
-compress.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.o
-.PHONY : compress.cpp.o
-
-compress.i: compress.cpp.i
-.PHONY : compress.i
-
-# target to preprocess a source file
-compress.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.i
-.PHONY : compress.cpp.i
-
-compress.s: compress.cpp.s
-.PHONY : compress.s
-
-# target to generate assembly for a file
-compress.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/compress.cpp.s
-.PHONY : compress.cpp.s
-
-decompress.o: decompress.cpp.o
-.PHONY : decompress.o
-
-# target to build an object file
-decompress.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.o
-.PHONY : decompress.cpp.o
-
-decompress.i: decompress.cpp.i
-.PHONY : decompress.i
-
-# target to preprocess a source file
-decompress.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.i
-.PHONY : decompress.cpp.i
-
-decompress.s: decompress.cpp.s
-.PHONY : decompress.s
-
-# target to generate assembly for a file
-decompress.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/decompress.cpp.s
-.PHONY : decompress.cpp.s
-
-get_data_range.o: get_data_range.cpp.o
-.PHONY : get_data_range.o
-
-# target to build an object file
-get_data_range.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_data_range.cpp.o
-.PHONY : get_data_range.cpp.o
-
-get_data_range.i: get_data_range.cpp.i
-.PHONY : get_data_range.i
-
-# target to preprocess a source file
-get_data_range.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_data_range.cpp.i
-.PHONY : get_data_range.cpp.i
-
-get_data_range.s: get_data_range.cpp.s
-.PHONY : get_data_range.s
-
-# target to generate assembly for a file
-get_data_range.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_data_range.cpp.s
-.PHONY : get_data_range.cpp.s
-
 huffman.o: huffman.cpp.o
 .PHONY : huffman.o
 
@@ -271,126 +199,6 @@ huffman.cpp.s:
 	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.s
 .PHONY : huffman.cpp.s
 
-quantize.o: quantize.cpp.o
-.PHONY : quantize.o
-
-# target to build an object file
-quantize.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.o
-.PHONY : quantize.cpp.o
-
-quantize.i: quantize.cpp.i
-.PHONY : quantize.i
-
-# target to preprocess a source file
-quantize.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.i
-.PHONY : quantize.cpp.i
-
-quantize.s: quantize.cpp.s
-.PHONY : quantize.s
-
-# target to generate assembly for a file
-quantize.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/quantize.cpp.s
-.PHONY : quantize.cpp.s
-
-read_block_info.o: read_block_info.cpp.o
-.PHONY : read_block_info.o
-
-# target to build an object file
-read_block_info.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.o
-.PHONY : read_block_info.cpp.o
-
-read_block_info.i: read_block_info.cpp.i
-.PHONY : read_block_info.i
-
-# target to preprocess a source file
-read_block_info.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.i
-.PHONY : read_block_info.cpp.i
-
-read_block_info.s: read_block_info.cpp.s
-.PHONY : read_block_info.s
-
-# target to generate assembly for a file
-read_block_info.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_block_info.cpp.s
-.PHONY : read_block_info.cpp.s
-
-read_data_range.o: read_data_range.cpp.o
-.PHONY : read_data_range.o
-
-# target to build an object file
-read_data_range.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.o
-.PHONY : read_data_range.cpp.o
-
-read_data_range.i: read_data_range.cpp.i
-.PHONY : read_data_range.i
-
-# target to preprocess a source file
-read_data_range.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.i
-.PHONY : read_data_range.cpp.i
-
-read_data_range.s: read_data_range.cpp.s
-.PHONY : read_data_range.s
-
-# target to generate assembly for a file
-read_data_range.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_data_range.cpp.s
-.PHONY : read_data_range.cpp.s
-
-read_header_file.o: read_header_file.cpp.o
-.PHONY : read_header_file.o
-
-# target to build an object file
-read_header_file.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.o
-.PHONY : read_header_file.cpp.o
-
-read_header_file.i: read_header_file.cpp.i
-.PHONY : read_header_file.i
-
-# target to preprocess a source file
-read_header_file.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.i
-.PHONY : read_header_file.cpp.i
-
-read_header_file.s: read_header_file.cpp.s
-.PHONY : read_header_file.s
-
-# target to generate assembly for a file
-read_header_file.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/read_header_file.cpp.s
-.PHONY : read_header_file.cpp.s
-
-simple_matrix_tools.o: simple_matrix_tools.cpp.o
-.PHONY : simple_matrix_tools.o
-
-# target to build an object file
-simple_matrix_tools.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.o
-.PHONY : simple_matrix_tools.cpp.o
-
-simple_matrix_tools.i: simple_matrix_tools.cpp.i
-.PHONY : simple_matrix_tools.i
-
-# target to preprocess a source file
-simple_matrix_tools.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.i
-.PHONY : simple_matrix_tools.cpp.i
-
-simple_matrix_tools.s: simple_matrix_tools.cpp.s
-.PHONY : simple_matrix_tools.s
-
-# target to generate assembly for a file
-simple_matrix_tools.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/simple_matrix_tools.cpp.s
-.PHONY : simple_matrix_tools.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -404,33 +212,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... libjzzz"
-	@echo "... compress.o"
-	@echo "... compress.i"
-	@echo "... compress.s"
-	@echo "... decompress.o"
-	@echo "... decompress.i"
-	@echo "... decompress.s"
-	@echo "... get_data_range.o"
-	@echo "... get_data_range.i"
-	@echo "... get_data_range.s"
 	@echo "... huffman.o"
 	@echo "... huffman.i"
 	@echo "... huffman.s"
-	@echo "... quantize.o"
-	@echo "... quantize.i"
-	@echo "... quantize.s"
-	@echo "... read_block_info.o"
-	@echo "... read_block_info.i"
-	@echo "... read_block_info.s"
-	@echo "... read_data_range.o"
-	@echo "... read_data_range.i"
-	@echo "... read_data_range.s"
-	@echo "... read_header_file.o"
-	@echo "... read_header_file.i"
-	@echo "... read_header_file.s"
-	@echo "... simple_matrix_tools.o"
-	@echo "... simple_matrix_tools.i"
-	@echo "... simple_matrix_tools.s"
 .PHONY : help
 
 

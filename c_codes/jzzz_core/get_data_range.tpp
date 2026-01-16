@@ -1,11 +1,11 @@
-#ifndef __GET_DATA_RANGE_CPP__
-#define __GET_DATA_RANGE_CPP__
+#pragma once
 
 #include "jzzz_param.hpp"
 
 namespace jzzz
 {
-    float param_class::get_data_range(string field)
+    template<typename T>
+    T param_class<T>::get_data_range(string field)
     {
         if (field=="velocityx")
             return data_range["U"][0][1]-data_range["U"][0][0];
@@ -25,5 +25,3 @@ namespace jzzz
         throw runtime_error("无法获取指定field的数据范围");
     }
 }
-
-#endif

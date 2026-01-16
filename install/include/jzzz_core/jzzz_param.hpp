@@ -1,5 +1,4 @@
-#ifndef __JZZZ_PARAM_H__
-#define __JZZZ_PARAM_H__
+#pragma once
 
 #include <string>
 #include <vector>
@@ -34,52 +33,55 @@ namespace jzzz
             uint64_t begin_index,end_index;
     };
 
+    template<typename T> // 表示压缩时使用的类型，可能和原始数据类型不同
     class param_class
     {
         public:
             string header_path;
             string eb_mode;
-            float eb;
+            T abs_eb,rel_eb;
             bool all_blocks_to_process=false;
             vector<uint64_t> blocks_to_process;
             bool all_fields_to_process=false;
             vector<string> fields_to_process;
 
             header_class header;
-            unordered_map<string,vector<vector<float>>> data_range;
+            unordered_map<string,vector<vector<T>>> data_range;
             uint64_t block_num;
             vector<block_class> blocks;
 
             uint64_t element_num_to_process; // 实际需要压缩的element数量
-            vector<float> data;
+            vector<T> data;
             vector<vector<unsigned char>> zstd_bs;
-            vector<float> decompressed_data;
+            vector<T> decompressed_data;
 
-            float param_eb_scale=0.05;
-            float param_eb;
-            float zero_f_qb_bound=3;
-            vector<float> x;
-            vector<float> L,neg_L;
-            vector<float> element_base_weight;
+            T param_eb_scale=0.05;
+            T param_eb;
+            T zero_f_qb_bound=3;
+            vector<T> x;
+            vector<T> L,neg_L;
+            vector<T> element_base_weight;
+            vector<uint32_t> no_corner_pos;
 
-            vector<float> simple_invert_matrix(vector<float>& A,uint32_t n);
-            vector<float> simple_matrix_multiply(vector<float>& A,vector<float>& B,uint32_t n);
+            vector<T> simple_invert_matrix(vector<T>& A,uint32_t n);
+            vector<T> simple_matrix_multiply(vector<T>& A,vector<T>& B,uint32_t n);
             void read_header_file();
             void read_data_range();
             void read_block_info();
-            float get_data_range(string field);
+            T get_data_range(string field);
             void compress();
             void decompress();
-            void quantize_and_overwrite_number(float &x,int64_t &y,float eb,float neg_2_eb);
-            void quantize_err(float *pred,float *truth,int64_t *qb,uint32_t size,float eb,float neg_2_eb);
-            void quantize_and_overwrite2(float *data,int64_t *qb,uint32_t size,float eb,float neg_2_eb,float zero_freq_bound);
+            void quantize_and_overwrite_number(T &x,int64_t &y,T eb,T neg_2_eb);
+            void quantize_err(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
+            void quantize_and_overwrite2(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb,T zero_freq_bound);
 
-            param_class():
-                x{-1,-0.91953391,-0.73877387,-0.47792495,-0.16527896,0.16527896,0.47792495,0.73877387,0.91953391,1}
+            void default_init()
             {
-                // if ((!std::is_same<float,float>::value) && (!std::is_same<float,double>::value))
-                //     throw runtime_error("仅能以float或double类型处理数据");
+                if ((!std::is_same<T,float>::value) && (!std::is_same<T,double>::value))
+                    throw runtime_error("仅能以float或double类型处理数据");
                 uint32_t n=x.size();
+                uint32_t n2=n*n;
+                uint32_t n3=n2*n;
                 for (uint32_t i=0;i<n;i++)
                 {
                     if (i==0)
@@ -93,7 +95,7 @@ namespace jzzz
                             L.push_back(2*x[j]*L[(i-1)*n+j]-L[(i-2)*n+j]);
                 }
                 neg_L=simple_invert_matrix(L,n);
-                element_base_weight=vector<float>(8*n*n*n,0);
+                element_base_weight=vector<T>(8*n*n*n,0);
                 for (uint32_t i0=0;i0<n;i0++)
                     for (uint32_t i1=0;i1<n;i1++)
                         for (uint32_t i2=0;i2<n;i2++)
@@ -108,8 +110,74 @@ namespace jzzz
                             element_base_weight[bias+6]=((x[i0]+1)*(x[i1]+1)*(1-x[i2]))/8;
                             element_base_weight[bias+7]=((x[i0]+1)*(x[i1]+1)*(x[i2]+1))/8;
                         }
+                no_corner_pos.resize(n3-8);
+                for (uint32_t i=1;i<n-1;i++)
+                    no_corner_pos[i-1]=i;
+                for (uint32_t i=n;i<n2-n;i++)
+                    no_corner_pos[i-2]=i;
+                for (uint32_t i=n2-n+1;i<n2-1;i++)
+                    no_corner_pos[i-3]=i;
+                for (uint32_t i=n2;i<n3-n2;i++)
+                    no_corner_pos[i-4]=i;
+                for (uint32_t i=n3-n2+1;i<n3-n2+n-1;i++)
+                    no_corner_pos[i-5]=i;
+                for (uint32_t i=n3-n2+n;i<n3-n;i++)
+                    no_corner_pos[i-6]=i;
+                for (uint32_t i=n3-n+1;i<n3-1;i++)
+                    no_corner_pos[i-7]=i;
+            }
+
+            param_class():
+                x{-1,-0.91953391,-0.73877387,-0.47792495,-0.16527896,0.16527896,0.47792495,0.73877387,0.91953391,1}
+            {
+                default_init();
+            }
+
+            template<typename T2>
+            param_class(param_class<T2> &other)
+            {
+                header_path=other.header_path;
+                eb_mode=other.eb_mode;
+                abs_eb=other.abs_eb;
+                rel_eb=other.rel_eb;
+                all_blocks_to_process=other.all_blocks_to_process;
+                blocks_to_process=other.blocks_to_process;
+                all_fields_to_process=other.all_fields_to_process;
+                fields_to_process=other.fields_to_process;
+
+                header=other.header;
+                for (auto other_pair:other.data_range)
+                {
+                    auto field=other_pair.first;
+                    auto other_dr=other_pair.second;
+                    for (auto range_vec:other_dr)
+                    {
+                        vector<T> range;
+                        for (auto val:range_vec)
+                            range.push_back(val);
+                        data_range[field].push_back(range);
+                    }
+                }
+                block_num=other.block_num;
+                blocks=other.blocks;
+
+                element_num_to_process=other.element_num_to_process;
+
+                param_eb_scale=other.param_eb_scale;
+                param_eb=other.param_eb;
+                zero_f_qb_bound=other.zero_f_qb_bound;
+                for (auto val:other.x)
+                    x.push_back(val);
+                default_init();
             }
     };
 }
 
-#endif
+#include "compress.tpp"
+#include "decompress.tpp"
+#include "get_data_range.tpp"
+#include "quantize.tpp"
+#include "read_block_info.tpp"
+#include "read_data_range.tpp"
+#include "read_header_file.tpp"
+#include "simple_matrix_tools.tpp"

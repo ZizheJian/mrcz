@@ -43,6 +43,29 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd/zstdTargets_shared.cmake")
+    file(DIFFERENT _cmake_export_file_changed FILES
+         "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd/zstdTargets_shared.cmake"
+         "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/CMakeFiles/Export/7cd453e9c303927a731457206834b245/zstdTargets_shared.cmake")
+    if(_cmake_export_file_changed)
+      file(GLOB _cmake_old_config_files "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd/zstdTargets_shared-*.cmake")
+      if(_cmake_old_config_files)
+        string(REPLACE ";" ", " _cmake_old_config_files_text "${_cmake_old_config_files}")
+        message(STATUS "Old export file \"$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd/zstdTargets_shared.cmake\" will be replaced.  Removing files [${_cmake_old_config_files_text}].")
+        unset(_cmake_old_config_files_text)
+        file(REMOVE ${_cmake_old_config_files})
+      endif()
+      unset(_cmake_old_config_files)
+    endif()
+    unset(_cmake_export_file_changed)
+  endif()
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd" TYPE FILE FILES "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/CMakeFiles/Export/7cd453e9c303927a731457206834b245/zstdTargets_shared.cmake")
+  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd" TYPE FILE FILES "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/CMakeFiles/Export/7cd453e9c303927a731457206834b245/zstdTargets_shared-release.cmake")
+  endif()
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd/zstdTargets_static.cmake")
     file(DIFFERENT _cmake_export_file_changed FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zstd/zstdTargets_static.cmake"
@@ -95,6 +118,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/cmake_install.cmake")
+  include("/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/cmake_install.cmake")
 
 endif()
 

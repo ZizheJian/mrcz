@@ -1,12 +1,12 @@
-#ifndef __READ_DATA_RANGE_CPP__
-#define __READ_DATA_RANGE_CPP__
+#pragma once
 
 #include "jzzz_param.hpp"
 #include <fstream>
 
 namespace jzzz
 {
-    void param_class::read_data_range()
+    template<typename T>
+    void param_class<T>::read_data_range()
     {
         ifstream header_file(header_path);
         if (!header_file.is_open())
@@ -31,7 +31,7 @@ namespace jzzz
                 break;
             line.erase(0,string("  ").size());
             string variable=line.substr(0,line.find(":"));
-            this->data_range[variable]=vector<vector<float>>();
+            this->data_range[variable]=vector<vector<T>>();
             int dim_num=1;
             if (variable=="X" || variable=="U")
                 dim_num=3;
@@ -43,13 +43,13 @@ namespace jzzz
                 {
                     getline(header_file,line);
                     line.erase(0,string("  - - ").size());
-                    float min_val=stof(line);
+                    T min_val=stof(line);
                     line_index++;
                     getline(header_file,line);
                     line.erase(0,string("    - ").size());
-                    float max_val=stof(line);
+                    T max_val=stof(line);
                     line_index++;
-                    this->data_range[variable].push_back(vector<float>{min_val,max_val});
+                    this->data_range[variable].push_back(vector<T>{min_val,max_val});
                 }
                 continue;
             }
@@ -57,13 +57,13 @@ namespace jzzz
             {
                 getline(header_file,line);
                 line.erase(0,string("  - ").size());
-                float min_val=stof(line);
+                T min_val=stof(line);
                 line_index++;
                 getline(header_file,line);
                 line.erase(0,string("  - ").size());
-                float max_val=stof(line);
+                T max_val=stof(line);
                 line_index++;
-                this->data_range[variable].push_back(vector<float>{min_val,max_val});
+                this->data_range[variable].push_back(vector<T>{min_val,max_val});
             }
             
         }
@@ -71,5 +71,3 @@ namespace jzzz
         header_file.close();
     }
 }
-
-#endif

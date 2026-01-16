@@ -5,7 +5,7 @@
 
 int main(int argc,char **argv)
 {
-    jzzz::param_class params;
+    jzzz::param_class<float> params;
     for (int i=1;i<argc;i++)
     {
         string arg=argv[i];
@@ -45,7 +45,12 @@ int main(int argc,char **argv)
             if (i+2<argc)
             {
                 params.eb_mode=argv[++i];
-                params.eb=stof(argv[++i]);
+                if (params.eb_mode=="ABS")
+                    params.abs_eb=stof(argv[++i]);
+                else if (params.eb_mode=="REL")
+                    params.rel_eb=stof(argv[++i]);
+                else
+                    throw runtime_error("仅支持ABS或REL误差控制模式");
             }
             else
                 throw runtime_error("缺少-M参数后的误差控制模式和误差值");
@@ -57,7 +62,7 @@ int main(int argc,char **argv)
         throw runtime_error("必须指定header文件路径，使用-i参数");
     if (params.eb_mode.empty())
         throw runtime_error("必须指定误差控制模式，使用-M参数");
-    if (params.eb<=0.0f)
+    if ((params.eb_mode=="ABS" && params.abs_eb<=0.0f) || (params.eb_mode=="REL" && params.rel_eb<=0.0f))
         throw runtime_error("误差值必须为正数");
     if (params.blocks_to_process.empty())
         params.all_blocks_to_process=true;
@@ -76,14 +81,34 @@ int main(int argc,char **argv)
     {
         if (field=="X")
             continue;
-        compress(params,field);
-        auto result=decompress(params,field);
-        float field_br=get<0>(result);
-        float field_cr=get<1>(result);
-        float field_max_err=get<2>(result);
-        float field_mse=get<3>(result);
-        float field_psnr=get<4>(result);
-        printf("Field= %s , %s_EB= %f , BR= %f , CR= %f , max_err= %f (%f%%) , MSE= %f , PSNR= %f dB\n",
-               field.c_str(),params.eb_mode.c_str(),params.eb,field_br,field_cr,field_max_err,field_max_err/params.eb*100,field_mse,field_psnr);
+        float data_range=params.get_data_range(field);
+        if (data_range==0)
+        {
+            printf("Field= %s 是常数\n",field.c_str());
+            continue;
+        }
+        if (params.eb_mode=="ABS")
+            params.rel_eb=params.abs_eb/data_range;
+        else
+            params.abs_eb=params.rel_eb*data_range;
+        tuple<double,double,double,double,double> result;
+        if ((params.header.word_size==8) || (params.rel_eb<1e-4))
+        {
+            jzzz::param_class<double> d_params(params);
+            compress(d_params,field);
+            result=decompress(d_params,field);
+        }
+        else
+        {
+            compress(params,field);
+            result=decompress(params,field);
+        }
+        double field_br=get<0>(result);
+        double field_cr=get<1>(result);
+        double field_max_err=get<2>(result);
+        double field_mse=get<3>(result);
+        double field_psnr=get<4>(result);
+        printf("Field= %s ,abs_eb= %f , BR= %f , CR= %f , max_err= %f (%f%%) , MSE= %f , PSNR= %f dB\n",
+               field.c_str(),params.abs_eb,field_br,field_cr,field_max_err,field_max_err/params.abs_eb*100,field_mse,field_psnr);
     }
 }

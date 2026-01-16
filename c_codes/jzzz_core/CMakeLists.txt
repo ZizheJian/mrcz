@@ -1,14 +1,4 @@
-add_library(libjzzz STATIC
-    compress.cpp
-    decompress.cpp
-    get_data_range.cpp
-    huffman.cpp
-    quantize.cpp
-    read_block_info.cpp
-    read_data_range.cpp
-    read_header_file.cpp
-    simple_matrix_tools.cpp
-)
+add_library(libjzzz STATIC huffman.cpp )
 
 # 设置 C++ 标准（与根项目一致）
 set_target_properties(libjzzz PROPERTIES

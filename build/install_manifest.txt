@@ -1,6 +1,8 @@
 /home/x-zjian1/unsz/install/bin/jzzz
 /home/x-zjian1/unsz/install/lib/liblibjzzz.a
 /home/x-zjian1/unsz/install/include/jzzz_core/jzzz_param.hpp
+/home/x-zjian1/unsz/install/lib64/cmake/zstd/zstdTargets_shared.cmake
+/home/x-zjian1/unsz/install/lib64/cmake/zstd/zstdTargets_shared-release.cmake
 /home/x-zjian1/unsz/install/lib64/cmake/zstd/zstdTargets_static.cmake
 /home/x-zjian1/unsz/install/lib64/cmake/zstd/zstdTargets_static-release.cmake
 /home/x-zjian1/unsz/install/lib64/cmake/zstd/zstdTargets.cmake
@@ -10,4 +12,18 @@
 /home/x-zjian1/unsz/install/include/zdict.h
 /home/x-zjian1/unsz/install/include/zstd.h
 /home/x-zjian1/unsz/install/include/zstd_errors.h
+/home/x-zjian1/unsz/install/lib64/libzstd.so.1.6.0
+/home/x-zjian1/unsz/install/lib64/libzstd.so.1
+/home/x-zjian1/unsz/install/lib64/libzstd.so
 /home/x-zjian1/unsz/install/lib64/libzstd.a
+/home/x-zjian1/unsz/install/bin/zstd
+/home/x-zjian1/unsz/install/bin/zstdcat
+/home/x-zjian1/unsz/install/bin/unzstd
+/home/x-zjian1/unsz/install/bin/zstdgrep
+/home/x-zjian1/unsz/install/bin/zstdless
+/home/x-zjian1/unsz/install/share/man/man1/zstd.1
+/home/x-zjian1/unsz/install/share/man/man1/zstdcat.1
+/home/x-zjian1/unsz/install/share/man/man1/unzstd.1
+/home/x-zjian1/unsz/install/share/man/man1/zstdgrep.1
+/home/x-zjian1/unsz/install/share/man/man1/zstdless.1
+/home/x-zjian1/unsz/install/bin/zstdmt

@@ -1,5 +1,4 @@
-#ifndef __HUFFMAN_CPP__
-#define __HUFFMAN_CPP__
+#pragma once
 
 #include <cassert>
 #include <map>
@@ -661,5 +660,3 @@ namespace jzzz
             }
     };
 }
-
-#endif

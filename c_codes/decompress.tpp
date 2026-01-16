@@ -1,13 +1,13 @@
-#ifndef __DECOMPRESS_CPP__
-#define __DECOMPRESS_CPP__
+#pragma once
 
 #include <fstream>
 #include <cmath>
 #include "jzzz_core/jzzz_param.hpp"
 
-tuple<float,float,float,float,float> decompress(jzzz::param_class &params,string field)
+template<typename T>
+tuple<double,double,double,double,double> decompress(jzzz::param_class<T> &params,string field)
 {
-    float br=0,cr=0,max_err=0,mse=0,psnr=0;
+    double br=0,cr=0,max_err=0,mse=0,psnr=0;
     params.zstd_bs.resize(params.block_num);
     string temp_name=field+"_path";
     for (auto block_id:params.blocks_to_process)
@@ -35,18 +35,31 @@ tuple<float,float,float,float,float> decompress(jzzz::param_class &params,string
         auto block=params.blocks[block_id];
         string data_path=block.field_paths[temp_name];
         ifstream file(data_path,ios::binary);
-        file.read(reinterpret_cast<char*>(params.data.data()+block.begin_index*params.header.element_size),block.element_num*params.header.element_size*params.header.word_size);
+        if (params.header.word_size==4 && sizeof(T)==8)
+        {
+            vector<float> temp_data(block.element_num*params.header.element_size);
+            file.read(reinterpret_cast<char*>(temp_data.data()),block.element_num*params.header.element_size*params.header.word_size);
+            for (uint64_t i=0;i<block.element_num*params.header.element_size;i++)
+                params.data[block.begin_index*params.header.element_size+i]=temp_data[i];
+        }
+        else
+            file.read(reinterpret_cast<char*>(params.data.data()+block.begin_index*params.header.element_size),block.element_num*params.header.element_size*params.header.word_size);
         file.close();
     }
     for (uint64_t i=0;i<params.element_num_to_process*params.header.element_size;i++)
     {
-        float err=params.decompressed_data[i]-params.data[i];
+        T err=params.decompressed_data[i]-params.data[i];
         mse+=err*err;
         if (fabs(err)>max_err)
             max_err=fabs(err);
+        if (fabs(err)>params.abs_eb*1.5)
+        {
+            printf("i=%ld, decompressed= %f, original= %f, err= %f\n",i,params.decompressed_data[i],params.data[i],err);
+            getchar();
+        }
     }
     mse/=(params.element_num_to_process*params.header.element_size);
-    float data_range=params.get_data_range(field);
+    T data_range=params.get_data_range(field);
     psnr=10*log10(data_range*data_range/mse);
     params.data.clear();
     params.data.shrink_to_fit();
@@ -61,5 +74,3 @@ tuple<float,float,float,float,float> decompress(jzzz::param_class &params,string
     params.zstd_bs.shrink_to_fit();
     return make_tuple(br,cr,max_err,mse,psnr);
 }
-
-#endif

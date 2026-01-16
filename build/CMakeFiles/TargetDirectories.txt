@@ -25,6 +25,7 @@
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/CMakeFiles/install.dir
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/CMakeFiles/install/local.dir
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/CMakeFiles/install/strip.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/edit_cache.dir
@@ -33,3 +34,19 @@
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/install.dir
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/install/local.dir
 /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/install/strip.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/edit_cache.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/rebuild_cache.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/list_install_components.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/install.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/install/local.dir
+/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/install/strip.dir
