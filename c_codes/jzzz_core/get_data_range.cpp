@@ -22,7 +22,7 @@ namespace jzzz
             int index=stoi(field.substr(1));
             return data_range["S"][index][1]-data_range["S"][index][0];
         }
-
+        throw runtime_error("无法获取指定field的数据范围");
     }
 }
 

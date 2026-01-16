@@ -67,7 +67,6 @@ namespace jzzz
             void read_header_file();
             void read_data_range();
             void read_block_info();
-            string get_full_field_name(string field);
             float get_data_range(string field);
             void compress();
             void decompress();

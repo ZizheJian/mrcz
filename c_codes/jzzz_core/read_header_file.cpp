@@ -102,7 +102,7 @@ namespace jzzz
                             this->fields_to_process.push_back("s0"+to_string(j));
                         else
                             this->fields_to_process.push_back("s"+to_string(j));
-                    break;
+                    i+=2;
                 }
             }
     }

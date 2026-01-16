@@ -247,30 +247,6 @@ get_data_range.cpp.s:
 	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_data_range.cpp.s
 .PHONY : get_data_range.cpp.s
 
-get_full_field_name.o: get_full_field_name.cpp.o
-.PHONY : get_full_field_name.o
-
-# target to build an object file
-get_full_field_name.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.o
-.PHONY : get_full_field_name.cpp.o
-
-get_full_field_name.i: get_full_field_name.cpp.i
-.PHONY : get_full_field_name.i
-
-# target to preprocess a source file
-get_full_field_name.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.i
-.PHONY : get_full_field_name.cpp.i
-
-get_full_field_name.s: get_full_field_name.cpp.s
-.PHONY : get_full_field_name.s
-
-# target to generate assembly for a file
-get_full_field_name.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/get_full_field_name.cpp.s
-.PHONY : get_full_field_name.cpp.s
-
 huffman.o: huffman.cpp.o
 .PHONY : huffman.o
 
@@ -437,9 +413,6 @@ help:
 	@echo "... get_data_range.o"
 	@echo "... get_data_range.i"
 	@echo "... get_data_range.s"
-	@echo "... get_full_field_name.o"
-	@echo "... get_full_field_name.i"
-	@echo "... get_full_field_name.s"
 	@echo "... huffman.o"
 	@echo "... huffman.i"
 	@echo "... huffman.s"

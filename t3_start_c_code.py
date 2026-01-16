@@ -12,7 +12,7 @@ import os
 method="my"
 
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
-abs_eb=100
+abs_eb=1e-4
 
 if method=="my":
     if os.path.exists(f"{data_path}.header.yaml"):
@@ -22,8 +22,8 @@ if method=="my":
             os.system("make")
             os.system("make install")
             os.chdir("..")
-            # os.system(f"./build/jzzz -i {data_path}.header.yaml -M ABS {abs_eb} -blocks [0]")
-            os.system(f"./build/jzzz -i {data_path}.header.yaml -M ABS {abs_eb}")
+            os.system(f"./build/jzzz -i {data_path}.header.yaml -M ABS {abs_eb} -blocks [1,2,4,8]")
+            # os.system(f"./build/jzzz -i {data_path}.header.yaml -M ABS {abs_eb}")
         except Exception as e:
             exit(0)
     else:
