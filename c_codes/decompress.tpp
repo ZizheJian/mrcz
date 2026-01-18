@@ -1,7 +1,5 @@
 #pragma once
 
-#include <fstream>
-#include <cmath>
 #include "jzzz_core/jzzz_param.hpp"
 
 template<typename T>
@@ -25,7 +23,19 @@ tuple<double,double,double,double,double> decompress(jzzz::param_class<T> &param
         file.close();
     }
     printf("\n");
-    params.decompress();
+    if (params.method=="jzzz")
+        params.decompress();
+    else if (params.method=="sz3-1")
+    {
+        vector<T> backup_x=params.x;
+        for (uint32_t i=0;i<params.x.size();i++)
+            params.x[i]=(T)i/(params.x.size()-1)*2-1;
+        sz3_2_decompress(params);
+        params.x=backup_x;
+    }
+    else if (params.method=="sz3-2")
+        sz3_2_decompress(params);
+    
     br*=(8.0f/(params.element_num_to_process*params.header.element_size));
     cr=(params.header.word_size*8.0f)/br;
 

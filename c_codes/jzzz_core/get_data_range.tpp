@@ -1,7 +1,5 @@
 #pragma once
 
-#include "jzzz_param.hpp"
-
 namespace jzzz
 {
     template<typename T>

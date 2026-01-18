@@ -1,8 +1,5 @@
 #pragma once
 
-#include "jzzz_param.hpp"
-#include <stdexcept>
-
 namespace jzzz
 {
     template<typename T>

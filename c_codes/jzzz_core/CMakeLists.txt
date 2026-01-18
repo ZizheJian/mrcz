@@ -1,4 +1,4 @@
-add_library(libjzzz STATIC huffman.cpp )
+add_library(libjzzz INTERFACE)
 
 # 设置 C++ 标准（与根项目一致）
 set_target_properties(libjzzz PROPERTIES
@@ -7,7 +7,7 @@ set_target_properties(libjzzz PROPERTIES
 )
 
 # 暴露头文件路径：让链接者（如主程序）能 #include "compressor.h"
-target_include_directories(libjzzz PUBLIC
+target_include_directories(libjzzz INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -17,5 +17,5 @@ install(TARGETS libjzzz
 )
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
     DESTINATION include 
-    FILES_MATCHING PATTERN "*.hpp"
+    FILES_MATCHING PATTERN "*.hpp" PATTERN "*.tpp"
 )

@@ -1,5 +1,13 @@
 /home/x-zjian1/unsz/install/bin/jzzz
-/home/x-zjian1/unsz/install/lib/liblibjzzz.a
+/home/x-zjian1/unsz/install/include/jzzz_core/read_block_info.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/simple_matrix_tools.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/quantize.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/huffman.hpp
+/home/x-zjian1/unsz/install/include/jzzz_core/read_header_file.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/decompress.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/get_data_range.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/compress.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/read_data_range.tpp
 /home/x-zjian1/unsz/install/include/jzzz_core/jzzz_param.hpp
 /home/x-zjian1/unsz/install/lib64/cmake/zstd/zstdTargets_shared.cmake
 /home/x-zjian1/unsz/install/lib64/cmake/zstd/zstdTargets_shared-release.cmake

@@ -1,9 +1,6 @@
 #pragma once
 
-#include <fstream>
 #include "jzzz_core/jzzz_param.hpp"
-
-using namespace std;
 
 template<typename T>
 void compress(jzzz::param_class<T> &params,string field)
@@ -28,7 +25,19 @@ void compress(jzzz::param_class<T> &params,string field)
         file.close();
     }
     printf("\n");
-    params.compress();
+    printf("params.method= %s\n",params.method.c_str());
+    if (params.method=="jzzz")
+        params.compress();
+    else if (params.method=="sz3-1")
+    {
+        vector<T> backup_x=params.x;
+        for (uint32_t i=0;i<params.x.size();i++)
+            params.x[i]=(T)i/(params.x.size()-1)*2-1;
+        sz3_2_compress(params);
+        params.x=backup_x;
+    }
+    else if (params.method=="sz3-2")
+        sz3_2_compress(params);
     for (auto block_id:params.blocks_to_process)
     {
         auto block=params.blocks[block_id];

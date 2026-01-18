@@ -1,12 +1,5 @@
 #pragma once
 
-#include <omp.h>
-#include <immintrin.h>
-#include "jzzz_param.hpp"
-#include "huffman.cpp"
-#include <cmath>
-#include "../third_party/zstd/lib/zstd.h"
-
 namespace jzzz
 {
     template<typename T>
@@ -22,7 +15,7 @@ namespace jzzz
         uint32_t n=header.element_shape[0];
         uint32_t n2=n*n;
         uint32_t n3=n2*n;
-        param_eb=abs_eb*param_eb_scale;
+        coeff_eb=abs_eb*coeff_eb_scale;
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
         int64_t *f_qb=new int64_t[element_num_to_process*header.element_size];
         int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(header.element_size-8)];
@@ -112,7 +105,7 @@ namespace jzzz
                 }
                 vector<T> temp_element1(n*n*n,0),temp_element2(n*n*n,0);
                 for (uint32_t i=0;i<n*n*n;i++)
-                    temp_element1[i]=element_f_qb[i]*2*param_eb;
+                    temp_element1[i]=element_f_qb[i]*2*coeff_eb;
                 for (uint32_t i=0;i<n;i++)
                     for (uint32_t j=0;j<n;j++)
                         for (uint32_t k=0;k<n;k++)

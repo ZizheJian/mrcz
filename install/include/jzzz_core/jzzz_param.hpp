@@ -6,6 +6,11 @@
 #include <stdexcept>
 #include <cstring>
 #include <type_traits>
+#include <omp.h>
+#include <immintrin.h>
+#include <cmath>
+#include "huffman.hpp"
+#include "../third_party/zstd/lib/zstd.h"
 
 using namespace std;
 
@@ -40,6 +45,7 @@ namespace jzzz
             string header_path;
             string eb_mode;
             T abs_eb,rel_eb;
+            string method;
             bool all_blocks_to_process=false;
             vector<uint64_t> blocks_to_process;
             bool all_fields_to_process=false;
@@ -55,8 +61,8 @@ namespace jzzz
             vector<vector<unsigned char>> zstd_bs;
             vector<T> decompressed_data;
 
-            T param_eb_scale=0.05;
-            T param_eb;
+            T coeff_eb_scale=0.05;
+            T coeff_eb;
             T zero_f_qb_bound=3;
             vector<T> x;
             vector<T> L,neg_L;
@@ -71,9 +77,10 @@ namespace jzzz
             T get_data_range(string field);
             void compress();
             void decompress();
-            void quantize_and_overwrite_number(T &x,int64_t &y,T eb,T neg_2_eb);
-            void quantize_err(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
-            void quantize_and_overwrite2(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb,T zero_freq_bound);
+            void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);
+            void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
+            void quantize_err_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
+            void quantize_and_overwrite_array2(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb,T zero_freq_bound);
 
             void default_init()
             {
@@ -140,6 +147,7 @@ namespace jzzz
                 eb_mode=other.eb_mode;
                 abs_eb=other.abs_eb;
                 rel_eb=other.rel_eb;
+                method=other.method;
                 all_blocks_to_process=other.all_blocks_to_process;
                 blocks_to_process=other.blocks_to_process;
                 all_fields_to_process=other.all_fields_to_process;
@@ -163,8 +171,8 @@ namespace jzzz
 
                 element_num_to_process=other.element_num_to_process;
 
-                param_eb_scale=other.param_eb_scale;
-                param_eb=other.param_eb;
+                coeff_eb_scale=other.coeff_eb_scale;
+                coeff_eb=other.coeff_eb;
                 zero_f_qb_bound=other.zero_f_qb_bound;
                 for (auto val:other.x)
                     x.push_back(val);

@@ -149,6 +149,41 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/functional_hash.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/hash_bytes.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_string.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/stdexcept \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/exception \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/exception_ptr.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/cxxabi_init_exception.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/typeinfo \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/nested_exception.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/fstream \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/istream \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ios \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ios_base.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/system_error \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/error_constants.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/streambuf \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_ios.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cwctype \
+  /usr/include/wctype.h \
+  /usr/include/bits/wctype-wchar.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_base.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf_iterator.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_inline.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_ios.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ostream \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ostream.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/istream.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/codecvt.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/basic_file.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/c++io.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/fstream.tcc \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/sstream \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/sstream.tcc \
   /home/x-zjian1/unsz/c_codes/jzzz_core/jzzz_param.hpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/vector \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_uninitialized.h \
@@ -161,16 +196,9 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/hashtable_policy.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/unordered_map.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/erase_if.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/stdexcept \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/exception \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/exception_ptr.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/cxxabi_init_exception.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/typeinfo \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/nested_exception.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cstring \
   /usr/include/string.h \
   /usr/include/strings.h \
-  /home/x-zjian1/unsz/c_codes/jzzz_core/compress.tpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/omp.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/immintrin.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/x86gprintrin.h \
@@ -256,7 +284,19 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxbf16intrin.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/prfchwintrin.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/keylockerintrin.h \
-  /home/x-zjian1/unsz/c_codes/jzzz_core/huffman.cpp \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cmath \
+  /usr/include/math.h \
+  /usr/include/bits/math-vector.h \
+  /usr/include/bits/libm-simd-decl-stubs.h \
+  /usr/include/bits/flt-eval-method.h \
+  /usr/include/bits/fp-logb.h \
+  /usr/include/bits/fp-fast.h \
+  /usr/include/bits/mathcalls-helper-functions.h \
+  /usr/include/bits/mathcalls.h \
+  /usr/include/bits/mathcalls-narrow.h \
+  /usr/include/bits/iscanonical.h \
+  /usr/include/bits/mathinline.h \
+  /home/x-zjian1/unsz/c_codes/jzzz_core/huffman.hpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cassert \
   /usr/include/assert.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/map \
@@ -271,111 +311,69 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_queue.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/stack \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_stack.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cmath \
-  /usr/include/math.h \
-  /usr/include/bits/math-vector.h \
-  /usr/include/bits/libm-simd-decl-stubs.h \
-  /usr/include/bits/flt-eval-method.h \
-  /usr/include/bits/fp-logb.h \
-  /usr/include/bits/fp-fast.h \
-  /usr/include/bits/mathcalls-helper-functions.h \
-  /usr/include/bits/mathcalls.h \
-  /usr/include/bits/mathcalls-narrow.h \
-  /usr/include/bits/iscanonical.h \
-  /usr/include/bits/mathinline.h \
   /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/zstd.h \
   /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/zstd_errors.h \
+  /home/x-zjian1/unsz/c_codes/jzzz_core/compress.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/decompress.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/get_data_range.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/quantize.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/read_block_info.tpp \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/fstream \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/istream \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ios \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ios_base.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.tcc \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/system_error \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/error_constants.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/streambuf \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf.tcc \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_ios.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cwctype \
-  /usr/include/wctype.h \
-  /usr/include/bits/wctype-wchar.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_base.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf_iterator.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_inline.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.tcc \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_ios.tcc \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ostream \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ostream.tcc \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/istream.tcc \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/codecvt.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/basic_file.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/c++io.h \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/fstream.tcc \
   /home/x-zjian1/unsz/c_codes/jzzz_core/read_data_range.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/read_header_file.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/simple_matrix_tools.tpp \
+  /home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_compress.cpp \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/set \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_set.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_multiset.h \
+  /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/zstd.h \
+  /home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_decompress.cpp \
   /home/x-zjian1/unsz/c_codes/compress.tpp \
-  /home/x-zjian1/unsz/c_codes/decompress.tpp \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/sstream \
-  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/sstream.tcc
+  /home/x-zjian1/unsz/c_codes/decompress.tpp
 
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/sstream.tcc:
 
 /home/x-zjian1/unsz/c_codes/decompress.tpp:
 
 /home/x-zjian1/unsz/c_codes/compress.tpp:
 
+/home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_decompress.cpp:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_multiset.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/set:
+
 /home/x-zjian1/unsz/c_codes/jzzz_core/simple_matrix_tools.tpp:
 
 /home/x-zjian1/unsz/c_codes/jzzz_core/read_data_range.tpp:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/fstream.tcc:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/c++io.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/codecvt.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ostream.tcc:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ostream:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_ios.tcc:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.tcc:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_inline.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf_iterator.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_base.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/sstream:
-
-/usr/include/bits/wctype-wchar.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/error_constants.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/system_error:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ios:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/istream:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/fstream:
 
 /home/x-zjian1/unsz/c_codes/jzzz_core/read_block_info.tpp:
 
 /home/x-zjian1/unsz/c_codes/jzzz_core/decompress.tpp:
 
+/home/x-zjian1/unsz/c_codes/jzzz_core/compress.tpp:
+
 /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/zstd_errors.h:
 
 /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/zstd.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/deque.tcc:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_deque.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/deque:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/queue:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_multimap.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_map.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_heap.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/map:
+
+/usr/include/assert.h:
+
+/home/x-zjian1/unsz/c_codes/jzzz_core/huffman.hpp:
 
 /usr/include/bits/mathinline.h:
 
@@ -399,27 +397,51 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cmath:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/deque.tcc:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/keylockerintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_deque.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/prfchwintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/deque:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxbf16intrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/queue:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxint8intrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_multimap.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bf16intrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_map.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bf16vlintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/vpclmulqdqintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_tree.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/vaesintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_heap.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/f16cintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/map:
+/home/x-zjian1/unsz/c_codes/jzzz_core/read_header_file.tpp:
 
-/usr/include/assert.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/fmaintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/shaintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vp2intersectvlintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bitalgintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vpopcntdqvlintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vnnivlintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vbmi2vlintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vpopcntdqintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vp2intersectintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx5124vnniwintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/gfniintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx5124fmapsintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vbmiintrin.h:
 
 /usr/include/alloca.h:
 
@@ -427,25 +449,25 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /usr/include/bits/types/sigset_t.h:
 
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/codecvt.h:
+
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/popcntintrin.h:
 
 /usr/include/sys/select.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cstdlib:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/alloc_traits.h:
 
 /usr/include/bits/setjmp.h:
 
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ios:
+
 /usr/include/bits/thread-shared-types.h:
 
 /usr/include/bits/pthreadtypes.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf.tcc:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vbmi2intrin.h:
 
-/usr/include/bits/types/timer_t.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cstdint:
 
 /usr/include/bits/types/__fpos_t.h:
 
@@ -469,23 +491,27 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/clflushoptintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/basic_file.h:
-
-/usr/include/pthread.h:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/backward/binders.h:
 
 /usr/include/bits/types/struct_itimerspec.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ostream_insert.h:
 
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.tcc:
+
 /usr/include/bits/time.h:
 
 /usr/include/bits/stdio_lim.h:
 
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vnniintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/iosfwd:
+
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/wbnoinvdintrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/exception.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_set.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/vector:
 
@@ -501,23 +527,21 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_algobase.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/iosfwd:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxtileintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vnniintrin.h:
+/usr/include/bits/types/clockid_t.h:
+
+/usr/include/bits/stdint-intn.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cstdio:
 
 /usr/include/bits/cpu-set.h:
 
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ostream.tcc:
+
 /usr/include/bits/typesizes.h:
 
 /usr/include/bits/types.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ios_base.h:
-
-/home/x-zjian1/unsz/c_codes/jzzz_core/get_data_range.tpp:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/cxxabi_forced.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/nested_exception.h:
 
@@ -525,15 +549,19 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_iterator_base_funcs.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vpopcntdqvlintrin.h:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/predefined_ops.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cassert:
+
+/usr/include/bits/uintn-identity.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vldqintrin.h:
 
 /usr/include/bits/select.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/functexcept.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bitalgintrin.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_base.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/char_traits.h:
 
@@ -542,10 +570,6 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 /usr/include/bits/wchar.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ext/atomicity.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/istream.tcc:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stddef.h:
 
 /usr/include/bits/byteswap.h:
 
@@ -571,29 +595,31 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /usr/include/gnu/stubs-64.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxint8intrin.h:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512fintrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/initializer_list:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cwchar:
 
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stddef.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/istream.tcc:
+
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/ia32intrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/concept_check.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/prfchwintrin.h:
-
 /usr/include/bits/types/wint_t.h:
+
+/home/x-zjian1/unsz/c_codes/jzzz_core/get_data_range.tpp:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/cxxabi_forced.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ios_base.h:
 
 /usr/include/bits/waitflags.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/debug/assertions.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.tcc:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/utility:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/ptr_traits.h:
 
@@ -603,9 +629,9 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/c++config.h:
 
-/usr/include/wctype.h:
-
 /usr/include/bits/fp-fast.h:
+
+/usr/include/wctype.h:
 
 /usr/include/sched.h:
 
@@ -615,8 +641,6 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx2intrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/shaintrin.h:
-
 /usr/include/bits/stdlib-float.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/mm_malloc.h:
@@ -624,10 +648,6 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/c++locale.h:
 
 /usr/include/bits/types/struct_tm.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx5124fmapsintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/gfniintrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_queue.h:
 
@@ -645,8 +665,6 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ext/string_conversions.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vnnivlintrin.h:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512erintrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/array:
@@ -654,6 +672,8 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 /home/x-zjian1/unsz/c_codes/main.cpp:
 
 /usr/include/errno.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/istream:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cwctype:
 
@@ -669,12 +689,6 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/invoke.h:
 
-/usr/include/bits/uintn-identity.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vldqintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cassert:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stdint.h:
 
 /usr/include/wchar.h:
@@ -688,8 +702,6 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_iterator.h:
 
 /usr/include/bits/types/__fpos64_t.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/f16cintrin.h:
 
 /usr/include/bits/types/struct_timeval.h:
 
@@ -709,11 +721,13 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/mmintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vpopcntdqintrin.h:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/stack:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/string:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf_iterator.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/error_constants.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/tuple:
 
@@ -724,6 +738,8 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ext/type_traits.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/memoryfwd.h:
+
+/home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_compress.cpp:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/postypes.h:
 
@@ -755,6 +771,8 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /usr/include/stdio.h:
 
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/ctype_inline.h:
+
 /usr/include/bits/types/struct_FILE.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/c++allocator.h:
@@ -762,8 +780,6 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 /usr/include/bits/types/cookie_io_functions_t.h:
 
 /usr/include/bits/sys_errlist.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bf16intrin.h:
 
 /usr/include/bits/stdio.h:
 
@@ -787,49 +803,11 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/functional_hash.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx5124vnniwintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vp2intersectintrin.h:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/hash_bytes.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_string.tcc:
 
-/home/x-zjian1/unsz/c_codes/jzzz_core/jzzz_param.hpp:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/cpp_type_traits.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/bmiintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/cpu_defines.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_uninitialized.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_bvector.h:
-
-/usr/include/gnu/stubs.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/vector.tcc:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ext/aligned_buffer.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/pmmintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/hashtable.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/hashtable_policy.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/move.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/unordered_map.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/erase_if.h:
-
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/stdexcept:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cstdint:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vbmi2intrin.h:
 
 /usr/include/bits/types/clock_t.h:
 
@@ -841,21 +819,41 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/typeinfo:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/streambuf:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/fstream:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512ifmaintrin.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cstdlib:
 
-/usr/include/string.h:
-
-/usr/include/strings.h:
-
-/home/x-zjian1/unsz/c_codes/jzzz_core/compress.tpp:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/omp.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/utility:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_classes.tcc:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/system_error:
 
 /home/x-zjian1/unsz/c_codes/main.hpp:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/immintrin.h:
+
+/usr/include/bits/types/timer_t.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/streambuf.tcc:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_tree.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/locale_facets.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_ios.tcc:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ostream:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_bvector.h:
+
+/usr/include/pthread.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/basic_file.h:
 
 /usr/include/endian.h:
 
@@ -865,7 +863,13 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/x86gprintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/bmi2intrin.h:
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/c++io.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_string.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/movdirintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/fstream.tcc:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/cetintrin.h:
 
@@ -875,15 +879,61 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/rdseedintrin.h:
 
+/usr/include/bits/wctype-wchar.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/sstream:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/sstream.tcc:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/hashtable_policy.h:
+
+/home/x-zjian1/unsz/c_codes/jzzz_core/jzzz_param.hpp:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/cpp_type_traits.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/bmiintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/x86_64-pc-linux-gnu/bits/cpu_defines.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_uninitialized.h:
+
+/usr/include/gnu/stubs.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/vector.tcc:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/ext/aligned_buffer.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/pmmintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/hashtable.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/move.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/unordered_map.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/erase_if.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512ifmaintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/streambuf:
+
+/usr/include/string.h:
+
+/usr/include/strings.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/bmi2intrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512pfintrin.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/unordered_map:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/clwbintrin.h:
+
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/xtestintrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/clzerointrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/lzcntintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/basic_string.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/movdirintrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/pconfigintrin.h:
 
@@ -923,19 +973,9 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avxvnniintrin.h:
 
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bf16vlintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/unordered_map:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/clwbintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512pfintrin.h:
-
 /usr/include/linux/errno.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vlintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vp2intersectvlintrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bwintrin.h:
 
@@ -944,27 +984,3 @@ CMakeFiles/jzzz.dir/main.cpp.o: /home/x-zjian1/unsz/c_codes/main.cpp \
 /usr/include/locale.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512ifmavlintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vbmiintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/keylockerintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vbmi2vlintrin.h:
-
-/home/x-zjian1/unsz/c_codes/jzzz_core/read_header_file.tpp:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/fmaintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/vaesintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/vpclmulqdqintrin.h:
-
-/usr/include/bits/types/clockid_t.h:
-
-/usr/include/bits/stdint-intn.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxtileintrin.h:
-
-/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxbf16intrin.h:
-
-/home/x-zjian1/unsz/c_codes/jzzz_core/huffman.cpp:

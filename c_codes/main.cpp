@@ -1,7 +1,4 @@
 #include "main.hpp"
-#include <stdexcept>
-#include <fstream>
-#include <sstream>
 
 int main(int argc,char **argv)
 {
@@ -40,6 +37,21 @@ int main(int argc,char **argv)
                 throw runtime_error("缺少-blocks参数后的块编号列表");
             continue;
         }
+        if (arg=="-fields")
+        {
+            if (i+1<argc)
+            {
+                string fields_str=argv[++i];
+                fields_str=fields_str.substr(1,fields_str.size()-2);
+                stringstream ss(fields_str);
+                string field_str;
+                while (getline(ss,field_str,','))
+                    params.fields_to_process.push_back(field_str);
+            }
+            else
+                throw runtime_error("缺少-fields参数后的字段列表");
+            continue;
+        }
         if (arg=="-M")
         {
             if (i+2<argc)
@@ -54,6 +66,14 @@ int main(int argc,char **argv)
             }
             else
                 throw runtime_error("缺少-M参数后的误差控制模式和误差值");
+            continue;
+        }
+        if (arg=="-method")
+        {
+            if (i+1<argc)
+                params.method=argv[++i];
+            else
+                throw runtime_error("缺少-method参数后的压缩方法");
             continue;
         }
     }
@@ -72,6 +92,8 @@ int main(int argc,char **argv)
         params.all_fields_to_process=true;
     else
         params.all_fields_to_process=false;
+    if (params.method.empty())
+        params.method="jzzz";
     
     params.read_header_file();
     params.read_data_range();

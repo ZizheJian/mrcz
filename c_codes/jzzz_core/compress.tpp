@@ -1,12 +1,5 @@
 #pragma once
 
-#include <omp.h>
-#include <immintrin.h>
-#include "jzzz_param.hpp"
-#include "huffman.cpp"
-#include <cmath>
-#include "../third_party/zstd/lib/zstd.h"
-
 namespace jzzz
 {
     template<typename T>
@@ -22,9 +15,9 @@ namespace jzzz
         uint32_t n=header.element_shape[0];
         uint32_t n2=n*n;
         uint32_t n3=n2*n;
-        param_eb=abs_eb*param_eb_scale;
-        T zero_freq_bound=param_eb*zero_f_qb_bound;
-        T neg_2_param_eb=1/(2*param_eb);
+        coeff_eb=abs_eb*coeff_eb_scale;
+        T zero_freq_bound=coeff_eb*zero_f_qb_bound;
+        T neg_2_param_eb=1/(2*coeff_eb);
         T neg_2_eb=1/(2*abs_eb);
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
         int64_t *f_qb=new int64_t[element_num_to_process*header.element_size];
@@ -46,14 +39,14 @@ namespace jzzz
             {
                 T *element=data.data()+i*header.element_size;
                 int64_t *element_corner_qb=corner_qb+8*i;
-                quantize_and_overwrite_number(element[0],element_corner_qb[0],abs_eb,neg_2_eb);
-                quantize_and_overwrite_number(element[n-1],element_corner_qb[1],abs_eb,neg_2_eb);
-                quantize_and_overwrite_number(element[n2-n],element_corner_qb[2],abs_eb,neg_2_eb);
-                quantize_and_overwrite_number(element[n2-1],element_corner_qb[3],abs_eb,neg_2_eb);
-                quantize_and_overwrite_number(element[n3-n2],element_corner_qb[4],abs_eb,neg_2_eb);
-                quantize_and_overwrite_number(element[n3-n2+n-1],element_corner_qb[5],abs_eb,neg_2_eb);
-                quantize_and_overwrite_number(element[n3-n],element_corner_qb[6],abs_eb,neg_2_eb);
-                quantize_and_overwrite_number(element[n3-1],element_corner_qb[7],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[0],element_corner_qb[0],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n-1],element_corner_qb[1],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n2-n],element_corner_qb[2],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n2-1],element_corner_qb[3],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n3-n2],element_corner_qb[4],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n3-n2+n-1],element_corner_qb[5],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n3-n],element_corner_qb[6],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n3-1],element_corner_qb[7],abs_eb,neg_2_eb);
             }
             // 然后量化剩余的数据
             for (uint64_t i=begin_index;i<end_index;i++)
@@ -126,7 +119,7 @@ namespace jzzz
                         for (uint32_t k=0;k<n;k++)
                             for (uint32_t c=0;c<n;c++)
                                 temp_element1[i*n2+j*n+k]+=temp_element2[i*n2+j*n+c]*neg_L[c*n+k];
-                quantize_and_overwrite2(temp_element1.data(),element_f_qb,n3,param_eb,neg_2_param_eb,zero_freq_bound);
+                quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n3,coeff_eb,neg_2_param_eb,zero_freq_bound);
                 // 反变换
                 memset(temp_element2.data(),0,sizeof(T)*n3);
                 for (uint32_t i=0;i<n;i++)
@@ -146,7 +139,7 @@ namespace jzzz
                         for (uint32_t b=0;b<n;b++)
                             for (uint32_t c=0;c<n;c++)
                                 temp_element2[a*n2+b*n+c]+=temp_element1[i*n2+b*n+c]*L[i*n+a];
-                quantize_err(temp_element2.data(),element,element_err_qb,n3,abs_eb,neg_2_eb);
+                quantize_err_array(temp_element2.data(),element,element_err_qb,n3,abs_eb,neg_2_eb);
             }
             //去掉err_qb中位于角上的qb
             for (uint64_t i=begin_index;i<end_index;i++)

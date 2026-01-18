@@ -83,7 +83,7 @@ clean: third_party/zstd/clean
 # Directory level rules for directory jzzz_core
 
 # Recursive "all" directory target.
-jzzz_core/all: jzzz_core/CMakeFiles/libjzzz.dir/all
+jzzz_core/all:
 .PHONY : jzzz_core/all
 
 # Recursive "preinstall" directory target.
@@ -91,7 +91,7 @@ jzzz_core/preinstall:
 .PHONY : jzzz_core/preinstall
 
 # Recursive "clean" directory target.
-jzzz_core/clean: jzzz_core/CMakeFiles/libjzzz.dir/clean
+jzzz_core/clean:
 .PHONY : jzzz_core/clean
 
 #=============================================================================
@@ -183,7 +183,6 @@ third_party/zstd/build/cmake/programs/clean: third_party/zstd/build/cmake/progra
 # Target rules for target CMakeFiles/jzzz.dir
 
 # All Build rule for target.
-CMakeFiles/jzzz.dir/all: jzzz_core/CMakeFiles/libjzzz.dir/all
 CMakeFiles/jzzz.dir/all: third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/build
@@ -192,7 +191,7 @@ CMakeFiles/jzzz.dir/all: third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_sta
 
 # Build rule for subdir invocation for target.
 CMakeFiles/jzzz.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 36
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/jzzz.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 0
 .PHONY : CMakeFiles/jzzz.dir/rule
@@ -205,32 +204,6 @@ jzzz: CMakeFiles/jzzz.dir/rule
 CMakeFiles/jzzz.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/clean
 .PHONY : CMakeFiles/jzzz.dir/clean
-
-#=============================================================================
-# Target rules for target jzzz_core/CMakeFiles/libjzzz.dir
-
-# All Build rule for target.
-jzzz_core/CMakeFiles/libjzzz.dir/all:
-	$(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/depend
-	$(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=4,5 "Built target libjzzz"
-.PHONY : jzzz_core/CMakeFiles/libjzzz.dir/all
-
-# Build rule for subdir invocation for target.
-jzzz_core/CMakeFiles/libjzzz.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz_core/CMakeFiles/libjzzz.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 0
-.PHONY : jzzz_core/CMakeFiles/libjzzz.dir/rule
-
-# Convenience name for target.
-libjzzz: jzzz_core/CMakeFiles/libjzzz.dir/rule
-.PHONY : libjzzz
-
-# clean rule for target.
-jzzz_core/CMakeFiles/libjzzz.dir/clean:
-	$(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/clean
-.PHONY : jzzz_core/CMakeFiles/libjzzz.dir/clean
 
 #=============================================================================
 # Target rules for target third_party/zstd/build/cmake/CMakeFiles/clean-all.dir
@@ -265,7 +238,7 @@ third_party/zstd/build/cmake/CMakeFiles/clean-all.dir/clean:
 third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/all:
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37 "Built target libzstd_shared"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35 "Built target libzstd_shared"
 .PHONY : third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/all
 
 # Build rule for subdir invocation for target.
@@ -291,7 +264,7 @@ third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/clean:
 third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/all:
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/build.make third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69 "Built target libzstd_static"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67 "Built target libzstd_static"
 .PHONY : third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/all
 
 # Build rule for subdir invocation for target.
@@ -343,7 +316,7 @@ third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/all: third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=72,73,74,75,76,77,78,79,80,81,82,83 "Built target zstd"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=70,71,72,73,74,75,76,77,78,79,80,81 "Built target zstd"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/all
 
 # Build rule for subdir invocation for target.
@@ -369,7 +342,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/all: third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=91 "Built target zstdcat"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=89 "Built target zstdcat"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/all
 
 # Build rule for subdir invocation for target.
@@ -395,7 +368,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/all: third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=70 "Built target unzstd"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=68 "Built target unzstd"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/all
 
 # Build rule for subdir invocation for target.
@@ -421,7 +394,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/all:
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=90 "Built target zstd.1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=88 "Built target zstd.1"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/all
 
 # Build rule for subdir invocation for target.
@@ -447,7 +420,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/all:
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=93 "Built target zstdgrep.1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=91 "Built target zstdgrep.1"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/all
 
 # Build rule for subdir invocation for target.
@@ -473,7 +446,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstdgrep.1.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/all:
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=94 "Built target zstdless.1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=92 "Built target zstdless.1"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/all
 
 # Build rule for subdir invocation for target.
@@ -499,7 +472,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstdless.1.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/all: third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=92 "Built target zstdcat.1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=90 "Built target zstdcat.1"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/all
 
 # Build rule for subdir invocation for target.
@@ -525,7 +498,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstdcat.1.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/all: third_party/zstd/build/cmake/programs/CMakeFiles/zstd.1.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=71 "Built target unzstd.1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=69 "Built target unzstd.1"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/all
 
 # Build rule for subdir invocation for target.
@@ -551,7 +524,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/unzstd.1.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/all: third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=84,85,86,87,88,89 "Built target zstd-frugal"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=82,83,84,85,86,87 "Built target zstd-frugal"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/all
 
 # Build rule for subdir invocation for target.
@@ -577,7 +550,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd-frugal.dir/clean:
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/all: third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=95 "Built target zstdmt"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=93 "Built target zstdmt"
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/all
 
 # Build rule for subdir invocation for target.

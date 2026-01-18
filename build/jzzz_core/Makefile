@@ -161,44 +161,6 @@ depend:
 	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-# Convenience name for target.
-jzzz_core/CMakeFiles/libjzzz.dir/rule:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz_core/CMakeFiles/libjzzz.dir/rule
-.PHONY : jzzz_core/CMakeFiles/libjzzz.dir/rule
-
-# Convenience name for target.
-libjzzz: jzzz_core/CMakeFiles/libjzzz.dir/rule
-.PHONY : libjzzz
-
-# fast build rule for target.
-libjzzz/fast:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/build
-.PHONY : libjzzz/fast
-
-huffman.o: huffman.cpp.o
-.PHONY : huffman.o
-
-# target to build an object file
-huffman.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.o
-.PHONY : huffman.cpp.o
-
-huffman.i: huffman.cpp.i
-.PHONY : huffman.i
-
-# target to preprocess a source file
-huffman.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.i
-.PHONY : huffman.cpp.i
-
-huffman.s: huffman.cpp.s
-.PHONY : huffman.s
-
-# target to generate assembly for a file
-huffman.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/huffman.cpp.s
-.PHONY : huffman.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -211,10 +173,6 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... libjzzz"
-	@echo "... huffman.o"
-	@echo "... huffman.i"
-	@echo "... huffman.s"
 .PHONY : help
 
 

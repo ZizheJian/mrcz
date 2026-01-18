@@ -1,7 +1,5 @@
 #pragma once
 
-#include <fstream>
-
 namespace jzzz
 {
     template<typename T>
@@ -82,9 +80,9 @@ namespace jzzz
                 char c=this->header.variables[i];
                 if (c=='U')
                 {
-                    // this->fields_to_process.push_back("velocityx");
-                    // this->fields_to_process.push_back("velocityy");
-                    // this->fields_to_process.push_back("velocityz");
+                    this->fields_to_process.push_back("velocityx");
+                    this->fields_to_process.push_back("velocityy");
+                    this->fields_to_process.push_back("velocityz");
                 }
                 else if (c=='P')
                 {

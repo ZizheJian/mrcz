@@ -92,7 +92,6 @@ jzzz_EXTERNAL_OBJECTS =
 
 jzzz: CMakeFiles/jzzz.dir/main.cpp.o
 jzzz: CMakeFiles/jzzz.dir/build.make
-jzzz: jzzz_core/liblibjzzz.a
 jzzz: third_party/zstd/build/cmake/lib/libzstd.a
 jzzz: CMakeFiles/jzzz.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable jzzz"

@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblibjzzz.a CMakeFiles/libjzzz.dir/huffman.cpp.o
-/usr/bin/ranlib liblibjzzz.a

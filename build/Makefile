@@ -175,19 +175,6 @@ jzzz/fast:
 .PHONY : jzzz/fast
 
 #=============================================================================
-# Target rules for targets named libjzzz
-
-# Build rule for target.
-libjzzz: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjzzz
-.PHONY : libjzzz
-
-# fast build rule for target.
-libjzzz/fast:
-	$(MAKE) $(MAKESILENT) -f jzzz_core/CMakeFiles/libjzzz.dir/build.make jzzz_core/CMakeFiles/libjzzz.dir/build
-.PHONY : libjzzz/fast
-
-#=============================================================================
 # Target rules for targets named clean-all
 
 # Build rule for target.
@@ -416,7 +403,6 @@ help:
 	@echo "... zstdless.1"
 	@echo "... zstdmt"
 	@echo "... jzzz"
-	@echo "... libjzzz"
 	@echo "... libzstd_shared"
 	@echo "... libzstd_static"
 	@echo "... zstd"
