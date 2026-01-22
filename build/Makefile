@@ -162,17 +162,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named jzzz
+# Target rules for targets named jzzz_compress
 
 # Build rule for target.
-jzzz: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz
-.PHONY : jzzz
+jzzz_compress: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz_compress
+.PHONY : jzzz_compress
 
 # fast build rule for target.
-jzzz/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/build
-.PHONY : jzzz/fast
+jzzz_compress/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/build
+.PHONY : jzzz_compress/fast
+
+#=============================================================================
+# Target rules for targets named jzzz_decompress
+
+# Build rule for target.
+jzzz_decompress: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz_decompress
+.PHONY : jzzz_decompress
+
+# fast build rule for target.
+jzzz_decompress/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/build
+.PHONY : jzzz_decompress/fast
 
 #=============================================================================
 # Target rules for targets named clean-all
@@ -356,29 +369,53 @@ zstdmt/fast:
 	$(MAKE) $(MAKESILENT) -f third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build.make third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build
 .PHONY : zstdmt/fast
 
-main.o: main.cpp.o
-.PHONY : main.o
+compress.o: compress.cpp.o
+.PHONY : compress.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/main.cpp.o
-.PHONY : main.cpp.o
+compress.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/compress.cpp.o
+.PHONY : compress.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+compress.i: compress.cpp.i
+.PHONY : compress.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/main.cpp.i
-.PHONY : main.cpp.i
+compress.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/compress.cpp.i
+.PHONY : compress.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+compress.s: compress.cpp.s
+.PHONY : compress.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz.dir/build.make CMakeFiles/jzzz.dir/main.cpp.s
-.PHONY : main.cpp.s
+compress.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/compress.cpp.s
+.PHONY : compress.cpp.s
+
+decompress.o: decompress.cpp.o
+.PHONY : decompress.o
+
+# target to build an object file
+decompress.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/decompress.cpp.o
+.PHONY : decompress.cpp.o
+
+decompress.i: decompress.cpp.i
+.PHONY : decompress.i
+
+# target to preprocess a source file
+decompress.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/decompress.cpp.i
+.PHONY : decompress.cpp.i
+
+decompress.s: decompress.cpp.s
+.PHONY : decompress.s
+
+# target to generate assembly for a file
+decompress.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/decompress.cpp.s
+.PHONY : decompress.cpp.s
 
 # Help Target
 help:
@@ -402,14 +439,18 @@ help:
 	@echo "... zstdgrep.1"
 	@echo "... zstdless.1"
 	@echo "... zstdmt"
-	@echo "... jzzz"
+	@echo "... jzzz_compress"
+	@echo "... jzzz_decompress"
 	@echo "... libzstd_shared"
 	@echo "... libzstd_static"
 	@echo "... zstd"
 	@echo "... zstd-frugal"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... compress.o"
+	@echo "... compress.i"
+	@echo "... compress.s"
+	@echo "... decompress.o"
+	@echo "... decompress.i"
+	@echo "... decompress.s"
 .PHONY : help
 
 

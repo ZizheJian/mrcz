@@ -1,37 +1,31 @@
 #pragma once
 
+#include "jzzz_param.hpp"
+
 namespace jzzz
 {
     template<typename T>
-    void param_class<T>::decompress()
+    void param_class<T>::decompress(string field)
     {
-        const char *slurm_cpus=getenv("SLURM_CPUS_PER_TASK");
-        int available_cpus=0;
-        if (slurm_cpus!=nullptr)
-            available_cpus=atoi(slurm_cpus);
-        else
-            throw runtime_error("没有获取到每个task可用的cpu数量");
-        printf("Available cpus per task= %d\n",available_cpus);
         uint32_t n=header.element_shape[0];
         uint32_t n2=n*n;
         uint32_t n3=n2*n;
-        coeff_eb=abs_eb*coeff_eb_scale;
+        T abs_eb=this->abs_eb[field];
+        T coeff_eb=abs_eb*coeff_eb_scale;
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
         int64_t *f_qb=new int64_t[element_num_to_process*header.element_size];
         int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(header.element_size-8)];
         decompressed_data.resize(element_num_to_process*header.element_size);
         double start_time=omp_get_wtime();
-        #pragma omp parallel for schedule(static) num_threads(available_cpus)
-        for (uint64_t fake_block_id=0;fake_block_id<blocks_to_process.size();fake_block_id++)
+        #pragma omp parallel for schedule(static) num_threads(max_cpus)
+        for (uint64_t block_id=0;block_id<blocks.size();block_id++)
         {
-            uint64_t block_id=blocks_to_process[fake_block_id];
-            // printf("CPU %d decompressing block %ld\n",omp_get_thread_num(),block_id);
             uint64_t begin_index=blocks[block_id].begin_index;
             uint64_t end_index=blocks[block_id].end_index;
             // 先无损解压
-            uint64_t huffman_bs_len=ZSTD_getFrameContentSize(zstd_bs[block_id].data(),zstd_bs[block_id].size());
+            uint64_t huffman_bs_len=ZSTD_getFrameContentSize(blocks[block_id].zstd_bs.data(),blocks[block_id].zstd_bs.size());
             vector<unsigned char> huffman_bs_vec(huffman_bs_len);
-            if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,zstd_bs[block_id].data(),zstd_bs[block_id].size())!=huffman_bs_len)
+            if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,blocks[block_id].zstd_bs.data(),blocks[block_id].zstd_bs.size())!=huffman_bs_len)
                 throw runtime_error("ZSTD_decompress error in decompress()");
             const unsigned char *huffman_bs=huffman_bs_vec.data();
             huffman_encoder_class<int64_t> corner_encoder;
@@ -123,6 +117,7 @@ namespace jzzz
                         for (uint32_t b=0;b<n;b++)
                             for (uint32_t c=0;c<n;c++)
                                 temp_element2[a*n*n+b*n+c]+=temp_element1[i*n*n+b*n+c]*L[i*n+a];
+                
                 for (uint32_t j=1;j<n-1;j++)
                     element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-1]*2*abs_eb);
                 for (uint32_t j=n;j<n2-n;j++)
@@ -144,6 +139,6 @@ namespace jzzz
         delete[] f_qb;
         delete[] no_corner_err_qb;
         printf("Decompression time= %f seconds\n",end_time-start_time);
-        printf("Bandwidth per cpu= %f MB/s\n",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*available_cpus));
+        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
     }
 }

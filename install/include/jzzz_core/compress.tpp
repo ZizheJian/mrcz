@@ -1,35 +1,29 @@
 #pragma once
 
+#include "jzzz_param.hpp"
+
 namespace jzzz
 {
     template<typename T>
-    void param_class<T>::compress()
+    void param_class<T>::compress(string field)
     {
-        const char *slurm_cpus=getenv("SLURM_CPUS_PER_TASK");
-        int available_cpus=0;
-        if (slurm_cpus!=nullptr)
-            available_cpus=atoi(slurm_cpus);
-        else
-            throw runtime_error("没有获取到每个task可用的cpu数量");
-        printf("Available cpus per task= %d\n",available_cpus);
         uint32_t n=header.element_shape[0];
         uint32_t n2=n*n;
         uint32_t n3=n2*n;
-        coeff_eb=abs_eb*coeff_eb_scale;
+        T abs_eb=this->abs_eb[field];
+        T coeff_eb=abs_eb*coeff_eb_scale;
         T zero_freq_bound=coeff_eb*zero_f_qb_bound;
-        T neg_2_param_eb=1/(2*coeff_eb);
+        T neg_2_coeff_eb=1/(2*coeff_eb);
         T neg_2_eb=1/(2*abs_eb);
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
         int64_t *f_qb=new int64_t[element_num_to_process*header.element_size];
         int64_t *err_qb=new int64_t[element_num_to_process*header.element_size];
         int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(header.element_size-8)];
-        zstd_bs.resize(blocks.size());
+        printf("Begin compressing\n");
         double start_time=omp_get_wtime();
-        #pragma omp parallel for schedule(static) num_threads(available_cpus)
-        for (uint64_t fake_block_id=0;fake_block_id<blocks_to_process.size();fake_block_id++) //这个block_id是假的，指的是在需要处理的blocks中的编号，而不是header文件中的编号
+        #pragma omp parallel for schedule(static) num_threads(max_cpus)
+        for (uint64_t block_id=0;block_id<blocks.size();block_id++)
         {
-            uint64_t block_id=blocks_to_process[fake_block_id];
-            // printf("CPU %d compressing block %ld\n",omp_get_thread_num(),block_id);
             uint64_t begin_index=blocks[block_id].begin_index;
             uint64_t end_index=blocks[block_id].end_index;
             // 先量化位于每个element位于角上的点，覆盖原数据
@@ -119,7 +113,7 @@ namespace jzzz
                         for (uint32_t k=0;k<n;k++)
                             for (uint32_t c=0;c<n;c++)
                                 temp_element1[i*n2+j*n+k]+=temp_element2[i*n2+j*n+c]*neg_L[c*n+k];
-                quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n3,coeff_eb,neg_2_param_eb,zero_freq_bound);
+                quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n3,coeff_eb,neg_2_coeff_eb,zero_freq_bound);
                 // 反变换
                 memset(temp_element2.data(),0,sizeof(T)*n3);
                 for (uint32_t i=0;i<n;i++)
@@ -171,9 +165,9 @@ namespace jzzz
             err_encoder.encode(no_corner_err_qb+begin_index*(header.element_size-8),(header.element_size-8)*(end_index-begin_index),huffman_bs);
             uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
             uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
-            zstd_bs[block_id].resize(max_zstd_bs_len);
-            uint64_t zstd_bs_len=ZSTD_compress(zstd_bs[block_id].data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
-            zstd_bs[block_id].resize(zstd_bs_len);
+            blocks[block_id].zstd_bs.resize(max_zstd_bs_len);
+            uint64_t zstd_bs_len=ZSTD_compress(blocks[block_id].zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
+            blocks[block_id].zstd_bs.resize(zstd_bs_len);
         }
         double end_time=omp_get_wtime();
         delete[] corner_qb;
@@ -181,13 +175,6 @@ namespace jzzz
         delete[] err_qb;
         delete[] no_corner_err_qb;
         printf("Compression time= %f seconds\n",end_time-start_time);
-        printf("Bandwidth per cpu= %f MB/s\n",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*available_cpus));
-        uint64_t total_compressed_size=0;
-        for (auto block_id:blocks_to_process)
-            total_compressed_size+=zstd_bs[block_id].size();
-        printf("Total compressed size= %lu bytes\n",total_compressed_size);
-        double br=static_cast<double>(total_compressed_size*8)/(element_num_to_process*header.element_size);
-        double cr=static_cast<double>(header.word_size*8)/br;
-        printf("BR= %f bits/value, CR= %f\n",br,cr);
+        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
     }
 }

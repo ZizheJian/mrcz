@@ -1,4 +1,5 @@
-/home/x-zjian1/unsz/build/CMakeFiles/jzzz.dir
+/home/x-zjian1/unsz/build/CMakeFiles/jzzz_compress.dir
+/home/x-zjian1/unsz/build/CMakeFiles/jzzz_decompress.dir
 /home/x-zjian1/unsz/build/CMakeFiles/edit_cache.dir
 /home/x-zjian1/unsz/build/CMakeFiles/rebuild_cache.dir
 /home/x-zjian1/unsz/build/CMakeFiles/list_install_components.dir

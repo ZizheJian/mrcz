@@ -21,7 +21,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -march=native -fopenmp -mavx2 
 add_subdirectory(jzzz_core)  # 你的子目录
 add_subdirectory(third_party/zstd)
 
-add_executable(jzzz main.cpp)
-target_link_libraries(jzzz libjzzz libzstd_static)
+add_executable(jzzz_compress compress.cpp)
+target_link_libraries(jzzz_compress libjzzz libzstd_static)
+add_executable(jzzz_decompress decompress.cpp)
+target_link_libraries(jzzz_decompress libjzzz libzstd_static)
 
-install(TARGETS jzzz DESTINATION bin)
+install(TARGETS jzzz_compress jzzz_decompress DESTINATION bin)

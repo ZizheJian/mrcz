@@ -19,13 +19,16 @@ namespace jzzz
     class header_class
     {
         public:
+            string original_header;
+
             uint8_t word_size;
-            string realtype;
             vector<uint32_t> element_shape;
             uint32_t element_size;
             uint64_t file_element_num;
             string variables;
             uint32_t passive_scalar_num;
+
+            char endian_mode; // '<'表示小端，'>'表示大端
     };
 
     class block_class
@@ -33,36 +36,40 @@ namespace jzzz
         public:
             uint64_t block_id;
             uint64_t element_num;
-            unordered_map<string,string> field_paths;
-
             uint64_t begin_index,end_index;
+
+            vector<unsigned char> zstd_bs;
     };
 
     template<typename T> // 表示压缩时使用的类型，可能和原始数据类型不同
     class param_class
     {
         public:
-            string header_path;
+            string data_path;
             string eb_mode;
-            T abs_eb,rel_eb;
+            T input_eb;
+            unordered_map<string,T> abs_eb,rel_eb;
             string method;
-            bool all_blocks_to_process=false;
-            vector<uint64_t> blocks_to_process;
             bool all_fields_to_process=false;
+            vector<string> all_fields_in_file;
             vector<string> fields_to_process;
+            unordered_map<string,uint64_t> field_begin_address;
+            unordered_map<string,uint64_t> field_end_address;
+            bool got_element_range=false;
+            uint64_t element_begin_index=0;
+            uint64_t element_end_index=0;
 
             header_class header;
-            unordered_map<string,vector<vector<T>>> data_range;
-            uint64_t block_num;
+            unordered_map<string,T> data_range_min;
+            unordered_map<string,T> data_range_max;
             vector<block_class> blocks;
 
             uint64_t element_num_to_process; // 实际需要压缩的element数量
             vector<T> data;
-            vector<vector<unsigned char>> zstd_bs;
             vector<T> decompressed_data;
 
+            int max_cpus=128;
             T coeff_eb_scale=0.05;
-            T coeff_eb;
             T zero_f_qb_bound=3;
             vector<T> x;
             vector<T> L,neg_L;
@@ -71,12 +78,15 @@ namespace jzzz
 
             vector<T> simple_invert_matrix(vector<T>& A,uint32_t n);
             vector<T> simple_matrix_multiply(vector<T>& A,vector<T>& B,uint32_t n);
-            void read_header_file();
+            void read_header(string header_path);
             void read_data_range();
             void read_block_info();
+            void save_header_and_element_map_compress();
+            void save_header_and_element_map_decompress();
+            void get_max_cpus();
             T get_data_range(string field);
-            void compress();
-            void decompress();
+            void compress(string field);
+            void decompress(string field);
             void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);
             void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
             void quantize_err_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
@@ -143,36 +153,37 @@ namespace jzzz
             template<typename T2>
             param_class(param_class<T2> &other)
             {
-                header_path=other.header_path;
+                data_path=other.data_path;
                 eb_mode=other.eb_mode;
-                abs_eb=other.abs_eb;
-                rel_eb=other.rel_eb;
+                input_eb=other.input_eb;
+                for (auto pair:other.abs_eb)
+                    abs_eb[pair.first]=pair.second;
+                for (auto pair:other.rel_eb)
+                    rel_eb[pair.first]=pair.second;
                 method=other.method;
-                all_blocks_to_process=other.all_blocks_to_process;
-                blocks_to_process=other.blocks_to_process;
                 all_fields_to_process=other.all_fields_to_process;
+                all_fields_in_file=other.all_fields_in_file;
                 fields_to_process=other.fields_to_process;
+                field_begin_address=other.field_begin_address;
+                field_end_address=other.field_end_address;
+                element_begin_index=other.element_begin_index;
+                element_end_index=other.element_end_index;
 
                 header=other.header;
-                for (auto other_pair:other.data_range)
-                {
-                    auto field=other_pair.first;
-                    auto other_dr=other_pair.second;
-                    for (auto range_vec:other_dr)
-                    {
-                        vector<T> range;
-                        for (auto val:range_vec)
-                            range.push_back(val);
-                        data_range[field].push_back(range);
-                    }
-                }
-                block_num=other.block_num;
+                for (auto pair:other.data_range_min)
+                    data_range_min[pair.first]=pair.second;
+                for (auto pair:other.data_range_max)
+                    data_range_max[pair.first]=pair.second;
                 blocks=other.blocks;
 
                 element_num_to_process=other.element_num_to_process;
-
+                for (auto val:other.data)
+                    data.push_back(val);
+                for (auto val:other.decompressed_data)
+                    decompressed_data.push_back(val);
+                
+                max_cpus=other.max_cpus;
                 coeff_eb_scale=other.coeff_eb_scale;
-                coeff_eb=other.coeff_eb;
                 zero_f_qb_bound=other.zero_f_qb_bound;
                 for (auto val:other.x)
                     x.push_back(val);
@@ -183,9 +194,8 @@ namespace jzzz
 
 #include "compress.tpp"
 #include "decompress.tpp"
-#include "get_data_range.tpp"
+#include "get_max_cpus.tpp"
 #include "quantize.tpp"
-#include "read_block_info.tpp"
-#include "read_data_range.tpp"
 #include "read_header_file.tpp"
+#include "save_header_and_element_map.tpp"
 #include "simple_matrix_tools.tpp"
