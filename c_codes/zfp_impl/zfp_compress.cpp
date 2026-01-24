@@ -1,0 +1,43 @@
+#pragma once
+
+#include <set>
+#include "../jzzz_core/jzzz_param.hpp"
+#include "../jzzz_core/huffman.hpp"
+#include "../jzzz_core/quantize.tpp"
+#include "../third_party/zfp/include/zfp.h"
+
+template<typename T>
+void zfp_compress(jzzz::param_class<T> &params,string field)
+{
+    auto &header=params.header;
+    auto &blocks=params.blocks;
+    auto &data=params.data;
+
+    uint32_t n=header.element_shape[0];
+    T abs_eb=params.abs_eb[field];
+    zfp_type type=std::is_same<T,float>::value ? zfp_type_float : zfp_type_double;
+    double start_time=omp_get_wtime();
+    #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
+    for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+    {
+        auto &block=blocks[block_id];
+        uint64_t begin_index=block.begin_index;
+        uint64_t end_index=block.end_index;
+        
+        zfp_stream *zfp=zfp_stream_open(NULL);
+        zfp_stream_set_accuracy(zfp,abs_eb);
+        zfp_field *field=zfp_field_4d(data.data()+begin_index*header.element_size,type,n,n,n,end_index-begin_index);
+        size_t block_max_buffer_size=zfp_stream_maximum_size(zfp,field);
+        block.zstd_bs.resize(block_max_buffer_size);
+        bitstream *output_bs=stream_open(block.zstd_bs.data(),block_max_buffer_size);
+        zfp_stream_set_bit_stream(zfp,output_bs);
+        size_t block_zstd_bs_len=zfp_compress(zfp,field);
+        block.zstd_bs.resize(block_zstd_bs_len);
+        stream_close(output_bs);
+        zfp_field_free(field);
+        zfp_stream_close(zfp);
+    }
+    double end_time=omp_get_wtime();
+    printf("Compression time= %f seconds\n",end_time-start_time);
+    printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",params.element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
+}

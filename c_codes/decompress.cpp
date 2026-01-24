@@ -4,10 +4,6 @@ template<typename T>
 unordered_map<string,vector<double>> decompress1(jzzz::param_class<T> &params);
 template<typename T>
 vector<double> decompress2(jzzz::param_class<T> &params,string field);
-template<typename T>
-void decompress3(jzzz::param_class<T> &params,string field);
-template<typename T>
-void decompress4(jzzz::param_class<T> &params,string field);
 
 int main(int argc,char **argv)
 {
@@ -100,17 +96,6 @@ int main(int argc,char **argv)
     }
     else
         result=decompress1(params);
-    // for (auto pair:result)
-    // {
-    //     auto field=pair.first;
-    //     auto field_br=pair.second[0];
-    //     auto field_cr=pair.second[1];
-    //     auto field_max_err=pair.second[2];
-    //     auto field_mse=pair.second[3];
-    //     auto field_psnr=pair.second[4];
-    //     printf("\033[91mField= %s ,abs_eb= %f , BR= %f , CR= %f , max_err= %f (%f%%) , MSE= %f , PSNR= %f dB\n\033[0m",
-    //         field.c_str(),params.abs_eb[field],field_br,field_cr,field_max_err,field_max_err/params.abs_eb[field]*100,field_mse,field_psnr);
-    // }
 }
 
 template<typename T>
@@ -212,16 +197,30 @@ vector<double> decompress2(jzzz::param_class<T> &params,string field)
     printf("params.method= %s\n",params.method.c_str());
     if (params.method=="jzzz")
         params.decompress(field);
+    else if (params.method=="sz2-0")
+    {
+        vector<T> backup_x=params.x;
+        for (uint32_t i=0;i<params.x.size();i++)
+            params.x[i]=(T)i/(params.x.size()-1)*2-1;
+        sz2_1_decompress(params,field);
+        params.x=backup_x;
+    }
+    else if (params.method=="sz2-1")
+        sz2_1_decompress(params,field);
     else if (params.method=="sz3-1")
     {
         vector<T> backup_x=params.x;
         for (uint32_t i=0;i<params.x.size();i++)
             params.x[i]=(T)i/(params.x.size()-1)*2-1;
-        sz3_2_decompress(params);
+        sz3_2_decompress(params,field);
         params.x=backup_x;
     }
     else if (params.method=="sz3-2")
-        sz3_2_decompress(params);
+        sz3_2_decompress(params,field);
+    else if (params.method=="zfp")
+        zfp_decompress(params,field);
+    else
+        throw runtime_error("未知的解压方法: "+params.method);
 
     //清空zstd_bs
     for (auto &block:params.blocks)

@@ -6,9 +6,14 @@
 #include <fstream>
 #include <sstream>
 #include "jzzz_core/jzzz_param.hpp"
+#include "sz2_impl/sz2_1_compress.cpp"
+#include "sz2_impl/sz2_1_decompress.cpp"
 #include "sz3_impl/sz3_2_compress.cpp"
 #include "sz3_impl/sz3_2_decompress.cpp"
+#include "zfp_impl/zfp_compress.cpp"
+#include "zfp_impl/zfp_decompress.cpp"
 
 using namespace std;
 
+#include "get_coordinate_in_element.tpp"
 #include "read_and_write_data.tpp"

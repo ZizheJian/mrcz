@@ -36,7 +36,7 @@ namespace jzzz
         public:
             uint64_t block_id;
             uint64_t element_num;
-            uint64_t begin_index,end_index;
+            uint64_t begin_index,end_index;//block包含的element在参与压缩的element中的相对位置
 
             vector<unsigned char> zstd_bs;
     };
@@ -53,7 +53,7 @@ namespace jzzz
             bool all_fields_to_process=false;
             vector<string> all_fields_in_file;
             vector<string> fields_to_process;
-            unordered_map<string,uint64_t> field_begin_address;
+            unordered_map<string,uint64_t> field_begin_address;//field中参与压缩的element在文件中的起始位置
             unordered_map<string,uint64_t> field_end_address;
             bool got_element_range=false;
             uint64_t element_begin_index=0;
@@ -84,6 +84,8 @@ namespace jzzz
             void save_header_and_element_map_compress();
             void save_header_and_element_map_decompress();
             void get_max_cpus();
+            void save_tail_metadata_compress();
+            void save_tail_metadata_decompress();
             T get_data_range(string field);
             void compress(string field);
             void decompress(string field);
@@ -198,4 +200,5 @@ namespace jzzz
 #include "quantize.tpp"
 #include "read_header_file.tpp"
 #include "save_header_and_element_map.tpp"
+#include "save_tail_metadata.tpp"
 #include "simple_matrix_tools.tpp"

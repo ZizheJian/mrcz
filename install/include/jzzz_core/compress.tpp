@@ -24,8 +24,9 @@ namespace jzzz
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
         for (uint64_t block_id=0;block_id<blocks.size();block_id++)
         {
-            uint64_t begin_index=blocks[block_id].begin_index;
-            uint64_t end_index=blocks[block_id].end_index;
+            auto &block=blocks[block_id];
+            uint64_t begin_index=block.begin_index;
+            uint64_t end_index=block.end_index;
             // 先量化位于每个element位于角上的点，覆盖原数据
             // 之后可能要改成压缩率更高的方法
             vector<T> corner_numbers(8*(end_index-begin_index));
@@ -165,9 +166,9 @@ namespace jzzz
             err_encoder.encode(no_corner_err_qb+begin_index*(header.element_size-8),(header.element_size-8)*(end_index-begin_index),huffman_bs);
             uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
             uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
-            blocks[block_id].zstd_bs.resize(max_zstd_bs_len);
-            uint64_t zstd_bs_len=ZSTD_compress(blocks[block_id].zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
-            blocks[block_id].zstd_bs.resize(zstd_bs_len);
+            block.zstd_bs.resize(max_zstd_bs_len);
+            uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
+            block.zstd_bs.resize(zstd_bs_len);
         }
         double end_time=omp_get_wtime();
         delete[] corner_qb;

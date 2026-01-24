@@ -39,33 +39,31 @@ def run_command(command,silent=False):
 #   "sz3-0": 把数据展成1维的，然后用SZ3的1维压缩
 #   "sz3-1": 对每个element执行sz3的3维压缩，在block内共用huffman tree
 #   "sz3-2": 对每个element执行sz3的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
-#   "sz2": 对每个element执行sz2的3维压缩，在block内共用huffman tree
+#   "sz2-0": 对每个element执行sz2的3维压缩，在block内共用huffman tree
+#   "sz2-1": 对每个element执行sz2的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="jzzz"
+method="sz2-0"
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 eb_mode="ABS"
 eb=1e-6
 fields=["P"]
 
-if method=="jzzz" or method=="sz3-1" or method=="sz3-2":
-    if os.path.exists(f"{data_path}.header.yaml"):
-        try:
-            os.makedirs("build",exist_ok=True)
-            os.chdir("build")
-            run_command("cmake -DCMAKE_INSTALL_PREFIX=../install ../c_codes",silent=silent_build)
-            run_command("make",silent=silent_build)
-            run_command("make install",silent=silent_build)
-            os.chdir("..")
-            os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-            os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-            # os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
-            # os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
-        except Exception as e:
-            exit(0)
-    else:
-        raise NotImplementedError("这里要自动生成header文件和block文件，目前还没写")
+if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or method=="sz2-0" or method=="sz2-1":
+    try:
+        os.makedirs("build",exist_ok=True)
+        os.chdir("build")
+        run_command("cmake -DCMAKE_INSTALL_PREFIX=../install ../c_codes",silent=silent_build)
+        run_command("make",silent=silent_build)
+        run_command("make install",silent=silent_build)
+        os.chdir("..")
+        os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+        os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+        # os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
+        # os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
+    except Exception as e:
+        exit(0)
 elif method=="sz3-0":
     import numpy as np
     from py_funcs.read_nekrs_header import read_nekrs_header

@@ -93,6 +93,7 @@ jzzz_decompress_EXTERNAL_OBJECTS =
 jzzz_decompress: CMakeFiles/jzzz_decompress.dir/decompress.cpp.o
 jzzz_decompress: CMakeFiles/jzzz_decompress.dir/build.make
 jzzz_decompress: third_party/zstd/build/cmake/lib/libzstd.a
+jzzz_decompress: third_party/zfp/lib64/libzfp.so.1.0.1
 jzzz_decompress: CMakeFiles/jzzz_decompress.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable jzzz_decompress"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/jzzz_decompress.dir/link.txt --verbose=$(VERBOSE)

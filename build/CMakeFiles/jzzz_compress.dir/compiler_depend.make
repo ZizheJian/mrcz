@@ -319,19 +319,51 @@ CMakeFiles/jzzz_compress.dir/compress.cpp.o: /home/x-zjian1/unsz/c_codes/compres
   /home/x-zjian1/unsz/c_codes/jzzz_core/quantize.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/read_header_file.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/save_header_and_element_map.tpp \
+  /home/x-zjian1/unsz/c_codes/jzzz_core/save_tail_metadata.tpp \
   /home/x-zjian1/unsz/c_codes/jzzz_core/simple_matrix_tools.tpp \
-  /home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_compress.cpp \
+  /home/x-zjian1/unsz/c_codes/sz2_impl/sz2_1_compress.cpp \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/set \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_set.h \
   /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_multiset.h \
   /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/zstd.h \
+  /home/x-zjian1/unsz/c_codes/sz2_impl/sz2_1_decompress.cpp \
+  /home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_compress.cpp \
+  /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/zstd.h \
   /home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_decompress.cpp \
+  /home/x-zjian1/unsz/c_codes/zfp_impl/zfp_compress.cpp \
+  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp.h \
+  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/bitstream.h \
+  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/types.h \
+  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cinttypes \
+  /usr/include/inttypes.h \
+  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/system.h \
+  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/version.h \
+  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/system.h \
+  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/types.h \
+  /home/x-zjian1/unsz/c_codes/zfp_impl/zfp_decompress.cpp \
+  /home/x-zjian1/unsz/c_codes/get_coordinate_in_element.tpp \
   /home/x-zjian1/unsz/c_codes/read_and_write_data.tpp
 
 
 /home/x-zjian1/unsz/c_codes/read_and_write_data.tpp:
 
+/home/x-zjian1/unsz/c_codes/get_coordinate_in_element.tpp:
+
+/home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/version.h:
+
+/home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/system.h:
+
+/usr/include/inttypes.h:
+
+/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/cinttypes:
+
+/home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/types.h:
+
+/home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp.h:
+
 /home/x-zjian1/unsz/c_codes/sz3_impl/sz3_2_decompress.cpp:
+
+/home/x-zjian1/unsz/c_codes/sz2_impl/sz2_1_decompress.cpp:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_multiset.h:
 
@@ -379,6 +411,8 @@ CMakeFiles/jzzz_compress.dir/compress.cpp.o: /home/x-zjian1/unsz/c_codes/compres
 
 /usr/include/bits/mathcalls.h:
 
+/home/x-zjian1/unsz/c_codes/sz2_impl/sz2_1_compress.cpp:
+
 /usr/include/bits/mathcalls-helper-functions.h:
 
 /usr/include/bits/fp-logb.h:
@@ -402,6 +436,8 @@ CMakeFiles/jzzz_compress.dir/compress.cpp.o: /home/x-zjian1/unsz/c_codes/compres
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/amxint8intrin.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bf16intrin.h:
+
+/home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/bitstream.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512bf16vlintrin.h:
 
@@ -437,6 +473,8 @@ CMakeFiles/jzzz_compress.dir/compress.cpp.o: /home/x-zjian1/unsz/c_codes/compres
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx5124fmapsintrin.h:
 
+/home/x-zjian1/unsz/c_codes/zfp_impl/zfp_decompress.cpp:
+
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/avx512vbmiintrin.h:
 
 /usr/include/alloca.h:
@@ -450,6 +488,8 @@ CMakeFiles/jzzz_compress.dir/compress.cpp.o: /home/x-zjian1/unsz/c_codes/compres
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/popcntintrin.h:
 
 /usr/include/sys/select.h:
+
+/home/x-zjian1/unsz/c_codes/zfp_impl/zfp_compress.cpp:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/alloc_traits.h:
 
@@ -590,6 +630,8 @@ CMakeFiles/jzzz_compress.dir/compress.cpp.o: /home/x-zjian1/unsz/c_codes/compres
 /usr/include/sys/types.h:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/hresetintrin.h:
+
+/home/x-zjian1/unsz/c_codes/jzzz_core/save_tail_metadata.tpp:
 
 /usr/include/sys/cdefs.h:
 

@@ -15,6 +15,8 @@ namespace jzzz
             max_cpus=available_cpus;
         else
             max_cpus=min(max_cpus,available_cpus);
+        if ((uint64_t)max_cpus>element_num_to_process)
+            max_cpus=element_num_to_process;
         printf("Max cpus= %d\n",max_cpus);
     }
 }
