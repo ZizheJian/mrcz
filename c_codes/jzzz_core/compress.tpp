@@ -4,6 +4,8 @@
 
 namespace jzzz
 {
+    void lossless_compress_f_qb_with_zero_map(header_class &header,uint64_t begin_index,uint64_t end_index,int64_t *f_qb,unsigned char *&huffman_bs);
+
     template<typename T>
     void param_class<T>::compress(string field)
     {
@@ -30,10 +32,10 @@ namespace jzzz
             // 先量化位于每个element位于角上的点，覆盖原数据
             // 之后可能要改成压缩率更高的方法
             vector<T> corner_numbers(8*(end_index-begin_index));
-            for (uint64_t i=begin_index;i<end_index;i++)
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
             {
-                T *element=data.data()+i*header.element_size;
-                int64_t *element_corner_qb=corner_qb+8*i;
+                T *element=data.data()+element_id*header.element_size;
+                int64_t *element_corner_qb=corner_qb+8*element_id;
                 quantize_and_overwrite(element[0],element_corner_qb[0],abs_eb,neg_2_eb);
                 quantize_and_overwrite(element[n-1],element_corner_qb[1],abs_eb,neg_2_eb);
                 quantize_and_overwrite(element[n2-n],element_corner_qb[2],abs_eb,neg_2_eb);
@@ -44,11 +46,11 @@ namespace jzzz
                 quantize_and_overwrite(element[n3-1],element_corner_qb[7],abs_eb,neg_2_eb);
             }
             // 然后量化剩余的数据
-            for (uint64_t i=begin_index;i<end_index;i++)
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
             {
-                T *element=data.data()+i*header.element_size;
-                int64_t *element_f_qb=f_qb+i*header.element_size;
-                int64_t *element_err_qb=err_qb+i*header.element_size;
+                T *element=data.data()+element_id*header.element_size;
+                int64_t *element_f_qb=f_qb+element_id*header.element_size;
+                int64_t *element_err_qb=err_qb+element_id*header.element_size;
                 // 使用8个角上的数据插值其他数据
                 if (is_same<T,float>::value)
                 {
@@ -137,10 +139,10 @@ namespace jzzz
                 quantize_err_array(temp_element2.data(),element,element_err_qb,n3,abs_eb,neg_2_eb);
             }
             //去掉err_qb中位于角上的qb
-            for (uint64_t i=begin_index;i<end_index;i++)
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
             {
-                int64_t *element_err_qb=err_qb+i*header.element_size;
-                int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(header.element_size-8);
+                int64_t *element_err_qb=err_qb+element_id*header.element_size;
+                int64_t *element_no_corner_err_qb=no_corner_err_qb+element_id*(header.element_size-8);
                 memcpy(element_no_corner_err_qb,element_err_qb+1,sizeof(int64_t)*(n-2));
                 memcpy(element_no_corner_err_qb+n-2,element_err_qb+n,sizeof(int64_t)*(n2-2*n));
                 memcpy(element_no_corner_err_qb+n2-n-2,element_err_qb+n2-n+1,sizeof(int64_t)*(n-2));
@@ -156,10 +158,7 @@ namespace jzzz
             corner_encoder.preprocess_encode(corner_qb+8*begin_index,8*(end_index-begin_index));
             corner_encoder.save(huffman_bs);
             corner_encoder.encode(corner_qb+8*begin_index,8*(end_index-begin_index),huffman_bs);
-            huffman_encoder_class<int64_t> f_encoder;
-            f_encoder.preprocess_encode(f_qb+begin_index*header.element_size,header.element_size*(end_index-begin_index));
-            f_encoder.save(huffman_bs);
-            f_encoder.encode(f_qb+begin_index*header.element_size,header.element_size*(end_index-begin_index),huffman_bs);
+            lossless_compress_f_qb_with_zero_map(header,begin_index,end_index,f_qb,huffman_bs);
             huffman_encoder_class<int64_t> err_encoder;
             err_encoder.preprocess_encode(no_corner_err_qb+begin_index*(header.element_size-8),(header.element_size-8)*(end_index-begin_index));
             err_encoder.save(huffman_bs);
@@ -177,5 +176,81 @@ namespace jzzz
         delete[] no_corner_err_qb;
         printf("Compression time= %f seconds\n",end_time-start_time);
         printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+    }
+
+    __attribute__((always_inline)) void lossless_compress_f_qb_with_zero_map(header_class &header,uint64_t begin_index,uint64_t end_index,
+        int64_t *f_qb,unsigned char *&huffman_bs)
+    {
+        bool f_qb_all_zero=true;
+        bool f_qb_none_zero=true;
+        uint32_t all_zero_num=0;
+        vector<bool> f_qb_zero_map(header.element_size,true);
+        vector<uint32_t> f_qb_compact_pos(header.element_size,0);
+        for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            for (uint32_t pos=0;pos<header.element_size;pos++)
+            {
+                int64_t val=f_qb[element_id*header.element_size+pos];
+                if (val!=0)
+                    f_qb_zero_map[pos]=false;
+            }
+        for (uint32_t pos=0;pos<header.element_size;pos++)
+        {
+            if (f_qb_zero_map[pos]==true)
+            {
+                f_qb_none_zero=false;
+                all_zero_num++;
+            }
+            else
+                f_qb_all_zero=false;
+            if (pos==0)
+                f_qb_compact_pos[pos]=0;
+            else
+                f_qb_compact_pos[pos]=f_qb_compact_pos[pos-1]+(f_qb_zero_map[pos]?0:1);
+        }
+        for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+        {
+            auto original_element_f_qb=f_qb+element_id*header.element_size;
+            auto compact_element_f_qb=f_qb+begin_index*header.element_size+(element_id-begin_index)*(header.element_size-all_zero_num);
+            for (uint32_t pos=0;pos<header.element_size;pos++)
+                if (f_qb_zero_map[pos]==false)
+                    compact_element_f_qb[f_qb_compact_pos[pos]]=original_element_f_qb[pos];
+        }
+        
+        if (f_qb_all_zero)
+        {
+            huffman_bs[0]=0;
+            huffman_bs+=1;
+        }
+        else if (f_qb_none_zero)
+        {
+            huffman_bs[0]=0x80;
+            huffman_bs+=1;
+        }
+        else
+        {
+            huffman_bs[0]=0x40;
+            uint32_t used_bits=2;
+            for (uint32_t pos=0;pos<header.element_size;pos++)
+            {
+                if (f_qb_zero_map[pos]==true)
+                    huffman_bs[0]|=((unsigned char)1)<<(7-used_bits);
+                used_bits++;
+                if (used_bits==8)
+                {
+                    huffman_bs++;
+                    used_bits=0;
+                }
+            }
+            if (used_bits!=0)
+                huffman_bs++;
+        }
+
+        if (!f_qb_all_zero)
+        {
+            huffman_encoder_class<int64_t> f_encoder;
+            f_encoder.preprocess_encode(f_qb+begin_index*header.element_size,(header.element_size-all_zero_num)*(end_index-begin_index));
+            f_encoder.save(huffman_bs);
+            f_encoder.encode(f_qb+begin_index*header.element_size,(header.element_size-all_zero_num)*(end_index-begin_index),huffman_bs);
+        }
     }
 }

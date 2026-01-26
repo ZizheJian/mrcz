@@ -7,3 +7,6 @@
 [submodule "c_codes/third_party/zfp"]
 	path = c_codes/third_party/zfp
 	url = https://github.com/LLNL/zfp.git
+[submodule "c_codes/third_party/sperr"]
+	path = c_codes/third_party/sperr
+	url = https://github.com/NCAR/SPERR.git

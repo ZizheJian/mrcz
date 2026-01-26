@@ -93,7 +93,9 @@ jzzz_compress_EXTERNAL_OBJECTS =
 jzzz_compress: CMakeFiles/jzzz_compress.dir/compress.cpp.o
 jzzz_compress: CMakeFiles/jzzz_compress.dir/build.make
 jzzz_compress: third_party/zstd/build/cmake/lib/libzstd.a
-jzzz_compress: third_party/zfp/lib64/libzfp.so.1.0.1
+jzzz_compress: third_party/zfp/lib64/libzfp.a
+jzzz_compress: /home/x-zjian1/unsz/c_codes/third_party/sperr/install/lib64/libSPERR.a
+jzzz_compress: /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib64/libgomp.so
 jzzz_compress: CMakeFiles/jzzz_compress.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable jzzz_compress"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/jzzz_compress.dir/link.txt --verbose=$(VERBOSE)

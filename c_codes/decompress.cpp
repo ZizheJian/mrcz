@@ -219,6 +219,8 @@ vector<double> decompress2(jzzz::param_class<T> &params,string field)
         sz3_2_decompress(params,field);
     else if (params.method=="zfp")
         zfp_decompress(params,field);
+    else if (params.method=="sperr")
+        sperr_decompress(params,field);
     else
         throw runtime_error("未知的解压方法: "+params.method);
 

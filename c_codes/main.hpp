@@ -12,6 +12,8 @@
 #include "sz3_impl/sz3_2_decompress.cpp"
 #include "zfp_impl/zfp_compress.cpp"
 #include "zfp_impl/zfp_decompress.cpp"
+#include "sperr_impl/sperr_compress.cpp"
+#include "sperr_impl/sperr_decompress.cpp"
 
 using namespace std;
 

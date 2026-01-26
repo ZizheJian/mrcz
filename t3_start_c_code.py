@@ -44,14 +44,21 @@ def run_command(command,silent=False):
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="sz2-0"
+method="jzzz"
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 eb_mode="ABS"
 eb=1e-6
 fields=["P"]
 
-if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or method=="sz2-0" or method=="sz2-1":
+if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
     try:
+        os.chdir("c_codes/third_party/sperr")
+        os.makedirs("build",exist_ok=True)
+        os.chdir("build")
+        run_command("cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_SHARED_LIBS=OFF ..",silent=silent_build)
+        run_command("make",silent=silent_build)
+        run_command("make install",silent=silent_build)
+        os.chdir("../../../..")
         os.makedirs("build",exist_ok=True)
         os.chdir("build")
         run_command("cmake -DCMAKE_INSTALL_PREFIX=../install ../c_codes",silent=silent_build)
@@ -115,15 +122,38 @@ elif method=="sz3-0":
     # 跳过element map
     f.seek(header.file_element_num*4,1)
     # 跳过coordinate
-    f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
+    if "X" in header.variables:
+        f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
     # velocity
-    if any("velocity" in field for field in fields):
-        data=np.fromfile(f,dtype=header.np_dtype,count=header.file_element_num*3*header.element_size)
-        data=data.reshape((header.file_element_num,3,header.element_size))
-        data=data.transpose((1,0,2)).reshape((3,-1))
-        if "velocityx" in fields:
-            sz3_0_compress(data_path,data[0],"velocityx")
-        if "velocityy" in fields:
-            sz3_0_compress(data_path,data[1],"velocityy")
-        if "velocityz" in fields:
-            sz3_0_compress(data_path,data[2],"velocityz")
+    if "U" in header.variables:
+        if any("velocity" in field for field in fields):
+            data=np.fromfile(f,dtype=header.np_dtype,count=header.file_element_num*3*header.element_size)
+            data=data.reshape((header.file_element_num,3,header.element_size))
+            data=data.transpose((1,0,2)).reshape((3,-1))
+            if "velocityx" in fields:
+                sz3_0_compress(data_path,data[0],"velocityx")
+            if "velocityy" in fields:
+                sz3_0_compress(data_path,data[1],"velocityy")
+            if "velocityz" in fields:
+                sz3_0_compress(data_path,data[2],"velocityz")
+        else:
+            f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
+    if "P" in header.variables:
+        if "P" in fields:
+            data=np.fromfile(f,dtype=header.np_dtype,count=header.file_element_num*header.element_size)
+            sz3_0_compress(data_path,data,"P")
+        else:
+            f.seek(header.file_element_num*header.element_size*header.word_size,1)
+    if "T" in header.variables:
+        if "T" in fields:
+            data=np.fromfile(f,dtype=header.np_dtype,count=header.file_element_num*header.element_size)
+            sz3_0_compress(data_path,data,"T")
+        else:
+            f.seek(header.file_element_num*header.element_size*header.word_size,1)
+    for sid in range(header.passive_scalar_num):
+        passive_scalar_name=f"S{sid:02d}"
+        if passive_scalar_name in fields:
+            data=np.fromfile(f,dtype=header.np_dtype,count=header.file_element_num*header.element_size)
+            sz3_0_compress(data_path,data,passive_scalar_name)
+        else:
+            f.seek(header.file_element_num*header.element_size*header.word_size,1)

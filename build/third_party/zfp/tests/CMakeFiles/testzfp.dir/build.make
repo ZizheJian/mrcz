@@ -92,7 +92,8 @@ testzfp_EXTERNAL_OBJECTS =
 
 third_party/zfp/bin/testzfp: third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o
 third_party/zfp/bin/testzfp: third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make
-third_party/zfp/bin/testzfp: third_party/zfp/lib64/libzfp.so.1.0.1
+third_party/zfp/bin/testzfp: third_party/zfp/lib64/libzfp.a
+third_party/zfp/bin/testzfp: /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib64/libgomp.so
 third_party/zfp/bin/testzfp: third_party/zfp/tests/CMakeFiles/testzfp.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../bin/testzfp"
 	cd /home/x-zjian1/unsz/build/third_party/zfp/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/testzfp.dir/link.txt --verbose=$(VERBOSE)

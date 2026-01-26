@@ -342,6 +342,10 @@ CMakeFiles/jzzz_decompress.dir/decompress.cpp.o
  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/system.h
  /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/types.h
  /home/x-zjian1/unsz/c_codes/zfp_impl/zfp_decompress.cpp
+ /home/x-zjian1/unsz/c_codes/sperr_impl/sperr_compress.cpp
+ /home/x-zjian1/unsz/c_codes/third_party/sperr/include/SPERR_C_API.h
+ /home/x-zjian1/unsz/c_codes/third_party/sperr/install/include/SperrConfig.h
+ /home/x-zjian1/unsz/c_codes/sperr_impl/sperr_decompress.cpp
  /home/x-zjian1/unsz/c_codes/get_coordinate_in_element.tpp
  /home/x-zjian1/unsz/c_codes/read_and_write_data.tpp
 

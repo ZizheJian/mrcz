@@ -99,7 +99,5 @@
 /home/x-zjian1/unsz/install/lib64/cmake/zfp/zfp-config-version.cmake
 /home/x-zjian1/unsz/install/lib64/cmake/zfp/zfp-targets.cmake
 /home/x-zjian1/unsz/install/lib64/cmake/zfp/zfp-targets-release.cmake
-/home/x-zjian1/unsz/install/lib64/libzfp.so.1.0.1
-/home/x-zjian1/unsz/install/lib64/libzfp.so.1
-/home/x-zjian1/unsz/install/lib64/libzfp.so
+/home/x-zjian1/unsz/install/lib64/libzfp.a
 /home/x-zjian1/unsz/install/bin/zfp

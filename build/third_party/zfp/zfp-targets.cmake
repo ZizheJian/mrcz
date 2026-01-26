@@ -47,17 +47,18 @@ unset(_cmake_expected_targets)
 
 
 # Create imported target zfp::zfp
-add_library(zfp::zfp SHARED IMPORTED)
+add_library(zfp::zfp STATIC IMPORTED)
 
 set_target_properties(zfp::zfp PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "/home/x-zjian1/unsz/c_codes/third_party/zfp/include"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:OpenMP::OpenMP_C>;\$<LINK_ONLY:m>"
 )
 
 # Import target "zfp::zfp" for configuration "Release"
 set_property(TARGET zfp::zfp APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(zfp::zfp PROPERTIES
-  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/unsz/build/third_party/zfp/lib64/libzfp.so.1.0.1"
-  IMPORTED_SONAME_RELEASE "libzfp.so.1"
+  IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/unsz/build/third_party/zfp/lib64/libzfp.a"
   )
 
 # This file does not depend on other imported targets which have

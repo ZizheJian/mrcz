@@ -92,7 +92,7 @@ testviews_EXTERNAL_OBJECTS =
 
 third_party/zfp/bin/testviews: third_party/zfp/tests/CMakeFiles/testviews.dir/testviews.cpp.o
 third_party/zfp/bin/testviews: third_party/zfp/tests/CMakeFiles/testviews.dir/build.make
-third_party/zfp/bin/testviews: third_party/zfp/lib64/libzfp.so.1.0.1
+third_party/zfp/bin/testviews: third_party/zfp/lib64/libzfp.a
 third_party/zfp/bin/testviews: /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib64/libgomp.so
 third_party/zfp/bin/testviews: third_party/zfp/tests/CMakeFiles/testviews.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../bin/testviews"

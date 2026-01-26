@@ -1,8 +1,6 @@
 file(REMOVE_RECURSE
+  "../lib64/libzfp.a"
   "../lib64/libzfp.pdb"
-  "../lib64/libzfp.so"
-  "../lib64/libzfp.so.1"
-  "../lib64/libzfp.so.1.0.1"
   "CMakeFiles/zfp.dir/bitstream.c.o"
   "CMakeFiles/zfp.dir/bitstream.c.o.d"
   "CMakeFiles/zfp.dir/decode1d.c.o"

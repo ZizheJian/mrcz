@@ -341,6 +341,10 @@ CMakeFiles/jzzz_decompress.dir/decompress.cpp.o: /home/x-zjian1/unsz/c_codes/dec
   /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/system.h \
   /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/internal/zfp/types.h \
   /home/x-zjian1/unsz/c_codes/zfp_impl/zfp_decompress.cpp \
+  /home/x-zjian1/unsz/c_codes/sperr_impl/sperr_compress.cpp \
+  /home/x-zjian1/unsz/c_codes/third_party/sperr/include/SPERR_C_API.h \
+  /home/x-zjian1/unsz/c_codes/third_party/sperr/install/include/SperrConfig.h \
+  /home/x-zjian1/unsz/c_codes/sperr_impl/sperr_decompress.cpp \
   /home/x-zjian1/unsz/c_codes/get_coordinate_in_element.tpp \
   /home/x-zjian1/unsz/c_codes/read_and_write_data.tpp
 
@@ -348,6 +352,12 @@ CMakeFiles/jzzz_decompress.dir/decompress.cpp.o: /home/x-zjian1/unsz/c_codes/dec
 /home/x-zjian1/unsz/c_codes/read_and_write_data.tpp:
 
 /home/x-zjian1/unsz/c_codes/get_coordinate_in_element.tpp:
+
+/home/x-zjian1/unsz/c_codes/sperr_impl/sperr_decompress.cpp:
+
+/home/x-zjian1/unsz/c_codes/third_party/sperr/install/include/SperrConfig.h:
+
+/home/x-zjian1/unsz/c_codes/third_party/sperr/include/SPERR_C_API.h:
 
 /home/x-zjian1/unsz/c_codes/third_party/zfp/include/zfp/version.h:
 
@@ -366,6 +376,8 @@ CMakeFiles/jzzz_decompress.dir/decompress.cpp.o: /home/x-zjian1/unsz/c_codes/dec
 /home/x-zjian1/unsz/c_codes/sz2_impl/sz2_1_decompress.cpp:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/bits/stl_multiset.h:
+
+/home/x-zjian1/unsz/c_codes/sperr_impl/sperr_compress.cpp:
 
 /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/include/c++/11.2.0/set:
 

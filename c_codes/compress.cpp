@@ -214,6 +214,8 @@ void compress2(jzzz::param_class<T> &params,string field) // 在最终决定para
         sz3_2_compress(params,field);
     else if (params.method=="zfp")
         zfp_compress(params,field);
+    else if (params.method=="sperr")
+        sperr_compress(params,field);
     else
         throw runtime_error("未知的压缩方法: "+params.method);
         

@@ -24,7 +24,7 @@ BUILD_CFP:BOOL=OFF
 BUILD_EXAMPLES:BOOL=OFF
 
 //Whether or not to build shared libraries
-BUILD_SHARED_LIBS:BOOL=ON
+BUILD_SHARED_LIBS:BOOL=OFF
 
 //Build the testing tree.
 BUILD_TESTING:BOOL=ON
@@ -380,7 +380,7 @@ OpenMP_gomp_LIBRARY:FILEPATH=/apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs
 PPM_CHROMA:STRING=2
 
 //Name of the computer/site where compile is being run
-SITE:STRING=a032.anvil.rcac.purdue.edu
+SITE:STRING=login05.anvil.rcac.purdue.edu
 
 //Visibility for ZDICTLIB_STATIC_API API
 ZDICTLIB_STATIC_API:STRING=

@@ -92,7 +92,8 @@ zfpcmd_EXTERNAL_OBJECTS =
 
 third_party/zfp/bin/zfp: third_party/zfp/utils/CMakeFiles/zfpcmd.dir/zfp.c.o
 third_party/zfp/bin/zfp: third_party/zfp/utils/CMakeFiles/zfpcmd.dir/build.make
-third_party/zfp/bin/zfp: third_party/zfp/lib64/libzfp.so.1.0.1
+third_party/zfp/bin/zfp: third_party/zfp/lib64/libzfp.a
+third_party/zfp/bin/zfp: /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib64/libgomp.so
 third_party/zfp/bin/zfp: third_party/zfp/utils/CMakeFiles/zfpcmd.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable ../bin/zfp"
 	cd /home/x-zjian1/unsz/build/third_party/zfp/utils && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/zfpcmd.dir/link.txt --verbose=$(VERBOSE)

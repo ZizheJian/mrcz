@@ -4,7 +4,7 @@
 # compile CXX with /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC
 CXX_DEFINES = -DZSTD_MULTITHREAD
 
-CXX_INCLUDES = -I/home/x-zjian1/unsz/c_codes/jzzz_core -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib -I/home/x-zjian1/unsz/c_codes/third_party/zfp/include
+CXX_INCLUDES = -I/home/x-zjian1/unsz/c_codes/third_party/sperr/install/include -I/home/x-zjian1/unsz/c_codes/jzzz_core -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib -I/home/x-zjian1/unsz/c_codes/third_party/zfp/include
 
-CXX_FLAGS =  -Wall -O3 -march=native -fopenmp -mavx2 -mfma -O3 -DNDEBUG -std=gnu++11
+CXX_FLAGS =  -Wall -Ofast -march=native -fopenmp -mavx2 -mfma -O3 -DNDEBUG -std=gnu++11
 

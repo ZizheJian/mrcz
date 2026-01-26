@@ -1,9 +1,6 @@
 #pragma once
 
-#include <set>
 #include "../jzzz_core/jzzz_param.hpp"
-#include "../jzzz_core/huffman.hpp"
-#include "../jzzz_core/quantize.tpp"
 #include "../third_party/zfp/include/zfp.h"
 
 template<typename T>

@@ -54,13 +54,13 @@ unset(_cmake_expected_targets)
 add_library(zstd::libzstd INTERFACE IMPORTED)
 
 set_target_properties(zstd::libzstd PROPERTIES
-  INTERFACE_LINK_LIBRARIES "zstd::libzstd_shared"
+  INTERFACE_LINK_LIBRARIES "zstd::libzstd_static"
 )
 
 # Make sure the targets which have been exported in some other
 # export set exist.
 unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-foreach(_target "zstd::libzstd_shared" )
+foreach(_target "zstd::libzstd_static" )
   if(NOT TARGET "${_target}" )
     set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
   endif()

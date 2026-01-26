@@ -4,6 +4,7 @@ add_library(libjzzz INTERFACE)
 set_target_properties(libjzzz PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON
+    BUILD_SHARED_LIBS OFF
 )
 
 # 暴露头文件路径：让链接者（如主程序）能 #include "compressor.h"

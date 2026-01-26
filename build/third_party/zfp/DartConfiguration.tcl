@@ -11,7 +11,7 @@ BuildDirectory: /home/x-zjian1/unsz/build/third_party/zfp
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: a032.anvil.rcac.purdue.edu
+Site: login05.anvil.rcac.purdue.edu
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Linux-mpiCC

@@ -585,55 +585,48 @@ zfp_OBJECTS = \
 # External object files for target zfp
 zfp_EXTERNAL_OBJECTS =
 
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/zfp.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/bitstream.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode1f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode1d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode1i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode1l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode1f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode1d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode1i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode1l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode2f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode2d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode2i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode2l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode2f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode2d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode2i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode2l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode3f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode3d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode3i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode3l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode3f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode3d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode3i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode3l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode4f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode4d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode4i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/encode4l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode4f.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode4d.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode4i.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/decode4l.c.o
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/build.make
-third_party/zfp/lib64/libzfp.so.1.0.1: /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib64/libgomp.so
-third_party/zfp/lib64/libzfp.so.1.0.1: third_party/zfp/src/CMakeFiles/zfp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Linking C shared library ../lib64/libzfp.so"
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/zfp.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/bitstream.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode1f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode1d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode1i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode1l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode1f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode1d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode1i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode1l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode2f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode2d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode2i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode2l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode2f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode2d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode2i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode2l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode3f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode3d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode3i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode3l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode3f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode3d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode3i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode3l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode4f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode4d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode4i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/encode4l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode4f.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode4d.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode4i.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/decode4l.c.o
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/build.make
+third_party/zfp/lib64/libzfp.a: third_party/zfp/src/CMakeFiles/zfp.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Linking C static library ../lib64/libzfp.a"
+	cd /home/x-zjian1/unsz/build/third_party/zfp/src && $(CMAKE_COMMAND) -P CMakeFiles/zfp.dir/cmake_clean_target.cmake
 	cd /home/x-zjian1/unsz/build/third_party/zfp/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/zfp.dir/link.txt --verbose=$(VERBOSE)
-	cd /home/x-zjian1/unsz/build/third_party/zfp/src && $(CMAKE_COMMAND) -E cmake_symlink_library ../lib64/libzfp.so.1.0.1 ../lib64/libzfp.so.1 ../lib64/libzfp.so
-
-third_party/zfp/lib64/libzfp.so.1: third_party/zfp/lib64/libzfp.so.1.0.1
-	@$(CMAKE_COMMAND) -E touch_nocreate third_party/zfp/lib64/libzfp.so.1
-
-third_party/zfp/lib64/libzfp.so: third_party/zfp/lib64/libzfp.so.1.0.1
-	@$(CMAKE_COMMAND) -E touch_nocreate third_party/zfp/lib64/libzfp.so
 
 # Rule to build all files generated by this target.
-third_party/zfp/src/CMakeFiles/zfp.dir/build: third_party/zfp/lib64/libzfp.so
+third_party/zfp/src/CMakeFiles/zfp.dir/build: third_party/zfp/lib64/libzfp.a
 .PHONY : third_party/zfp/src/CMakeFiles/zfp.dir/build
 
 third_party/zfp/src/CMakeFiles/zfp.dir/clean:

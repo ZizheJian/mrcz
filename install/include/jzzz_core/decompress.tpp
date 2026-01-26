@@ -4,6 +4,9 @@
 
 namespace jzzz
 {
+    void lossless_decompress_f_qb_with_zero_map(header_class &header,uint64_t begin_index,uint64_t end_index,
+        int64_t *f_qb,int64_t *compact_f_qb,const unsigned char *&huffman_bs);
+
     template<typename T>
     void param_class<T>::decompress(string field)
     {
@@ -14,6 +17,7 @@ namespace jzzz
         T coeff_eb=abs_eb*coeff_eb_scale;
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
         int64_t *f_qb=new int64_t[element_num_to_process*header.element_size];
+        int64_t *compact_f_qb=new int64_t[element_num_to_process*header.element_size];
         int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(header.element_size-8)];
         decompressed_data.resize(element_num_to_process*header.element_size);
         double start_time=omp_get_wtime();
@@ -31,12 +35,11 @@ namespace jzzz
             huffman_encoder_class<int64_t> corner_encoder;
             corner_encoder.load(huffman_bs);
             corner_encoder.decode(huffman_bs,corner_qb+8*begin_index,8*(end_index-begin_index));
-            huffman_encoder_class<int64_t> f_encoder;
-            f_encoder.load(huffman_bs);
-            f_encoder.decode(huffman_bs,f_qb+header.element_size*begin_index,header.element_size*(end_index-begin_index));
+            lossless_decompress_f_qb_with_zero_map(header,begin_index,end_index,f_qb,compact_f_qb,huffman_bs);
             huffman_encoder_class<int64_t> err_encoder;
             err_encoder.load(huffman_bs);
             err_encoder.decode(huffman_bs,no_corner_err_qb+(header.element_size-8)*begin_index,(header.element_size-8)*(end_index-begin_index));
+            
             // 重构每个element角上的数据
             for (uint64_t i=begin_index;i<end_index;i++)
             {
@@ -140,5 +143,63 @@ namespace jzzz
         delete[] no_corner_err_qb;
         printf("Decompression time= %f seconds\n",end_time-start_time);
         printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+    }
+
+    void lossless_decompress_f_qb_with_zero_map(header_class &header,uint64_t begin_index,uint64_t end_index,int64_t *f_qb,int64_t *compact_f_qb,const unsigned char *&huffman_bs)
+    {
+        bool f_qb_all_zero=false;
+        uint32_t all_zero_num=0;
+        vector<bool> f_qb_zero_map(header.element_size,false);
+        vector<uint32_t> f_qb_compact_pos(header.element_size,0);
+        if ((huffman_bs[0]&0xC0)==0)
+        {
+            f_qb_all_zero=true;
+            f_qb_zero_map.assign(header.element_size,true);
+            huffman_bs+=1;
+        }
+        else if ((huffman_bs[0]&0xC0)==0x80)
+            huffman_bs+=1;
+        else
+        {
+            uint32_t used_bits=2;
+            for (uint32_t pos=0;pos<header.element_size;pos++)
+            {
+                if ((huffman_bs[0]>>(7-used_bits))&0x01)
+                    f_qb_zero_map[pos]=true;
+                used_bits++;
+                if (used_bits==8)
+                {
+                    huffman_bs++;
+                    used_bits=0;
+                }
+            }
+            if (used_bits!=0)
+                huffman_bs++;
+        }
+        for (uint32_t pos=0;pos<header.element_size;pos++)
+        {
+            if (f_qb_zero_map[pos]==true)
+                all_zero_num++;
+            if (pos==0)
+                f_qb_compact_pos[pos]=0;
+            else
+                f_qb_compact_pos[pos]=f_qb_compact_pos[pos-1]+(f_qb_zero_map[pos]?0:1);
+        }
+        if (!f_qb_all_zero)
+        {
+            huffman_encoder_class<int64_t> f_encoder;
+            f_encoder.load(huffman_bs);
+            f_encoder.decode(huffman_bs,compact_f_qb+header.element_size*begin_index,(header.element_size-all_zero_num)*(end_index-begin_index));
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            {
+                auto compact_element_f_qb=compact_f_qb+begin_index*header.element_size+(element_id-begin_index)*(header.element_size-all_zero_num);
+                auto original_element_f_qb=f_qb+element_id*header.element_size;
+                for (uint32_t pos=0;pos<header.element_size;pos++)
+                    if (f_qb_zero_map[pos]==false)
+                        original_element_f_qb[pos]=compact_element_f_qb[f_qb_compact_pos[pos]];
+            }
+        }
+        else
+            memset(f_qb+begin_index*header.element_size,0,sizeof(int64_t)*header.element_size*(end_index-begin_index));
     }
 }
