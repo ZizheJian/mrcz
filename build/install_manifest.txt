@@ -5,6 +5,7 @@
 /home/x-zjian1/unsz/install/include/jzzz_core/quantize.tpp
 /home/x-zjian1/unsz/install/include/jzzz_core/huffman.hpp
 /home/x-zjian1/unsz/install/include/jzzz_core/get_max_cpus.tpp
+/home/x-zjian1/unsz/install/include/jzzz_core/gll_nodes.tpp
 /home/x-zjian1/unsz/install/include/jzzz_core/read_header_file.tpp
 /home/x-zjian1/unsz/install/include/jzzz_core/decompress.tpp
 /home/x-zjian1/unsz/install/include/jzzz_core/save_header_and_element_map.tpp

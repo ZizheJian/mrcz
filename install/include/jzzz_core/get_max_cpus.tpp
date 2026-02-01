@@ -10,7 +10,7 @@ namespace jzzz
         if (slurm_cpus!=nullptr)
             available_cpus=atoi(slurm_cpus);
         else
-            throw runtime_error("没有获取到每个task可用的cpu数量");
+            available_cpus=1;
         if (max_cpus==0)
             max_cpus=available_cpus;
         else

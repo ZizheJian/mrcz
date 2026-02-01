@@ -83,6 +83,7 @@ int main(int argc,char **argv)
         params.method="jzzz";
     
     params.read_header(params.data_path);
+    params.default_init();
     params.save_header_and_element_map_compress();
     params.get_max_cpus();
 
@@ -95,8 +96,6 @@ int main(int argc,char **argv)
         block.end_index=((i+1)*params.element_num_to_process)/params.max_cpus;
         block.element_num=block.end_index-block.begin_index;
     }
-
-    
     
     if (params.header.word_size==8)
     {

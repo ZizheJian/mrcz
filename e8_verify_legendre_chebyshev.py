@@ -6,8 +6,10 @@
 
 import numpy as np
 
-n=10
-x_legendre=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(10-1).deriv().roots(),[1]))
-x_chebyshev=np.sort(np.cos((np.arange(10))*np.pi/(10-1)))
-print("Legendre:",np.diff(x_legendre))
-print("Chebyshev:",np.diff(x_chebyshev))
+n=6
+x_legendre=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(n-1).deriv().roots(),[1]))
+x_chebyshev=np.sort(np.cos((np.arange(n))*np.pi/(n-1)))
+print("Legendre nodes:",x_legendre)
+print("Chebyshev nodes:",x_chebyshev)
+print("Legendre gap:",np.diff(x_legendre))
+print("Chebyshev gap:",np.diff(x_chebyshev))

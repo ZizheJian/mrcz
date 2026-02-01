@@ -41,6 +41,9 @@ namespace jzzz
             vector<unsigned char> zstd_bs;
     };
 
+    template<typename T>
+    vector<T> compute_GLL_nodes(uint32_t n);
+
     template<typename T> // 表示压缩时使用的类型，可能和原始数据类型不同
     class param_class
     {
@@ -68,7 +71,7 @@ namespace jzzz
             vector<T> data;
             vector<T> decompressed_data;
 
-            int max_cpus=128;
+            int max_cpus=1;
             T coeff_eb_scale=0.05;
             T zero_f_qb_bound=3;
             vector<T> x;
@@ -96,6 +99,9 @@ namespace jzzz
 
             void default_init()
             {
+                if (header.element_shape.size()!=3)
+                    throw runtime_error("element必须是三维的");
+                x=compute_GLL_nodes<T>(header.element_shape[0]);
                 if ((!std::is_same<T,float>::value) && (!std::is_same<T,double>::value))
                     throw runtime_error("仅能以float或double类型处理数据");
                 uint32_t n=x.size();
@@ -146,11 +152,7 @@ namespace jzzz
                     no_corner_pos[i-7]=i;
             }
 
-            param_class():
-                x{-1,-0.91953391,-0.73877387,-0.47792495,-0.16527896,0.16527896,0.47792495,0.73877387,0.91953391,1}
-            {
-                default_init();
-            }
+            param_class(){}
 
             template<typename T2>
             param_class(param_class<T2> &other)
@@ -187,8 +189,6 @@ namespace jzzz
                 max_cpus=other.max_cpus;
                 coeff_eb_scale=other.coeff_eb_scale;
                 zero_f_qb_bound=other.zero_f_qb_bound;
-                for (auto val:other.x)
-                    x.push_back(val);
                 default_init();
             }
     };
@@ -197,6 +197,7 @@ namespace jzzz
 #include "compress.tpp"
 #include "decompress.tpp"
 #include "get_max_cpus.tpp"
+#include "gll_nodes.tpp"
 #include "quantize.tpp"
 #include "read_header_file.tpp"
 #include "save_header_and_element_map.tpp"

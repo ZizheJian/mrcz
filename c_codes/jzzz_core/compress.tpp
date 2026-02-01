@@ -21,6 +21,8 @@ namespace jzzz
         int64_t *f_qb=new int64_t[element_num_to_process*header.element_size];
         int64_t *err_qb=new int64_t[element_num_to_process*header.element_size];
         int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(header.element_size-8)];
+        // ofstream coeff_file(data_path+"_coeff",ios::binary);
+        // ofstream err_file(data_path+"_err",ios::binary);
         printf("Begin compressing\n");
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
@@ -116,6 +118,7 @@ namespace jzzz
                         for (uint32_t k=0;k<n;k++)
                             for (uint32_t c=0;c<n;c++)
                                 temp_element1[i*n2+j*n+k]+=temp_element2[i*n2+j*n+c]*neg_L[c*n+k];
+                // coeff_file.write(reinterpret_cast<char*>(temp_element1.data()),sizeof(T)*n3);
                 quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n3,coeff_eb,neg_2_coeff_eb,zero_freq_bound);
                 // 反变换
                 memset(temp_element2.data(),0,sizeof(T)*n3);
@@ -136,6 +139,10 @@ namespace jzzz
                         for (uint32_t b=0;b<n;b++)
                             for (uint32_t c=0;c<n;c++)
                                 temp_element2[a*n2+b*n+c]+=temp_element1[i*n2+b*n+c]*L[i*n+a];
+                // vector<T> err(n3,0);
+                // for (uint32_t i=0;i<n3;i++)
+                //     err[i]=temp_element2[i]-element[i];
+                // err_file.write(reinterpret_cast<char*>(err.data()),sizeof(T)*n3);
                 quantize_err_array(temp_element2.data(),element,element_err_qb,n3,abs_eb,neg_2_eb);
             }
             //去掉err_qb中位于角上的qb

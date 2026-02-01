@@ -2,7 +2,7 @@ import os,subprocess
 
 redbegin="\033[91m"
 redend="\033[0m"
-silent_build=False
+silent_build=True
 
 def run_command(command,silent=False):
     import pty,errno
@@ -45,10 +45,11 @@ def run_command(command,silent=False):
 #   "sperr": 对每个element执行sperr的3维压缩
 
 method="jzzz"
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001"
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 eb_mode="ABS"
 eb=1e-6
-fields=["P"]
+fields=["UY","UZ"]
 
 if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
     try:
@@ -65,10 +66,10 @@ if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or meth
         run_command("make",silent=silent_build)
         run_command("make install",silent=silent_build)
         os.chdir("..")
-        os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-        os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-        # os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
-        # os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
+        # os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+        # os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+        os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
+        os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
     except Exception as e:
         exit(0)
 elif method=="sz3-0":
