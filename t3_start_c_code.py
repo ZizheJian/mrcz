@@ -44,12 +44,15 @@ def run_command(command,silent=False):
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="jzzz"
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
+method="sperr"
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001"
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001"
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/xmdv_data/newtgv0.f00016"
+data_index=5
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 eb_mode="ABS"
-eb=1e-6
-fields=["UY","UZ"]
+eb=1e-8
+fields=["UX"]
 
 if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
     try:
@@ -66,10 +69,10 @@ if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or meth
         run_command("make",silent=silent_build)
         run_command("make install",silent=silent_build)
         os.chdir("..")
-        # os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-        # os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-        os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
-        os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
+        os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+        os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+        # os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
+        # os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
     except Exception as e:
         exit(0)
 elif method=="sz3-0":
@@ -89,6 +92,7 @@ elif method=="sz3-0":
             f2.write(data.tobytes())
         command=f"./c_codes/third_party/sz3/install/bin/sz3 -i {data_path}_{field} -z {data_path}_{field}.sz3 -o {data_path}_{field}.sz3.bin "
         command+=f"-f -M {eb_mode} {eb} -1 {data.shape[0]} -a "
+        print(command)
         result=run_command(command,silent=True)
         lines=result.splitlines()
         for line in lines:
@@ -127,16 +131,16 @@ elif method=="sz3-0":
         f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
     # velocity
     if "U" in header.variables:
-        if any("velocity" in field for field in fields):
+        if any("U" in field for field in fields):
             data=np.fromfile(f,dtype=header.np_dtype,count=header.file_element_num*3*header.element_size)
             data=data.reshape((header.file_element_num,3,header.element_size))
             data=data.transpose((1,0,2)).reshape((3,-1))
-            if "velocityx" in fields:
-                sz3_0_compress(data_path,data[0],"velocityx")
-            if "velocityy" in fields:
-                sz3_0_compress(data_path,data[1],"velocityy")
-            if "velocityz" in fields:
-                sz3_0_compress(data_path,data[2],"velocityz")
+            if "UX" in fields:
+                sz3_0_compress(data_path,data[0],"UX")
+            if "UY" in fields:
+                sz3_0_compress(data_path,data[1],"UY")
+            if "UZ" in fields:
+                sz3_0_compress(data_path,data[2],"UZ")
         else:
             f.seek(header.file_element_num*3*header.element_size*header.word_size,1)
     if "P" in header.variables:

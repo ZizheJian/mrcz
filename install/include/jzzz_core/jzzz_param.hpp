@@ -71,7 +71,7 @@ namespace jzzz
             vector<T> data;
             vector<T> decompressed_data;
 
-            int max_cpus=1;
+            int max_cpus=128;
             T coeff_eb_scale=0.05;
             T zero_f_qb_bound=3;
             vector<T> x;
