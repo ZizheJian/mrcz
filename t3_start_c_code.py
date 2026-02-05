@@ -44,8 +44,8 @@ def run_command(command,silent=False):
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="sz3-1"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
+method="mrcz"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001" #512*6*6*6
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/tc_channel0.f00001" #512*8*8*8 (double)
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8

@@ -10,7 +10,9 @@ void sperr_compress(mrcz::param_class<T> &params,string field)
     auto &blocks=params.blocks;
     auto &data=params.data;
 
-    uint32_t n=header.element_shape[0];
+    uint32_t n0=header.element_shape[0];
+    uint32_t n1=header.element_shape[1];
+    uint32_t n2=header.element_shape[2];
     T abs_eb=params.abs_eb[field];
     int is_float=std::is_same<T,float>::value?1:0;
     double start_time=omp_get_wtime();
@@ -24,7 +26,7 @@ void sperr_compress(mrcz::param_class<T> &params,string field)
         void *temp_zstd_bs=nullptr;
         size_t block_zstd_bs_len=0;
         C_API::sperr_comp_3d((const void*)(data.data()+begin_index*header.element_size),
-            is_float,n,n,(end_index-begin_index)*n,n,n,n,3,abs_eb,0,&temp_zstd_bs,&block_zstd_bs_len);
+            is_float,n2,n1,(end_index-begin_index)*n0,n2,n1,n0,3,abs_eb,0,&temp_zstd_bs,&block_zstd_bs_len);
         block.zstd_bs.resize(block_zstd_bs_len);
         memcpy(block.zstd_bs.data(),temp_zstd_bs,block_zstd_bs_len);
         free(temp_zstd_bs);

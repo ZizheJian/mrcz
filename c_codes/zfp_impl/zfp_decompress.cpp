@@ -10,7 +10,9 @@ void zfp_decompress(mrcz::param_class<T> &params,string field)
     auto &blocks=params.blocks;
     auto &decompressed_data=params.decompressed_data;
 
-    uint32_t n=header.element_shape[0];
+    uint32_t n0=header.element_shape[0];
+    uint32_t n1=header.element_shape[1];
+    uint32_t n2=header.element_shape[2];
     T abs_eb=params.abs_eb[field];
     zfp_type type=std::is_same<T,float>::value ? zfp_type_float : zfp_type_double;
     decompressed_data.resize(params.element_num_to_process*header.element_size);
@@ -26,7 +28,7 @@ void zfp_decompress(mrcz::param_class<T> &params,string field)
         zfp_stream_set_accuracy(zfp,abs_eb);
         bitstream *input_bs=stream_open(block.zstd_bs.data(),block.zstd_bs.size());
         zfp_stream_set_bit_stream(zfp,input_bs);
-        zfp_field *field=zfp_field_4d(decompressed_data.data()+begin_index*header.element_size,type,n,n,n,end_index-begin_index);
+        zfp_field *field=zfp_field_4d(decompressed_data.data()+begin_index*header.element_size,type,n0,n1,n2,end_index-begin_index);
         zfp_decompress(zfp,field);
         stream_close(input_bs);
         zfp_field_free(field);
