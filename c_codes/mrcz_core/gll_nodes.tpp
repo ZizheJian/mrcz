@@ -49,7 +49,7 @@ namespace mrcz
         double tol=1e-14;
 
         if (n<2)
-            throw invalid_argument("n must be >= 2");
+            return {0};
         if (n==2) 
             return {-1,1};
         int m=n-1; // we need roots of P'_m

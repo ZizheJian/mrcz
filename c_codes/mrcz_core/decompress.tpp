@@ -5,16 +5,25 @@ namespace mrcz
     template<typename T>
     void param_class<T>::decompress(string field)
     {
-        uint32_t n=header.element_shape[0];
-        uint32_t n2=n*n;
-        uint32_t n3=n2*n;
+        uint32_t n0=header.element_shape[0];
+        uint32_t n1=header.element_shape[1];
+        uint32_t n2=header.element_shape[2];
+        uint32_t n12=n1*n2;
+        uint32_t n012=n0*n1*n2;
+        uint32_t corner_num=1;
+        for (uint32_t dim=0;dim<3;dim++)
+            if (header.element_shape[dim]>1)
+                corner_num*=2;
+        vector<T> L0=L[0];
+        vector<T> L1=L[1];
+        vector<T> L2=L[2];
         T abs_eb=this->abs_eb[field];
         T coeff_eb=abs_eb*coeff_eb_scale;
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
-        int64_t *coeff_qb=new int64_t[element_num_to_process*header.element_size];
-        int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(header.element_size-8)];
-        int64_t *err_qb=new int64_t[element_num_to_process*header.element_size];
-        decompressed_data.resize(element_num_to_process*header.element_size);
+        int64_t *coeff_qb=new int64_t[element_num_to_process*n012];
+        int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(n012-corner_num)];
+        int64_t *err_qb=new int64_t[element_num_to_process*n012];
+        decompressed_data.resize(element_num_to_process*n012);
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
         for (uint64_t block_id=0;block_id<blocks.size();block_id++)
@@ -34,58 +43,69 @@ namespace mrcz
                 corner_encoder.decode(huffman_bs,corner_qb+8*begin_index,8*(end_index-begin_index));
             }
             if (if_zero_map)
-                lossless_decompress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs);
+                lossless_decompress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n012);
             else
-                lossless_decompress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs);
+                lossless_decompress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
             if (if_corner_based_prediction)
             {
                 huffman_encoder_class<int64_t> err_encoder;
                 err_encoder.load(huffman_bs);
-                err_encoder.decode(huffman_bs,no_corner_err_qb+(header.element_size-8)*begin_index,(header.element_size-8)*(end_index-begin_index));
+                err_encoder.decode(huffman_bs,no_corner_err_qb+(n012-corner_num)*begin_index,(n012-corner_num)*(end_index-begin_index));
             }
             else
             {
                 huffman_encoder_class<int64_t> err_encoder;
                 err_encoder.load(huffman_bs);
-                err_encoder.decode(huffman_bs,err_qb+n3*begin_index,n3*(end_index-begin_index));
+                err_encoder.decode(huffman_bs,err_qb+n012*begin_index,n012*(end_index-begin_index));
             }
             
             // 重构每个element角上的数据
-            reconstruct_corner_number(corner_qb,begin_index,end_index,n,n2,n3,abs_eb);
+            if (if_corner_based_prediction)
+                reconstruct_corner_number(corner_qb,begin_index,end_index,n2,n12,n012,abs_eb);
             // 然后重构剩余的数据
-            vector<T> temp_element1(n3,0),temp_element2(n3,0);
+            vector<T> temp_element1(n012,0),temp_element2(n012,0);
             for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
             {
-                T *element=decompressed_data.data()+element_id*header.element_size;
-                int64_t *element_coeff_qb=coeff_qb+element_id*header.element_size;
-                int64_t *element_no_corner_err_qb=no_corner_err_qb+element_id*(header.element_size-8);
-                int64_t *element_err_qb=err_qb+element_id*header.element_size;
+                T *element=decompressed_data.data()+element_id*n012;
+                int64_t *element_coeff_qb=coeff_qb+element_id*n012;
+                int64_t *element_no_corner_err_qb=no_corner_err_qb+element_id*(n012-8);
+                int64_t *element_err_qb=err_qb+element_id*n012;
                 if (if_corner_based_prediction)
-                    add_element_base(element,n,n2,n3);
+                    add_element_base(element,n2,n12,n012);
                 // 重构coeff
-                for (uint32_t i=0;i<n3;i++)
+                for (uint32_t i=0;i<n012;i++)
                     temp_element1[i]=element_coeff_qb[i]*2*coeff_eb;
                 // 反变换
-                inverse_transform(temp_element1,temp_element2,n,n2,n3);
+                inverse_transform(temp_element1,temp_element2,n0,n1,n2,n12,n012,L0,L1,L2);
                 if (if_corner_based_prediction)
-                {
-                    for (uint32_t j=1;j<n-1;j++)
-                        element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-1]*2*abs_eb);
-                    for (uint32_t j=n;j<n2-n;j++)
-                        element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-2]*2*abs_eb);
-                    for (uint32_t j=n2-n+1;j<n2-1;j++)
-                        element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-3]*2*abs_eb);
-                    for (uint32_t j=n2;j<n3-n2;j++)
-                        element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-4]*2*abs_eb);
-                    for (uint32_t j=n3-n2+1;j<n3-n2+n-1;j++)
-                        element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-5]*2*abs_eb);
-                    for (uint32_t j=n3-n2+n;j<n3-n;j++)
-                        element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-6]*2*abs_eb);
-                    for (uint32_t j=n3-n+1;j<n3-1;j++)
-                        element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-7]*2*abs_eb);
-                }
+                    if (n2>1)
+                    {
+                        for (uint32_t j=1;j<n2-1;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-1]*2*abs_eb);
+                        for (uint32_t j=n2;j<n12-n2;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-2]*2*abs_eb);
+                        for (uint32_t j=n12-n2+1;j<n12-1;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-3]*2*abs_eb);
+                        for (uint32_t j=n12;j<n012-n12;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-4]*2*abs_eb);
+                        for (uint32_t j=n012-n12+1;j<n012-n12+n2-1;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-5]*2*abs_eb);
+                        for (uint32_t j=n012-n12+n2;j<n012-n2;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-6]*2*abs_eb);
+                        for (uint32_t j=n012-n2+1;j<n012-1;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-7]*2*abs_eb);
+                    }
+                    else
+                    {
+                        for (uint32_t j=1;j<n12-1;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-1]*2*abs_eb);
+                        for (uint32_t j=n12;j<n012-n12;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-2]*2*abs_eb);
+                        for (uint32_t j=n012-n12+1;j<n012-1;j++)
+                            element[j]+=(temp_element2[j]-element_no_corner_err_qb[j-3]*2*abs_eb);
+                    }
                 else
-                    for (uint32_t j=0;j<n3;j++)
+                    for (uint32_t j=0;j<n012;j++)
                         element[j]+=(temp_element2[j]-element_err_qb[j]*2*abs_eb);
             }
         }
@@ -95,21 +115,21 @@ namespace mrcz
         delete[] coeff_qb;
         delete[] no_corner_err_qb;
         printf("Decompression time= %f seconds\n",end_time-start_time);
-        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
     }
 
     template<typename T>
-    inline void param_class<T>::lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs)
+    inline void param_class<T>::lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,
+        uint32_t n012)
     {
-        uint32_t n3=header.element_size;
         bool coeff_qb_all_zero=false;
         uint32_t all_zero_num=0;
-        vector<bool> coeff_qb_zero_map(n3,false);
-        vector<uint32_t> coeff_qb_compact_pos(n3,0);
+        vector<bool> coeff_qb_zero_map(n012,false);
+        vector<uint32_t> coeff_qb_compact_pos(n012,0);
         if ((huffman_bs[0]&0xC0)==0)
         {
             coeff_qb_all_zero=true;
-            coeff_qb_zero_map.assign(n3,true);
+            coeff_qb_zero_map.assign(n012,true);
             huffman_bs+=1;
         }
         else if ((huffman_bs[0]&0xC0)==0x80)
@@ -117,7 +137,7 @@ namespace mrcz
         else
         {
             uint32_t used_bits=2;
-            for (uint32_t pos=0;pos<n3;pos++)
+            for (uint32_t pos=0;pos<n012;pos++)
             {
                 if ((huffman_bs[0]>>(7-used_bits))&0x01)
                     coeff_qb_zero_map[pos]=true;
@@ -133,7 +153,7 @@ namespace mrcz
         }
         if (!coeff_qb_all_zero)
         {
-            for (uint32_t pos=0;pos<n3;pos++)
+            for (uint32_t pos=0;pos<n012;pos++)
             {
                 coeff_qb_compact_pos[pos]=pos-all_zero_num;
                 if (coeff_qb_zero_map[pos])
@@ -141,29 +161,29 @@ namespace mrcz
             }
             if (if_coefficient_transpose)
             {
-                int64_t *temp_coeff_qb=new int64_t[(n3-all_zero_num)*(end_index-begin_index)];
+                int64_t *temp_coeff_qb=new int64_t[(n012-all_zero_num)*(end_index-begin_index)];
                 huffman_encoder_class<int64_t> coeff_encoder;
                 coeff_encoder.load(huffman_bs);
-                coeff_encoder.decode(huffman_bs,temp_coeff_qb,(n3-all_zero_num)*(end_index-begin_index));
-                for (uint32_t pos=0;pos<n3-all_zero_num;pos++)
+                coeff_encoder.decode(huffman_bs,temp_coeff_qb,(n012-all_zero_num)*(end_index-begin_index));
+                for (uint32_t pos=0;pos<n012-all_zero_num;pos++)
                     for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
-                        coeff_qb[begin_index*n3+(element_id-begin_index)*(n3-all_zero_num)+pos]=temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)];
+                        coeff_qb[begin_index*n012+(element_id-begin_index)*(n012-all_zero_num)+pos]=temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)];
                 delete[] temp_coeff_qb;
             }
             else
             {
                 huffman_encoder_class<int64_t> coeff_encoder;
                 coeff_encoder.load(huffman_bs);
-                coeff_encoder.decode(huffman_bs,coeff_qb+n3*begin_index,(n3-all_zero_num)*(end_index-begin_index));
+                coeff_encoder.decode(huffman_bs,coeff_qb+n012*begin_index,(n012-all_zero_num)*(end_index-begin_index));
             }
             for (uint64_t neg_element_id=begin_index;neg_element_id<end_index;neg_element_id++)
             {
                 uint64_t element_id=begin_index+end_index-1-neg_element_id;
-                auto compact_element_coeff_qb=coeff_qb+begin_index*n3+(element_id-begin_index)*(n3-all_zero_num);
-                auto original_element_coeff_qb=coeff_qb+element_id*n3;
-                for (uint32_t neg_pos=0;neg_pos<n3;neg_pos++)
+                auto compact_element_coeff_qb=coeff_qb+begin_index*n012+(element_id-begin_index)*(n012-all_zero_num);
+                auto original_element_coeff_qb=coeff_qb+element_id*n012;
+                for (uint32_t neg_pos=0;neg_pos<n012;neg_pos++)
                 {
-                    uint32_t pos=n3-1-neg_pos;
+                    uint32_t pos=n012-1-neg_pos;
                     if (coeff_qb_zero_map[pos]==false)
                         original_element_coeff_qb[pos]=compact_element_coeff_qb[coeff_qb_compact_pos[pos]];
                     else
@@ -172,41 +192,40 @@ namespace mrcz
             }
         }
         else
-            memset(coeff_qb+begin_index*n3,0,sizeof(int64_t)*n3*(end_index-begin_index));
+            memset(coeff_qb+begin_index*n012,0,sizeof(int64_t)*n012*(end_index-begin_index));
     }
 
     template<typename T>
-    inline void param_class<T>::lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs)
+    inline void param_class<T>::lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012)
     {
-        uint32_t n3=header.element_size;
         huffman_encoder_class<int64_t> coeff_encoder;
         coeff_encoder.load(huffman_bs);
-        coeff_encoder.decode(huffman_bs,coeff_qb+n3*begin_index,n3*(end_index-begin_index));
+        coeff_encoder.decode(huffman_bs,coeff_qb+n012*begin_index,n012*(end_index-begin_index));
     }
 
     template<typename T>
-    inline void param_class<T>::reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,T abs_eb)
+    inline void param_class<T>::reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n2,uint32_t n12,uint32_t n012,T abs_eb)
     {
         for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
         {
-            T *element=decompressed_data.data()+element_id*header.element_size;
+            T *element=decompressed_data.data()+element_id*n012;
             int64_t *element_corner_qb=corner_qb+8*element_id;
             element[0]=element_corner_qb[0]*2*abs_eb;
-            element[n-1]=element_corner_qb[1]*2*abs_eb;
-            element[n2-n]=element_corner_qb[2]*2*abs_eb;
-            element[n2-1]=element_corner_qb[3]*2*abs_eb;
-            element[n3-n2]=element_corner_qb[4]*2*abs_eb;
-            element[n3-n2+n-1]=element_corner_qb[5]*2*abs_eb;
-            element[n3-n]=element_corner_qb[6]*2*abs_eb;
-            element[n3-1]=element_corner_qb[7]*2*abs_eb;
+            element[n2-1]=element_corner_qb[1]*2*abs_eb;
+            element[n12-n2]=element_corner_qb[2]*2*abs_eb;
+            element[n12-1]=element_corner_qb[3]*2*abs_eb;
+            element[n012-n12]=element_corner_qb[4]*2*abs_eb;
+            element[n012-n12+n2-1]=element_corner_qb[5]*2*abs_eb;
+            element[n012-n2]=element_corner_qb[6]*2*abs_eb;
+            element[n012-1]=element_corner_qb[7]*2*abs_eb;
         }
     }
 
     template<>
-    inline void param_class<float>::add_element_base(float *element,uint32_t n,uint32_t n2,uint32_t n3)
+    inline void param_class<float>::add_element_base(float *element,uint32_t n2,uint32_t n12,uint32_t n012)
     {
-        __m256 vec_corner_numbers=_mm256_set_ps(element[n3-1],element[n3-n],element[n3-n2+n-1],element[n3-n2],
-                                                element[n2-1],element[n2-n],element[n-1],element[0]);
+        __m256 vec_corner_numbers=_mm256_set_ps(element[n012-1],element[n012-n2],element[n012-n12+n2-1],element[n012-n12],
+                                                element[n12-1],element[n12-n2],element[n2-1],element[0]);
         for (auto pos:no_corner_pos)
         {
             uint32_t bias=8*pos;
@@ -223,10 +242,10 @@ namespace mrcz
     }
 
     template<>
-    inline void param_class<double>::add_element_base(double *element,uint32_t n,uint32_t n2,uint32_t n3)
+    inline void param_class<double>::add_element_base(double *element,uint32_t n2,uint32_t n12,uint32_t n012)
     {
-        __m256d vec_corner_numbers_1=_mm256_set_pd(element[n3-1],element[n3-n],element[n3-n2+n-1],element[n3-n2]);
-        __m256d vec_corner_numbers_2=_mm256_set_pd(element[n2-1],element[n2-n],element[n-1],element[0]);
+        __m256d vec_corner_numbers_1=_mm256_set_pd(element[n012-1],element[n012-n2],element[n012-n12+n2-1],element[n012-n12]);
+        __m256d vec_corner_numbers_2=_mm256_set_pd(element[n12-1],element[n12-n2],element[n2-1],element[0]);
         for (auto pos:no_corner_pos)
         {
             uint32_t bias=8*pos;

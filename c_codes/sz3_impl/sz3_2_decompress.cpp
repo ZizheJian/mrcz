@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../mrcz_core/mrcz_param.hpp"
+#include "sz3_2_compress.cpp"
 
 template<typename T>
 void sz3_2_decompress(mrcz::param_class<T> &params,string field)
@@ -8,61 +9,58 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
 	auto &header=params.header;
     auto &blocks=params.blocks;
     auto &decompressed_data=params.decompressed_data;
-    auto &x=params.x;
+    auto &x0=params.x[0];
+    auto &x1=params.x[1];
+    auto &x2=params.x[2];
 
-    uint32_t n=header.element_shape[0];
-    uint32_t n2=n*n;
-    uint32_t n3=n2*n;
+    uint32_t n0=header.element_shape[0];
+    uint32_t n1=header.element_shape[1];
+    uint32_t n2=header.element_shape[2];
+    uint32_t n12=n1*n2;
+    uint32_t n012=n0*n1*n2;
+    uint32_t corner_num=1;
+    for (uint32_t dim=0;dim<3;dim++)
+        if (header.element_shape[dim]>1)
+            corner_num*=2;
     T abs_eb=params.abs_eb[field];
     int64_t *corner_qb=new int64_t[8*params.element_num_to_process];
-    int64_t *err_qb=new int64_t[params.element_num_to_process*header.element_size];
-    int64_t *no_corner_err_qb=new int64_t[params.element_num_to_process*(header.element_size-8)];
-    vector<vector<uint32_t>> left_indices,right_indices,mid_indices,compressed_indices;
-    vector<vector<T>> left_weight,right_weight;
-    decompressed_data.resize(params.element_num_to_process*header.element_size);
-    left_indices.push_back({0});
-    right_indices.push_back({n-1});
-    compressed_indices.push_back({0,n-1});
-    while (true)
+    int64_t *err_qb=new int64_t[params.element_num_to_process*n012];
+    int64_t *no_corner_err_qb=new int64_t[params.element_num_to_process*(n012-corner_num)];
+    decompressed_data.resize(params.element_num_to_process*n012);
+    vector<vector<uint32_t>> left_indices0,right_indices0,mid_indices0,compressed_indices0;
+    vector<vector<uint32_t>> left_indices1,right_indices1,mid_indices1,compressed_indices1;
+    vector<vector<uint32_t>> left_indices2,right_indices2,mid_indices2,compressed_indices2;
+    vector<vector<T>> left_weight0,right_weight0;
+    vector<vector<T>> left_weight1,right_weight1;
+    vector<vector<T>> left_weight2,right_weight2;
+    left_indices0.push_back({0});       left_indices1.push_back({0});       left_indices2.push_back({0});
+    right_indices0.push_back({n0-1});   right_indices1.push_back({n1-1});   right_indices2.push_back({n2-1});
+    if (n0==1)
+        compressed_indices0.push_back({0});
+    else
     {
-        mid_indices.push_back({});
-        left_weight.push_back({});
-        right_weight.push_back({});
-        for (uint32_t i=0;i<left_indices.back().size();i++)
-        {
-            uint32_t left_index=left_indices.back()[i],right_index=right_indices.back()[i],mid_index=left_index;
-            T left_pos=x[left_index],right_pos=x[right_index],ideal_mid_pos=(left_pos+right_pos)/2;
-            for (uint32_t j=left_index+1;j<right_index;j++)
-                if (fabs(x[j]-ideal_mid_pos)<fabs(x[mid_index]-ideal_mid_pos))
-                    mid_index=j;
-            mid_indices.back().push_back(mid_index);
-            T mid_pos=x[mid_index];
-            T left_dist=mid_pos-left_pos;
-            T right_dist=right_pos-mid_pos;
-            left_weight.back().push_back(right_dist/(left_dist+right_dist));
-            right_weight.back().push_back(left_dist/(left_dist+right_dist));
-        }
-        vector<uint32_t> new_left_indices,new_right_indices;
-        for (uint32_t i=0;i<left_indices.back().size();i++)
-        {
-            uint32_t left_index=left_indices.back()[i],right_index=right_indices.back()[i],mid_index=mid_indices.back()[i];
-            if (mid_index-left_index>1)
-                new_left_indices.push_back(left_index),new_right_indices.push_back(mid_index);
-            if (right_index-mid_index>1)
-                new_left_indices.push_back(mid_index),new_right_indices.push_back(right_index);
-        }
-        set<uint32_t> temp_set;
-        temp_set.insert(compressed_indices.back().begin(),compressed_indices.back().end());
-        temp_set.insert(mid_indices.back().begin(),mid_indices.back().end());
-        compressed_indices.push_back(vector<uint32_t>(temp_set.begin(),temp_set.end()));
-        if (new_left_indices.size()==0)
-            break;
-        else
-            left_indices.push_back(new_left_indices),right_indices.push_back(new_right_indices);
+        compressed_indices0.push_back({0,n0-1});
+        sz3_generate_weight(left_indices0,right_indices0,mid_indices0,compressed_indices0,left_weight0,right_weight0,x0);
     }
+    if (n1==1)
+        compressed_indices1.push_back({0});
+    else
+    {
+        compressed_indices1.push_back({0,n1-1});
+        sz3_generate_weight(left_indices1,right_indices1,mid_indices1,compressed_indices1,left_weight1,right_weight1,x1);
+    }
+    if (n2==1)
+        compressed_indices2.push_back({0});
+    else
+    {
+        compressed_indices2.push_back({0,n2-1});
+        sz3_generate_weight(left_indices2,right_indices2,mid_indices2,compressed_indices2,left_weight2,right_weight2,x2);
+    }
+    uint32_t max_level=max(max(left_indices0.size(),left_indices1.size()),left_indices2.size());
+
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-    for (uint64_t block_id=0;block_id<blocks.size();block_id++) //这个block_id是假的，指的是在需要处理的blocks中的编号，而不是header文件中的编号
+    for (uint64_t block_id=0;block_id<blocks.size();block_id++)
     {
         auto &block=blocks[block_id];
         uint64_t begin_index=block.begin_index;
@@ -78,74 +76,89 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
         corner_encoder.decode(huffman_bs,corner_qb+8*begin_index,8*(end_index-begin_index));
         mrcz::huffman_encoder_class<int64_t> err_encoder;
         err_encoder.load(huffman_bs);
-        err_encoder.decode(huffman_bs,no_corner_err_qb+(header.element_size-8)*begin_index,(header.element_size-8)*(end_index-begin_index));
+        err_encoder.decode(huffman_bs,no_corner_err_qb+(n012-corner_num)*begin_index,(n012-corner_num)*(end_index-begin_index));
         // 重构每个element角上的数据
-        for (uint64_t i=begin_index;i<end_index;i++)
-        {
-            T *element=decompressed_data.data()+i*header.element_size;
-            int64_t *element_corner_qb=corner_qb+8*i;
-            element[0]=element_corner_qb[0]*2*abs_eb;
-            element[n-1]=element_corner_qb[1]*2*abs_eb;
-            element[(n-1)*n]=element_corner_qb[2]*2*abs_eb;
-            element[n*n-1]=element_corner_qb[3]*2*abs_eb;
-            element[(n-1)*n*n]=element_corner_qb[4]*2*abs_eb;
-            element[(n-1)*(n*n+1)]=element_corner_qb[5]*2*abs_eb;
-            element[(n-1)*n*(n+1)]=element_corner_qb[6]*2*abs_eb;
-            element[n*n*n-1]=element_corner_qb[7]*2*abs_eb;
-        }
+        params.reconstruct_corner_number(corner_qb,begin_index,end_index,n2,n12,n012,abs_eb);
         //把no_corner_err_qb转换成err_qb
         for (uint64_t i=begin_index;i<end_index;i++)
         {
-            int64_t *element_err_qb=err_qb+i*header.element_size;
-            int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(header.element_size-8);
-            memcpy(element_err_qb+1,element_no_corner_err_qb,sizeof(int64_t)*(n-2));
-            memcpy(element_err_qb+n,element_no_corner_err_qb+n-2,sizeof(int64_t)*(n2-2*n));
-            memcpy(element_err_qb+n2-n+1,element_no_corner_err_qb+n2-n-2,sizeof(int64_t)*(n-2));
-            memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-4,sizeof(int64_t)*(n3-2*n2));
-            memcpy(element_err_qb+n3-n2+1,element_no_corner_err_qb+n3-n2-4,sizeof(int64_t)*(n-2));
-            memcpy(element_err_qb+n3-n2+n,element_no_corner_err_qb+n3-n2+n-6,sizeof(int64_t)*(n2-2*n));
-            memcpy(element_err_qb+n3-n+1,element_no_corner_err_qb+n3-n-6,sizeof(int64_t)*(n-2));
-        }
-        // 然后重构剩余的数据
-        for (uint64_t i=begin_index;i<end_index;i++)
-        {
-            T *element=decompressed_data.data()+i*header.element_size;
-            int64_t *element_err_qb=err_qb+i*header.element_size;
-            for (uint32_t level=0;level<left_indices.size();level++)
+            int64_t *element_err_qb=err_qb+i*n012;
+            int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(n012-corner_num);
+            if (n2>1)
             {
-                for (auto i0:compressed_indices[level])
-                    for (auto i1:compressed_indices[level])
-                        for (uint32_t i2=0;i2<left_indices[level].size();i2++)
-                        {
-                            uint32_t pos_base=i0*n2+i1*n;
-                            uint32_t mid_pos=pos_base+mid_indices[level][i2];
-                            T left_value=element[pos_base+left_indices[level][i2]];
-                            T right_value=element[pos_base+right_indices[level][i2]];
-                            T pred_value=left_weight[level][i2]*left_value+right_weight[level][i2]*right_value;
-                            element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
-                        }
-                for (auto i0:compressed_indices[level])
-                    for (uint32_t i1=0;i1<left_indices[level].size();i1++)
-                        for (auto i2:compressed_indices[level+1])
-                        {
-                            uint32_t pos_base=i0*n2+i2;
-                            uint32_t mid_pos=pos_base+mid_indices[level][i1]*n;
-                            T left_value=element[pos_base+left_indices[level][i1]*n];
-                            T right_value=element[pos_base+right_indices[level][i1]*n];
-                            T pred_value=left_weight[level][i1]*left_value+right_weight[level][i1]*right_value;
-                            element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
-                        }
-                for (uint32_t i0=0;i0<left_indices[level].size();i0++)
-                    for (auto i1:compressed_indices[level+1])
-                        for (auto i2:compressed_indices[level+1])
-                        {
-                            uint32_t pos_base=i1*n+i2;
-                            uint32_t mid_pos=pos_base+mid_indices[level][i0]*n2;
-                            T left_value=element[pos_base+left_indices[level][i0]*n2];
-                            T right_value=element[pos_base+right_indices[level][i0]*n2];
-                            T pred_value=left_weight[level][i0]*left_value+right_weight[level][i0]*right_value;
-                            element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
-                        }
+                memcpy(element_err_qb+1,element_no_corner_err_qb,sizeof(int64_t)*(n2-2));
+                memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-2,sizeof(int64_t)*(n12-2*n2));
+                memcpy(element_err_qb+n12-n2+1,element_no_corner_err_qb+n12-n2-2,sizeof(int64_t)*(n2-2));
+                memcpy(element_err_qb+n12,element_no_corner_err_qb+n12-4,sizeof(int64_t)*(n012-2*n12));
+                memcpy(element_err_qb+n012-n12+1,element_no_corner_err_qb+n012-n12-4,sizeof(int64_t)*(n2-2));
+                memcpy(element_err_qb+n012-n12+n2,element_no_corner_err_qb+n012-n12+n2-6,sizeof(int64_t)*(n12-2*n2));
+                memcpy(element_err_qb+n012-n2+1,element_no_corner_err_qb+n012-n2-6,sizeof(int64_t)*(n2-2));
+            }
+            else
+            {
+                memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-1,sizeof(int64_t)*(n12-2*n2));
+                memcpy(element_err_qb+n12,element_no_corner_err_qb+n12-2,sizeof(int64_t)*(n012-2*n12));
+                memcpy(element_err_qb+n012-n12+n2,element_no_corner_err_qb+n012-n12+n2-3,sizeof(int64_t)*(n12-2*n2));
+            }
+            // for (uint32_t i=0;i<n012;i++)
+            //     printf("%ld ",element_err_qb[i]);
+            // printf("\n");
+
+            T *element=decompressed_data.data()+i*n012;
+            uint32_t level0=0,level1=0,level2=0;
+            for (uint32_t level=0;level<max_level;level++)
+            {
+                // printf("level=%u, level0=%u, level1=%u, level2=%u\n",level,level0,level1,level2);
+                if (n2>1 && level2<left_indices2.size())
+                {
+                    for (auto i0:compressed_indices0[level0])
+                        for (auto i1:compressed_indices1[level1])
+                            for (uint32_t i2=0;i2<left_indices2[level2].size();i2++)
+                            {
+                                uint32_t pos_base=i0*n12+i1*n2;
+                                uint32_t mid_pos=pos_base+mid_indices2[level2][i2];
+                                T left_value=element[pos_base+left_indices2[level2][i2]];
+                                T right_value=element[pos_base+right_indices2[level2][i2]];
+                                T pred_value=left_weight2[level2][i2]*left_value+right_weight2[level2][i2]*right_value;
+                                element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
+                            }
+                    level2++;
+                }
+                // printf("aaa\n");
+                if (n1>1 && level1<left_indices1.size())
+                {
+                    for (auto i0:compressed_indices0[level0])
+                        for (uint32_t i1=0;i1<left_indices1[level1].size();i1++)
+                            for (auto i2:compressed_indices2[level2])
+                            {
+                                uint32_t pos_base=i0*n12+i2;
+                                uint32_t mid_pos=pos_base+mid_indices1[level1][i1]*n2;
+                                T left_value=element[pos_base+left_indices1[level1][i1]*n2];
+                                T right_value=element[pos_base+right_indices1[level1][i1]*n2];
+                                T pred_value=left_weight1[level1][i1]*left_value+right_weight1[level1][i1]*right_value;
+                                element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
+                                // printf("mid_pos=%u, pred_value=%f, err_qb=%ld, decompressed_value=%f\n",mid_pos,pred_value,element_err_qb[mid_pos],element[mid_pos]);
+                            }
+                    level1++;
+                }
+                // printf("bbb\n");
+                if (n0>1 && level0<left_indices0.size())
+                {
+                    for (uint32_t i0=0;i0<left_indices0[level0].size();i0++)
+                        for (auto i1:compressed_indices1[level1])
+                            for (auto i2:compressed_indices2[level2])
+                            {
+                                uint32_t pos_base=i1*n2+i2;
+                                uint32_t mid_pos=pos_base+mid_indices0[level0][i0]*n12;
+                                T left_value=element[pos_base+left_indices0[level0][i0]*n12];
+                                T right_value=element[pos_base+right_indices0[level0][i0]*n12];
+                                T pred_value=left_weight0[level0][i0]*left_value+right_weight0[level0][i0]*right_value;
+                                element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
+                                // printf("mid_pos=%u, pred_value=%f, err_qb=%ld, decompressed_value=%f\n",mid_pos,pred_value,element_err_qb[mid_pos],element[mid_pos]);
+                            }
+                    level0++;
+                }
+                // printf("ccc\n");
             }
         }
     }
@@ -154,5 +167,5 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
     delete[] err_qb;
     delete[] no_corner_err_qb;
     printf("Decompression time= %f seconds\n",end_time-start_time);
-    printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",params.element_num_to_process*header.element_size*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
+    printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
 }

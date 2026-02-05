@@ -156,7 +156,7 @@ void compress1(mrcz::param_class<T> &params) //已经根据原始数据的格式
         }
         printf("Data range: [%f, %f], abs_eb=%e, rel_eb=%e\n",params.data_range_min[field],params.data_range_max[field],params.abs_eb[field],params.rel_eb[field]);
 
-        if ((is_same<T,float>::value) and (params.rel_eb[field]<1e-6)) //原始数据类型是float，但是需要更高精度的压缩
+        if ((is_same<T,float>::value) and (params.rel_eb[field]<1e-4)) //原始数据类型是float，但是需要更高精度的压缩
         {
             mrcz::param_class<double> params_double(params);
             params_double.data.resize(params.element_num_to_process*params.header.element_size);
@@ -193,9 +193,13 @@ void compress2(mrcz::param_class<T> &params,string field) // 在最终决定para
         params.compress(field);
     else if (params.method=="sz2-0")
     {
-        vector<T> backup_x=params.x;
-        for (uint32_t i=0;i<params.x.size();i++)
-            params.x[i]=(T)i/(params.x.size()-1)*2-1;
+        vector<vector<T>> backup_x=params.x;
+        for (int dim=0;dim<3;dim++)
+            if (params.x[dim].size()>1)
+                for (uint32_t i=0;i<params.x[dim].size();i++)
+                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+            else
+                params.x[dim][0]=0;
         sz2_1_compress(params,field);
         params.x=backup_x;
     }
@@ -203,9 +207,13 @@ void compress2(mrcz::param_class<T> &params,string field) // 在最终决定para
         sz2_1_compress(params,field);
     else if (params.method=="sz3-1")
     {
-        vector<T> backup_x=params.x;
-        for (uint32_t i=0;i<params.x.size();i++)
-            params.x[i]=(T)i/(params.x.size()-1)*2-1;
+        vector<vector<T>> backup_x=params.x;
+        for (int dim=0;dim<3;dim++)
+            if (params.x[dim].size()>1)
+                for (uint32_t i=0;i<params.x[dim].size();i++)
+                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+            else
+                params.x[dim][0]=0;
         sz3_2_compress(params,field);
         params.x=backup_x;
     }

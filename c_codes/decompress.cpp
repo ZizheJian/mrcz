@@ -200,9 +200,13 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
         params.decompress(field);
     else if (params.method=="sz2-0")
     {
-        vector<T> backup_x=params.x;
-        for (uint32_t i=0;i<params.x.size();i++)
-            params.x[i]=(T)i/(params.x.size()-1)*2-1;
+        vector<vector<T>> backup_x=params.x;
+        for (int dim=0;dim<3;dim++)
+            if (params.x[dim].size()>1)
+                for (uint32_t i=0;i<params.x[dim].size();i++)
+                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+            else
+                params.x[dim][0]=0;
         sz2_1_decompress(params,field);
         params.x=backup_x;
     }
@@ -210,9 +214,13 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
         sz2_1_decompress(params,field);
     else if (params.method=="sz3-1")
     {
-        vector<T> backup_x=params.x;
-        for (uint32_t i=0;i<params.x.size();i++)
-            params.x[i]=(T)i/(params.x.size()-1)*2-1;
+        vector<vector<T>> backup_x=params.x;
+        for (int dim=0;dim<3;dim++)
+            if (params.x[dim].size()>1)
+                for (uint32_t i=0;i<params.x[dim].size();i++)
+                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+            else
+                params.x[dim][0]=0;
         sz3_2_decompress(params,field);
         params.x=backup_x;
     }
@@ -292,6 +300,11 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
             for (uint64_t i=begin_address;i<end_address;i++)
             {
                 T err=fabs(params.data[i]-params.decompressed_data[i]);
+                if (err>params.abs_eb[field]*1.1)
+                {
+                    printf("element_index= %lu , original= %f , decompressed= %f , err= %f , abs_eb= %f\n",i,params.data[i],params.decompressed_data[i],err,params.abs_eb[field]);
+                    exit(0);
+                }
                 max_err=max(max_err,(double)err);
                 mse+=err*err;
             }

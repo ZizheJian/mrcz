@@ -5,18 +5,30 @@ namespace mrcz
     template<typename T>
     void param_class<T>::compress(string field)
     {
-        uint32_t n=header.element_shape[0];
-        uint32_t n2=n*n;
-        uint32_t n3=n2*n;
+        uint32_t n0=header.element_shape[0];
+        uint32_t n1=header.element_shape[1];
+        uint32_t n2=header.element_shape[2];
+        uint32_t n12=n1*n2;
+        uint32_t n012=n0*n1*n2;
+        uint32_t corner_num=1;
+        for (uint32_t dim=0;dim<3;dim++)
+            if (header.element_shape[dim]>1)
+                corner_num*=2;
+        vector<T> L0=L[0];
+        vector<T> L1=L[1];
+        vector<T> L2=L[2];
+        vector<T> neg_L0=neg_L[0];
+        vector<T> neg_L1=neg_L[1];
+        vector<T> neg_L2=neg_L[2];
         T abs_eb=this->abs_eb[field];
         T coeff_eb=abs_eb*coeff_eb_scale;
         T zero_coeff_bound=coeff_eb*zero_coeff_qb_bound;
         T neg_2_coeff_eb=1/(2*coeff_eb);
         T neg_2_eb=1/(2*abs_eb);
         int64_t *corner_qb=new int64_t[8*element_num_to_process];
-        int64_t *coeff_qb=new int64_t[element_num_to_process*n3];
-        int64_t *err_qb=new int64_t[element_num_to_process*n3];
-        int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(n3-8)];
+        int64_t *coeff_qb=new int64_t[element_num_to_process*n012];
+        int64_t *err_qb=new int64_t[element_num_to_process*n012];
+        int64_t *no_corner_err_qb=new int64_t[element_num_to_process*(n012-corner_num)];
         // ofstream coeff_file(data_path+"_coeff",ios::binary);
         // ofstream err_file(data_path+"_err",ios::binary);
         printf("Begin compressing\n");
@@ -30,38 +42,38 @@ namespace mrcz
             // 先量化位于每个element位于角上的点，覆盖原数据
             // 之后可能要改成压缩率更高的方法。因为可能使用跨element预测，所以放在element级for循环外面
             if (if_corner_based_prediction)
-                quantize_and_overwrite_corner_numbers(corner_qb,begin_index,end_index,n,n2,n3,abs_eb,neg_2_eb);
+                quantize_and_overwrite_corner_numbers(corner_qb,begin_index,end_index,n2,n12,n012,abs_eb,neg_2_eb);
             // 然后量化剩余的数据
-            vector<T> temp_element1(n3,0),temp_element2(n3,0);
+            vector<T> temp_element1(n012,0),temp_element2(n012,0);
             for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
             {
-                T *element=data.data()+element_id*n3;
-                int64_t *element_f_qb=coeff_qb+element_id*n3;
-                int64_t *element_err_qb=err_qb+element_id*n3;
-                int64_t *element_no_corner_err_qb=no_corner_err_qb+element_id*(n3-8);
+                T *element=data.data()+element_id*n012;
+                int64_t *element_f_qb=coeff_qb+element_id*n012;
+                int64_t *element_err_qb=err_qb+element_id*n012;
+                int64_t *element_no_corner_err_qb=no_corner_err_qb+element_id*(n012-corner_num);
                 // 使用8个角上的数据插值其他数据
                 if (if_corner_based_prediction)
-                    subtract_element_base(element,n,n2,n3);
+                    subtract_element_base(element,n2,n12,n012);
                 // 正变换
-                forward_transform(temp_element1,temp_element2,element,n,n2,n3);
-                // coeff_file.write(reinterpret_cast<char*>(temp_element1.data()),sizeof(T)*n3);
+                forward_transform(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
+                // coeff_file.write(reinterpret_cast<char*>(temp_element1.data()),sizeof(T)*n012);
                 // 量化
                 if (if_zero_freq_expanding)
-                    quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n3,coeff_eb,neg_2_coeff_eb,zero_coeff_bound);
+                    quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb,zero_coeff_bound);
                 else
-                    quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n3,coeff_eb,neg_2_coeff_eb);
+                    quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb);
                 // 反变换
-                inverse_transform(temp_element1,temp_element2,n,n2,n3);
-                // vector<T> err(n3,0);
-                // for (uint32_t i=0;i<n3;i++)
+                inverse_transform(temp_element1,temp_element2,n0,n1,n2,n12,n012,L0,L1,L2);
+                // vector<T> err(n012,0);
+                // for (uint32_t i=0;i<n012;i++)
                 //     err[i]=temp_element2[i]-element[i];
-                // err_file.write(reinterpret_cast<char*>(err.data()),sizeof(T)*n3);
-                quantize_err_array(temp_element2.data(),element,element_err_qb,n3,abs_eb,neg_2_eb);
+                // err_file.write(reinterpret_cast<char*>(err.data()),sizeof(T)*n012);
+                quantize_err_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,neg_2_eb);
                 if (if_corner_based_prediction)
-                    convert_err_eb_to_no_corner_err_eb(element_no_corner_err_qb,element_err_qb,n,n2,n3);
+                    convert_err_eb_to_no_corner_err_eb(element_no_corner_err_qb,element_err_qb,n2,n12,n012);
             }
             // 无损压缩
-            vector<unsigned char> huffman_bs_vec((2*n3+8)*(end_index-begin_index)*sizeof(int64_t),0);
+            vector<unsigned char> huffman_bs_vec((2*n012+8)*(end_index-begin_index)*sizeof(int64_t),0);
             unsigned char *huffman_bs=huffman_bs_vec.data();
             if (if_corner_based_prediction)
             {
@@ -71,22 +83,22 @@ namespace mrcz
                 corner_encoder.encode(corner_qb+8*begin_index,8*(end_index-begin_index),huffman_bs);
             }
             if (if_zero_map)
-                lossless_compress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs);
+                lossless_compress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n012);
             else
-                lossless_compress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs);
+                lossless_compress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
             if (if_corner_based_prediction)
             {
                 huffman_encoder_class<int64_t> err_encoder;
-                err_encoder.preprocess_encode(no_corner_err_qb+begin_index*(n3-8),(n3-8)*(end_index-begin_index));
+                err_encoder.preprocess_encode(no_corner_err_qb+begin_index*(n012-corner_num),(n012-corner_num)*(end_index-begin_index));
                 err_encoder.save(huffman_bs);
-                err_encoder.encode(no_corner_err_qb+begin_index*(n3-8),(n3-8)*(end_index-begin_index),huffman_bs);
+                err_encoder.encode(no_corner_err_qb+begin_index*(n012-corner_num),(n012-corner_num)*(end_index-begin_index),huffman_bs);
             }
             else
             {
                 huffman_encoder_class<int64_t> err_encoder;
-                err_encoder.preprocess_encode(err_qb+begin_index*n3,n3*(end_index-begin_index));
+                err_encoder.preprocess_encode(err_qb+begin_index*n012,n012*(end_index-begin_index));
                 err_encoder.save(huffman_bs);
-                err_encoder.encode(err_qb+begin_index*n3,n3*(end_index-begin_index),huffman_bs);
+                err_encoder.encode(err_qb+begin_index*n012,n012*(end_index-begin_index),huffman_bs);
             }
             uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
             uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
@@ -100,34 +112,49 @@ namespace mrcz
         delete[] err_qb;
         delete[] no_corner_err_qb;
         printf("Compression time= %f seconds\n",end_time-start_time);
-        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*n3*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
     }
 
     template<typename T>
-    inline void param_class<T>::quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,
+    inline void param_class<T>::quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n2,uint32_t n12,uint32_t n012,
         T abs_eb,T neg_2_eb)
     {
-        for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
-        {
-            T *element=data.data()+element_id*n3;
-            int64_t *element_corner_qb=corner_qb+8*element_id;
-            quantize_and_overwrite(element[0],element_corner_qb[0],abs_eb,neg_2_eb);
-            quantize_and_overwrite(element[n-1],element_corner_qb[1],abs_eb,neg_2_eb);
-            quantize_and_overwrite(element[n2-n],element_corner_qb[2],abs_eb,neg_2_eb);
-            quantize_and_overwrite(element[n2-1],element_corner_qb[3],abs_eb,neg_2_eb);
-            quantize_and_overwrite(element[n3-n2],element_corner_qb[4],abs_eb,neg_2_eb);
-            quantize_and_overwrite(element[n3-n2+n-1],element_corner_qb[5],abs_eb,neg_2_eb);
-            quantize_and_overwrite(element[n3-n],element_corner_qb[6],abs_eb,neg_2_eb);
-            quantize_and_overwrite(element[n3-1],element_corner_qb[7],abs_eb,neg_2_eb);
-        }
+        if (n2>1)
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            {
+                T *element=data.data()+element_id*n012;
+                int64_t *element_corner_qb=corner_qb+8*element_id;
+                quantize_and_overwrite(element[0],element_corner_qb[0],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n2-1],element_corner_qb[1],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n12-n2],element_corner_qb[2],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n12-1],element_corner_qb[3],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n012-n12],element_corner_qb[4],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n012-n12+n2-1],element_corner_qb[5],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n012-n2],element_corner_qb[6],abs_eb,neg_2_eb);
+                quantize_and_overwrite(element[n012-1],element_corner_qb[7],abs_eb,neg_2_eb);
+            }
+        else
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            {
+                T *element=data.data()+element_id*n012;
+                int64_t *element_corner_qb=corner_qb+8*element_id;
+                quantize_and_overwrite(element[0],element_corner_qb[0],abs_eb,neg_2_eb);
+                element_corner_qb[1]=element_corner_qb[0];
+                quantize_and_overwrite(element[n12-n2],element_corner_qb[2],abs_eb,neg_2_eb);
+                element_corner_qb[3]=element_corner_qb[2];
+                quantize_and_overwrite(element[n012-n12],element_corner_qb[4],abs_eb,neg_2_eb);
+                element_corner_qb[5]=element_corner_qb[4];
+                quantize_and_overwrite(element[n012-n2],element_corner_qb[6],abs_eb,neg_2_eb);
+                element_corner_qb[7]=element_corner_qb[6];
+            }
     }
 
     template<>
-    inline void param_class<float>::subtract_element_base(float *element,uint32_t n,uint32_t n2,uint32_t n3)
+    inline void param_class<float>::subtract_element_base(float *element,uint32_t n2,uint32_t n12,uint32_t n012)
     {
-        __m256 vec_corner_numbers=_mm256_set_ps(element[n3-1],element[n3-n],element[n3-n2+n-1],element[n3-n2],
-                                                element[n2-1],element[n2-n],element[n-1],element[0]);
-        for (uint32_t pos=0;pos<n3;pos++)
+        __m256 vec_corner_numbers=_mm256_set_ps(element[n012-1],element[n012-n2],element[n012-n12+n2-1],element[n012-n12],
+                                                element[n12-1],element[n12-n2],element[n2-1],element[0]);
+        for (uint32_t pos=0;pos<n012;pos++)
         {
             uint32_t bias=8*pos;
             __m256 vec_element_base_weight=_mm256_loadu_ps(element_base_weight.data()+bias);
@@ -143,11 +170,11 @@ namespace mrcz
     }
 
     template<>
-    inline void param_class<double>::subtract_element_base(double *element,uint32_t n,uint32_t n2,uint32_t n3)
+    inline void param_class<double>::subtract_element_base(double *element,uint32_t n2,uint32_t n12,uint32_t n012)
     {
-        __m256d vec_corner_numbers_1=_mm256_set_pd(element[n3-1],element[n3-n],element[n3-n2+n-1],element[n3-n2]);
-        __m256d vec_corner_numbers_2=_mm256_set_pd(element[n2-1],element[n2-n],element[n-1],element[0]);
-        for (uint32_t pos=0;pos<n3;pos++)
+        __m256d vec_corner_numbers_1=_mm256_set_pd(element[n012-1],element[n012-n2],element[n012-n12+n2-1],element[n012-n12]);
+        __m256d vec_corner_numbers_2=_mm256_set_pd(element[n12-1],element[n12-n2],element[n2-1],element[0]);
+        for (uint32_t pos=0;pos<n012;pos++)
         {
             uint32_t bias=8*pos;
             __m256d vec_element_base_weight_1=_mm256_loadu_pd(element_base_weight.data()+bias+4);
@@ -165,77 +192,87 @@ namespace mrcz
     }
 
     template<typename T>
-    inline void param_class<T>::forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n,uint32_t n2,uint32_t n3)
+    inline void param_class<T>::forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,
+        uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2)
     {
-        memset(temp_element1.data(),0,sizeof(T)*n3);
-        for (uint32_t i=0;i<n;i++)
-            for (uint32_t a=0;a<n;a++)
-                for (uint32_t b=0;b<n;b++)
-                    for (uint32_t c=0;c<n;c++)
-                        temp_element1[i*n2+b*n+c]+=element[a*n2+b*n+c]*neg_L[a*n+i];
-        memset(temp_element2.data(),0,sizeof(T)*n3);
-        for (uint32_t i=0;i<n;i++)
-            for (uint32_t b=0;b<n;b++)
-                for (uint32_t j=0;j<n;j++)
-                    for (uint32_t c=0;c<n;c++)
-                        temp_element2[i*n2+j*n+c]+=temp_element1[i*n2+b*n+c]*neg_L[b*n+j];
-        memset(temp_element1.data(),0,sizeof(T)*n3);
-        for (uint32_t i=0;i<n;i++)
-            for (uint32_t j=0;j<n;j++)
-                for (uint32_t k=0;k<n;k++)
-                    for (uint32_t c=0;c<n;c++)
-                        temp_element1[i*n2+j*n+k]+=temp_element2[i*n2+j*n+c]*neg_L[c*n+k];
+        memset(temp_element1.data(),0,sizeof(T)*n012);
+        for (uint32_t i=0;i<n0;i++)
+            for (uint32_t a=0;a<n0;a++)
+                for (uint32_t b=0;b<n1;b++)
+                    for (uint32_t c=0;c<n2;c++)
+                        temp_element1[i*n12+b*n2+c]+=element[a*n12+b*n2+c]*neg_L0[a*n0+i];
+        memset(temp_element2.data(),0,sizeof(T)*n012);
+        for (uint32_t i=0;i<n0;i++)
+            for (uint32_t b=0;b<n1;b++)
+                for (uint32_t j=0;j<n1;j++)
+                    for (uint32_t c=0;c<n2;c++)
+                        temp_element2[i*n12+j*n2+c]+=temp_element1[i*n12+b*n2+c]*neg_L1[b*n1+j];
+        memset(temp_element1.data(),0,sizeof(T)*n012);
+        for (uint32_t i=0;i<n0;i++)
+            for (uint32_t j=0;j<n1;j++)
+                for (uint32_t k=0;k<n2;k++)
+                    for (uint32_t c=0;c<n2;c++)
+                        temp_element1[i*n12+j*n2+k]+=temp_element2[i*n12+j*n2+c]*neg_L2[c*n2+k];
     }
 
     template<typename T>
-    inline void param_class<T>::inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n,uint32_t n2,uint32_t n3)
+    inline void param_class<T>::inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,
+        uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,vector<T> &L0,vector<T> &L1,vector<T> &L2)
     {
-        memset(temp_element2.data(),0,sizeof(T)*n3);
-        for (uint32_t i=0;i<n;i++)
-            for (uint32_t j=0;j<n;j++)
-                for (uint32_t k=0;k<n;k++)
-                    for (uint32_t c=0;c<n;c++)
-                        temp_element2[i*n2+j*n+c]+=temp_element1[i*n2+j*n+k]*L[k*n+c];
-        memset(temp_element1.data(),0,sizeof(T)*n3);
-        for (uint32_t i=0;i<n;i++)
-            for (uint32_t j=0;j<n;j++)
-                for (uint32_t b=0;b<n;b++)
-                    for (uint32_t c=0;c<n;c++)
-                        temp_element1[i*n2+b*n+c]+=temp_element2[i*n2+j*n+c]*L[j*n+b];
-        memset(temp_element2.data(),0,sizeof(T)*n3);
-        for (uint32_t i=0;i<n;i++)
-            for (uint32_t a=0;a<n;a++)
-                for (uint32_t b=0;b<n;b++)
-                    for (uint32_t c=0;c<n;c++)
-                        temp_element2[a*n2+b*n+c]+=temp_element1[i*n2+b*n+c]*L[i*n+a];
+        memset(temp_element2.data(),0,sizeof(T)*n012);
+        for (uint32_t i=0;i<n0;i++)
+            for (uint32_t j=0;j<n1;j++)
+                for (uint32_t k=0;k<n2;k++)
+                    for (uint32_t c=0;c<n2;c++)
+                        temp_element2[i*n12+j*n2+c]+=temp_element1[i*n12+j*n2+k]*L2[k*n2+c];
+        memset(temp_element1.data(),0,sizeof(T)*n012);
+        for (uint32_t i=0;i<n0;i++)
+            for (uint32_t j=0;j<n1;j++)
+                for (uint32_t b=0;b<n1;b++)
+                    for (uint32_t c=0;c<n2;c++)
+                        temp_element1[i*n12+b*n2+c]+=temp_element2[i*n12+j*n2+c]*L1[j*n1+b];
+        memset(temp_element2.data(),0,sizeof(T)*n012);
+        for (uint32_t i=0;i<n0;i++)
+            for (uint32_t a=0;a<n0;a++)
+                for (uint32_t b=0;b<n1;b++)
+                    for (uint32_t c=0;c<n2;c++)
+                        temp_element2[a*n12+b*n2+c]+=temp_element1[i*n12+b*n2+c]*L0[i*n0+a];
     }
 
     template<typename T>
-    inline void param_class<T>::convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n,uint32_t n2,uint32_t n3)
+    inline void param_class<T>::convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n2,uint32_t n12,uint32_t n012)
     {
-        memcpy(element_no_corner_err_qb,element_err_qb+1,sizeof(int64_t)*(n-2));
-        memcpy(element_no_corner_err_qb+n-2,element_err_qb+n,sizeof(int64_t)*(n2-2*n));
-        memcpy(element_no_corner_err_qb+n2-n-2,element_err_qb+n2-n+1,sizeof(int64_t)*(n-2));
-        memcpy(element_no_corner_err_qb+n2-4,element_err_qb+n2,sizeof(int64_t)*(n3-2*n2));
-        memcpy(element_no_corner_err_qb+n3-n2-4,element_err_qb+n3-n2+1,sizeof(int64_t)*(n-2));
-        memcpy(element_no_corner_err_qb+n3-n2+n-6,element_err_qb+n3-n2+n,sizeof(int64_t)*(n2-2*n));
-        memcpy(element_no_corner_err_qb+n3-n-6,element_err_qb+n3-n+1,sizeof(int64_t)*(n-2));
+        if (n2>1)
+        {
+            memcpy(element_no_corner_err_qb,element_err_qb+1,sizeof(int64_t)*(n2-2));
+            memcpy(element_no_corner_err_qb+n2-2,element_err_qb+n2,sizeof(int64_t)*(n12-2*n2));
+            memcpy(element_no_corner_err_qb+n12-n2-2,element_err_qb+n12-n2+1,sizeof(int64_t)*(n2-2));
+            memcpy(element_no_corner_err_qb+n12-4,element_err_qb+n12,sizeof(int64_t)*(n012-2*n12));
+            memcpy(element_no_corner_err_qb+n012-n12-4,element_err_qb+n012-n12+1,sizeof(int64_t)*(n2-2));
+            memcpy(element_no_corner_err_qb+n012-n12+n2-6,element_err_qb+n012-n12+n2,sizeof(int64_t)*(n12-2*n2));
+            memcpy(element_no_corner_err_qb+n012-n2-6,element_err_qb+n012-n2+1,sizeof(int64_t)*(n2-2));
+        }
+        else
+        {
+            memcpy(element_no_corner_err_qb+n2-1,element_err_qb+n2,sizeof(int64_t)*(n12-2*n2));
+            memcpy(element_no_corner_err_qb+n12-2,element_err_qb+n12,sizeof(int64_t)*(n012-2*n12));
+            memcpy(element_no_corner_err_qb+n012-n12+n2-3,element_err_qb+n012-n12+n2,sizeof(int64_t)*(n12-2*n2));
+        }
     }
 
     template<typename T>
-    inline void param_class<T>::lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs)
+    inline void param_class<T>::lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012)
     {
-        uint32_t n3=header.element_size;
         bool coeff_qb_all_zero=true;//coeff_qb全0
         bool coeff_qb_none_zero=true;//所有沿着element_id维度的柱子上至少有一个非0
         uint32_t all_zero_num=0;//沿着element_id的维度上全0的柱子数量
-        vector<bool> coeff_qb_zero_map(n3,true);//沿着element_id的维度上全0的柱子的标记
-        vector<uint32_t> coeff_qb_compact_pos(n3,0);//从非全0的柱子位置到紧凑存储时的位置的映射
+        vector<bool> coeff_qb_zero_map(n012,true);//沿着element_id的维度上全0的柱子的标记
+        vector<uint32_t> coeff_qb_compact_pos(n012,0);//从非全0的柱子位置到紧凑存储时的位置的映射
         for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
-            for (uint32_t pos=0;pos<n3;pos++)
-                if (coeff_qb[element_id*n3+pos]!=0)
+            for (uint32_t pos=0;pos<n012;pos++)
+                if (coeff_qb[element_id*n012+pos]!=0)
                     coeff_qb_zero_map[pos]=false;
-        for (uint32_t pos=0;pos<n3;pos++)
+        for (uint32_t pos=0;pos<n012;pos++)
         {
             coeff_qb_compact_pos[pos]=pos-all_zero_num;
             if (coeff_qb_zero_map[pos]==true)
@@ -248,9 +285,9 @@ namespace mrcz
         }
         for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
         {
-            auto original_element_f_qb=coeff_qb+element_id*n3;
-            auto compact_element_f_qb=coeff_qb+begin_index*n3+(element_id-begin_index)*(n3-all_zero_num);
-            for (uint32_t pos=0;pos<n3;pos++)
+            auto original_element_f_qb=coeff_qb+element_id*n012;
+            auto compact_element_f_qb=coeff_qb+begin_index*n012+(element_id-begin_index)*(n012-all_zero_num);
+            for (uint32_t pos=0;pos<n012;pos++)
                 if (coeff_qb_zero_map[pos]==false)
                     compact_element_f_qb[coeff_qb_compact_pos[pos]]=original_element_f_qb[pos];
         }
@@ -269,7 +306,7 @@ namespace mrcz
         {
             huffman_bs[0]=0x40;
             uint32_t used_bits=2;
-            for (uint32_t pos=0;pos<n3;pos++)
+            for (uint32_t pos=0;pos<n012;pos++)
             {
                 if (coeff_qb_zero_map[pos]==true)
                     huffman_bs[0]|=((unsigned char)1)<<(7-used_bits);
@@ -287,47 +324,46 @@ namespace mrcz
         if (!coeff_qb_all_zero)
             if (if_coefficient_transpose)
             {
-                int64_t *temp_coeff_qb=new int64_t[(n3-all_zero_num)*(end_index-begin_index)];
-                for (uint32_t pos=0;pos<n3-all_zero_num;pos++)
+                int64_t *temp_coeff_qb=new int64_t[(n012-all_zero_num)*(end_index-begin_index)];
+                for (uint32_t pos=0;pos<n012-all_zero_num;pos++)
                     for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
-                        temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[begin_index*n3+(element_id-begin_index)*(n3-all_zero_num)+pos];
+                        temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[begin_index*n012+(element_id-begin_index)*(n012-all_zero_num)+pos];
                 huffman_encoder_class<int64_t> f_encoder;
-                f_encoder.preprocess_encode(temp_coeff_qb,(n3-all_zero_num)*(end_index-begin_index));
+                f_encoder.preprocess_encode(temp_coeff_qb,(n012-all_zero_num)*(end_index-begin_index));
                 f_encoder.save(huffman_bs);
-                f_encoder.encode(temp_coeff_qb,(n3-all_zero_num)*(end_index-begin_index),huffman_bs);
+                f_encoder.encode(temp_coeff_qb,(n012-all_zero_num)*(end_index-begin_index),huffman_bs);
                 delete[] temp_coeff_qb;
             }
             else
             {
                 huffman_encoder_class<int64_t> f_encoder;
-                f_encoder.preprocess_encode(coeff_qb+begin_index*n3,(n3-all_zero_num)*(end_index-begin_index));
+                f_encoder.preprocess_encode(coeff_qb+begin_index*n012,(n012-all_zero_num)*(end_index-begin_index));
                 f_encoder.save(huffman_bs);
-                f_encoder.encode(coeff_qb+begin_index*n3,(n3-all_zero_num)*(end_index-begin_index),huffman_bs);
+                f_encoder.encode(coeff_qb+begin_index*n012,(n012-all_zero_num)*(end_index-begin_index),huffman_bs);
             }
     }
 
     template<typename T>
-    inline void param_class<T>::lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs)
+    inline void param_class<T>::lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012)
     {
-        uint32_t n3=header.element_size;
         if (if_coefficient_transpose)
         {
-            int64_t *temp_coeff_qb=new int64_t[n3*(end_index-begin_index)];
-            for (uint32_t pos=0;pos<n3;pos++)
+            int64_t *temp_coeff_qb=new int64_t[n012*(end_index-begin_index)];
+            for (uint32_t pos=0;pos<n012;pos++)
                 for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
-                    temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[element_id*n3+pos];
+                    temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[element_id*n012+pos];
             huffman_encoder_class<int64_t> f_encoder;
-            f_encoder.preprocess_encode(temp_coeff_qb,n3*(end_index-begin_index));
+            f_encoder.preprocess_encode(temp_coeff_qb,n012*(end_index-begin_index));
             f_encoder.save(huffman_bs);
-            f_encoder.encode(temp_coeff_qb,n3*(end_index-begin_index),huffman_bs);
+            f_encoder.encode(temp_coeff_qb,n012*(end_index-begin_index),huffman_bs);
             delete[] temp_coeff_qb;
         }
         else
         {
             huffman_encoder_class<int64_t> f_encoder;
-            f_encoder.preprocess_encode(coeff_qb+begin_index*n3,n3*(end_index-begin_index));
+            f_encoder.preprocess_encode(coeff_qb+begin_index*n012,n012*(end_index-begin_index));
             f_encoder.save(huffman_bs);
-            f_encoder.encode(coeff_qb+begin_index*n3,n3*(end_index-begin_index),huffman_bs);
+            f_encoder.encode(coeff_qb+begin_index*n012,n012*(end_index-begin_index),huffman_bs);
         }
     }
 }

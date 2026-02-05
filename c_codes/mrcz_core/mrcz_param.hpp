@@ -48,7 +48,7 @@ namespace mrcz
     class param_class
     {
         public:
-            bool if_better_corner_compression=false;
+            bool if_chebyshev=true;
             bool if_corner_based_prediction=false;
             bool if_zero_freq_expanding=true;
             bool if_coefficient_transpose=true;
@@ -80,8 +80,8 @@ namespace mrcz
             int max_cpus=128;
             T coeff_eb_scale=0.05;
             T zero_coeff_qb_bound=3;
-            vector<T> x;
-            vector<T> L,neg_L;
+            vector<vector<T>> x;
+            vector<vector<T>> L,neg_L;
             vector<T> element_base_weight;
             vector<uint32_t> no_corner_pos;
 
@@ -101,15 +101,17 @@ namespace mrcz
             void quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,
                 T abs_eb,T neg_2_eb);
             void subtract_element_base(T *element,uint32_t n,uint32_t n2,uint32_t n3);
-            void forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n,uint32_t n2,uint32_t n3);
-            void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n,uint32_t n2,uint32_t n3);
+            void forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+                vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
+            void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+                vector<T> &L0,vector<T> &L1,vector<T> &L2);
             void convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n,uint32_t n2,uint32_t n3);
-            void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs);
-            void lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *f_qb,unsigned char *&huffman_bs);
+            void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
+            void lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *f_qb,unsigned char *&huffman_bs,uint32_t n012);
 
             void decompress(string field);
-            void lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs);
-            void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs);
+            void lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
+            void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
             void reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,T abs_eb);
             void add_element_base(T *element,uint32_t n,uint32_t n2,uint32_t n3);
 
@@ -121,57 +123,67 @@ namespace mrcz
 
             void default_init()
             {
-                if (header.element_shape.size()!=3)
-                    throw runtime_error("element必须是三维的");
-                x=compute_GLL_nodes<T>(header.element_shape[0]);
                 if ((!std::is_same<T,float>::value) && (!std::is_same<T,double>::value))
                     throw runtime_error("仅能以float或double类型处理数据");
-                uint32_t n=x.size();
-                uint32_t n2=n*n;
-                uint32_t n3=n2*n;
-                for (uint32_t i=0;i<n;i++)
+                if (header.element_shape.size()!=3)
+                    throw runtime_error("element必须是三维的");
+                for (int dim=0;dim<3;dim++)
                 {
-                    if (i==0)
-                        for (uint32_t j=0;j<n;j++)
-                            L.push_back(1);
-                    else if (i==1)
-                        for (uint32_t j=0;j<n;j++)
-                            L.push_back(x[j]);
-                    else
-                        for (uint32_t j=0;j<n;j++)
-                            L.push_back(2*x[j]*L[(i-1)*n+j]-L[(i-2)*n+j]);
+                    x.push_back(compute_GLL_nodes<T>(header.element_shape[dim]));
+                    uint32_t n=x[dim].size();
+                    L.push_back(vector<T>());
+                    for (uint32_t i=0;i<n;i++)
+                    {
+                        if (i==0)
+                            for (uint32_t j=0;j<n;j++)
+                                L[dim].push_back(1);
+                        else if (i==1)
+                            for (uint32_t j=0;j<n;j++)
+                                L[dim].push_back(x[dim][j]);
+                        else
+                            for (uint32_t j=0;j<n;j++)
+                                if (if_chebyshev)
+                                    L[dim].push_back(2*x[dim][j]*L[dim][(i-1)*n+j]-L[dim][(i-2)*n+j]);
+                                else
+                                    L[dim].push_back(((2*i-1)*x[dim][j]*L[dim][(i-1)*n+j]-(i-1)*L[dim][(i-2)*n+j])/i);
+                    }
+                    neg_L.push_back(vector<T>());
+                    neg_L[dim]=simple_invert_matrix(L[dim],n);
                 }
-                neg_L=simple_invert_matrix(L,n);
-                element_base_weight=vector<T>(8*n*n*n,0);
-                for (uint32_t i0=0;i0<n;i0++)
-                    for (uint32_t i1=0;i1<n;i1++)
-                        for (uint32_t i2=0;i2<n;i2++)
+                uint32_t n0=header.element_shape[0];
+                uint32_t n1=header.element_shape[1];
+                uint32_t n2=header.element_shape[2];
+                uint32_t n12=n1*n2;
+                uint32_t n012=n0*n1*n2;
+                element_base_weight=vector<T>(8*n012,0);
+                for (uint32_t i0=0;i0<n0;i0++)
+                    for (uint32_t i1=0;i1<n1;i1++)
+                        for (uint32_t i2=0;i2<n2;i2++)
                         {
-                            uint32_t bias=8*(i0*n*n+i1*n+i2);
-                            element_base_weight[bias+0]=((1-x[i0])*(1-x[i1])*(1-x[i2]))/8;
-                            element_base_weight[bias+1]=((1-x[i0])*(1-x[i1])*(x[i2]+1))/8;
-                            element_base_weight[bias+2]=((1-x[i0])*(x[i1]+1)*(1-x[i2]))/8;
-                            element_base_weight[bias+3]=((1-x[i0])*(x[i1]+1)*(x[i2]+1))/8;
-                            element_base_weight[bias+4]=((x[i0]+1)*(1-x[i1])*(1-x[i2]))/8;
-                            element_base_weight[bias+5]=((x[i0]+1)*(1-x[i1])*(x[i2]+1))/8;
-                            element_base_weight[bias+6]=((x[i0]+1)*(x[i1]+1)*(1-x[i2]))/8;
-                            element_base_weight[bias+7]=((x[i0]+1)*(x[i1]+1)*(x[i2]+1))/8;
+                            uint32_t bias=8*(i0*n12+i1*n2+i2);
+                            element_base_weight[bias+0]=((1-x[0][i0])*(1-x[1][i1])*(1-x[2][i2]))/8;
+                            element_base_weight[bias+1]=((1-x[0][i0])*(1-x[1][i1])*(x[2][i2]+1))/8;
+                            element_base_weight[bias+2]=((1-x[0][i0])*(x[1][i1]+1)*(1-x[2][i2]))/8;
+                            element_base_weight[bias+3]=((1-x[0][i0])*(x[1][i1]+1)*(x[2][i2]+1))/8;
+                            element_base_weight[bias+4]=((x[0][i0]+1)*(1-x[1][i1])*(1-x[2][i2]))/8;
+                            element_base_weight[bias+5]=((x[0][i0]+1)*(1-x[1][i1])*(x[2][i2]+1))/8;
+                            element_base_weight[bias+6]=((x[0][i0]+1)*(x[1][i1]+1)*(1-x[2][i2]))/8;
+                            element_base_weight[bias+7]=((x[0][i0]+1)*(x[1][i1]+1)*(x[2][i2]+1))/8;
                         }
-                no_corner_pos.resize(n3-8);
-                for (uint32_t i=1;i<n-1;i++)
-                    no_corner_pos[i-1]=i;
-                for (uint32_t i=n;i<n2-n;i++)
-                    no_corner_pos[i-2]=i;
-                for (uint32_t i=n2-n+1;i<n2-1;i++)
-                    no_corner_pos[i-3]=i;
-                for (uint32_t i=n2;i<n3-n2;i++)
-                    no_corner_pos[i-4]=i;
-                for (uint32_t i=n3-n2+1;i<n3-n2+n-1;i++)
-                    no_corner_pos[i-5]=i;
-                for (uint32_t i=n3-n2+n;i<n3-n;i++)
-                    no_corner_pos[i-6]=i;
-                for (uint32_t i=n3-n+1;i<n3-1;i++)
-                    no_corner_pos[i-7]=i;
+                for (uint32_t i=1;i<n2-1;i++)
+                    no_corner_pos.push_back(i);
+                for (uint32_t i=n2;i<n12-n2;i++)
+                    no_corner_pos.push_back(i);
+                for (uint32_t i=n12-n2+1;i<n12-1;i++)
+                    no_corner_pos.push_back(i);
+                for (uint32_t i=n12;i<n012-n12;i++)
+                    no_corner_pos.push_back(i);
+                for (uint32_t i=n012-n12+1;i<n012-n12+n2-1;i++)
+                    no_corner_pos.push_back(i);
+                for (uint32_t i=n012-n12+n2;i<n012-n2;i++)
+                    no_corner_pos.push_back(i);
+                for (uint32_t i=n012-n2+1;i<n012-1;i++)
+                    no_corner_pos.push_back(i);
             }
 
             param_class(){}
@@ -179,7 +191,7 @@ namespace mrcz
             template<typename T2>
             param_class(param_class<T2> &other)
             {
-                if_better_corner_compression=other.if_better_corner_compression;
+                if_chebyshev=other.if_chebyshev;
                 if_corner_based_prediction=other.if_corner_based_prediction;
                 if_zero_freq_expanding=other.if_zero_freq_expanding;
                 if_coefficient_transpose=other.if_coefficient_transpose;
