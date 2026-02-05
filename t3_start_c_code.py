@@ -2,7 +2,7 @@ import os,subprocess
 
 redbegin="\033[91m"
 redend="\033[0m"
-silent_build=True
+silent_build=False
 
 def run_command(command,silent=False):
     import pty,errno
@@ -45,13 +45,13 @@ def run_command(command,silent=False):
 #   "sperr": 对每个element执行sperr的3维压缩
 
 method="mrcz"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/xmdv_data/newtgv0.f00016"
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 eb_mode="ABS"
 eb=1e-7
-fields=["P"]
+fields=["UZ"]
 
 if method=="mrcz" or method=="sz3-1" or method=="sz3-nekrs" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
     try:

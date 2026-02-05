@@ -51,7 +51,7 @@ namespace mrcz
             bool if_better_corner_compression=false;
             bool if_corner_based_prediction=false;
             bool if_zero_freq_expanding=true;
-            bool if_coefficient_transpose=false;
+            bool if_coefficient_transpose=true;
             bool if_zero_map=true;
 
             string data_path;

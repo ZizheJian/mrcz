@@ -1,6 +1,5 @@
-mrcz_env/
-fig/
-build/
-install/
-c_codes/third_party/sz3/build
-c_codes/third_party/sz3/install
+mrcz_env/*
+fig/*
+build/*
+install/*
+c_codes/third_party/*
