@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/x-zjian1/unsz/c_codes
+CMAKE_SOURCE_DIR = /home/x-zjian1/mrcz/c_codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/x-zjian1/unsz/build
+CMAKE_BINARY_DIR = /home/x-zjian1/mrcz/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles /home/x-zjian1/unsz/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/mrcz/build/CMakeFiles /home/x-zjian1/mrcz/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/mrcz/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -162,30 +162,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named jzzz_compress
+# Target rules for targets named mrcz_compress
 
 # Build rule for target.
-jzzz_compress: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz_compress
-.PHONY : jzzz_compress
+mrcz_compress: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mrcz_compress
+.PHONY : mrcz_compress
 
 # fast build rule for target.
-jzzz_compress/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/build
-.PHONY : jzzz_compress/fast
+mrcz_compress/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_compress.dir/build.make CMakeFiles/mrcz_compress.dir/build
+.PHONY : mrcz_compress/fast
 
 #=============================================================================
-# Target rules for targets named jzzz_decompress
+# Target rules for targets named mrcz_decompress
 
 # Build rule for target.
-jzzz_decompress: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jzzz_decompress
-.PHONY : jzzz_decompress
+mrcz_decompress: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mrcz_decompress
+.PHONY : mrcz_decompress
 
 # fast build rule for target.
-jzzz_decompress/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/build
-.PHONY : jzzz_decompress/fast
+mrcz_decompress/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_decompress.dir/build.make CMakeFiles/mrcz_decompress.dir/build
+.PHONY : mrcz_decompress/fast
 
 #=============================================================================
 # Target rules for targets named clean-all
@@ -790,7 +790,7 @@ compress.o: compress.cpp.o
 
 # target to build an object file
 compress.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/compress.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_compress.dir/build.make CMakeFiles/mrcz_compress.dir/compress.cpp.o
 .PHONY : compress.cpp.o
 
 compress.i: compress.cpp.i
@@ -798,7 +798,7 @@ compress.i: compress.cpp.i
 
 # target to preprocess a source file
 compress.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/compress.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_compress.dir/build.make CMakeFiles/mrcz_compress.dir/compress.cpp.i
 .PHONY : compress.cpp.i
 
 compress.s: compress.cpp.s
@@ -806,7 +806,7 @@ compress.s: compress.cpp.s
 
 # target to generate assembly for a file
 compress.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_compress.dir/build.make CMakeFiles/jzzz_compress.dir/compress.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_compress.dir/build.make CMakeFiles/mrcz_compress.dir/compress.cpp.s
 .PHONY : compress.cpp.s
 
 decompress.o: decompress.cpp.o
@@ -814,7 +814,7 @@ decompress.o: decompress.cpp.o
 
 # target to build an object file
 decompress.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/decompress.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_decompress.dir/build.make CMakeFiles/mrcz_decompress.dir/decompress.cpp.o
 .PHONY : decompress.cpp.o
 
 decompress.i: decompress.cpp.i
@@ -822,7 +822,7 @@ decompress.i: decompress.cpp.i
 
 # target to preprocess a source file
 decompress.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/decompress.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_decompress.dir/build.make CMakeFiles/mrcz_decompress.dir/decompress.cpp.i
 .PHONY : decompress.cpp.i
 
 decompress.s: decompress.cpp.s
@@ -830,7 +830,7 @@ decompress.s: decompress.cpp.s
 
 # target to generate assembly for a file
 decompress.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jzzz_decompress.dir/build.make CMakeFiles/jzzz_decompress.dir/decompress.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mrcz_decompress.dir/build.make CMakeFiles/mrcz_decompress.dir/decompress.cpp.s
 .PHONY : decompress.cpp.s
 
 # Help Target
@@ -883,10 +883,10 @@ help:
 	@echo "... zstdgrep.1"
 	@echo "... zstdless.1"
 	@echo "... zstdmt"
-	@echo "... jzzz_compress"
-	@echo "... jzzz_decompress"
 	@echo "... libzstd_shared"
 	@echo "... libzstd_static"
+	@echo "... mrcz_compress"
+	@echo "... mrcz_decompress"
 	@echo "... testviews"
 	@echo "... testzfp"
 	@echo "... zfp"

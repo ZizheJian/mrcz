@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/x-zjian1/unsz/c_codes
+CMAKE_SOURCE_DIR = /home/x-zjian1/mrcz/c_codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/x-zjian1/unsz/build
+CMAKE_BINARY_DIR = /home/x-zjian1/mrcz/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles /home/x-zjian1/unsz/build/third_party/zfp/tests//CMakeFiles/progress.marks
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/unsz/build/CMakeFiles 0
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/mrcz/build/CMakeFiles /home/x-zjian1/mrcz/build/third_party/zfp/tests//CMakeFiles/progress.marks
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/x-zjian1/mrcz/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/clean
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,22 +148,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/preinstall
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/preinstall
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 third_party/zfp/tests/CMakeFiles/testzfp.dir/rule:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/CMakeFiles/testzfp.dir/rule
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/CMakeFiles/testzfp.dir/rule
 .PHONY : third_party/zfp/tests/CMakeFiles/testzfp.dir/rule
 
 # Convenience name for target.
@@ -172,12 +172,12 @@ testzfp: third_party/zfp/tests/CMakeFiles/testzfp.dir/rule
 
 # fast build rule for target.
 testzfp/fast:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/build
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/build
 .PHONY : testzfp/fast
 
 # Convenience name for target.
 third_party/zfp/tests/CMakeFiles/testviews.dir/rule:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/CMakeFiles/testviews.dir/rule
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/zfp/tests/CMakeFiles/testviews.dir/rule
 .PHONY : third_party/zfp/tests/CMakeFiles/testviews.dir/rule
 
 # Convenience name for target.
@@ -186,7 +186,7 @@ testviews: third_party/zfp/tests/CMakeFiles/testviews.dir/rule
 
 # fast build rule for target.
 testviews/fast:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/build
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/build
 .PHONY : testviews/fast
 
 testviews.o: testviews.cpp.o
@@ -194,7 +194,7 @@ testviews.o: testviews.cpp.o
 
 # target to build an object file
 testviews.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/testviews.cpp.o
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/testviews.cpp.o
 .PHONY : testviews.cpp.o
 
 testviews.i: testviews.cpp.i
@@ -202,7 +202,7 @@ testviews.i: testviews.cpp.i
 
 # target to preprocess a source file
 testviews.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/testviews.cpp.i
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/testviews.cpp.i
 .PHONY : testviews.cpp.i
 
 testviews.s: testviews.cpp.s
@@ -210,7 +210,7 @@ testviews.s: testviews.cpp.s
 
 # target to generate assembly for a file
 testviews.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/testviews.cpp.s
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testviews.dir/build.make third_party/zfp/tests/CMakeFiles/testviews.dir/testviews.cpp.s
 .PHONY : testviews.cpp.s
 
 testzfp.o: testzfp.cpp.o
@@ -218,7 +218,7 @@ testzfp.o: testzfp.cpp.o
 
 # target to build an object file
 testzfp.cpp.o:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o
 .PHONY : testzfp.cpp.o
 
 testzfp.i: testzfp.cpp.i
@@ -226,7 +226,7 @@ testzfp.i: testzfp.cpp.i
 
 # target to preprocess a source file
 testzfp.cpp.i:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.i
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.i
 .PHONY : testzfp.cpp.i
 
 testzfp.s: testzfp.cpp.s
@@ -234,7 +234,7 @@ testzfp.s: testzfp.cpp.s
 
 # target to generate assembly for a file
 testzfp.cpp.s:
-	cd /home/x-zjian1/unsz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.s
+	cd /home/x-zjian1/mrcz/build && $(MAKE) $(MAKESILENT) -f third_party/zfp/tests/CMakeFiles/testzfp.dir/build.make third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.s
 .PHONY : testzfp.cpp.s
 
 # Help Target
@@ -268,6 +268,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

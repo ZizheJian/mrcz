@@ -1,13 +1,13 @@
 #include "main.hpp"
 
 template<typename T>
-void compress1(jzzz::param_class<T> &params);
+void compress1(mrcz::param_class<T> &params);
 template<typename T>
-void compress2(jzzz::param_class<T> &params,string field);
+void compress2(mrcz::param_class<T> &params,string field);
 
 int main(int argc,char **argv)
 {
-    jzzz::param_class<float> params;
+    mrcz::param_class<float> params;
     for (int i=1;i<argc;i++)
     {
         string arg=argv[i];
@@ -80,7 +80,7 @@ int main(int argc,char **argv)
     else
         params.all_fields_to_process=false;
     if (params.method.empty())
-        params.method="jzzz";
+        params.method="mrcz";
     
     params.read_header(params.data_path);
     params.default_init();
@@ -99,7 +99,7 @@ int main(int argc,char **argv)
     
     if (params.header.word_size==8)
     {
-        jzzz::param_class<double> params_double(params);
+        mrcz::param_class<double> params_double(params);
         compress1(params_double);
     }
     else
@@ -107,7 +107,7 @@ int main(int argc,char **argv)
 }
 
 template<typename T>
-void compress1(jzzz::param_class<T> &params) //已经根据原始数据的格式改变了T
+void compress1(mrcz::param_class<T> &params) //已经根据原始数据的格式改变了T
 {
     for (auto field:params.fields_to_process)
     {
@@ -120,7 +120,7 @@ void compress1(jzzz::param_class<T> &params) //已经根据原始数据的格式
             vector<T> coordinate_data(header.file_element_num*3*header.element_size);
             data_file.read(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
             data_file.close();
-            ofstream coordinate_file(params.data_path+"_"+field+".jzzz",ios::binary);
+            ofstream coordinate_file(params.data_path+"_"+field+".mrcz",ios::binary);
             coordinate_file.write(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
             coordinate_file.close();
             continue;
@@ -158,7 +158,7 @@ void compress1(jzzz::param_class<T> &params) //已经根据原始数据的格式
 
         if ((is_same<T,float>::value) and (params.rel_eb[field]<1e-6)) //原始数据类型是float，但是需要更高精度的压缩
         {
-            jzzz::param_class<double> params_double(params);
+            mrcz::param_class<double> params_double(params);
             params_double.data.resize(params.element_num_to_process*params.header.element_size);
             #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
             for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
@@ -185,11 +185,11 @@ void compress1(jzzz::param_class<T> &params) //已经根据原始数据的格式
 }
 
 template<typename T>
-void compress2(jzzz::param_class<T> &params,string field) // 在最终决定params的T后，根据method调用不同的压缩函数，并写出压缩数据
+void compress2(mrcz::param_class<T> &params,string field) // 在最终决定params的T后，根据method调用不同的压缩函数，并写出压缩数据
 {
     // get_coordinate_in_element(params); //用于统计每个element中相邻点的距离，验证了点确实在GLL点上。自带exit(0)，压缩时不使用。
     printf("params.method= %s\n",params.method.c_str());
-    if (params.method=="jzzz")
+    if (params.method=="mrcz")
         params.compress(field);
     else if (params.method=="sz2-0")
     {
@@ -209,7 +209,7 @@ void compress2(jzzz::param_class<T> &params,string field) // 在最终决定para
         sz3_2_compress(params,field);
         params.x=backup_x;
     }
-    else if (params.method=="sz3-2")
+    else if (params.method=="sz3-nekrs")
         sz3_2_compress(params,field);
     else if (params.method=="zfp")
         zfp_compress(params,field);
@@ -219,7 +219,7 @@ void compress2(jzzz::param_class<T> &params,string field) // 在最终决定para
         throw runtime_error("未知的压缩方法: "+params.method);
         
     double br=0,cr=0;
-    string compressed_path=params.data_path+"_"+field+".jzzz";
+    string compressed_path=params.data_path+"_"+field+".mrcz";
     ofstream compressed_file(compressed_path,ios::binary);
     uint8_t word_size_during_compression=sizeof(T);
     compressed_file.write(reinterpret_cast<char*>(&word_size_during_compression),1);

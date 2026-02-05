@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/x-zjian1/unsz/c_codes
+CMAKE_SOURCE_DIR = /home/x-zjian1/mrcz/c_codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/x-zjian1/unsz/build
+CMAKE_BINARY_DIR = /home/x-zjian1/mrcz/build
 
 # Include any dependencies generated for this target.
 include third_party/zfp/tests/CMakeFiles/testzfp.dir/depend.make
@@ -70,18 +70,18 @@ include third_party/zfp/tests/CMakeFiles/testzfp.dir/progress.make
 include third_party/zfp/tests/CMakeFiles/testzfp.dir/flags.make
 
 third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o: third_party/zfp/tests/CMakeFiles/testzfp.dir/flags.make
-third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o: /home/x-zjian1/unsz/c_codes/third_party/zfp/tests/testzfp.cpp
+third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o: /home/x-zjian1/mrcz/c_codes/third_party/zfp/tests/testzfp.cpp
 third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o: third_party/zfp/tests/CMakeFiles/testzfp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o"
-	cd /home/x-zjian1/unsz/build/third_party/zfp/tests && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o -MF CMakeFiles/testzfp.dir/testzfp.cpp.o.d -o CMakeFiles/testzfp.dir/testzfp.cpp.o -c /home/x-zjian1/unsz/c_codes/third_party/zfp/tests/testzfp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/x-zjian1/mrcz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o"
+	cd /home/x-zjian1/mrcz/build/third_party/zfp/tests && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.o -MF CMakeFiles/testzfp.dir/testzfp.cpp.o.d -o CMakeFiles/testzfp.dir/testzfp.cpp.o -c /home/x-zjian1/mrcz/c_codes/third_party/zfp/tests/testzfp.cpp
 
 third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/testzfp.dir/testzfp.cpp.i"
-	cd /home/x-zjian1/unsz/build/third_party/zfp/tests && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/x-zjian1/unsz/c_codes/third_party/zfp/tests/testzfp.cpp > CMakeFiles/testzfp.dir/testzfp.cpp.i
+	cd /home/x-zjian1/mrcz/build/third_party/zfp/tests && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/x-zjian1/mrcz/c_codes/third_party/zfp/tests/testzfp.cpp > CMakeFiles/testzfp.dir/testzfp.cpp.i
 
 third_party/zfp/tests/CMakeFiles/testzfp.dir/testzfp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/testzfp.dir/testzfp.cpp.s"
-	cd /home/x-zjian1/unsz/build/third_party/zfp/tests && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/x-zjian1/unsz/c_codes/third_party/zfp/tests/testzfp.cpp -o CMakeFiles/testzfp.dir/testzfp.cpp.s
+	cd /home/x-zjian1/mrcz/build/third_party/zfp/tests && /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/x-zjian1/mrcz/c_codes/third_party/zfp/tests/testzfp.cpp -o CMakeFiles/testzfp.dir/testzfp.cpp.s
 
 # Object files for target testzfp
 testzfp_OBJECTS = \
@@ -95,18 +95,18 @@ third_party/zfp/bin/testzfp: third_party/zfp/tests/CMakeFiles/testzfp.dir/build.
 third_party/zfp/bin/testzfp: third_party/zfp/lib64/libzfp.a
 third_party/zfp/bin/testzfp: /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib64/libgomp.so
 third_party/zfp/bin/testzfp: third_party/zfp/tests/CMakeFiles/testzfp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../bin/testzfp"
-	cd /home/x-zjian1/unsz/build/third_party/zfp/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/testzfp.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/x-zjian1/mrcz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../bin/testzfp"
+	cd /home/x-zjian1/mrcz/build/third_party/zfp/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/testzfp.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 third_party/zfp/tests/CMakeFiles/testzfp.dir/build: third_party/zfp/bin/testzfp
 .PHONY : third_party/zfp/tests/CMakeFiles/testzfp.dir/build
 
 third_party/zfp/tests/CMakeFiles/testzfp.dir/clean:
-	cd /home/x-zjian1/unsz/build/third_party/zfp/tests && $(CMAKE_COMMAND) -P CMakeFiles/testzfp.dir/cmake_clean.cmake
+	cd /home/x-zjian1/mrcz/build/third_party/zfp/tests && $(CMAKE_COMMAND) -P CMakeFiles/testzfp.dir/cmake_clean.cmake
 .PHONY : third_party/zfp/tests/CMakeFiles/testzfp.dir/clean
 
 third_party/zfp/tests/CMakeFiles/testzfp.dir/depend:
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/unsz/c_codes /home/x-zjian1/unsz/c_codes/third_party/zfp/tests /home/x-zjian1/unsz/build /home/x-zjian1/unsz/build/third_party/zfp/tests /home/x-zjian1/unsz/build/third_party/zfp/tests/CMakeFiles/testzfp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/mrcz/c_codes /home/x-zjian1/mrcz/c_codes/third_party/zfp/tests /home/x-zjian1/mrcz/build /home/x-zjian1/mrcz/build/third_party/zfp/tests /home/x-zjian1/mrcz/build/third_party/zfp/tests/CMakeFiles/testzfp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : third_party/zfp/tests/CMakeFiles/testzfp.dir/depend
 

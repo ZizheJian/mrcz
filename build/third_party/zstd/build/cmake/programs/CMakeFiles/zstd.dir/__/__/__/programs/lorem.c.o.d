@@ -1,7 +1,7 @@
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/lorem.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/lorem.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/lorem.c \
  /usr/include/stdc-predef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/lorem.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/lorem.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stddef.h \
  /usr/include/assert.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/bits/long-double.h \

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace jzzz
+namespace mrcz
 {
     template<typename T>
     void param_class<T>::save_tail_metadata_compress()
@@ -15,7 +15,7 @@ namespace jzzz
         data_file.read(reinterpret_cast<char*>(tail_data.data()),tail_end-tail_begin);
         data_file.close();
 
-        ofstream tail_file(data_path+"_tail.jzzz",ios::binary);
+        ofstream tail_file(data_path+"_tail.mrcz",ios::binary);
         tail_file.write(reinterpret_cast<char*>(tail_data.data()),tail_data.size());
         tail_file.close();
     }
@@ -23,7 +23,7 @@ namespace jzzz
     template<typename T>
     void param_class<T>::save_tail_metadata_decompress()
     {
-        ifstream tail_file(data_path+"_tail.jzzz",ios::binary);
+        ifstream tail_file(data_path+"_tail.mrcz",ios::binary);
         tail_file.seekg(0,ios::end);
         uint64_t tail_size=tail_file.tellg();
         tail_file.seekg(0,ios::beg);
@@ -31,7 +31,7 @@ namespace jzzz
         tail_file.read(reinterpret_cast<char*>(tail_data.data()),tail_size);
         tail_file.close();
 
-        ofstream decompressed_file(data_path+".jzzz.bin",ios::app|ios::binary);
+        ofstream decompressed_file(data_path+".mrcz.bin",ios::app|ios::binary);
         decompressed_file.seekp(0,ios::end);
         decompressed_file.write(reinterpret_cast<char*>(tail_data.data()),tail_size);
         decompressed_file.close();

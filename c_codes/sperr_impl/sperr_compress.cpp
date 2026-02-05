@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../jzzz_core/jzzz_param.hpp"
+#include "../mrcz_core/mrcz_param.hpp"
 #include "../third_party/sperr/include/SPERR_C_API.h"
 
 template<typename T>
-void sperr_compress(jzzz::param_class<T> &params,string field)
+void sperr_compress(mrcz::param_class<T> &params,string field)
 {
     auto &header=params.header;
     auto &blocks=params.blocks;

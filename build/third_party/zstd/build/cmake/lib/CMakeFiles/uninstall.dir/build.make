@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/x-zjian1/unsz/c_codes
+CMAKE_SOURCE_DIR = /home/x-zjian1/mrcz/c_codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/x-zjian1/unsz/build
+CMAKE_BINARY_DIR = /home/x-zjian1/mrcz/build
 
 # Utility rule file for uninstall.
 
@@ -67,7 +67,7 @@ include third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/compiler_depen
 include third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/progress.make
 
 third_party/zstd/build/cmake/lib/CMakeFiles/uninstall:
-	cd /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib && /usr/bin/cmake -P /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/cmake_uninstall.cmake
+	cd /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/lib && /usr/bin/cmake -P /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/lib/cmake_uninstall.cmake
 
 uninstall: third_party/zstd/build/cmake/lib/CMakeFiles/uninstall
 uninstall: third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/build.make
@@ -78,10 +78,10 @@ third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/build: uninstall
 .PHONY : third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/build
 
 third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/clean:
-	cd /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib && $(CMAKE_COMMAND) -P CMakeFiles/uninstall.dir/cmake_clean.cmake
+	cd /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/lib && $(CMAKE_COMMAND) -P CMakeFiles/uninstall.dir/cmake_clean.cmake
 .PHONY : third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/clean
 
 third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/depend:
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/unsz/c_codes /home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/lib /home/x-zjian1/unsz/build /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/mrcz/c_codes /home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/lib /home/x-zjian1/mrcz/build /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/lib /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : third_party/zstd/build/cmake/lib/CMakeFiles/uninstall.dir/depend
 

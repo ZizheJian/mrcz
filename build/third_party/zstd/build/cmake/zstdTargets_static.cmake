@@ -51,14 +51,14 @@ add_library(zstd::libzstd_static STATIC IMPORTED)
 
 set_target_properties(zstd::libzstd_static PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "ZSTD_MULTITHREAD"
-  INTERFACE_INCLUDE_DIRECTORIES "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib"
+  INTERFACE_INCLUDE_DIRECTORIES "/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../lib"
 )
 
 # Import target "zstd::libzstd_static" for configuration "Release"
 set_property(TARGET zstd::libzstd_static APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(zstd::libzstd_static PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "ASM;C"
-  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/libzstd.a"
+  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/lib/libzstd.a"
   )
 
 # This file does not depend on other imported targets which have

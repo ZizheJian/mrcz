@@ -1,6 +1,6 @@
 #pragma once
 
-namespace jzzz
+namespace mrcz
 {
     template<typename T>
     void param_class<T>::read_header(string header_path)

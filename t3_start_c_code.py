@@ -35,26 +35,25 @@ def run_command(command,silent=False):
         return output
 
 # method可选:
-#   "jzzz"
+#   "mrcz"
 #   "sz3-0": 把数据展成1维的，然后用SZ3的1维压缩
 #   "sz3-1": 对每个element执行sz3的3维压缩，在block内共用huffman tree
-#   "sz3-2": 对每个element执行sz3的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
+#   "sz3-nekrs": 对每个element执行sz3的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
 #   "sz2-0": 对每个element执行sz2的3维压缩，在block内共用huffman tree
 #   "sz2-1": 对每个element执行sz2的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="sperr"
+method="mrcz"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/xmdv_data/newtgv0.f00016"
-data_index=5
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
 eb_mode="ABS"
-eb=1e-8
-fields=["UX"]
+eb=1e-7
+fields=["P"]
 
-if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
+if method=="mrcz" or method=="sz3-1" or method=="sz3-nekrs" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
     try:
         os.chdir("c_codes/third_party/sperr")
         os.makedirs("build",exist_ok=True)
@@ -69,10 +68,12 @@ if method=="jzzz" or method=="sz3-1" or method=="sz3-2" or method=="zfp" or meth
         run_command("make",silent=silent_build)
         run_command("make install",silent=silent_build)
         os.chdir("..")
-        os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-        os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-        # os.system(f"./build/jzzz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
-        # os.system(f"./build/jzzz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
+        if "fields" in locals():
+            os.system(f"./build/mrcz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+            os.system(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+        else:
+            os.system(f"./build/mrcz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
+            os.system(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
     except Exception as e:
         exit(0)
 elif method=="sz3-0":

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../jzzz_core/jzzz_param.hpp"
+#include "../mrcz_core/mrcz_param.hpp"
 #include "../third_party/zfp/include/zfp.h"
 
 template<typename T>
-void zfp_decompress(jzzz::param_class<T> &params,string field)
+void zfp_decompress(mrcz::param_class<T> &params,string field)
 {
 	auto &header=params.header;
     auto &blocks=params.blocks;

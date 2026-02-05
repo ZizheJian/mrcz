@@ -1,8 +1,8 @@
 third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/threading.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/common/threading.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/common/threading.c \
  /usr/include/stdc-predef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/common/threading.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/common/debug.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/common/threading.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/common/debug.h \
  /usr/include/pthread.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/bits/long-double.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \

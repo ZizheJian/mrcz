@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/x-zjian1/unsz/c_codes
+CMAKE_SOURCE_DIR = /home/x-zjian1/mrcz/c_codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/x-zjian1/unsz/build
+CMAKE_BINARY_DIR = /home/x-zjian1/mrcz/build
 
 # Utility rule file for ExperimentalBuild.
 
@@ -67,7 +67,7 @@ include third_party/zfp/CMakeFiles/ExperimentalBuild.dir/compiler_depend.make
 include third_party/zfp/CMakeFiles/ExperimentalBuild.dir/progress.make
 
 third_party/zfp/CMakeFiles/ExperimentalBuild:
-	cd /home/x-zjian1/unsz/build/third_party/zfp && /usr/bin/ctest -D ExperimentalBuild
+	cd /home/x-zjian1/mrcz/build/third_party/zfp && /usr/bin/ctest -D ExperimentalBuild
 
 ExperimentalBuild: third_party/zfp/CMakeFiles/ExperimentalBuild
 ExperimentalBuild: third_party/zfp/CMakeFiles/ExperimentalBuild.dir/build.make
@@ -78,10 +78,10 @@ third_party/zfp/CMakeFiles/ExperimentalBuild.dir/build: ExperimentalBuild
 .PHONY : third_party/zfp/CMakeFiles/ExperimentalBuild.dir/build
 
 third_party/zfp/CMakeFiles/ExperimentalBuild.dir/clean:
-	cd /home/x-zjian1/unsz/build/third_party/zfp && $(CMAKE_COMMAND) -P CMakeFiles/ExperimentalBuild.dir/cmake_clean.cmake
+	cd /home/x-zjian1/mrcz/build/third_party/zfp && $(CMAKE_COMMAND) -P CMakeFiles/ExperimentalBuild.dir/cmake_clean.cmake
 .PHONY : third_party/zfp/CMakeFiles/ExperimentalBuild.dir/clean
 
 third_party/zfp/CMakeFiles/ExperimentalBuild.dir/depend:
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/unsz/c_codes /home/x-zjian1/unsz/c_codes/third_party/zfp /home/x-zjian1/unsz/build /home/x-zjian1/unsz/build/third_party/zfp /home/x-zjian1/unsz/build/third_party/zfp/CMakeFiles/ExperimentalBuild.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/mrcz/c_codes /home/x-zjian1/mrcz/c_codes/third_party/zfp /home/x-zjian1/mrcz/build /home/x-zjian1/mrcz/build/third_party/zfp /home/x-zjian1/mrcz/build/third_party/zfp/CMakeFiles/ExperimentalBuild.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : third_party/zfp/CMakeFiles/ExperimentalBuild.dir/depend
 

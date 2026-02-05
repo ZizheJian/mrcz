@@ -1,7 +1,7 @@
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/timefn.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/timefn.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/timefn.c \
  /usr/include/stdc-predef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/timefn.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/timefn.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
@@ -10,7 +10,7 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/time
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/bits/wchar.h /usr/include/bits/stdint-intn.h \
  /usr/include/bits/stdint-uintn.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/platform.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/platform.h \
  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
  /usr/include/bits/environments.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stddef.h \

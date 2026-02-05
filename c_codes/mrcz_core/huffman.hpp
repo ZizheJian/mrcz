@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace jzzz
+namespace mrcz
 {
     template <class T>
     class huffman_encoder_class

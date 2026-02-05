@@ -1,6 +1,6 @@
-#include "jzzz_param.hpp"
+#pragma once
 
-namespace jzzz
+namespace mrcz
 {
     // Evaluate Legendre P_m(x) and P_{m-1}(x) via recurrence
     static inline void legendre_Pm_and_Pm1(int m,double x,double &Pm,double &Pm1)
@@ -60,7 +60,7 @@ namespace jzzz
         // Initial guesses: Chebyshev-Lobatto nodes are a good start
         // x_k ~ -cos(pi*k/(n-1)), k=0..n-1 (already includes endpoints)
         // We'll refine only interior k = 1..n-2
-        for (int k=1;k<=n-2;k++)
+        for (uint32_t k=1;k<=n-2;k++)
         {
             double xi=-cos(M_PI*k/m); // initial guess
             for (int it=0;it<max_iter;it++)

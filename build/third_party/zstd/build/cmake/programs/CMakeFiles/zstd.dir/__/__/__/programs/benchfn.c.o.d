@@ -1,5 +1,5 @@
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/benchfn.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/benchfn.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/benchfn.c \
  /usr/include/stdc-predef.h /usr/include/stdlib.h \
  /usr/include/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
@@ -24,8 +24,8 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/benc
  /usr/include/string.h /usr/include/bits/types/locale_t.h \
  /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
  /usr/include/assert.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/timefn.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/timefn.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
  /usr/include/bits/stdint-uintn.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/benchfn.h
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/benchfn.h

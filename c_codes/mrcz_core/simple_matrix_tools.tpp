@@ -1,6 +1,6 @@
 #pragma once
 
-namespace jzzz
+namespace mrcz
 {
     template<typename T>
     vector<T> param_class<T>::simple_invert_matrix(vector<T>& A,uint32_t n)

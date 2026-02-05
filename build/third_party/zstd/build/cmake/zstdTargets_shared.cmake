@@ -51,13 +51,13 @@ add_library(zstd::libzstd_shared SHARED IMPORTED)
 
 set_target_properties(zstd::libzstd_shared PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "ZSTD_MULTITHREAD"
-  INTERFACE_INCLUDE_DIRECTORIES "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib"
+  INTERFACE_INCLUDE_DIRECTORIES "/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../lib"
 )
 
 # Import target "zstd::libzstd_shared" for configuration "Release"
 set_property(TARGET zstd::libzstd_shared APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(zstd::libzstd_shared PROPERTIES
-  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/lib/libzstd.so.1.6.0"
+  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/lib/libzstd.so.1.6.0"
   IMPORTED_SONAME_RELEASE "libzstd.so.1"
   )
 

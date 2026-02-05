@@ -1,7 +1,7 @@
 third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/xxhash.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/common/xxhash.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/common/xxhash.c \
  /usr/include/stdc-predef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/common/xxhash.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/common/xxhash.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stddef.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/libc-header-start.h \

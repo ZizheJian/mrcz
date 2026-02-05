@@ -1,8 +1,8 @@
-# Install script for directory: /home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/programs
+# Install script for directory: /home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/programs
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/unsz/install")
+  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/mrcz/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -43,7 +43,7 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/zstd")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/zstd")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zstd" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/zstd")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -53,32 +53,32 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE FILE FILES "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/zstdcat")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE FILE FILES "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/zstdcat")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE FILE FILES "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/unzstd")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE FILE FILES "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/unzstd")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE PROGRAM FILES "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../programs/zstdgrep")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE PROGRAM FILES "/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../programs/zstdgrep")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE PROGRAM FILES "/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../programs/zstdless")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE PROGRAM FILES "/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../programs/zstdless")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/man/man1" TYPE FILE FILES
-    "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/zstd.1"
-    "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/zstdcat.1"
-    "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/unzstd.1"
-    "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/zstdgrep.1"
-    "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/zstdless.1"
+    "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/zstd.1"
+    "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/zstdcat.1"
+    "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/unzstd.1"
+    "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/zstdgrep.1"
+    "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/zstdless.1"
     )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE FILE FILES "/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/zstdmt")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE FILE FILES "/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/zstdmt")
 endif()
 

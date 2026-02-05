@@ -1,9 +1,9 @@
 #pragma once
 
-#include "jzzz_core/jzzz_param.hpp"
+#include "mrcz_core/mrcz_param.hpp"
 
 template<typename T>
-void read_data(jzzz::param_class<T> &params,string field)//分配好params.data的空间后，调用这个函数来读取指定field的数据到params.data中
+void read_data(mrcz::param_class<T> &params,string field)//分配好params.data的空间后，调用这个函数来读取指定field的数据到params.data中
 {
     auto &header=params.header;
     ifstream data_file(params.data_path,ios::binary);
@@ -31,10 +31,10 @@ void read_data(jzzz::param_class<T> &params,string field)//分配好params.data�
 }
 
 template<typename T>
-void write_data(jzzz::param_class<T> &params,string field)
+void write_data(mrcz::param_class<T> &params,string field)
 {
     assert(params.header.word_size==sizeof(T));
-    fstream decompressed_file(params.data_path+".jzzz.bin",ios::app|ios::binary);
+    fstream decompressed_file(params.data_path+".mrcz.bin",ios::app|ios::binary);
     if (field=="UX" || field=="UY" || field=="UZ")
     {
         if (field=="UX")

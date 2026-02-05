@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../jzzz_core/jzzz_param.hpp"
+#include "../mrcz_core/mrcz_param.hpp"
 
 template<typename T>
-void sz3_2_decompress(jzzz::param_class<T> &params,string field)
+void sz3_2_decompress(mrcz::param_class<T> &params,string field)
 {
 	auto &header=params.header;
     auto &blocks=params.blocks;
@@ -73,10 +73,10 @@ void sz3_2_decompress(jzzz::param_class<T> &params,string field)
         if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,block.zstd_bs.data(),block.zstd_bs.size())!=huffman_bs_len)
             throw runtime_error("ZSTD_decompress error in decompress()");
         const unsigned char *huffman_bs=huffman_bs_vec.data();
-        jzzz::huffman_encoder_class<int64_t> corner_encoder;
+        mrcz::huffman_encoder_class<int64_t> corner_encoder;
         corner_encoder.load(huffman_bs);
         corner_encoder.decode(huffman_bs,corner_qb+8*begin_index,8*(end_index-begin_index));
-        jzzz::huffman_encoder_class<int64_t> err_encoder;
+        mrcz::huffman_encoder_class<int64_t> err_encoder;
         err_encoder.load(huffman_bs);
         err_encoder.decode(huffman_bs,no_corner_err_qb+(header.element_size-8)*begin_index,(header.element_size-8)*(end_index-begin_index));
         // 重构每个element角上的数据

@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
-#include "jzzz_core/jzzz_param.hpp"
+#include "mrcz_core/mrcz_param.hpp"
 #include "sz2_impl/sz2_1_compress.cpp"
 #include "sz2_impl/sz2_1_decompress.cpp"
 #include "sz3_impl/sz3_2_compress.cpp"

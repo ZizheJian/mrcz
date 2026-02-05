@@ -1,5 +1,5 @@
 third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/dictBuilder/divsufsort.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/dictBuilder/divsufsort.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/dictBuilder/divsufsort.c \
  /usr/include/stdc-predef.h /usr/include/assert.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
@@ -27,4 +27,4 @@ third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/dict
  /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
  /usr/include/bits/pthreadtypes-arch.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/dictBuilder/divsufsort.h
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/dictBuilder/divsufsort.h

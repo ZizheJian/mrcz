@@ -4,14 +4,14 @@
 
 
 # Configuration directories and files
-SourceDirectory: /home/x-zjian1/unsz/c_codes/third_party/zfp
-BuildDirectory: /home/x-zjian1/unsz/build/third_party/zfp
+SourceDirectory: /home/x-zjian1/mrcz/c_codes/third_party/zfp
+BuildDirectory: /home/x-zjian1/mrcz/build/third_party/zfp
 
 # Where to place the cost data store
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: login05.anvil.rcac.purdue.edu
+Site: login00.anvil.rcac.purdue.edu
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Linux-mpiCC
@@ -27,7 +27,7 @@ SubmitInactivityTimeout:
 NightlyStartTime: 01:00:00 UTC
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "/usr/bin/cmake" "/home/x-zjian1/unsz/c_codes/third_party/zfp"
+ConfigureCommand: "/usr/bin/cmake" "/home/x-zjian1/mrcz/c_codes/third_party/zfp"
 MakeCommand: /usr/bin/cmake --build . --config "${CTEST_CONFIGURATION_TYPE}"
 DefaultCTestConfigurationType: Release
 

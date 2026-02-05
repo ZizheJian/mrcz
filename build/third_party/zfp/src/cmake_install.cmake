@@ -1,8 +1,8 @@
-# Install script for directory: /home/x-zjian1/unsz/c_codes/third_party/zfp/src
+# Install script for directory: /home/x-zjian1/mrcz/c_codes/third_party/zfp/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/unsz/install")
+  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/mrcz/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -43,6 +43,6 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64" TYPE STATIC_LIBRARY FILES "/home/x-zjian1/unsz/build/third_party/zfp/lib64/libzfp.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64" TYPE STATIC_LIBRARY FILES "/home/x-zjian1/mrcz/build/third_party/zfp/lib64/libzfp.a")
 endif()
 

@@ -1,7 +1,7 @@
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/zstdcli.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/zstdcli.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/zstdcli.c \
  /usr/include/stdc-predef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/platform.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/platform.h \
  /usr/include/unistd.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/bits/long-double.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
@@ -17,16 +17,16 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/zstd
  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
  /usr/include/bits/stdio.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/util.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/util.h \
  /usr/include/sys/types.h /usr/include/bits/types/clock_t.h \
  /usr/include/bits/types/clockid_t.h /usr/include/bits/types/time_t.h \
  /usr/include/bits/types/timer_t.h /usr/include/bits/stdint-intn.h \
  /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
  /usr/include/bits/pthreadtypes-arch.h /usr/include/sys/stat.h \
  /usr/include/bits/types/struct_timespec.h /usr/include/bits/stat.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/mem.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/compiler.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/portability_macros.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/mem.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/compiler.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/portability_macros.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/cet.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/emmintrin.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/xmmintrin.h \
@@ -36,8 +36,8 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/zstd
  /usr/include/bits/waitstatus.h /usr/include/bits/floatn.h \
  /usr/include/bits/floatn-common.h /usr/include/bits/stdlib-bsearch.h \
  /usr/include/bits/stdlib-float.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/debug.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/zstd_deps.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/debug.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/zstd_deps.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include-fixed/limits.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
@@ -50,23 +50,23 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/zstd
  /usr/include/sys/resource.h /usr/include/bits/resource.h \
  /usr/include/bits/types/struct_timeval.h \
  /usr/include/bits/types/struct_rusage.h /usr/include/assert.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/fileio.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/fileio_types.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/zstd.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/zstd_errors.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/benchzstd.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/dibio.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/zdict.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/zstdcli_trace.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/fileio_asyncio.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/pool.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/../zstd.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/threading.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/fileio.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/fileio_types.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/zstd.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/zstd_errors.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/benchzstd.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/dibio.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/zdict.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/zstdcli_trace.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/fileio_asyncio.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/pool.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/../zstd.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/threading.h \
  /usr/include/pthread.h /usr/include/endian.h /usr/include/bits/endian.h \
  /usr/include/sched.h /usr/include/bits/sched.h \
  /usr/include/bits/types/struct_sched_param.h /usr/include/bits/cpu-set.h \
  /usr/include/time.h /usr/include/bits/time.h \
  /usr/include/bits/types/struct_tm.h \
  /usr/include/bits/types/struct_itimerspec.h /usr/include/bits/setjmp.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/fileio_common.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/timefn.h
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/fileio_common.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/timefn.h

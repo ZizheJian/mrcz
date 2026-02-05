@@ -1,14 +1,14 @@
 #pragma once
 
 #include <set>
-#include "../jzzz_core/jzzz_param.hpp"
-#include "../jzzz_core/huffman.hpp"
-#include "../jzzz_core/quantize.tpp"
+#include "../mrcz_core/mrcz_param.hpp"
+#include "../mrcz_core/huffman.hpp"
+#include "../mrcz_core/quantize.tpp"
 #include "../third_party/zstd/lib/zstd.h"
 
 
 template<typename T>
-void sz2_1_compress(jzzz::param_class<T> &params,string field)
+void sz2_1_compress(mrcz::param_class<T> &params,string field)
 {
     auto &header=params.header;
     auto &blocks=params.blocks;
@@ -91,7 +91,7 @@ void sz2_1_compress(jzzz::param_class<T> &params,string field)
         // // 把两种qb无损压缩到一起
         vector<unsigned char> huffman_bs_vec((header.element_size+4)*(end_index-begin_index)*sizeof(int64_t));
         unsigned char *huffman_bs=huffman_bs_vec.data();
-        jzzz::huffman_encoder_class<int64_t> err_encoder;
+        mrcz::huffman_encoder_class<int64_t> err_encoder;
         err_encoder.preprocess_encode(a_address,(header.element_size+4)*(end_index-begin_index));
         err_encoder.save(huffman_bs);
         err_encoder.encode(a_address,(header.element_size+4)*(end_index-begin_index),huffman_bs);

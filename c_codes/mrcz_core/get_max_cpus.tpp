@@ -1,6 +1,6 @@
 #pragma once
 
-namespace jzzz
+namespace mrcz
 {
     template<typename T>
     void param_class<T>::get_max_cpus()

@@ -50,7 +50,7 @@ unset(_cmake_expected_targets)
 add_library(zfp::zfp STATIC IMPORTED)
 
 set_target_properties(zfp::zfp PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/home/x-zjian1/unsz/c_codes/third_party/zfp/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/home/x-zjian1/mrcz/c_codes/third_party/zfp/include"
   INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:OpenMP::OpenMP_C>;\$<LINK_ONLY:m>"
 )
 
@@ -58,7 +58,7 @@ set_target_properties(zfp::zfp PROPERTIES
 set_property(TARGET zfp::zfp APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(zfp::zfp PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
-  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/unsz/build/third_party/zfp/lib64/libzfp.a"
+  IMPORTED_LOCATION_RELEASE "/home/x-zjian1/mrcz/build/third_party/zfp/lib64/libzfp.a"
   )
 
 # This file does not depend on other imported targets which have

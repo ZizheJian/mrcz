@@ -1,13 +1,13 @@
 #include "main.hpp"
 
 template<typename T>
-unordered_map<string,vector<double>> decompress1(jzzz::param_class<T> &params);
+unordered_map<string,vector<double>> decompress1(mrcz::param_class<T> &params);
 template<typename T>
-vector<double> decompress2(jzzz::param_class<T> &params,string field);
+vector<double> decompress2(mrcz::param_class<T> &params,string field);
 
 int main(int argc,char **argv)
 {
-    jzzz::param_class<float> params;
+    mrcz::param_class<float> params;
     for (int i=1;i<argc;i++)
     {
         string arg=argv[i];
@@ -70,7 +70,7 @@ int main(int argc,char **argv)
     }
     
     if (params.data_path.empty())
-        throw runtime_error("必须指定原始数据路径，使用-i参数。如果原始数据不存在，寻找解压产生的独立的header文件，文件名以_header.jzzz为结尾），去掉这一后缀作为数据路径");
+        throw runtime_error("必须指定原始数据路径，使用-i参数。如果原始数据不存在，寻找解压产生的独立的header文件，文件名以_header.mrcz为结尾），去掉这一后缀作为数据路径");
     if (params.eb_mode.empty())
         throw runtime_error("必须指定误差控制模式，使用-M参数");
     if (params.input_eb<=0)
@@ -80,9 +80,9 @@ int main(int argc,char **argv)
     else
         params.all_fields_to_process=false;
     if (params.method.empty())
-        params.method="jzzz";
+        params.method="mrcz";
     
-    params.read_header(params.data_path+"_header.jzzz");
+    params.read_header(params.data_path+"_header.mrcz");
     params.default_init();
     params.save_header_and_element_map_decompress();
     params.get_max_cpus();
@@ -90,7 +90,7 @@ int main(int argc,char **argv)
     unordered_map<string,vector<double>> result;
     if (params.header.word_size==8)
     {
-        jzzz::param_class<double> params_double(params);
+        mrcz::param_class<double> params_double(params);
         result=decompress1(params_double);
         for (auto field:params.fields_to_process)
             params.abs_eb[field]=params_double.abs_eb[field];
@@ -100,7 +100,7 @@ int main(int argc,char **argv)
 }
 
 template<typename T>
-unordered_map<string,vector<double>> decompress1(jzzz::param_class<T> &params) //对不同的field调用decompress2，并修改T至实际压缩的类型
+unordered_map<string,vector<double>> decompress1(mrcz::param_class<T> &params) //对不同的field调用decompress2，并修改T至实际压缩的类型
 {
     unordered_map<string,vector<double>> result;
     for (auto field:params.fields_to_process)
@@ -109,23 +109,23 @@ unordered_map<string,vector<double>> decompress1(jzzz::param_class<T> &params) /
         if (field=="X")
         {
             auto header=params.header;
-            ifstream compressed_file(params.data_path+"_"+field+".jzzz",ios::binary);
+            ifstream compressed_file(params.data_path+"_"+field+".mrcz",ios::binary);
             vector<T> coordinate_data(header.file_element_num*3*header.element_size);
             compressed_file.read(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
             compressed_file.close();
-            ofstream decompressed_file(params.data_path+".jzzz.bin",ios::app|ios::binary);
+            ofstream decompressed_file(params.data_path+".mrcz.bin",ios::app|ios::binary);
             decompressed_file.seekp(0,ios::end);
             decompressed_file.write(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
             decompressed_file.close();
             continue;
         }
-        ifstream compressed_file(params.data_path+"_"+field+".jzzz",ios::binary);
+        ifstream compressed_file(params.data_path+"_"+field+".mrcz",ios::binary);
         uint8_t word_size_during_compression;
         compressed_file.read(reinterpret_cast<char*>(&word_size_during_compression),1);
         compressed_file.close();
         if ((is_same<T,float>::value) and (word_size_during_compression==8)) //原始数据类型是float，但是压缩时使用了double
         {
-            jzzz::param_class<double> params_double(params);
+            mrcz::param_class<double> params_double(params);
             result[field]=decompress2(params_double,field);
             params.abs_eb[field]=params_double.abs_eb[field];
         }
@@ -138,9 +138,9 @@ unordered_map<string,vector<double>> decompress1(jzzz::param_class<T> &params) /
 }
 
 template<typename T>
-vector<double> decompress2(jzzz::param_class<T> &params,string field)
+vector<double> decompress2(mrcz::param_class<T> &params,string field)
 {
-    ifstream compressed_file(params.data_path+"_"+field+".jzzz",ios::binary);
+    ifstream compressed_file(params.data_path+"_"+field+".mrcz",ios::binary);
     compressed_file.seekg(1,ios::beg);
     uint64_t block_num;
     compressed_file.read(reinterpret_cast<char*>(&block_num),8);
@@ -196,7 +196,7 @@ vector<double> decompress2(jzzz::param_class<T> &params,string field)
     }
 
     printf("params.method= %s\n",params.method.c_str());
-    if (params.method=="jzzz")
+    if (params.method=="mrcz")
         params.decompress(field);
     else if (params.method=="sz2-0")
     {
@@ -216,7 +216,7 @@ vector<double> decompress2(jzzz::param_class<T> &params,string field)
         sz3_2_decompress(params,field);
         params.x=backup_x;
     }
-    else if (params.method=="sz3-2")
+    else if (params.method=="sz3-nekrs")
         sz3_2_decompress(params,field);
     else if (params.method=="zfp")
         zfp_decompress(params,field);
@@ -238,7 +238,7 @@ vector<double> decompress2(jzzz::param_class<T> &params,string field)
     else
         if (is_same<T,double>::value and params.header.word_size==4) 
         {
-            jzzz::param_class<float> params_float(params);
+            mrcz::param_class<float> params_float(params);
             params_float.decompressed_data.resize(params.decompressed_data.size());
             #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
             for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
@@ -265,7 +265,7 @@ vector<double> decompress2(jzzz::param_class<T> &params,string field)
         params.data.resize(params.element_num_to_process*params.header.element_size);
         if ((params.header.word_size==4) and (is_same<T,double>::value))
         {
-            jzzz::param_class<float> params_float(params);
+            mrcz::param_class<float> params_float(params);
             params_float.data.resize(params.element_num_to_process*params.header.element_size);
             read_data(params_float,field);
             #pragma omp parallel for schedule(static) num_threads(params.max_cpus)

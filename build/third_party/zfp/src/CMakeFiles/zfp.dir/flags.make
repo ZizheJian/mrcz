@@ -4,7 +4,7 @@
 # compile C with /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpicc
 C_DEFINES = -DZFP_ROUNDING_MODE=ZFP_ROUND_NEVER
 
-C_INCLUDES = -I/home/x-zjian1/unsz/c_codes/third_party/zfp/include
+C_INCLUDES = -I/home/x-zjian1/mrcz/c_codes/third_party/zfp/include
 
 C_FLAGS = -O3 -DNDEBUG -std=gnu99 -fPIC -fopenmp
 

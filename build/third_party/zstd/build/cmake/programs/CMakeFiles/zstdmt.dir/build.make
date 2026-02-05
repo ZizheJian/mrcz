@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/x-zjian1/unsz/c_codes
+CMAKE_SOURCE_DIR = /home/x-zjian1/mrcz/c_codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/x-zjian1/unsz/build
+CMAKE_BINARY_DIR = /home/x-zjian1/mrcz/build
 
 # Utility rule file for zstdmt.
 
@@ -67,8 +67,8 @@ include third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/compiler_dep
 include third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/progress.make
 
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt: third_party/zstd/build/cmake/programs/zstd
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/x-zjian1/unsz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Creating zstdmt symlink"
-	cd /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs && /usr/bin/cmake -E create_symlink zstd zstdmt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/x-zjian1/mrcz/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Creating zstdmt symlink"
+	cd /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs && /usr/bin/cmake -E create_symlink zstd zstdmt
 
 zstdmt: third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt
 zstdmt: third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build.make
@@ -79,10 +79,10 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build: zstdmt
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/build
 
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/clean:
-	cd /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs && $(CMAKE_COMMAND) -P CMakeFiles/zstdmt.dir/cmake_clean.cmake
+	cd /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs && $(CMAKE_COMMAND) -P CMakeFiles/zstdmt.dir/cmake_clean.cmake
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/clean
 
 third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/depend:
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/unsz/c_codes /home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/programs /home/x-zjian1/unsz/build /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs /home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/mrcz/c_codes /home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/programs /home/x-zjian1/mrcz/build /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs /home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : third_party/zstd/build/cmake/programs/CMakeFiles/zstdmt.dir/depend
 

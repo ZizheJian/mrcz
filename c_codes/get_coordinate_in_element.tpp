@@ -1,9 +1,9 @@
 #pragma once
 
-#include "jzzz_core/jzzz_param.hpp"
+#include "mrcz_core/mrcz_param.hpp"
 
 template<typename T>
-void get_coordinate_in_element(jzzz::param_class<T> &params)
+void get_coordinate_in_element(mrcz::param_class<T> &params)
 {
     vector<float> coordinate_float(params.element_num_to_process*3*params.header.element_size);
     ifstream data_file(params.data_path,ios::binary);

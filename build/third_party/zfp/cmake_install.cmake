@@ -1,8 +1,8 @@
-# Install script for directory: /home/x-zjian1/unsz/c_codes/third_party/zfp
+# Install script for directory: /home/x-zjian1/mrcz/c_codes/third_party/zfp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/unsz/install")
+  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/mrcz/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -43,13 +43,13 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/x-zjian1/unsz/c_codes/third_party/zfp/include/" REGEX "/cfp$" EXCLUDE)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/x-zjian1/mrcz/c_codes/third_party/zfp/include/" REGEX "/cfp$" EXCLUDE)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp" TYPE FILE FILES
-    "/home/x-zjian1/unsz/build/third_party/zfp/zfp-config.cmake"
-    "/home/x-zjian1/unsz/build/third_party/zfp/zfp-config-version.cmake"
+    "/home/x-zjian1/mrcz/build/third_party/zfp/zfp-config.cmake"
+    "/home/x-zjian1/mrcz/build/third_party/zfp/zfp-config-version.cmake"
     )
 endif()
 
@@ -57,7 +57,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp/zfp-targets.cmake")
     file(DIFFERENT _cmake_export_file_changed FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp/zfp-targets.cmake"
-         "/home/x-zjian1/unsz/build/third_party/zfp/CMakeFiles/Export/5fc949d93872ca5837b2236d97079417/zfp-targets.cmake")
+         "/home/x-zjian1/mrcz/build/third_party/zfp/CMakeFiles/Export/5fc949d93872ca5837b2236d97079417/zfp-targets.cmake")
     if(_cmake_export_file_changed)
       file(GLOB _cmake_old_config_files "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp/zfp-targets-*.cmake")
       if(_cmake_old_config_files)
@@ -70,17 +70,17 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
     endif()
     unset(_cmake_export_file_changed)
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp" TYPE FILE FILES "/home/x-zjian1/unsz/build/third_party/zfp/CMakeFiles/Export/5fc949d93872ca5837b2236d97079417/zfp-targets.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp" TYPE FILE FILES "/home/x-zjian1/mrcz/build/third_party/zfp/CMakeFiles/Export/5fc949d93872ca5837b2236d97079417/zfp-targets.cmake")
   if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp" TYPE FILE FILES "/home/x-zjian1/unsz/build/third_party/zfp/CMakeFiles/Export/5fc949d93872ca5837b2236d97079417/zfp-targets-release.cmake")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib64/cmake/zfp" TYPE FILE FILES "/home/x-zjian1/mrcz/build/third_party/zfp/CMakeFiles/Export/5fc949d93872ca5837b2236d97079417/zfp-targets-release.cmake")
   endif()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/x-zjian1/unsz/build/third_party/zfp/src/cmake_install.cmake")
-  include("/home/x-zjian1/unsz/build/third_party/zfp/utils/cmake_install.cmake")
-  include("/home/x-zjian1/unsz/build/third_party/zfp/tests/cmake_install.cmake")
+  include("/home/x-zjian1/mrcz/build/third_party/zfp/src/cmake_install.cmake")
+  include("/home/x-zjian1/mrcz/build/third_party/zfp/utils/cmake_install.cmake")
+  include("/home/x-zjian1/mrcz/build/third_party/zfp/tests/cmake_install.cmake")
 
 endif()
 

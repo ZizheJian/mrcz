@@ -1,7 +1,7 @@
 third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/dibio.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/dibio.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/dibio.c \
  /usr/include/stdc-predef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/platform.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/platform.h \
  /usr/include/unistd.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/bits/long-double.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
@@ -17,16 +17,16 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/dibi
  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
  /usr/include/bits/stdio.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/util.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/util.h \
  /usr/include/sys/types.h /usr/include/bits/types/clock_t.h \
  /usr/include/bits/types/clockid_t.h /usr/include/bits/types/time_t.h \
  /usr/include/bits/types/timer_t.h /usr/include/bits/stdint-intn.h \
  /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
  /usr/include/bits/pthreadtypes-arch.h /usr/include/sys/stat.h \
  /usr/include/bits/types/struct_timespec.h /usr/include/bits/stat.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/mem.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/compiler.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/portability_macros.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/mem.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/compiler.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/portability_macros.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/cet.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/emmintrin.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/xmmintrin.h \
@@ -36,8 +36,8 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/dibi
  /usr/include/bits/waitstatus.h /usr/include/bits/floatn.h \
  /usr/include/bits/floatn-common.h /usr/include/bits/stdlib-bsearch.h \
  /usr/include/bits/stdlib-float.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/debug.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/zstd_deps.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/debug.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/zstd_deps.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include-fixed/limits.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
@@ -53,8 +53,8 @@ third_party/zstd/build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/dibi
  /usr/include/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
  /usr/include/asm-generic/errno-base.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/timefn.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/common/debug.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/zstd_errors.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/dibio.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/programs/../lib/zdict.h
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/timefn.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/common/debug.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/zstd_errors.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/dibio.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/programs/../lib/zdict.h

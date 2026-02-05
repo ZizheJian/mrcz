@@ -1,8 +1,8 @@
-# Install script for directory: /home/x-zjian1/unsz/c_codes/third_party/zfp/tests
+# Install script for directory: /home/x-zjian1/mrcz/c_codes/third_party/zfp/tests
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/unsz/install")
+  set(CMAKE_INSTALL_PREFIX "/home/x-zjian1/mrcz/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

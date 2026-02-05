@@ -4,7 +4,7 @@
 # compile C with /apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpicc
 C_DEFINES = -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -DZSTD_NOBENCH -DZSTD_NODICT -DZSTD_NOTRACE
 
-C_INCLUDES = -I/home/x-zjian1/unsz/build/third_party/zstd/build/cmake/programs -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/programs -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../programs -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib/common -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib/compress -I/home/x-zjian1/unsz/c_codes/third_party/zstd/build/cmake/../../lib/dictBuilder
+C_INCLUDES = -I/home/x-zjian1/mrcz/build/third_party/zstd/build/cmake/programs -I/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/programs -I/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../programs -I/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../lib -I/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../lib/common -I/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../lib/compress -I/home/x-zjian1/mrcz/c_codes/third_party/zstd/build/cmake/../../lib/dictBuilder
 
 C_FLAGS =  -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wcast-qual -Wstrict-prototypes -Wa,--noexecstack -O3 -DNDEBUG
 

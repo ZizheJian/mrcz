@@ -1,14 +1,14 @@
 #pragma once
 
 #include <set>
-#include "../jzzz_core/jzzz_param.hpp"
-#include "../jzzz_core/huffman.hpp"
-#include "../jzzz_core/quantize.tpp"
+#include "../mrcz_core/mrcz_param.hpp"
+#include "../mrcz_core/huffman.hpp"
+#include "../mrcz_core/quantize.tpp"
 #include "../third_party/zstd/lib/zstd.h"
 
 
 template<typename T>
-void sz3_2_compress(jzzz::param_class<T> &params,string field)
+void sz3_2_compress(mrcz::param_class<T> &params,string field)
 {
     auto &header=params.header;
     auto &blocks=params.blocks;
@@ -146,11 +146,11 @@ void sz3_2_compress(jzzz::param_class<T> &params,string field)
         // 把两种qb无损压缩到一起
         vector<unsigned char> huffman_bs_vec((2*header.element_size+8)*(end_index-begin_index)*sizeof(int64_t));
         unsigned char *huffman_bs=huffman_bs_vec.data();
-        jzzz::huffman_encoder_class<int64_t> corner_encoder;
+        mrcz::huffman_encoder_class<int64_t> corner_encoder;
         corner_encoder.preprocess_encode(corner_qb+8*begin_index,8*(end_index-begin_index));
         corner_encoder.save(huffman_bs);
         corner_encoder.encode(corner_qb+8*begin_index,8*(end_index-begin_index),huffman_bs);
-        jzzz::huffman_encoder_class<int64_t> err_encoder;
+        mrcz::huffman_encoder_class<int64_t> err_encoder;
         err_encoder.preprocess_encode(no_corner_err_qb+begin_index*(header.element_size-8),(header.element_size-8)*(end_index-begin_index));
         err_encoder.save(huffman_bs);
         err_encoder.encode(no_corner_err_qb+begin_index*(header.element_size-8),(header.element_size-8)*(end_index-begin_index),huffman_bs);

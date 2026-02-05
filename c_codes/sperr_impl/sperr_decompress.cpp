@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../jzzz_core/jzzz_param.hpp"
+#include "../mrcz_core/mrcz_param.hpp"
 
 template<typename T>
-void sperr_decompress(jzzz::param_class<T> &params,string field)
+void sperr_decompress(mrcz::param_class<T> &params,string field)
 {
 	auto &header=params.header;
     auto &blocks=params.blocks;

@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/x-zjian1/unsz/c_codes
+CMAKE_SOURCE_DIR = /home/x-zjian1/mrcz/c_codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/x-zjian1/unsz/build
+CMAKE_BINARY_DIR = /home/x-zjian1/mrcz/build
 
 # Utility rule file for NightlyCoverage.
 
@@ -67,7 +67,7 @@ include third_party/zfp/CMakeFiles/NightlyCoverage.dir/compiler_depend.make
 include third_party/zfp/CMakeFiles/NightlyCoverage.dir/progress.make
 
 third_party/zfp/CMakeFiles/NightlyCoverage:
-	cd /home/x-zjian1/unsz/build/third_party/zfp && /usr/bin/ctest -D NightlyCoverage
+	cd /home/x-zjian1/mrcz/build/third_party/zfp && /usr/bin/ctest -D NightlyCoverage
 
 NightlyCoverage: third_party/zfp/CMakeFiles/NightlyCoverage
 NightlyCoverage: third_party/zfp/CMakeFiles/NightlyCoverage.dir/build.make
@@ -78,10 +78,10 @@ third_party/zfp/CMakeFiles/NightlyCoverage.dir/build: NightlyCoverage
 .PHONY : third_party/zfp/CMakeFiles/NightlyCoverage.dir/build
 
 third_party/zfp/CMakeFiles/NightlyCoverage.dir/clean:
-	cd /home/x-zjian1/unsz/build/third_party/zfp && $(CMAKE_COMMAND) -P CMakeFiles/NightlyCoverage.dir/cmake_clean.cmake
+	cd /home/x-zjian1/mrcz/build/third_party/zfp && $(CMAKE_COMMAND) -P CMakeFiles/NightlyCoverage.dir/cmake_clean.cmake
 .PHONY : third_party/zfp/CMakeFiles/NightlyCoverage.dir/clean
 
 third_party/zfp/CMakeFiles/NightlyCoverage.dir/depend:
-	cd /home/x-zjian1/unsz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/unsz/c_codes /home/x-zjian1/unsz/c_codes/third_party/zfp /home/x-zjian1/unsz/build /home/x-zjian1/unsz/build/third_party/zfp /home/x-zjian1/unsz/build/third_party/zfp/CMakeFiles/NightlyCoverage.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/x-zjian1/mrcz/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/x-zjian1/mrcz/c_codes /home/x-zjian1/mrcz/c_codes/third_party/zfp /home/x-zjian1/mrcz/build /home/x-zjian1/mrcz/build/third_party/zfp /home/x-zjian1/mrcz/build/third_party/zfp/CMakeFiles/NightlyCoverage.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : third_party/zfp/CMakeFiles/NightlyCoverage.dir/depend
 

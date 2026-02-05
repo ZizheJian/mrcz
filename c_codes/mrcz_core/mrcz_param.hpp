@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace jzzz
+namespace mrcz
 {
     class header_class
     {
@@ -48,6 +48,12 @@ namespace jzzz
     class param_class
     {
         public:
+            bool if_better_corner_compression=false;
+            bool if_corner_based_prediction=false;
+            bool if_zero_freq_expanding=true;
+            bool if_coefficient_transpose=false;
+            bool if_zero_map=true;
+
             string data_path;
             string eb_mode;
             T input_eb;
@@ -73,7 +79,7 @@ namespace jzzz
 
             int max_cpus=128;
             T coeff_eb_scale=0.05;
-            T zero_f_qb_bound=3;
+            T zero_coeff_qb_bound=3;
             vector<T> x;
             vector<T> L,neg_L;
             vector<T> element_base_weight;
@@ -90,12 +96,28 @@ namespace jzzz
             void save_tail_metadata_compress();
             void save_tail_metadata_decompress();
             T get_data_range(string field);
+
             void compress(string field);
+            void quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,
+                T abs_eb,T neg_2_eb);
+            void subtract_element_base(T *element,uint32_t n,uint32_t n2,uint32_t n3);
+            void forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n,uint32_t n2,uint32_t n3);
+            void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n,uint32_t n2,uint32_t n3);
+            void convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n,uint32_t n2,uint32_t n3);
+            void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs);
+            void lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *f_qb,unsigned char *&huffman_bs);
+
             void decompress(string field);
+            void lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs);
+            void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs);
+            void reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,T abs_eb);
+            void add_element_base(T *element,uint32_t n,uint32_t n2,uint32_t n3);
+
             void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);
             void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
             void quantize_err_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
-            void quantize_and_overwrite_array2(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb,T zero_freq_bound);
+            void quantize_and_overwrite_array1(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
+            void quantize_and_overwrite_array2(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb,T zero_coeff_bound);
 
             void default_init()
             {
@@ -157,6 +179,12 @@ namespace jzzz
             template<typename T2>
             param_class(param_class<T2> &other)
             {
+                if_better_corner_compression=other.if_better_corner_compression;
+                if_corner_based_prediction=other.if_corner_based_prediction;
+                if_zero_freq_expanding=other.if_zero_freq_expanding;
+                if_coefficient_transpose=other.if_coefficient_transpose;
+                if_zero_map=other.if_zero_map;
+                
                 data_path=other.data_path;
                 eb_mode=other.eb_mode;
                 input_eb=other.input_eb;
@@ -188,7 +216,7 @@ namespace jzzz
                 
                 max_cpus=other.max_cpus;
                 coeff_eb_scale=other.coeff_eb_scale;
-                zero_f_qb_bound=other.zero_f_qb_bound;
+                zero_coeff_qb_bound=other.zero_coeff_qb_bound;
                 default_init();
             }
     };

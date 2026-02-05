@@ -1,10 +1,10 @@
 third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/hist.c.o: \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/hist.c \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/hist.c \
  /usr/include/stdc-predef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/mem.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/mem.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stddef.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/compiler.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/portability_macros.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/compiler.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/portability_macros.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/cet.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/emmintrin.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/xmmintrin.h \
@@ -29,8 +29,8 @@ third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/comp
  /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
  /usr/include/bits/pthreadtypes-arch.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/debug.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/zstd_deps.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/debug.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/zstd_deps.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include-fixed/limits.h \
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
@@ -41,8 +41,8 @@ third_party/zstd/build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/comp
  /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib/gcc/x86_64-pc-linux-gnu/11.2.0/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
  /usr/include/bits/stdint-uintn.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/debug.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/error_private.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/../zstd_errors.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/hist.h \
- /home/x-zjian1/unsz/c_codes/third_party/zstd/lib/compress/../common/zstd_deps.h
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/debug.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/error_private.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/../zstd_errors.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/hist.h \
+ /home/x-zjian1/mrcz/c_codes/third_party/zstd/lib/compress/../common/zstd_deps.h
