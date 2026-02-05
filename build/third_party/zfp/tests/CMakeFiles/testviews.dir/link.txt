@@ -1,1 +1,0 @@
-/apps/spack/anvil/apps/openmpi/4.0.6-gcc-11.2.0-3navcwb/bin/mpiCC  -Wall -Ofast -march=native -fopenmp -mavx2 -mfma -O3 -DNDEBUG CMakeFiles/testviews.dir/testviews.cpp.o -o ../bin/testviews  ../lib64/libzfp.a /apps/spack/anvil/apps/gcc/11.2.0-gcc-8.4.1-qjtdkvs/lib64/libgomp.so -lm 
