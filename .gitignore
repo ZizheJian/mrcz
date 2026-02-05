@@ -1,5 +1,5 @@
-mrcz_env/*
-fig/*
-build/*
-install/*
-c_codes/third_party/*
+mrcz_env/
+fig/
+build/
+install/
+c_codes/third_party/
