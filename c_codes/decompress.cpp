@@ -322,7 +322,7 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
     }
     params.decompressed_data.clear();
     params.decompressed_data.shrink_to_fit();
-    printf("\033[91mField= %s ,abs_eb= %f, BR= %f, CR= %f, max_err= %f (%f%%), MSE= %f, PSNR= %f dB\n\033[0m",
+    printf("\033[91mField= %s, abs_eb= %.15f, BR= %.15f, CR= %.15f, max_err= %.15f (%f%%), MSE= %.15f, PSNR= %.15f dB\033[0m\n",
         field.c_str(),params.abs_eb[field],result[0],result[1],result[2],result[2]/params.abs_eb[field]*100,result[3],result[4]);
     return result;
 }

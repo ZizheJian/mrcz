@@ -115,7 +115,7 @@ namespace mrcz
         delete[] coeff_qb;
         delete[] no_corner_err_qb;
         printf("Decompression time= %f seconds\n",end_time-start_time);
-        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+        printf("\033[91mBandwidth per cpu= %f MB/s\033[0m\n",element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
     }
 
     template<typename T>
@@ -198,9 +198,23 @@ namespace mrcz
     template<typename T>
     inline void param_class<T>::lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012)
     {
-        huffman_encoder_class<int64_t> coeff_encoder;
-        coeff_encoder.load(huffman_bs);
-        coeff_encoder.decode(huffman_bs,coeff_qb+n012*begin_index,n012*(end_index-begin_index));
+        if (if_coefficient_transpose)
+        {
+            int64_t *temp_coeff_qb=new int64_t[(n012)*(end_index-begin_index)];
+            huffman_encoder_class<int64_t> coeff_encoder;
+            coeff_encoder.load(huffman_bs);
+            coeff_encoder.decode(huffman_bs,temp_coeff_qb,n012*(end_index-begin_index));
+            for (uint32_t pos=0;pos<n012;pos++)
+                for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+                    coeff_qb[element_id*n012+pos]=temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)];
+            delete[] temp_coeff_qb;
+        }
+        else
+        {
+            huffman_encoder_class<int64_t> coeff_encoder;
+            coeff_encoder.load(huffman_bs);
+            coeff_encoder.decode(huffman_bs,coeff_qb+n012*begin_index,n012*(end_index-begin_index));
+        }
     }
 
     template<typename T>

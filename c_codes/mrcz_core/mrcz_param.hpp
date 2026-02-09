@@ -51,8 +51,8 @@ namespace mrcz
             bool if_chebyshev=true;
             bool if_corner_based_prediction=false;
             bool if_zero_freq_expanding=true;
-            bool if_coefficient_transpose=true;
             bool if_zero_map=true;
+            bool if_coefficient_transpose=true;
 
             string data_path;
             string eb_mode;
@@ -194,8 +194,8 @@ namespace mrcz
                 if_chebyshev=other.if_chebyshev;
                 if_corner_based_prediction=other.if_corner_based_prediction;
                 if_zero_freq_expanding=other.if_zero_freq_expanding;
-                if_coefficient_transpose=other.if_coefficient_transpose;
                 if_zero_map=other.if_zero_map;
+                if_coefficient_transpose=other.if_coefficient_transpose;
                 
                 data_path=other.data_path;
                 eb_mode=other.eb_mode;

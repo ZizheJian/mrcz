@@ -50,6 +50,10 @@ def read_nekrs_header(f)->nekrs_header_c:
     ret.file_id=int(header[9])
     ret.file_num=int(header[10])
     ret.variables=header[11].decode("utf-8")
-    ret.passive_scalar_num=int(re.search(r"S(\d{2})",ret.variables).group(1))
+    SXX_matxh=re.search(r"S(\d{2})",ret.variables)
+    if SXX_matxh is not None:
+        ret.passive_scalar_num=int(re.search(r"S(\d{2})",ret.variables).group(1))
+    else:
+        ret.passive_scalar_num=0
     ret.endian_mode=endian_mode
     return ret
