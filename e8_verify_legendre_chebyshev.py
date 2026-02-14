@@ -6,7 +6,7 @@
 
 import numpy as np
 
-n=6
+n=10
 x_legendre=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(n-1).deriv().roots(),[1]))
 x_chebyshev=np.sort(np.cos((np.arange(n))*np.pi/(n-1)))
 print("Legendre nodes:",x_legendre)

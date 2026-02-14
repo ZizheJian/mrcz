@@ -87,7 +87,7 @@ def add_csv(method,field,abs_eb,br,psnr):
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="sz3-1"
+method="sperr"
 
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
 # fields=["UX","UY","UZ","P","T"]
@@ -99,24 +99,22 @@ method="sz3-1"
 # fields=["UX","UY","UZ"]
 # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8]
 
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
 # fields=["T"]
-# eb_list=[4.2e-3]
+eb_list=[4.52e-2]
 # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
 # SZ3-NekRS的相对误差为7.9e-4时，T的CR=26.052934653717053
 # SZ3-1的相对误差为2e-3时，T的CR=26.078980036305357
 # SZ2-1的相对误差为4.2e-3时，T的CR=26.051779
-# ZFP的相对误差为3.16e-1时，T的CR=27.974553
 # SPERR的相对误差为4.52e-2时，T的CR=26.084365
+# ZFP的相对误差为3.16e-1时，T的CR=27.974553
 # eb_list=[1e-1,1e-2,1e-3,1e-4]
 
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
 # fields=["UX","UY","UZ","P","S00"]
 # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
-fields=["P"]
-eb_list=[1e-6,1e-6,1e-6,1e-6,1e-6,1e-6]
 
-eb_mode="ABS"
+eb_mode="REL"
 
 if method=="mrcz" or method=="sz3-1" or method=="sz3-nekrs" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
     try:
