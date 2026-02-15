@@ -190,7 +190,10 @@ void compress2(mrcz::param_class<T> &params,string field) // 在最终决定para
     // get_coordinate_in_element(params); //用于统计每个element中相邻点的距离，验证了点确实在GLL点上。自带exit(0)，压缩时不使用。
     printf("params.method= %s\n",params.method.c_str());
     if (params.method=="mrcz")
-        params.compress(field);
+        if ((params.header.element_shape[0]==params.header.element_shape[1]) and (params.header.element_shape[1]==params.header.element_shape[2]))
+            params.compress_regular(field);
+        else
+            params.compress_irregular(field);
     else if (params.method=="sz2-0")
     {
         vector<vector<T>> backup_x=params.x;
@@ -217,7 +220,7 @@ void compress2(mrcz::param_class<T> &params,string field) // 在最终决定para
         sz3_2_compress(params,field);
         params.x=backup_x;
     }
-    else if (params.method=="sz3-nekrs")
+    else if (params.method=="sz3-hohs")
         sz3_2_compress(params,field);
     else if (params.method=="zfp")
         zfp_compress(params,field);

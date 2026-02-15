@@ -81,7 +81,7 @@ def add_csv(method,field,abs_eb,br,psnr):
 #   "mrcz"
 #   "sz3-0": 把数据展成1维的，然后用SZ3的1维压缩
 #   "sz3-1": 对每个element执行sz3的3维压缩，在block内共用huffman tree
-#   "sz3-nekrs": 对每个element执行sz3的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
+#   "sz3-hohs": 对每个element执行sz3的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
 #   "sz2-0": 对每个element执行sz2的3维压缩，在block内共用huffman tree
 #   "sz2-1": 对每个element执行sz2的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
 #   "zfp": 对每个element执行zfp的3维压缩
@@ -89,21 +89,27 @@ def add_csv(method,field,abs_eb,br,psnr):
 
 method="sperr"
 
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
+fields=["T"]
+eb_list=[1e-4]
 # fields=["UX","UY","UZ","P","T"]
 # eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
+
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001" #512*6*6*6
+# fields=["T"]
+# eb_list=[1e-7]
 # fields=["UZ","T","S00","S01"]
 # eb_list=[1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8,3.162e-9,1e-9,3.162e-10,1e-10]
+
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/tc_channel0.f00001" #512*8*8*8 (double)
 # fields=["UX","UY","UZ"]
 # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8]
 
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
 # fields=["T"]
-eb_list=[4.52e-2]
+# eb_list=[4.52e-2]
 # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
-# SZ3-NekRS的相对误差为7.9e-4时，T的CR=26.052934653717053
+# SZ3-HOHS的相对误差为7.9e-4时，T的CR=26.052934653717053
 # SZ3-1的相对误差为2e-3时，T的CR=26.078980036305357
 # SZ2-1的相对误差为4.2e-3时，T的CR=26.051779
 # SPERR的相对误差为4.52e-2时，T的CR=26.084365
@@ -114,9 +120,9 @@ eb_list=[4.52e-2]
 # fields=["UX","UY","UZ","P","S00"]
 # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
 
-eb_mode="REL"
+eb_mode="ABS"
 
-if method=="mrcz" or method=="sz3-1" or method=="sz3-nekrs" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
+if method=="mrcz" or method=="sz3-1" or method=="sz3-hohs" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
     try:
         os.chdir("c_codes/third_party/sperr")
         os.makedirs("build",exist_ok=True)
@@ -137,7 +143,7 @@ if method=="mrcz" or method=="sz3-1" or method=="sz3-nekrs" or method=="zfp" or 
                 run_command(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
             else:
                 os.system(f"./build/mrcz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
-                ret=run_command(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
+                run_command(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")
             if "ret" in locals():
                 ret=ret.splitlines()
                 for line in ret:

@@ -23,7 +23,7 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
         if (header.element_shape[dim]>1)
             corner_num*=2;
     T abs_eb=params.abs_eb[field];
-    int64_t *corner_qb=new int64_t[8*params.element_num_to_process];
+    int64_t *corner_qb=new int64_t[corner_num*params.element_num_to_process];
     int64_t *err_qb=new int64_t[params.element_num_to_process*n012];
     int64_t *no_corner_err_qb=new int64_t[params.element_num_to_process*(n012-corner_num)];
     decompressed_data.resize(params.element_num_to_process*n012);
@@ -73,43 +73,54 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
         const unsigned char *huffman_bs=huffman_bs_vec.data();
         mrcz::huffman_encoder_class<int64_t> corner_encoder;
         corner_encoder.load(huffman_bs);
-        corner_encoder.decode(huffman_bs,corner_qb+8*begin_index,8*(end_index-begin_index));
+        corner_encoder.decode(huffman_bs,corner_qb+corner_num*begin_index,corner_num*(end_index-begin_index));
         mrcz::huffman_encoder_class<int64_t> err_encoder;
         err_encoder.load(huffman_bs);
         err_encoder.decode(huffman_bs,no_corner_err_qb+(n012-corner_num)*begin_index,(n012-corner_num)*(end_index-begin_index));
         // 重构每个element角上的数据
-        params.reconstruct_corner_number(corner_qb,begin_index,end_index,n2,n12,n012,abs_eb);
+        params.reconstruct_corner_number(corner_qb,begin_index,end_index,n0,n1,n2,n12,n012,abs_eb);
         //把no_corner_err_qb转换成err_qb
         for (uint64_t i=begin_index;i<end_index;i++)
         {
             int64_t *element_err_qb=err_qb+i*n012;
             int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(n012-corner_num);
-            if (n2>1)
-            {
-                memcpy(element_err_qb+1,element_no_corner_err_qb,sizeof(int64_t)*(n2-2));
-                memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-2,sizeof(int64_t)*(n12-2*n2));
-                memcpy(element_err_qb+n12-n2+1,element_no_corner_err_qb+n12-n2-2,sizeof(int64_t)*(n2-2));
-                memcpy(element_err_qb+n12,element_no_corner_err_qb+n12-4,sizeof(int64_t)*(n012-2*n12));
-                memcpy(element_err_qb+n012-n12+1,element_no_corner_err_qb+n012-n12-4,sizeof(int64_t)*(n2-2));
-                memcpy(element_err_qb+n012-n12+n2,element_no_corner_err_qb+n012-n12+n2-6,sizeof(int64_t)*(n12-2*n2));
-                memcpy(element_err_qb+n012-n2+1,element_no_corner_err_qb+n012-n2-6,sizeof(int64_t)*(n2-2));
-            }
-            else
-            {
-                memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-1,sizeof(int64_t)*(n12-2*n2));
-                memcpy(element_err_qb+n12,element_no_corner_err_qb+n12-2,sizeof(int64_t)*(n012-2*n12));
-                memcpy(element_err_qb+n012-n12+n2,element_no_corner_err_qb+n012-n12+n2-3,sizeof(int64_t)*(n12-2*n2));
-            }
-            // for (uint32_t i=0;i<n012;i++)
-            //     printf("%ld ",element_err_qb[i]);
-            // printf("\n");
+            params.convert_no_corner_err_eb_to_err_eb(element_no_corner_err_qb,element_err_qb,n0,n1,n2,n12,n012);
 
             T *element=decompressed_data.data()+i*n012;
             uint32_t level0=0,level1=0,level2=0;
             for (uint32_t level=0;level<max_level;level++)
             {
-                // printf("level=%u, level0=%u, level1=%u, level2=%u\n",level,level0,level1,level2);
-                if (n2>1 && level2<left_indices2.size())
+                if (n0>1 and level0<left_indices0.size())
+                {
+                    for (uint32_t i0=0;i0<left_indices0[level0].size();i0++)
+                        for (auto i1:compressed_indices1[level1])
+                            for (auto i2:compressed_indices2[level2])
+                            {
+                                uint32_t pos_base=i1*n2+i2;
+                                uint32_t mid_pos=pos_base+mid_indices0[level0][i0]*n12;
+                                T left_value=element[pos_base+left_indices0[level0][i0]*n12];
+                                T right_value=element[pos_base+right_indices0[level0][i0]*n12];
+                                T pred_value=left_weight0[level0][i0]*left_value+right_weight0[level0][i0]*right_value;
+                                element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
+                            }
+                    level0++;
+                }
+                if (n1>1 and level1<left_indices1.size())
+                {
+                    for (auto i0:compressed_indices0[level0])
+                        for (uint32_t i1=0;i1<left_indices1[level1].size();i1++)
+                            for (auto i2:compressed_indices2[level2])
+                            {
+                                uint32_t pos_base=i0*n12+i2;
+                                uint32_t mid_pos=pos_base+mid_indices1[level1][i1]*n2;
+                                T left_value=element[pos_base+left_indices1[level1][i1]*n2];
+                                T right_value=element[pos_base+right_indices1[level1][i1]*n2];
+                                T pred_value=left_weight1[level1][i1]*left_value+right_weight1[level1][i1]*right_value;
+                                element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
+                            }
+                    level1++;
+                }
+                if (n2>1 and level2<left_indices2.size())
                 {
                     for (auto i0:compressed_indices0[level0])
                         for (auto i1:compressed_indices1[level1])
@@ -124,41 +135,6 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
                             }
                     level2++;
                 }
-                // printf("aaa\n");
-                if (n1>1 && level1<left_indices1.size())
-                {
-                    for (auto i0:compressed_indices0[level0])
-                        for (uint32_t i1=0;i1<left_indices1[level1].size();i1++)
-                            for (auto i2:compressed_indices2[level2])
-                            {
-                                uint32_t pos_base=i0*n12+i2;
-                                uint32_t mid_pos=pos_base+mid_indices1[level1][i1]*n2;
-                                T left_value=element[pos_base+left_indices1[level1][i1]*n2];
-                                T right_value=element[pos_base+right_indices1[level1][i1]*n2];
-                                T pred_value=left_weight1[level1][i1]*left_value+right_weight1[level1][i1]*right_value;
-                                element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
-                                // printf("mid_pos=%u, pred_value=%f, err_qb=%ld, decompressed_value=%f\n",mid_pos,pred_value,element_err_qb[mid_pos],element[mid_pos]);
-                            }
-                    level1++;
-                }
-                // printf("bbb\n");
-                if (n0>1 && level0<left_indices0.size())
-                {
-                    for (uint32_t i0=0;i0<left_indices0[level0].size();i0++)
-                        for (auto i1:compressed_indices1[level1])
-                            for (auto i2:compressed_indices2[level2])
-                            {
-                                uint32_t pos_base=i1*n2+i2;
-                                uint32_t mid_pos=pos_base+mid_indices0[level0][i0]*n12;
-                                T left_value=element[pos_base+left_indices0[level0][i0]*n12];
-                                T right_value=element[pos_base+right_indices0[level0][i0]*n12];
-                                T pred_value=left_weight0[level0][i0]*left_value+right_weight0[level0][i0]*right_value;
-                                element[mid_pos]=pred_value-2*abs_eb*element_err_qb[mid_pos];
-                                // printf("mid_pos=%u, pred_value=%f, err_qb=%ld, decompressed_value=%f\n",mid_pos,pred_value,element_err_qb[mid_pos],element[mid_pos]);
-                            }
-                    level0++;
-                }
-                // printf("ccc\n");
             }
         }
     }
@@ -168,4 +144,93 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
     delete[] no_corner_err_qb;
     printf("Decompression time= %f seconds\n",end_time-start_time);
     printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
+}
+
+namespace mrcz
+{
+    template<typename T>
+    inline void param_class<T>::reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,T abs_eb)
+    {
+        if ((n0>1) and (n1>1) and (n2>1))
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            {
+                T *element=decompressed_data.data()+element_id*n012;
+                int64_t *element_corner_qb=corner_qb+8*element_id;
+                element[0]=element_corner_qb[0]*2*abs_eb;
+                element[n2-1]=element_corner_qb[1]*2*abs_eb;
+                element[n12-n2]=element_corner_qb[2]*2*abs_eb;
+                element[n12-1]=element_corner_qb[3]*2*abs_eb;
+                element[n012-n12]=element_corner_qb[4]*2*abs_eb;
+                element[n012-n12+n2-1]=element_corner_qb[5]*2*abs_eb;
+                element[n012-n2]=element_corner_qb[6]*2*abs_eb;
+                element[n012-1]=element_corner_qb[7]*2*abs_eb;
+            }
+        else if ((n0>1) and (n1>1) and (n2==1))
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            {
+                T *element=decompressed_data.data()+element_id*n012;
+                int64_t *element_corner_qb=corner_qb+4*element_id;
+                element[0]=element_corner_qb[0]*2*abs_eb;
+                element[n12-n2]=element_corner_qb[1]*2*abs_eb;
+                element[n012-n12]=element_corner_qb[2]*2*abs_eb;
+                element[n012-n2]=element_corner_qb[3]*2*abs_eb;
+            }
+        else if ((n0>1) and (n1==1) and (n2>1))
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            {
+                T *element=decompressed_data.data()+element_id*n012;
+                int64_t *element_corner_qb=corner_qb+4*element_id;
+                element[0]=element_corner_qb[0]*2*abs_eb;
+                element[n2-1]=element_corner_qb[1]*2*abs_eb;
+                element[n012-n12]=element_corner_qb[2]*2*abs_eb;
+                element[n012-n12+n2-1]=element_corner_qb[3]*2*abs_eb;
+            }
+        else if ((n0==1) and (n1>1) and (n2>1))
+            for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+            {
+                T *element=decompressed_data.data()+element_id*n012;
+                int64_t *element_corner_qb=corner_qb+4*element_id;
+                element[0]=element_corner_qb[0]*2*abs_eb;
+                element[n2-1]=element_corner_qb[1]*2*abs_eb;
+                element[n12-n2]=element_corner_qb[2]*2*abs_eb;
+                element[n12-1]=element_corner_qb[3]*2*abs_eb;
+            }
+        else
+            throw runtime_error("Error: sz3_2_decompress only supports 3D or 2D elements.\n");
+    }
+
+    template<typename T>
+    inline void param_class<T>::convert_no_corner_err_eb_to_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012)
+    {
+        if ((n0>1) and (n1>1) and (n2>1))
+        {
+            memcpy(element_err_qb+1,element_no_corner_err_qb,sizeof(int64_t)*(n2-2));
+            memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-2,sizeof(int64_t)*(n12-2*n2));
+            memcpy(element_err_qb+n12-n2+1,element_no_corner_err_qb+n12-n2-2,sizeof(int64_t)*(n2-2));
+            memcpy(element_err_qb+n12,element_no_corner_err_qb+n12-4,sizeof(int64_t)*(n012-2*n12));
+            memcpy(element_err_qb+n012-n12+1,element_no_corner_err_qb+n012-n12-4,sizeof(int64_t)*(n2-2));
+            memcpy(element_err_qb+n012-n12+n2,element_no_corner_err_qb+n012-n12+n2-6,sizeof(int64_t)*(n12-2*n2));
+            memcpy(element_err_qb+n012-n2+1,element_no_corner_err_qb+n012-n2-6,sizeof(int64_t)*(n2-2));
+        }
+        else if ((n0>1) and (n1>1) and (n2==1))
+        {
+            memcpy(element_err_qb+1,element_no_corner_err_qb,sizeof(int64_t)*(n12-2));
+            memcpy(element_err_qb+n12,element_no_corner_err_qb+n12-2,sizeof(int64_t)*(n012-2*n12));
+            memcpy(element_err_qb+n012-n12+1,element_no_corner_err_qb+n012-n12-2,sizeof(int64_t)*(n12-2));
+        }
+        else if ((n0>1) and (n1==1) and (n2>1))
+        {
+            memcpy(element_err_qb+1,element_no_corner_err_qb,sizeof(int64_t)*(n2-2));
+            memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-2,sizeof(int64_t)*(n012-2*n2));
+            memcpy(element_err_qb+n012-n2+1,element_no_corner_err_qb+n012-n2-2,sizeof(int64_t)*(n2-2));
+        }
+        else if ((n0==1) and (n1>1) and (n2>1))
+        {
+            memcpy(element_err_qb+1,element_no_corner_err_qb,sizeof(int64_t)*(n2-2));
+            memcpy(element_err_qb+n2,element_no_corner_err_qb+n2-2,sizeof(int64_t)*(n12-2*n2));
+            memcpy(element_err_qb+n12-n2+1,element_no_corner_err_qb+n12-n2-2,sizeof(int64_t)*(n2-2));
+        }
+        else
+            throw runtime_error("Error: sz3_2_decompress only supports 3D or 2D elements.\n");
+    }
 }

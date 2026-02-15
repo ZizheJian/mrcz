@@ -241,7 +241,7 @@ namespace mrcz
                 tree.maxval=__maxval-__minval+1;
 
                 // bin的值密集时使用vector存储频次，稀疏时使用map存储频次
-                if ((tree.maxval>=(1<<12) && num_bin<2*static_cast<uint64_t>(__maxval)) || tree.maxval>=(1<<28))
+                if ((tree.maxval>=(1<<12) and num_bin<2*static_cast<uint64_t>(__maxval)) || tree.maxval>=(1<<28))
                     tree.usemp=1;
                 else
                     tree.usemp=0;
@@ -484,7 +484,7 @@ namespace mrcz
 
             static void writeBytes(unsigned char*& c,T val,unsigned char len,unsigned char& mask,unsigned char& index)
             {
-                assert(len>=1 && len<=sizeof(T)*8);
+                assert(len>=1 and len<=sizeof(T)*8);
 
                 if (len+index>=8)
                 {
@@ -645,7 +645,7 @@ namespace mrcz
                             u->p[0]=&tree.ht[tree.ht.size()-1];
                         else
                             u->p[1]=&tree.ht[tree.ht.size()-1];
-                        while (!stk.empty() && stk.top()->p[1] != nullptr)
+                        while (!stk.empty() and stk.top()->p[1] != nullptr)
                             stk.pop();
                     }
                 }

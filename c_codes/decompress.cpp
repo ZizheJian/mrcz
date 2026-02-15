@@ -197,7 +197,10 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
 
     printf("params.method= %s\n",params.method.c_str());
     if (params.method=="mrcz")
-        params.decompress(field);
+        if ((params.header.element_shape[0]==params.header.element_shape[1]) and (params.header.element_shape[1]==params.header.element_shape[2]))
+            params.decompress_regular(field);
+        else
+            params.decompress_irregular(field);
     else if (params.method=="sz2-0")
     {
         vector<vector<T>> backup_x=params.x;
@@ -224,7 +227,7 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
         sz3_2_decompress(params,field);
         params.x=backup_x;
     }
-    else if (params.method=="sz3-nekrs")
+    else if (params.method=="sz3-hohs")
         sz3_2_decompress(params,field);
     else if (params.method=="zfp")
         zfp_decompress(params,field);

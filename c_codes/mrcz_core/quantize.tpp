@@ -38,7 +38,7 @@ namespace mrcz
     {
         for (uint32_t i=0;i<size;i++)
         {
-            if (-zero_coeff_bound<=data[i] && data[i]<=zero_coeff_bound)
+            if (-zero_coeff_bound<=data[i] and data[i]<=zero_coeff_bound)
                 qb[i]=0;
             else
                 qb[i]=static_cast<int64_t>(round(data[i]*neg_2_eb));

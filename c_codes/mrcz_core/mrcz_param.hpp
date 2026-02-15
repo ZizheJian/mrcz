@@ -49,7 +49,6 @@ namespace mrcz
     {
         public:
             bool if_chebyshev=true;
-            bool if_corner_based_prediction=false;
             bool if_zero_freq_expanding=true;
             bool if_zero_map=true;
             bool if_coefficient_transpose=true;
@@ -97,23 +96,28 @@ namespace mrcz
             void save_tail_metadata_decompress();
             T get_data_range(string field);
 
-            void compress(string field);
-            void quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,
-                T abs_eb,T neg_2_eb);
-            void subtract_element_base(T *element,uint32_t n,uint32_t n2,uint32_t n3);
-            void forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+            void compress_irregular(string field);
+            void forward_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
-            void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+            void inverse_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &L0,vector<T> &L1,vector<T> &L2);
-            void convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n,uint32_t n2,uint32_t n3);
-            void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
+            void compress_regular(string field);
+            void forward_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &neg_L0);
+            void inverse_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &L0);
+            
             void lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *f_qb,unsigned char *&huffman_bs,uint32_t n012);
+            void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
 
-            void decompress(string field);
+            void decompress_irregular(string field);
+            void decompress_regular(string field);
             void lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
-            void reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n,uint32_t n2,uint32_t n3,T abs_eb);
-            void add_element_base(T *element,uint32_t n,uint32_t n2,uint32_t n3);
+            
+            void quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+                T abs_eb,T neg_2_eb);
+            void convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012);
+            void reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,T abs_eb);
+            void convert_no_corner_err_eb_to_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012);
 
             void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);
             void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
@@ -123,7 +127,7 @@ namespace mrcz
 
             void default_init()
             {
-                if ((!std::is_same<T,float>::value) && (!std::is_same<T,double>::value))
+                if ((!std::is_same<T,float>::value) and (!std::is_same<T,double>::value))
                     throw runtime_error("仅能以float或double类型处理数据");
                 if (header.element_shape.size()!=3)
                     throw runtime_error("element必须是三维的");
@@ -192,7 +196,6 @@ namespace mrcz
             param_class(param_class<T2> &other)
             {
                 if_chebyshev=other.if_chebyshev;
-                if_corner_based_prediction=other.if_corner_based_prediction;
                 if_zero_freq_expanding=other.if_zero_freq_expanding;
                 if_zero_map=other.if_zero_map;
                 if_coefficient_transpose=other.if_coefficient_transpose;
@@ -234,8 +237,10 @@ namespace mrcz
     };
 }
 
-#include "compress.tpp"
-#include "decompress.tpp"
+#include "compress_irregular.tpp"
+#include "compress_regular.tpp"
+#include "decompress_irregular.tpp"
+#include "decompress_regular.tpp"
 #include "get_max_cpus.tpp"
 #include "gll_nodes.tpp"
 #include "quantize.tpp"
