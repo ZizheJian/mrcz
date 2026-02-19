@@ -61,13 +61,11 @@ namespace mrcz
     template<typename T>
     inline void param_class<T>::lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n000)
     {
-        bool coeff_qb_all_zero=false;
         uint32_t all_zero_num=0;
         vector<bool> coeff_qb_zero_map(n000,false);
         vector<uint32_t> coeff_qb_loose_pos(n000,0),coeff_qb_compact_pos(n000,0);
         if ((huffman_bs[0]&0xC0)==0)
         {
-            coeff_qb_all_zero=true;
             coeff_qb_zero_map.assign(n000,true);
             huffman_bs+=1;
             memset(coeff_qb+begin_index*n000,0,sizeof(int64_t)*n000*(end_index-begin_index));
@@ -123,11 +121,15 @@ namespace mrcz
                 huffman_encoder_class<int64_t> coeff_encoder;
                 coeff_encoder.load(huffman_bs);
                 coeff_encoder.decode(huffman_bs,temp_coeff_qb,(n000-all_zero_num)*(end_index-begin_index));
-                for (uint32_t pos=0;pos<n000-all_zero_num;pos++)
+                for (uint32_t pos=0;pos<n000;pos++)
                 {
-                    uint32_t loose_pos=coeff_qb_loose_pos[pos];
-                    for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
-                        coeff_qb[element_id*n000+loose_pos]=temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)];
+                    uint32_t compact_pos=coeff_qb_compact_pos[pos];
+                    if (coeff_qb_zero_map[pos]==false)
+                        for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+                            coeff_qb[element_id*n000+pos]=temp_coeff_qb[compact_pos*(end_index-begin_index)+(element_id-begin_index)];
+                    else
+                        for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+                            coeff_qb[element_id*n000+pos]=0;
                 }
                 delete[] temp_coeff_qb;
             }

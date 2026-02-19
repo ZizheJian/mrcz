@@ -25,7 +25,7 @@ void zfp_compress(mrcz::param_class<T> &params,string field)
         
         zfp_stream *zfp=zfp_stream_open(NULL);
         zfp_stream_set_accuracy(zfp,abs_eb);
-        zfp_field *field=zfp_field_4d(data.data()+begin_index*header.element_size,type,n0,n1,n2,end_index-begin_index);
+        zfp_field *field=zfp_field_4d(data.data()+begin_index*header.element_size,type,n2,n1,n0,end_index-begin_index);
         size_t block_max_buffer_size=zfp_stream_maximum_size(zfp,field);
         block.zstd_bs.resize(block_max_buffer_size);
         bitstream *output_bs=stream_open(block.zstd_bs.data(),block_max_buffer_size);

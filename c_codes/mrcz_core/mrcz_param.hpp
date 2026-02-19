@@ -81,8 +81,6 @@ namespace mrcz
             T zero_coeff_qb_bound=3;
             vector<vector<T>> x;
             vector<vector<T>> L,neg_L;
-            vector<T> element_base_weight;
-            vector<uint32_t> no_corner_pos;
 
             vector<T> simple_invert_matrix(vector<T>& A,uint32_t n);
             vector<T> simple_matrix_multiply(vector<T>& A,vector<T>& B,uint32_t n);
@@ -154,40 +152,6 @@ namespace mrcz
                     neg_L.push_back(vector<T>());
                     neg_L[dim]=simple_invert_matrix(L[dim],n);
                 }
-                uint32_t n0=header.element_shape[0];
-                uint32_t n1=header.element_shape[1];
-                uint32_t n2=header.element_shape[2];
-                uint32_t n12=n1*n2;
-                uint32_t n012=n0*n1*n2;
-                element_base_weight=vector<T>(8*n012,0);
-                for (uint32_t i0=0;i0<n0;i0++)
-                    for (uint32_t i1=0;i1<n1;i1++)
-                        for (uint32_t i2=0;i2<n2;i2++)
-                        {
-                            uint32_t bias=8*(i0*n12+i1*n2+i2);
-                            element_base_weight[bias+0]=((1-x[0][i0])*(1-x[1][i1])*(1-x[2][i2]))/8;
-                            element_base_weight[bias+1]=((1-x[0][i0])*(1-x[1][i1])*(x[2][i2]+1))/8;
-                            element_base_weight[bias+2]=((1-x[0][i0])*(x[1][i1]+1)*(1-x[2][i2]))/8;
-                            element_base_weight[bias+3]=((1-x[0][i0])*(x[1][i1]+1)*(x[2][i2]+1))/8;
-                            element_base_weight[bias+4]=((x[0][i0]+1)*(1-x[1][i1])*(1-x[2][i2]))/8;
-                            element_base_weight[bias+5]=((x[0][i0]+1)*(1-x[1][i1])*(x[2][i2]+1))/8;
-                            element_base_weight[bias+6]=((x[0][i0]+1)*(x[1][i1]+1)*(1-x[2][i2]))/8;
-                            element_base_weight[bias+7]=((x[0][i0]+1)*(x[1][i1]+1)*(x[2][i2]+1))/8;
-                        }
-                for (uint32_t i=1;i<n2-1;i++)
-                    no_corner_pos.push_back(i);
-                for (uint32_t i=n2;i<n12-n2;i++)
-                    no_corner_pos.push_back(i);
-                for (uint32_t i=n12-n2+1;i<n12-1;i++)
-                    no_corner_pos.push_back(i);
-                for (uint32_t i=n12;i<n012-n12;i++)
-                    no_corner_pos.push_back(i);
-                for (uint32_t i=n012-n12+1;i<n012-n12+n2-1;i++)
-                    no_corner_pos.push_back(i);
-                for (uint32_t i=n012-n12+n2;i<n012-n2;i++)
-                    no_corner_pos.push_back(i);
-                for (uint32_t i=n012-n2+1;i<n012-1;i++)
-                    no_corner_pos.push_back(i);
             }
 
             param_class(){}

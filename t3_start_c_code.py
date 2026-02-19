@@ -2,7 +2,7 @@ import os,subprocess
 
 redbegin="\033[91m"
 redend="\033[0m"
-silent_build=True
+silent_build=False
 
 def run_command(command,silent=False):
     import pty,errno
@@ -87,17 +87,13 @@ def add_csv(method,field,abs_eb,br,psnr):
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="sperr"
+method="mrcz"
 
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
-fields=["T"]
-eb_list=[1e-4]
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
 # fields=["UX","UY","UZ","P","T"]
 # eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001" #512*6*6*6
-# fields=["T"]
-# eb_list=[1e-7]
 # fields=["UZ","T","S00","S01"]
 # eb_list=[1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8,3.162e-9,1e-9,3.162e-10,1e-10]
 
@@ -139,8 +135,8 @@ if method=="mrcz" or method=="sz3-1" or method=="sz3-hohs" or method=="zfp" or m
         os.chdir("..")
         for eb in eb_list:
             if "fields" in locals():
-                os.system(f"./build/mrcz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-                run_command(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                os.system(f"./build/mrcz_compress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}] -elements [0,1]")
+                run_command(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}] -elements [0,1]")
             else:
                 os.system(f"./build/mrcz_compress -i {data_path} -M {eb_mode} {eb} -method {method}")
                 run_command(f"./build/mrcz_decompress -i {data_path} -M {eb_mode} {eb} -method {method}")

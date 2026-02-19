@@ -18,7 +18,6 @@ namespace mrcz
         T neg_2_coeff_eb=1/(2*coeff_eb);
         int64_t *coeff_qb=new int64_t[element_num_to_process*n000];
         int64_t *err_qb=new int64_t[element_num_to_process*n000];
-        printf("Begin compressing\n");
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
         for (uint64_t block_id=0;block_id<blocks.size();block_id++)

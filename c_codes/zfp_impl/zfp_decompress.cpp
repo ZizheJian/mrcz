@@ -28,7 +28,7 @@ void zfp_decompress(mrcz::param_class<T> &params,string field)
         zfp_stream_set_accuracy(zfp,abs_eb);
         bitstream *input_bs=stream_open(block.zstd_bs.data(),block.zstd_bs.size());
         zfp_stream_set_bit_stream(zfp,input_bs);
-        zfp_field *field=zfp_field_4d(decompressed_data.data()+begin_index*header.element_size,type,n0,n1,n2,end_index-begin_index);
+        zfp_field *field=zfp_field_4d(decompressed_data.data()+begin_index*header.element_size,type,n2,n1,n0,end_index-begin_index);
         zfp_decompress(zfp,field);
         stream_close(input_bs);
         zfp_field_free(field);

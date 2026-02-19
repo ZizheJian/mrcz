@@ -305,7 +305,7 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
                 T err=fabs(params.data[i]-params.decompressed_data[i]);
                 if (err>params.abs_eb[field]*1.1)
                 {
-                    printf("element_index= %lu , original= %f , decompressed= %f , err= %f , abs_eb= %f\n",i,params.data[i],params.decompressed_data[i],err,params.abs_eb[field]);
+                    printf("index= %lu, original= %f, decompressed= %f, err= %f, abs_eb= %f\n",i,params.data[i],params.decompressed_data[i],err,params.abs_eb[field]);
                     exit(0);
                 }
                 max_err=max(max_err,(double)err);
