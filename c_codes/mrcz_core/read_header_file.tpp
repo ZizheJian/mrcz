@@ -3,8 +3,24 @@
 namespace mrcz
 {
     template<typename T>
-    void param_class<T>::read_header(string header_path)
+    void param_class<T>::read_header(const string &task)
     {
+        if (format=="nekrs")
+            read_header_nekrs(task);
+        else if (format=="mfem")
+            read_header_mfem(task);
+        else
+            throw runtime_error("未知的数据格式: "+format);
+    }
+
+    template<typename T>
+    void param_class<T>::read_header_nekrs(const string &task)
+    {
+        string header_path;
+        if (task=="compress")
+            header_path=data_path;
+        else
+            header_path=data_path+"_header.mrcz";
         //////// 读取header文件 ////////
         ifstream data_file(header_path,ios::binary);
         header.original_header.resize(136);
@@ -132,4 +148,96 @@ namespace mrcz
                 field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*element_num_to_process;
             }
     }
+
+    template<typename T>
+    void param_class<T>::read_header_mfem(const string &task)
+    {
+        //////// 读取gf文件的开头 ////////
+        string header_path;
+        if (task=="compress")
+            header_path=data_path;
+        else
+            header_path=data_path+"_header.mrcz";
+        ifstream gf_file(header_path);
+        header.original_header="";
+        string line;
+        while (getline(gf_file,line))
+        {
+            bool is_empty=true;
+            for (char c:line)
+                if (!isspace(c))
+                {
+                    is_empty=false;
+                    break;
+                }
+            if (is_empty)
+                break;
+            else
+                header.original_header+=line+"\n";
+        }
+        gf_file.close();
+        if (task=="decompress")
+        {
+            uint32_t lastn=header.original_header.rfind('\n');
+            uint32_t last2n=header.original_header.rfind('\n',lastn-1);
+            string last_line=header.original_header.substr(last2n+1,lastn-last2n-1);
+            if (last_line.rfind("DofNum=",0)==0)
+                header.dof_num=stoll(last_line.substr(7));
+            header.original_header=header.original_header.substr(0,last2n+1);
+            ofstream dummy_decompressed_file(data_path+".mrcz.bin");
+            dummy_decompressed_file.write(header.original_header.c_str(),header.original_header.size());
+            dummy_decompressed_file.put('\n');
+            for (uint64_t i=0;i<header.dof_num;i++)
+            {
+                string s=to_string(i)+"\n";
+                dummy_decompressed_file.write(s.c_str(),s.size());
+            }
+        }
+        //////// 读取mfem的一些信息 ////////
+        ifstream mesh_f(mesh_path);
+        mfem::Mesh mesh(mesh_f,1,1);
+        ifstream solution_f(data_path);
+        mfem::GridFunction gf(&mesh,solution_f);
+        mfem::FiniteElementSpace *fes=gf.FESpace();
+        const mfem::FiniteElement *fe=fes->GetFE(0);
+        header.word_size=sizeof(mfem::real_t);
+        printf("header.word_size=sizeof(mfem::real_t)=%d\n",header.word_size);
+        uint32_t order=fe->GetOrder();
+        int geomerty=mesh.GetElementBaseGeometry(0);
+        if (geomerty==mfem::Geometry::SEGMENT)
+            header.element_shape={order+1,1,1};
+        else if (geomerty==mfem::Geometry::SQUARE)
+            header.element_shape={order+1,order+1,1};
+        else if (geomerty==mfem::Geometry::CUBE)
+            header.element_shape={order+1,order+1,order+1};
+        else
+            throw runtime_error("不支持的element形状");
+        printf("header.element_shape: %d %d %d\n",header.element_shape[0],header.element_shape[1],header.element_shape[2]);
+        header.element_size=fe->GetDof();
+        printf("header.element_size=fe->GetDof()=%d\n",header.element_size);
+        if (header.element_size!=header.element_shape[0]*header.element_shape[1]*header.element_shape[2])
+            throw runtime_error("element_size与element_shape不匹配");
+        header.file_element_num=mesh.GetNE();
+        printf("header.file_element_num=mesh.GetNE()=%ld\n",header.file_element_num);
+        header.variables="";
+        header.passive_scalar_num=0;
+        header.endian_mode=0;
+        header.dof_num=fes->GetNDofs();
+        printf("header.dof_num=fes->GetNDofs()=%ld\n",header.dof_num);
+        mesh_f.close();
+        solution_f.close();
+        //////// 生成all_fields_in_file,fields_to_process ////////
+        all_fields_in_file.push_back("no_name_field");
+        fields_to_process=all_fields_in_file;
+        //////// 计算实际需要处理的element范围 ////////
+        if (!got_element_range)
+        {
+            element_begin_index=0;
+            element_end_index=header.file_element_num;
+            element_num_to_process=header.file_element_num;
+        }
+        else
+            element_num_to_process=element_end_index-element_begin_index;
+    }
+
 }

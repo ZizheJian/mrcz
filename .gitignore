@@ -3,3 +3,4 @@ fig/
 build/
 install/
 c_codes/third_party/
+.cache/

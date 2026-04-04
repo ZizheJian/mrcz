@@ -11,12 +11,28 @@ int main(int argc,char **argv)
     for (int i=1;i<argc;i++)
     {
         string arg=argv[i];
+        if (arg=="-format")
+        {
+            if (i+1<argc)
+                params.format=argv[++i];
+            else
+                throw runtime_error("缺少-format参数后的数据格式");
+            continue;
+        }
         if (arg=="-i")
         {
             if (i+1<argc)
                 params.data_path=argv[++i];
             else
                 throw runtime_error("缺少-i参数后的输入文件路径");
+            continue;
+        }
+        if (arg=="-mesh")
+        {
+            if (i+1<argc)
+                params.mesh_path=argv[++i];
+            else
+                throw runtime_error("缺少-mesh参数后的网格文件路径");
             continue;
         }
         if (arg=="-elements")
@@ -69,8 +85,12 @@ int main(int argc,char **argv)
         }
     }
     
+    if (params.format.empty() or (params.format!="nekrs" and params.format!="mfem"))
+        throw runtime_error("必须指定数据格式，使用-format参数，目前支持的格式有: mekrs, mfem");
     if (params.data_path.empty())
         throw runtime_error("必须指定原始数据路径，使用-i参数");
+    if (params.format=="mfem" and params.mesh_path.empty())
+        throw runtime_error("使用mfem格式时必须指定网格文件路径，使用-mesh参数");
     if (params.eb_mode.empty())
         throw runtime_error("必须指定误差控制模式，使用-M参数");
     if (params.input_eb<=0)
@@ -82,9 +102,9 @@ int main(int argc,char **argv)
     if (params.method.empty())
         params.method="mrcz";
     
-    params.read_header(params.data_path);
+    params.read_header("compress");
     params.default_init();
-    params.save_header_and_element_map_compress();
+    params.save_header_and_element_map("compress");
     params.get_max_cpus();
 
     params.blocks.resize(params.max_cpus);
@@ -155,7 +175,7 @@ void compress1(mrcz::param_class<T> &params) //已经根据原始数据的格式
             params.abs_eb[field]=params.input_eb*(params.data_range_max[field]-params.data_range_min[field]);
         }
         printf("Data range: [%f, %f], abs_eb=%e, rel_eb=%e\n",params.data_range_min[field],params.data_range_max[field],params.abs_eb[field],params.rel_eb[field]);
-
+        
         if ((is_same<T,float>::value) and (params.rel_eb[field]<1e-4)) //原始数据类型是float，但是需要更高精度的压缩
         {
             mrcz::param_class<double> params_double(params);

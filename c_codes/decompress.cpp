@@ -11,12 +11,28 @@ int main(int argc,char **argv)
     for (int i=1;i<argc;i++)
     {
         string arg=argv[i];
+        if (arg=="-format")
+        {
+            if (i+1<argc)
+                params.format=argv[++i];
+            else
+                throw runtime_error("缺少-format参数后的数据格式");
+            continue;
+        }
         if (arg=="-i")
         {
             if (i+1<argc)
                 params.data_path=argv[++i];
             else
                 throw runtime_error("缺少-i参数后的输入文件路径");
+            continue;
+        }
+        if (arg=="-mesh")
+        {
+            if (i+1<argc)
+                params.mesh_path=argv[++i];
+            else
+                throw runtime_error("缺少-mesh参数后的网格文件路径");
             continue;
         }
         if (arg=="-elements")
@@ -69,8 +85,12 @@ int main(int argc,char **argv)
         }
     }
     
+    if (params.format.empty())
+        throw runtime_error("必须指定数据格式，使用-format参数");
     if (params.data_path.empty())
         throw runtime_error("必须指定原始数据路径，使用-i参数。如果原始数据不存在，寻找解压产生的独立的header文件，文件名以_header.mrcz为结尾），去掉这一后缀作为数据路径");
+    if (params.format=="mfem" and params.mesh_path.empty())
+        throw runtime_error("使用mfem格式时必须指定网格文件路径，使用-mesh参数");
     if (params.eb_mode.empty())
         throw runtime_error("必须指定误差控制模式，使用-M参数");
     if (params.input_eb<=0)
@@ -82,9 +102,9 @@ int main(int argc,char **argv)
     if (params.method.empty())
         params.method="mrcz";
     
-    params.read_header(params.data_path+"_header.mrcz");
+    params.read_header("decompress");
     params.default_init();
-    params.save_header_and_element_map_decompress();
+    params.save_header_and_element_map("decompress");
     params.get_max_cpus();
     
     unordered_map<string,vector<double>> result;

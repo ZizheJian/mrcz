@@ -1,0 +1,13 @@
+{
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "search.exclude":{
+        "**/build/**":true,
+        "**/third_party/**":true,
+        "**/install/**":true
+    },
+    "cmake.sourceDirectory": "/home/x-zjian1/mrcz/c_codes",
+    "cmake.configureOnEdit": false,
+    "cmake.configureOnOpen": false,
+    "cmake.buildBeforeRun": false,
+    "cmake.buildDirectory": ""
+}

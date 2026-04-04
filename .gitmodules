@@ -10,3 +10,6 @@
 [submodule "c_codes/third_party/sperr"]
 	path = c_codes/third_party/sperr
 	url = https://github.com/NCAR/SPERR.git
+[submodule "c_codes/third_party/mfem"]
+	path = c_codes/third_party/mfem
+	url = https://github.com/mfem/mfem.git

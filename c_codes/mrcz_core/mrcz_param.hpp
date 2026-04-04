@@ -9,8 +9,10 @@
 #include <omp.h>
 #include <immintrin.h>
 #include <cmath>
+#include <charconv>
 #include "huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
+#include "../third_party/mfem/mfem.hpp"
 
 using namespace std;
 
@@ -29,6 +31,8 @@ namespace mrcz
             uint32_t passive_scalar_num;
 
             char endian_mode; // '<'表示小端，'>'表示大端
+
+            uint64_t dof_num=0; //mfem格式中gf文件内dof的总数
     };
 
     class block_class
@@ -53,7 +57,9 @@ namespace mrcz
             bool if_zero_map=true;
             bool if_coefficient_transpose=true;
 
+            string format;
             string data_path;
+            string mesh_path;
             string eb_mode;
             T input_eb;
             unordered_map<string,T> abs_eb,rel_eb;
@@ -84,11 +90,14 @@ namespace mrcz
 
             vector<T> simple_invert_matrix(vector<T>& A,uint32_t n);
             vector<T> simple_matrix_multiply(vector<T>& A,vector<T>& B,uint32_t n);
-            void read_header(string header_path);
+            void read_header(const string &task);
+            void read_header_nekrs(const string &task);
+            void read_header_mfem(const string &task);
             void read_data_range();
             void read_block_info();
-            void save_header_and_element_map_compress();
-            void save_header_and_element_map_decompress();
+            void save_header_and_element_map(const string &task);
+            void save_header_and_element_map_nekrs(const string &task);
+            void save_header_and_element_map_mfem(const string &task);
             void get_max_cpus();
             void save_tail_metadata_compress();
             void save_tail_metadata_decompress();
@@ -164,7 +173,9 @@ namespace mrcz
                 if_zero_map=other.if_zero_map;
                 if_coefficient_transpose=other.if_coefficient_transpose;
                 
+                format=other.format;
                 data_path=other.data_path;
+                mesh_path=other.mesh_path;
                 eb_mode=other.eb_mode;
                 input_eb=other.input_eb;
                 for (auto pair:other.abs_eb)
