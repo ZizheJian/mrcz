@@ -239,5 +239,4 @@ namespace mrcz
         else
             element_num_to_process=element_end_index-element_begin_index;
     }
-
 }

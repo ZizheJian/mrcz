@@ -3,48 +3,67 @@ import numpy as np
 n=10
 x_legendre=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(n-1).deriv().roots(),[1]))
 x_chebyshev=np.sort(np.cos((np.arange(n))*np.pi/(n-1)))
+x_uniform=np.linspace(-1,1,n)
 print("Legendre nodes:",x_legendre)
 print("Chebyshev nodes:",x_chebyshev)
 print("Legendre gap:",np.diff(x_legendre))
 print("Chebyshev gap:",np.diff(x_chebyshev))
 
-# def normalize_columns(V):
-#  norms=np.linalg.norm(V,axis=0)
-#  return V/norms,norms
+dlt_gll=np.zeros((n,n),dtype=np.float64)
+for i in range(n):
+    if i==0:
+        dlt_gll[:,i]=1.0
+    elif i==1:
+        dlt_gll[:,i]=x_legendre
+    else:
+        dlt_gll[:,i]=((2*i-1)*x_legendre*dlt_gll[:,i-1]-(i-1)*dlt_gll[:,i-2])/i
+print(f"dlt_gll_vmax={np.max(np.abs(dlt_gll))}, dlt_gll_norm2={np.linalg.norm(dlt_gll,2)}")
 
-# def stability_report(name,V):
-#     condV=np.linalg.cond(V)
-#     G=V.T@V
-#     condG=np.linalg.cond(G)
-#     Vn,_=normalize_columns(V)
-#     Gn=Vn.T@Vn
-#     orth_err_2=np.linalg.norm(Gn-np.eye(Gn.shape[0]),2)
-#     orth_err_f=np.linalg.norm(Gn-np.eye(Gn.shape[0]),'fro')
-#     print(f"\n{name}")
-#     print("shape:",V.shape)
-#     print("cond(V):",condV)
-#     print("cond(V^T V):",condG)
-#     print("||G-I||_2 after column normalization:",orth_err_2)
-#     print("||G-I||_F after column normalization:",orth_err_f)
+dcht_gll=np.zeros((n,n),dtype=np.float64)
+for i in range(n):
+    if i==0:
+        dcht_gll[:,i]=1.0
+    elif i==1:
+        dcht_gll[:,i]=x_legendre
+    else:
+        dcht_gll[:,i]=2*x_legendre*dcht_gll[:,i-1]-dcht_gll[:,i-2]
+print(f"dcht_gll_vmax={np.max(np.abs(dcht_gll))}, dcht_gll_norm2={np.linalg.norm(dcht_gll,2)}")
 
+dct_gll=np.zeros((n,n),dtype=np.float64)
+for i in range(n):
+    for j in range(n):
+        dct_gll[j,i]=np.cos(i*np.pi*(x_legendre[j]+1)/2)
+print(f"dct_gll_vmax={np.max(np.abs(dct_gll))}, dct_gll_norm2={np.linalg.norm(dct_gll,2)}")
 
-# V_leg_on_gll=np.zeros((n,n),dtype=np.float64)
-# for i in range(n):
-#     if i==0:
-#         V_leg_on_gll[:,i]=1.0
-#     elif i==1:
-#         V_leg_on_gll[:,i]=x_legendre
-#     else:
-#         V_leg_on_gll[:,i]=((2*i-1)*x_legendre*V_leg_on_gll[:,i-1]-(i-1)*V_leg_on_gll[:,i-2])/i
+dlt_uniform=np.zeros((n,n),dtype=np.float64)
+for i in range(n):
+    if i==0:
+        dlt_uniform[:,i]=1.0
+    elif i==1:
+        dlt_uniform[:,i]=x_uniform
+    else:
+        dlt_uniform[:,i]=((2*i-1)*x_uniform*dlt_uniform[:,i-1]-(i-1)*dlt_uniform[:,i-2])/i
+print(f"dlt_uniform_vmax={np.max(np.abs(dlt_uniform))}, dlt_uniform_norm2={np.linalg.norm(dlt_uniform,2)}")
 
-# V_cheb_on_gll=np.zeros((n,n),dtype=np.float64)
-# for i in range(n):
-#     if i==0:
-#         V_cheb_on_gll[:,i]=1.0
-#     elif i==1:
-#         V_cheb_on_gll[:,i]=x_legendre
-#     else:
-#         V_cheb_on_gll[:,i]=2*x_legendre*V_cheb_on_gll[:,i-1]-V_cheb_on_gll[:,i-2]
+dcht_uniform=np.zeros((n,n),dtype=np.float64)
+for i in range(n):
+    if i==0:
+        dcht_uniform[:,i]=1.0
+    elif i==1:
+        dcht_uniform[:,i]=x_uniform
+    else:
+        dcht_uniform[:,i]=2*x_uniform*dcht_uniform[:,i-1]-dcht_uniform[:,i-2]
+print(f"dcht_uniform_vmax={np.max(np.abs(dcht_uniform))}, dcht_uniform_norm2={np.linalg.norm(dcht_uniform,2)}")
 
-# stability_report("Discrete Legendre matrix on GLL",V_leg_on_gll)
-# stability_report("Discrete Chebyshev matrix on GLL",V_cheb_on_gll)
+dst_uniform=np.zeros((n,n),dtype=np.float64)
+for i in range(n):
+    for j in range(n):
+        dst_uniform[j,i]=np.sin((i+1)*np.pi*(j+1)/(n+1))
+print(f"dst_uniform_vmax={np.max(np.abs(dst_uniform))}, dst_uniform_norm2={np.linalg.norm(dst_uniform,2)}")
+
+dct_uniform=np.zeros((n,n),dtype=np.float64)
+for i in range(n):
+    for j in range(n):
+        dct_uniform[j,i]=np.cos(i*np.pi*(j+1)/(n+1))
+print(f"dct_uniform_vmax={np.max(np.abs(dct_uniform))}, dct_uniform_norm2={np.linalg.norm(dct_uniform,2)}")
+

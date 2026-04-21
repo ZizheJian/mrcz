@@ -5,11 +5,14 @@ namespace mrcz
     template<typename T>
     void param_class<T>::get_max_cpus()
     {
-        const char *slurm_cpus=getenv("SLURM_CPUS_PER_TASK");
+        const char *cpus_per_task=getenv("SLURM_CPUS_PER_TASK");
+        const char *ntasks=getenv("SLURM_NTASKS");
         int available_cpus=0;
-        if (slurm_cpus!=nullptr)
-            available_cpus=atoi(slurm_cpus);
-        else
+        if(cpus_per_task)
+            available_cpus=atoi(cpus_per_task);
+        else if(ntasks)
+            available_cpus=atoi(ntasks);
+        else 
             available_cpus=1;
         if (max_cpus==0)
             max_cpus=available_cpus;

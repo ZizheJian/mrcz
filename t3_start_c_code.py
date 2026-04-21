@@ -2,7 +2,7 @@ import os,subprocess
 
 redbegin="\033[91m"
 redend="\033[0m"
-silent_build=False
+silent_build=True
 
 def run_command(command,silent=False):
     import pty,errno
@@ -87,27 +87,26 @@ def add_csv(method,field,abs_eb,br,psnr):
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="mrcz"
+method="zfp"
 
 # format="nekrs"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
 # fields=["UX","UY","UZ","P","T"]
 # eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
-# fromat="nekrs"
+# format="nekrs"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001" #512*6*6*6
 # fields=["UZ","T","S00","S01"]
 # eb_list=[1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8,3.162e-9,1e-9,3.162e-10,1e-10]
 
-# fromat="nekrs"
+# format="nekrs"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/tc_channel0.f00001" #512*8*8*8 (double)
 # fields=["UX","UY","UZ"]
 # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8]
 
-# fromat="nekrs"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
-# fields=["T"]
-# eb_list=[4.52e-2]
+format="nekrs"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
+eb_list=[1e-3]
 # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
 # SZ3-HOHS的相对误差为7.9e-4时，T的CR=26.052934653717053
 # SZ3-1的相对误差为2e-3时，T的CR=26.078980036305357
@@ -116,20 +115,20 @@ method="mrcz"
 # ZFP的相对误差为3.16e-1时，T的CR=27.974553
 # eb_list=[1e-1,1e-2,1e-3,1e-4]
 
-# fromat="nekrs"
+# format="nekrs"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
 # fields=["UX","UY","UZ","P","S00"]
 # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
 
-fromat="mfem"
-data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/sol0.gf"
-mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/mesh0.mesh"
-eb_list=[1e-4]
+# format="mfem"
+# data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/sol0.gf"
+# mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/mesh0.mesh"
+# # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
-# fromat="mfem"
+# format="mfem"
 # data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/sol1.gf"
 # mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/refined1.mesh"
-# eb_list=[1e-4]
+# eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 eb_mode="ABS"
 
@@ -162,20 +161,20 @@ if method=="mrcz" or method=="sz3-1" or method=="sz3-hohs" or method=="zfp" or m
         run_command("make install",silent=silent_build)
         os.chdir("..")
         for eb in eb_list:
-            if fromat=="nekrs":
+            if format=="nekrs":
                 if "fields" in locals():
-                    os.system(f"./build/mrcz_compress -format {fromat} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-                    run_command(f"./build/mrcz_decompress -format {fromat} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                    os.system(f"./build/mrcz_compress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                    # run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
                 else:
-                    os.system(f"./build/mrcz_compress -format {fromat} -i {data_path} -M {eb_mode} {eb} -method {method}")
-                    run_command(f"./build/mrcz_decompress -format {fromat} -i {data_path} -M {eb_mode} {eb} -method {method}")
-            elif fromat=="mfem":
+                    os.system(f"./build/mrcz_compress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
+                    # run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
+            elif format=="mfem":
                 if "fields" in locals():
-                    os.system(f"./build/mrcz_compress -format {fromat} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-                    run_command(f"./build/mrcz_decompress -format {fromat} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                    os.system(f"./build/mrcz_compress -format {format} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                    run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
                 else:
-                    os.system(f"./build/mrcz_compress -format {fromat} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method}")
-                    run_command(f"./build/mrcz_decompress -format {fromat} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method}")
+                    os.system(f"./build/mrcz_compress -format {format} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method}")
+                    run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method}")
             if "ret" in locals():
                 ret=ret.splitlines()
                 for line in ret:

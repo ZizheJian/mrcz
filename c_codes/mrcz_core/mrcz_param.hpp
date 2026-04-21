@@ -140,9 +140,36 @@ namespace mrcz
                     throw runtime_error("element必须是三维的");
                 for (int dim=0;dim<3;dim++)
                 {
+                    //////// GLL grid ////////
                     x.push_back(compute_GLL_nodes<T>(header.element_shape[dim]));
+                    //////// uniform grid ////////
+                    // x.push_back(vector<T>());
+                    // for (uint32_t i=0;i<header.element_shape[dim];i++)
+                    //     x[dim].push_back(2.0*i/(header.element_shape[dim]-1)-1);
+
                     uint32_t n=x[dim].size();
                     L.push_back(vector<T>());
+                    //////// sin ////////
+                    // const T pi=acos(T(-1));
+                    // for(uint32_t i=0;i<n;i++)
+                    //     for(uint32_t j=0;j<n;j++)
+                    //         L[dim].push_back((T(2)/(n+1))*sin(pi*(i+1)*(j+1)/(n+1)));
+                    //////// sin on GLL ////////
+                    // const T pi=acos(T(-1));
+                    // for(uint32_t i=0;i<n;i++)
+                    //     for(uint32_t j=0;j<n;j++)
+                    //         L[dim].push_back(sin(pi*(i+1)*(x[dim][j]+1)/2));
+                    //////// cos ////////
+                    // const T pi=acos(T(-1));
+                    // for(uint32_t i=0;i<n;i++)
+                    //     for(uint32_t j=0;j<n;j++)
+                    //         L[dim].push_back(cos(pi*i*(j+1)/(n+1)));
+                    //////// cos on GLL ////////
+                    // const T pi=acos(T(-1));
+                    // for(uint32_t i=0;i<n;i++)
+                    //     for(uint32_t j=0;j<n;j++)
+                    //         L[dim].push_back(cos(pi*i*(x[dim][j]+1)/2));
+
                     for (uint32_t i=0;i<n;i++)
                     {
                         if (i==0)

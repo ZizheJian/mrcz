@@ -86,7 +86,7 @@ int main(int argc,char **argv)
     }
     
     if (params.format.empty() or (params.format!="nekrs" and params.format!="mfem"))
-        throw runtime_error("必须指定数据格式，使用-format参数，目前支持的格式有: mekrs, mfem");
+        throw runtime_error("必须指定数据格式，使用-format参数，目前支持的格式有: nekrs, mfem");
     if (params.data_path.empty())
         throw runtime_error("必须指定原始数据路径，使用-i参数");
     if (params.format=="mfem" and params.mesh_path.empty())

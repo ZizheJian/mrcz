@@ -18,6 +18,7 @@ namespace mrcz
         T neg_2_coeff_eb=1/(2*coeff_eb);
         int64_t *coeff_qb=new int64_t[element_num_to_process*n000];
         int64_t *err_qb=new int64_t[element_num_to_process*n000];
+        // vector<double> coeff_br(max_cpus,0),err_br(max_cpus,0);
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
         for (uint64_t block_id=0;block_id<blocks.size();block_id++)
@@ -45,6 +46,34 @@ namespace mrcz
             }
             // 无损压缩
             vector<unsigned char> huffman_bs_vec(2*n000*(end_index-begin_index)*sizeof(int64_t),0);
+            // {
+            //     unsigned char *huffman_bs=huffman_bs_vec.data();
+            //     if (if_zero_map)
+            //         lossless_compress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n000);
+            //     else
+            //         lossless_compress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n000);
+            //     uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
+            //     uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
+            //     block.zstd_bs.resize(max_zstd_bs_len);
+            //     uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
+            //     coeff_br[block_id]=zstd_bs_len;
+            //     fill(huffman_bs_vec.begin(),huffman_bs_vec.end(),0);
+            //     block.zstd_bs.clear();
+            // }
+            // {
+            //     unsigned char *huffman_bs=huffman_bs_vec.data();
+            //     huffman_encoder_class<int64_t> err_encoder;
+            //     err_encoder.preprocess_encode(err_qb+begin_index*n000,n000*(end_index-begin_index));
+            //     err_encoder.save(huffman_bs);
+            //     err_encoder.encode(err_qb+begin_index*n000,n000*(end_index-begin_index),huffman_bs);
+            //     uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
+            //     uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
+            //     block.zstd_bs.resize(max_zstd_bs_len);
+            //     uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
+            //     err_br[block_id]=zstd_bs_len;
+            //     fill(huffman_bs_vec.begin(),huffman_bs_vec.end(),0);
+            //     block.zstd_bs.clear();
+            // }
             unsigned char *huffman_bs=huffman_bs_vec.data();
             if (if_zero_map)
                 lossless_compress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n000);
@@ -65,6 +94,8 @@ namespace mrcz
         delete[] err_qb;
         printf("Compression time= %f seconds\n",end_time-start_time);
         printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*n000*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+        // printf("coeff_br= %f\n",accumulate(coeff_br.begin(),coeff_br.end(),(double)0)*8/element_num_to_process/n000);
+        // printf("err_br= %f\n",accumulate(err_br.begin(),err_br.end(),(double)0)*8/element_num_to_process/n000);
     }
 
     template<typename T>
