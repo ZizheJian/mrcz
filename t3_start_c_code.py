@@ -123,7 +123,7 @@ eb_list=[1e-3]
 # format="mfem"
 # data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/sol0.gf"
 # mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/mesh0.mesh"
-# # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
+# eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 # format="mfem"
 # data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/sol1.gf"
@@ -164,10 +164,10 @@ if method=="mrcz" or method=="sz3-1" or method=="sz3-hohs" or method=="zfp" or m
             if format=="nekrs":
                 if "fields" in locals():
                     os.system(f"./build/mrcz_compress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-                    # run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                    run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
                 else:
                     os.system(f"./build/mrcz_compress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
-                    # run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
+                    run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
             elif format=="mfem":
                 if "fields" in locals():
                     os.system(f"./build/mrcz_compress -format {format} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
