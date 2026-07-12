@@ -13,9 +13,3 @@
 [submodule "c_codes/third_party/mfem"]
 	path = c_codes/third_party/mfem
 	url = https://github.com/mfem/mfem.git
-[submodule "c_codes/third_party/nektar++"]
-	path = c_codes/third_party/nektar++
-	url = http://gitlab.nektar.info/nektar/nektar.git
-[submodule "c_codes/third_party/dealii"]
-	path = c_codes/third_party/dealii
-	url = https://github.com/dealii/dealii.git
