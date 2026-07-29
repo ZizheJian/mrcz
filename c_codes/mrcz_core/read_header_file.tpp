@@ -9,6 +9,8 @@ namespace mrcz
             read_header_nekrs(task);
         else if (format=="mfem")
             read_header_mfem(task);
+        else if (format=="nektar++")
+            read_header_nektarpp(task);
         else
             throw runtime_error("未知的数据格式: "+format);
     }
@@ -229,6 +231,71 @@ namespace mrcz
         //////// 生成all_fields_in_file,fields_to_process ////////
         all_fields_in_file.push_back("no_name_field");
         fields_to_process=all_fields_in_file;
+        //////// 计算实际需要处理的element范围 ////////
+        if (!got_element_range)
+        {
+            element_begin_index=0;
+            element_end_index=header.file_element_num;
+            element_num_to_process=header.file_element_num;
+        }
+        else
+            element_num_to_process=element_end_index-element_begin_index;
+    }
+
+    template<typename T>
+    void param_class<T>::read_header_nektarpp(const string &task)
+    {
+        string header_path;
+        if (task=="compress")
+            header_path=data_path;
+        else
+            header_path=data_path+"_header.mrcz";
+        //////// 读取header文件 ////////
+        header.header_doc=new tinyxml2::XMLDocument();
+        header.header_doc->LoadFile(header_path.c_str());
+        auto *UnstructuredGrid_node=header.header_doc->FirstChildElement("VTKFile")->FirstChildElement("UnstructuredGrid");
+        auto *Piece_node=UnstructuredGrid_node->FirstChildElement("Piece");
+        uint32_t num_cells=0;
+        Piece_node->QueryUnsignedAttribute("NumberOfPoints",&header.element_size);
+        Piece_node->QueryUnsignedAttribute("NumberOfCells",&num_cells);
+        double a_dim2=pow(static_cast<double>(header.element_size),1.0/2);
+        double a_dim3=pow(static_cast<double>(header.element_size),1.0/3);
+        double ratio_dim2=abs(log((a_dim2-1)*(a_dim2-1)/num_cells));
+        double ratio_dim3=abs(log((a_dim3-1)*(a_dim3-1)*(a_dim3-1)/num_cells));
+        if (ratio_dim2<ratio_dim3)
+            header.element_shape={1,static_cast<uint32_t>(round(a_dim2)),static_cast<uint32_t>(round(a_dim2))};
+        else
+            header.element_shape={static_cast<uint32_t>(round(a_dim3)),static_cast<uint32_t>(round(a_dim3)),static_cast<uint32_t>(round(a_dim3))};
+        auto *PointData_node=Piece_node->FirstChildElement("PointData");
+        for (auto *DataArray_node=PointData_node->FirstChildElement("DataArray");DataArray_node;DataArray_node=DataArray_node->NextSiblingElement("DataArray"))
+        {
+            string data_type=DataArray_node->Attribute("type");
+            header.word_size=0;
+            if ((data_type=="Float32") && (header.word_size<4))
+                header.word_size=4;
+            else if ((data_type=="Float64") && (header.word_size<8))
+                header.word_size=8;
+            string data_name=DataArray_node->Attribute("Name");
+            if (header.variables.find(data_name)==string::npos)
+                header.variables+=data_name;
+        }
+        header.file_element_num=0;
+        for (Piece_node=UnstructuredGrid_node->FirstChildElement("Piece");Piece_node;Piece_node=Piece_node->NextSiblingElement("Piece"))
+        {
+            PointData_node=Piece_node->FirstChildElement("PointData");
+            for (auto *DataArray_node=PointData_node->FirstChildElement("DataArray");DataArray_node;DataArray_node=DataArray_node->NextSiblingElement("DataArray"))
+                DataArray_node->DeleteChildren();
+            header.file_element_num++;
+        }
+        //////// 生成all_fields_in_file,fields_to_process ////////
+        for (uint32_t i=0;i<header.variables.size();i++)
+        {
+            char c=header.variables[i];
+            all_fields_in_file.push_back(string(1,c));
+        }
+        if (all_fields_to_process)
+            fields_to_process=all_fields_in_file;
+        
         //////// 计算实际需要处理的element范围 ////////
         if (!got_element_range)
         {

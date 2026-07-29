@@ -106,7 +106,7 @@ int main(int argc,char **argv)
     params.default_init();
     params.save_header_and_element_map("decompress");
     params.get_max_cpus();
-    
+
     unordered_map<string,vector<double>> result;
     if (params.header.word_size==8)
     {

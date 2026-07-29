@@ -28,6 +28,7 @@ namespace mrcz
             uint64_t end_index=block.end_index;
             // 然后量化剩余的数据
             vector<T> temp_element1(n000,0),temp_element2(n000,0);
+            vector<T> mean_abs_coeff(n000,0);
             for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
             {
                 T *element=data.data()+element_id*n000;
@@ -35,6 +36,8 @@ namespace mrcz
                 int64_t *element_err_qb=err_qb+element_id*n000;
                 // 正变换
                 forward_transform_regular(temp_element1,temp_element2,element,n0,n00,n000,neg_L0);
+                for (uint32_t pos=0;pos<n000;pos++)
+                    mean_abs_coeff[pos]+=fabs(temp_element1[pos]);
                 // 量化
                 if (if_zero_freq_expanding)
                     quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n000,coeff_eb,neg_2_coeff_eb,zero_coeff_bound);
@@ -44,6 +47,11 @@ namespace mrcz
                 inverse_transform_regular(temp_element1,temp_element2,n0,n00,n000,L0);
                 quantize_err_array(temp_element2.data(),element,element_err_qb,n000,abs_eb,neg_2_eb);
             }
+            for (uint32_t pos=0;pos<n000;pos++)
+                mean_abs_coeff[pos]/=(end_index-begin_index);
+            FILE *mean_abs_coeff_file=fopen((data_path+"."+field+".mean_abs_coeff.block"+to_string(block_id)+"_DLT").c_str(),"wb");
+            fwrite(mean_abs_coeff.data(),sizeof(T),n000,mean_abs_coeff_file);
+            fclose(mean_abs_coeff_file);
             // 无损压缩
             vector<unsigned char> huffman_bs_vec(2*n000*(end_index-begin_index)*sizeof(int64_t),0);
             // {

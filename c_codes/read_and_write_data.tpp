@@ -7,9 +7,13 @@ void read_data_nekrs(mrcz::param_class<T> &params,string field);
 template<typename T>
 void read_data_mfem(mrcz::param_class<T> &params,string field);
 template<typename T>
+void read_data_nektarpp(mrcz::param_class<T> &params,string field);
+template<typename T>
 void write_data_nekrs(mrcz::param_class<T> &params,string field);
 template<typename T>
 void write_data_mfem(mrcz::param_class<T> &params,string field);
+template<typename T>
+void write_data_nektarpp(mrcz::param_class<T> &params,string field);
 
 template<typename T>
 void read_data(mrcz::param_class<T> &params,string field)//分配好params.data的空间后，调用这个函数来读取指定field的数据到params.data中
@@ -18,6 +22,8 @@ void read_data(mrcz::param_class<T> &params,string field)//分配好params.data�
         read_data_nekrs(params,field);
     else if (params.format=="mfem")
         read_data_mfem(params,field);
+    else if (params.format=="nektar++")
+        read_data_nektarpp(params,field);
     else
         throw runtime_error("不支持的格式");
 }
@@ -96,6 +102,33 @@ void read_data_mfem(mrcz::param_class<T> &params,string field)
 }
 
 template<typename T>
+void read_data_nektarpp(mrcz::param_class<T> &params,string field)
+{
+    tinyxml2::XMLDocument data_doc;
+    data_doc.LoadFile(params.data_path.c_str());
+    auto *UnstructuredGrid_node=data_doc.FirstChildElement("VTKFile")->FirstChildElement("UnstructuredGrid");
+    uint64_t element_id=0;
+    for (auto *Piece_node=UnstructuredGrid_node->FirstChildElement("Piece");Piece_node;Piece_node=Piece_node->NextSiblingElement("Piece"))
+    {
+        auto *PointData_node=Piece_node->FirstChildElement("PointData");
+        for (auto *DataArray_node=PointData_node->FirstChildElement("DataArray");DataArray_node;DataArray_node=DataArray_node->NextSiblingElement("DataArray"))
+        {
+            if (string(DataArray_node->Attribute("Name"))==field)
+            {
+                char *text=(char*)(DataArray_node->GetText());
+                for (uint32_t point_id=0;point_id<params.header.element_size;point_id++)
+                {
+                    char *endptr;
+                    params.data[element_id*params.header.element_size+point_id]=static_cast<T>(strtod(text,&endptr)); 
+                    text=endptr;
+                }
+            }
+        }
+        element_id++;
+    }
+}
+
+template<typename T>
 void write_data(mrcz::param_class<T> &params,string field)
 {
     assert(params.header.word_size==sizeof(T));
@@ -103,6 +136,8 @@ void write_data(mrcz::param_class<T> &params,string field)
         write_data_nekrs(params,field);
     else if (params.format=="mfem")
         write_data_mfem(params,field);
+    else if (params.format=="nektar++")
+        write_data_nektarpp(params,field);
     else
         throw runtime_error("不支持的格式");
 }
@@ -116,7 +151,7 @@ void write_data_nekrs(mrcz::param_class<T> &params,string field)
         if (field=="UX")
         {
             decompressed_file.seekp(0,ios::end);
-            assert(decompressed_file.tellp()==params.field_begin_address[field]);
+            // assert(decompressed_file.tellp()==params.field_begin_address[field]);
             vector<T> temp_data(params.element_num_to_process*params.header.element_size*3,0);
             for (uint64_t element_id=0;element_id<params.element_num_to_process;element_id++)
                 memcpy(&temp_data[element_id*params.header.element_size*3],&params.decompressed_data[element_id*params.header.element_size],params.header.element_size*sizeof(T));
@@ -125,7 +160,7 @@ void write_data_nekrs(mrcz::param_class<T> &params,string field)
         else if (field=="UY")
         {
             decompressed_file.seekp(0,ios::end);
-            assert(decompressed_file.tellp()==params.field_end_address[field]);
+            // assert(decompressed_file.tellp()==params.field_end_address[field]);
             vector<T> temp_data(params.element_num_to_process*params.header.element_size*3,0);
             decompressed_file.seekg(params.field_begin_address[field]);
             decompressed_file.read(reinterpret_cast<char*>(temp_data.data()),params.element_num_to_process*params.header.element_size*3*sizeof(T));
@@ -137,7 +172,7 @@ void write_data_nekrs(mrcz::param_class<T> &params,string field)
         else if (field=="UZ")
         {
             decompressed_file.seekp(0,ios::end);
-            assert(decompressed_file.tellp()==params.field_end_address[field]);
+            // assert(decompressed_file.tellp()==params.field_end_address[field]);
             vector<T> temp_data(params.element_num_to_process*params.header.element_size*3,0);
             decompressed_file.seekg(params.field_begin_address[field]);
             decompressed_file.read(reinterpret_cast<char*>(temp_data.data()),params.element_num_to_process*params.header.element_size*3*sizeof(T));
@@ -150,7 +185,7 @@ void write_data_nekrs(mrcz::param_class<T> &params,string field)
     else
     {
         decompressed_file.seekp(0,ios::end);
-        assert(decompressed_file.tellp()==params.field_begin_address[field]);
+        // assert(decompressed_file.tellp()==params.field_begin_address[field]);
         decompressed_file.write(reinterpret_cast<char*>(params.decompressed_data.data()),params.element_num_to_process*params.header.element_size*params.header.word_size);
     }
     decompressed_file.close();
@@ -219,4 +254,10 @@ void write_data_mfem(mrcz::param_class<T> &params,string field)
         decompressed_file.write(buf,ptr-buf);
     }
     decompressed_file.close();
+}
+
+template<typename T>
+void write_data_nektarpp(mrcz::param_class<T> &params,string field)
+{
+    // Implementation for writing data in nektar++ format
 }

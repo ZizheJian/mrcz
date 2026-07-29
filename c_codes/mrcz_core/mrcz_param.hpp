@@ -13,6 +13,7 @@
 #include "huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
 #include "../third_party/mfem/mfem.hpp"
+#include "../third_party/tinyxml2/tinyxml2.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ namespace mrcz
             char endian_mode; // '<'表示小端，'>'表示大端
 
             uint64_t dof_num=0; //mfem格式中gf文件内dof的总数
+            tinyxml2::XMLDocument *header_doc;//用于存储nektar++生成的vtu文件
     };
 
     class block_class
@@ -52,7 +54,7 @@ namespace mrcz
     class param_class
     {
         public:
-            bool if_chebyshev=true;
+            bool if_chebyshev=false;
             bool if_zero_freq_expanding=true;
             bool if_zero_map=true;
             bool if_coefficient_transpose=true;
@@ -93,11 +95,13 @@ namespace mrcz
             void read_header(const string &task);
             void read_header_nekrs(const string &task);
             void read_header_mfem(const string &task);
+            void read_header_nektarpp(const string &task);
             void read_data_range();
             void read_block_info();
             void save_header_and_element_map(const string &task);
             void save_header_and_element_map_nekrs(const string &task);
             void save_header_and_element_map_mfem(const string &task);
+            void save_header_and_element_map_nektarpp(const string &task);
             void get_max_cpus();
             void save_tail_metadata_compress();
             void save_tail_metadata_decompress();

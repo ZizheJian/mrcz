@@ -9,6 +9,8 @@ namespace mrcz
             save_header_and_element_map_nekrs(task);
         else if (format=="mfem")
             save_header_and_element_map_mfem(task);
+        else if (format=="nektar++")
+            save_header_and_element_map_nektarpp(task);
         else
             throw runtime_error("未知的数据格式: "+format);
     }
@@ -57,6 +59,17 @@ namespace mrcz
             header_file.write(s.data(),s.size());
             header_file.close();
         }
+        else
+        {
+            // 什么都不干
+        }
+    }
+
+    template<typename T>
+    void param_class<T>::save_header_and_element_map_nektarpp(const string &task)
+    {
+        if (task=="compress")
+            header.header_doc->SaveFile((data_path+"_header.mrcz").c_str());
         else
         {
             // 什么都不干

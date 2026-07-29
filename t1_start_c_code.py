@@ -1,81 +1,11 @@
 import os,subprocess
+from third_party.get_max_cpus.py_codes.get_max_cpus import get_max_cpus
+from third_party.run_command.run_command import run_command
 
 redbegin="\033[91m"
 redend="\033[0m"
-silent_build=True
-
-def run_command(command,silent=False):
-    import pty,errno
-    command_list=command.split()
-    if silent:
-        result=subprocess.run(command_list,capture_output=True,text=True,encoding="utf-8")
-        if result.returncode!=0:
-            print(result.stdout)
-            print(result.stderr)
-            exit()
-        return result.stdout
-    else:
-        master,slave=pty.openpty()
-        proc=subprocess.Popen(command_list,stdout=slave,stderr=slave,text=True,bufsize=1)
-        os.close(slave)
-        lines=[]
-        with os.fdopen(master) as proc_stdout:
-            try:
-                for line in proc_stdout:
-                    print(line,end="")
-                    lines.append(line)
-            except OSError as e:
-                if e.errno!=errno.EIO:
-                    raise e
-        proc.wait()
-        output="".join(lines)
-        if proc.returncode!=0:
-            print(output)
-            exit()
-        return output
-
-def add_csv(method,field,abs_eb,br,psnr):
-    csv_path=f"{data_path}_{field}.csv"
-    if os.path.exists(csv_path):
-        with open(csv_path,"r") as f:
-            lines=f.readlines()
-            records=[]
-            width=len(lines[0].strip().split(","))
-            for line in lines:
-                records.append(line.strip().split(","))
-                records[-1]+=[""]*(width-len(records[-1]))
-        row_index=0
-        for i in range(1,len(records)+1):
-            if i==len(records) or abs_eb>float(records[i][0])*1.001:
-                records.insert(i,[""]*len(records[0]))
-                records[i][0]=str(abs_eb)
-                row_index=i
-                break
-            elif 0.999*float(records[i][0])<=abs_eb<=1.001*float(records[i][0]):
-                row_index=i
-                break
-        column_index=0
-        for i in range(1,len(records[0])+2,2):
-            if i==len(records[0]) or method.upper()+"_BR">records[0][i]:
-                records[0].insert(i,method.upper()+"_PSNR")
-                records[0].insert(i,method.upper()+"_BR")
-                for j in range(1,len(records)):
-                    records[j].insert(i,"")
-                    records[j].insert(i,"")
-                column_index=i
-                break
-            elif method.upper()+"_BR"==records[0][i]:
-                column_index=i
-                break
-        records[row_index][column_index]=str(br)
-        records[row_index][column_index+1]=str(psnr)
-        with open(csv_path,"w") as f:
-            for record in records:
-                f.write(",".join(record)+"\n")
-    else:
-        with open(csv_path,"w") as f:
-            f.write(f"ABS_EB,{method.upper()}_BR,{method.upper()}_PSNR\n")
-            f.write(f"{abs_eb},{br},{psnr}\n")
+silent_build=False
+build_max_cpus=get_max_cpus(8)
 
 # method可选:
 #   "mrcz"
@@ -87,12 +17,13 @@ def add_csv(method,field,abs_eb,br,psnr):
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
 
-method="zfp"
+method="mrcz"
+eb_mode="REL"
 
-# format="nekrs"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
-# fields=["UX","UY","UZ","P","T"]
-# eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
+format="nekrs"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
+fields=["UX","UY","UZ","P","T"]
+eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 # format="nekrs"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001" #512*6*6*6
@@ -104,9 +35,9 @@ method="zfp"
 # fields=["UX","UY","UZ"]
 # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8]
 
-format="nekrs"
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
-eb_list=[1e-3]
+# format="nekrs"
+# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
+# eb_list=[1e-3]
 # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
 # SZ3-HOHS的相对误差为7.9e-4时，T的CR=26.052934653717053
 # SZ3-1的相对误差为2e-3时，T的CR=26.078980036305357
@@ -121,38 +52,42 @@ eb_list=[1e-3]
 # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
 
 # format="mfem"
-# data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/sol0.gf"
-# mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/mesh0.mesh"
+# data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex0examples/sol.gf"
+# mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex0examples/mesh.mesh"
 # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 # format="mfem"
-# data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/sol1.gf"
-# mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/refined1.mesh"
+# data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex1examples/sol.gf"
+# mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex1examples/refined.mesh"
 # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
-eb_mode="ABS"
+# format="nektar++"
+# data_path="/home/x-zjian1/mrcz/c_codes/third_party/flow-stability-cylinder/tutorial/base/Cylinder-Base.vtu"
+# eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5]
+# eb_list=[1e1,1e0,1e-1,1e-2,1e-3]
 
-if method=="mrcz" or method=="sz3-1" or method=="sz3-hohs" or method=="zfp" or method=="sz2-0" or method=="sz2-1" or method=="sperr":
+if method in ["mrcz","sz3-hohs","sz3-1","sz2-1","sz2-0","zfp", "sperr"]:
     try:
-        ######## build sperr ########
-        os.chdir("build")
-        os.makedirs("sperr_build",exist_ok=True)
-        os.chdir("sperr_build")
-        if not os.path.exists("CMakeCache.txt"):
-            run_command("cmake -DCMAKE_INSTALL_PREFIX=../../install/sperr_install -DBUILD_SHARED_LIBS=OFF ../../c_codes/third_party/sperr",silent=silent_build)
-        run_command("make",silent=silent_build)
-        run_command("make install",silent=silent_build)
-        os.chdir("../..")
+        ######## build sperr ######## sperr的CMakeLists写的有问题，需要手动安装并链接
+        sperr_source_path="third_party/sperr"
+        sperr_build_path="build/sperr_build"
+        sperr_install_path="install/sperr_install"
+        os.makedirs(sperr_build_path,exist_ok=True)
+        if not os.path.exists(os.path.join(sperr_build_path,"CMakeCache.txt")):
+            run_command(f"cmake -S \"{sperr_source_path}\" -B \"{sperr_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{sperr_install_path}\" \
+                        -DBUILD_SHARED_LIBS=OFF",silent=silent_build)
+        run_command(f"cmake --build {sperr_build_path} --parallel {build_max_cpus}",silent=silent_build)
+        run_command(f"cmake --install {sperr_build_path}",silent=silent_build)
         ######## build mfem ########
-        os.chdir("build")
-        os.makedirs("mfem_build",exist_ok=True)
-        os.chdir("mfem_build")
-        if not os.path.exists("CMakeCache.txt"):
-            run_command("cmake -DCMAKE_INSTALL_PREFIX=../../install/mfem_install ../../c_codes/third_party/mfem",silent=silent_build)
-        run_command("make",silent=silent_build)
-        run_command("make examples",silent=silent_build)
-        run_command("make install",silent=silent_build)
-        os.chdir("../..")
+        mfem_source_path="third_party/mfem"
+        mfem_build_path="build/mfem_build"
+        mfem_install_path="install/mfem_install"
+        os.makedirs(mfem_build_path,exist_ok=True)
+        if not os.path.exists(os.path.join(mfem_build_path,"CMakeCache.txt")):
+            run_command(f"cmake -S \"{mfem_source_path}\" -B \"{mfem_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{mfem_install_path}\"",
+                        silent=silent_build)
+        run_command(f"cmake --build {mfem_build_path} --parallel {build_max_cpus}",silent=silent_build)
+        run_command(f"cmake --install {mfem_build_path}",silent=silent_build)
         ######## build mrcz ########
         os.makedirs("build",exist_ok=True)
         os.chdir("build")
@@ -161,13 +96,13 @@ if method=="mrcz" or method=="sz3-1" or method=="sz3-hohs" or method=="zfp" or m
         run_command("make install",silent=silent_build)
         os.chdir("..")
         for eb in eb_list:
-            if format=="nekrs":
+            if format=="nekrs" or format=="nektar++":
                 if "fields" in locals():
-                    os.system(f"./build/mrcz_compress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
-                    run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                    run_command(f"./build/mrcz_compress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
+                    # run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
                 else:
                     os.system(f"./build/mrcz_compress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
-                    run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
+                    ret=run_command(f"./build/mrcz_decompress -format {format} -i {data_path} -M {eb_mode} {eb} -method {method}")
             elif format=="mfem":
                 if "fields" in locals():
                     os.system(f"./build/mrcz_compress -format {format} -i {data_path} -mesh {mesh_path} -M {eb_mode} {eb} -method {method} -fields [{','.join(fields)}]")
