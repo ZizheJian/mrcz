@@ -1,3 +1,5 @@
 mrcz_env/
 build/
 install/
+/third_party/flow-stability-cylinder.tar.gz
+/third_party/flow-stability-cylinder/
