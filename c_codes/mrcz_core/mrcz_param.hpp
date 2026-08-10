@@ -1,3 +1,5 @@
+// 先按照逆变换中每个阶的平方和来归一化，之后再看看要不要给每个阶的系数用不同的压缩误差
+// 
 #pragma once
 
 #include <string>
@@ -12,7 +14,7 @@
 #include <charconv>
 #include "huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
-#include "../third_party/mfem/mfem.hpp"
+#include <mfem.hpp>
 #include "../third_party/tinyxml2/tinyxml2.h"
 
 using namespace std;
@@ -37,12 +39,12 @@ namespace mrcz
             tinyxml2::XMLDocument *header_doc;//用于存储nektar++生成的vtu文件
     };
 
-    class block_class
+    class partition_class
     {
         public:
-            uint64_t block_id;
+            uint64_t partition_id;
             uint64_t element_num;
-            uint64_t begin_index,end_index;//block包含的element在参与压缩的element中的相对位置
+            uint64_t begin_index,end_index;//partition包含的element在参与压缩的element中的相对位置
 
             vector<unsigned char> zstd_bs;
     };
@@ -54,17 +56,18 @@ namespace mrcz
     class param_class
     {
         public:
-            bool if_chebyshev=false;
             bool if_zero_freq_expanding=true;
             bool if_zero_map=true;
             bool if_coefficient_transpose=true;
+            string grid_assumption="GLL"; //GLL ,chebyshev, uniform
+            string transform="DChT"; //DLT, DChT, DST, DCT
 
             string format;
             string data_path;
             string mesh_path;
             string eb_mode;
             T input_eb;
-            unordered_map<string,T> abs_eb,rel_eb;
+            unordered_map<string,T> abs_eb,rel_eb; //每个field的绝对误差和相对误差
             string method;
             bool all_fields_to_process=false;
             vector<string> all_fields_in_file;
@@ -78,7 +81,7 @@ namespace mrcz
             header_class header;
             unordered_map<string,T> data_range_min;
             unordered_map<string,T> data_range_max;
-            vector<block_class> blocks;
+            vector<partition_class> partitions;
 
             uint64_t element_num_to_process; // 实际需要压缩的element数量
             vector<T> data;
@@ -91,21 +94,16 @@ namespace mrcz
             vector<vector<T>> L,neg_L;
 
             vector<T> simple_invert_matrix(vector<T>& A,uint32_t n);
-            vector<T> simple_matrix_multiply(vector<T>& A,vector<T>& B,uint32_t n);
             void read_header(const string &task);
             void read_header_nekrs(const string &task);
             void read_header_mfem(const string &task);
             void read_header_nektarpp(const string &task);
-            void read_data_range();
-            void read_block_info();
             void save_header_and_element_map(const string &task);
             void save_header_and_element_map_nekrs(const string &task);
             void save_header_and_element_map_mfem(const string &task);
             void save_header_and_element_map_nektarpp(const string &task);
-            void get_max_cpus();
             void save_tail_metadata_compress();
             void save_tail_metadata_decompress();
-            T get_data_range(string field);
 
             void compress_irregular(string field);
             void forward_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
@@ -141,56 +139,65 @@ namespace mrcz
                 if ((!std::is_same<T,float>::value) and (!std::is_same<T,double>::value))
                     throw runtime_error("仅能以float或double类型处理数据");
                 if (header.element_shape.size()!=3)
-                    throw runtime_error("element必须是三维的");
+                    throw runtime_error("element必须是三维的。如果是二维的，应该补上一个维度为1的维度。");
                 for (int dim=0;dim<3;dim++)
                 {
-                    //////// GLL grid ////////
-                    x.push_back(compute_GLL_nodes<T>(header.element_shape[dim]));
-                    //////// uniform grid ////////
-                    // x.push_back(vector<T>());
-                    // for (uint32_t i=0;i<header.element_shape[dim];i++)
-                    //     x[dim].push_back(2.0*i/(header.element_shape[dim]-1)-1);
+                    uint32_t n=header.element_shape[dim];
+                    if (grid_assumption=="GLL")
+                        x.push_back(compute_GLL_nodes<T>(n));
+                    else if (grid_assumption=="chebyshev")
+                    {
+                        x.push_back(vector<T>());
+                        for (uint32_t i=0;i<n;i++)
+                            x[dim].push_back(-cos(M_PI*i/(n-1)));
+                    }
+                    else if (grid_assumption=="uniform")
+                    {
+                        x.push_back(vector<T>());
+                        for (uint32_t i=0;i<n;i++)
+                            x[dim].push_back(2.0*i/(n-1)-1);
+                    }
 
-                    uint32_t n=x[dim].size();
-                    L.push_back(vector<T>());
-                    //////// sin ////////
-                    // const T pi=acos(T(-1));
-                    // for(uint32_t i=0;i<n;i++)
-                    //     for(uint32_t j=0;j<n;j++)
-                    //         L[dim].push_back((T(2)/(n+1))*sin(pi*(i+1)*(j+1)/(n+1)));
-                    //////// sin on GLL ////////
-                    // const T pi=acos(T(-1));
-                    // for(uint32_t i=0;i<n;i++)
-                    //     for(uint32_t j=0;j<n;j++)
-                    //         L[dim].push_back(sin(pi*(i+1)*(x[dim][j]+1)/2));
-                    //////// cos ////////
-                    // const T pi=acos(T(-1));
-                    // for(uint32_t i=0;i<n;i++)
-                    //     for(uint32_t j=0;j<n;j++)
-                    //         L[dim].push_back(cos(pi*i*(j+1)/(n+1)));
-                    //////// cos on GLL ////////
-                    // const T pi=acos(T(-1));
-                    // for(uint32_t i=0;i<n;i++)
-                    //     for(uint32_t j=0;j<n;j++)
-                    //         L[dim].push_back(cos(pi*i*(x[dim][j]+1)/2));
-
+                    neg_L.push_back(vector<T>());
+                    T pi=acos(T(-1));
                     for (uint32_t i=0;i<n;i++)
                     {
-                        if (i==0)
-                            for (uint32_t j=0;j<n;j++)
-                                L[dim].push_back(1);
-                        else if (i==1)
-                            for (uint32_t j=0;j<n;j++)
-                                L[dim].push_back(x[dim][j]);
-                        else
-                            for (uint32_t j=0;j<n;j++)
-                                if (if_chebyshev)
-                                    L[dim].push_back(2*x[dim][j]*L[dim][(i-1)*n+j]-L[dim][(i-2)*n+j]);
-                                else
-                                    L[dim].push_back(((2*i-1)*x[dim][j]*L[dim][(i-1)*n+j]-(i-1)*L[dim][(i-2)*n+j])/i);
+                        if (transform=="DLT")
+                        {
+                            if (i==0)
+                                for (uint32_t j=0;j<n;j++)
+                                    neg_L[dim].push_back(1);
+                            else if (i==1)
+                                for (uint32_t j=0;j<n;j++)
+                                    neg_L[dim].push_back(x[dim][j]);
+                            else
+                                for (uint32_t j=0;j<n;j++)
+                                    neg_L[dim].push_back(((2*i-1)*x[dim][j]*neg_L[dim][(i-1)*n+j]-(i-1)*neg_L[dim][(i-2)*n+j])/i);
+                        }
+                        else if (transform=="DChT")
+                        {
+                            if (i==0)
+                                for (uint32_t j=0;j<n;j++)
+                                    neg_L[dim].push_back(1);
+                            else if (i==1)
+                                for (uint32_t j=0;j<n;j++)
+                                    neg_L[dim].push_back(x[dim][j]);
+                            else
+                                for (uint32_t j=0;j<n;j++)
+                                    neg_L[dim].push_back(2*x[dim][j]*neg_L[dim][(i-1)*n+j]-neg_L[dim][(i-2)*n+j]);
+                        }
+                        else if (transform=="DST")
+                            if ((grid_assumption=="GLL") or (grid_assumption=="chebyshev"))
+                                throw runtime_error("DST在"+grid_assumption+"网格上是奇异的");
+                            else if (grid_assumption=="uniform")
+                                for(uint32_t j=0;j<n;j++)
+                                    neg_L[dim].push_back((T(2)/(n+1))*sin(pi*(i+1)*(j+1)/(n+1)));
+                        else if (transform=="DCT")
+                            for(uint32_t j=0;j<n;j++)
+                                neg_L[dim].push_back(cos(pi*i*(x[dim][j]+1)/2));
                     }
-                    neg_L.push_back(vector<T>());
-                    neg_L[dim]=simple_invert_matrix(L[dim],n);
+                    L.push_back(vector<T>());
+                    L[dim]=simple_invert_matrix(neg_L[dim],n);
                 }
             }
 
@@ -199,10 +206,11 @@ namespace mrcz
             template<typename T2>
             param_class(param_class<T2> &other)
             {
-                if_chebyshev=other.if_chebyshev;
                 if_zero_freq_expanding=other.if_zero_freq_expanding;
                 if_zero_map=other.if_zero_map;
                 if_coefficient_transpose=other.if_coefficient_transpose;
+                grid_assumption=other.grid_assumption;
+                transform=other.transform;
                 
                 format=other.format;
                 data_path=other.data_path;
@@ -219,6 +227,7 @@ namespace mrcz
                 fields_to_process=other.fields_to_process;
                 field_begin_address=other.field_begin_address;
                 field_end_address=other.field_end_address;
+                got_element_range=other.got_element_range;
                 element_begin_index=other.element_begin_index;
                 element_end_index=other.element_end_index;
 
@@ -227,13 +236,11 @@ namespace mrcz
                     data_range_min[pair.first]=pair.second;
                 for (auto pair:other.data_range_max)
                     data_range_max[pair.first]=pair.second;
-                blocks=other.blocks;
+                partitions=other.partitions;
 
                 element_num_to_process=other.element_num_to_process;
-                for (auto val:other.data)
-                    data.push_back(val);
-                for (auto val:other.decompressed_data)
-                    decompressed_data.push_back(val);
+                data.assign(other.data.begin(),other.data.end());
+                decompressed_data.assign(other.decompressed_data.begin(),other.decompressed_data.end());
                 
                 max_cpus=other.max_cpus;
                 coeff_eb_scale=other.coeff_eb_scale;
@@ -247,10 +254,9 @@ namespace mrcz
 #include "compress_regular.tpp"
 #include "decompress_irregular.tpp"
 #include "decompress_regular.tpp"
-#include "get_max_cpus.tpp"
 #include "gll_nodes.tpp"
 #include "quantize.tpp"
-#include "read_header_file.tpp"
+#include "read_header.tpp"
 #include "save_header_and_element_map.tpp"
 #include "save_tail_metadata.tpp"
 #include "simple_matrix_tools.tpp"

@@ -1,5 +1,7 @@
 #pragma once
 
+using namespace std;
+
 #include <tuple>
 #include <string>
 #include <stdexcept>
@@ -14,8 +16,6 @@
 #include "zfp_impl/zfp_decompress.cpp"
 #include "sperr_impl/sperr_compress.cpp"
 #include "sperr_impl/sperr_decompress.cpp"
-
-using namespace std;
-
+#include "../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "get_coordinate_in_element.tpp"
 #include "read_and_write_data.tpp"

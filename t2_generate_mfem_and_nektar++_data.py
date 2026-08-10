@@ -1,4 +1,4 @@
-import os,subprocess
+import os,subprocess,tarfile,urllib.request
 from third_party.get_max_cpus.py_codes.get_max_cpus import get_max_cpus
 from third_party.run_command.run_command import run_command
 
@@ -28,3 +28,14 @@ os.makedirs("build/mfem_build/examples/ex1examples",exist_ok=True)
 run_command("./ex1 --order 4",cwd="build/mfem_build/examples")
 os.rename("build/mfem_build/examples/sol.gf","build/mfem_build/examples/ex1examples/sol.gf")
 os.rename("build/mfem_build/examples/refined.mesh","build/mfem_build/examples/ex1examples/refined.mesh")
+
+######## download flow-stability-cylinder ########
+flow_stability_url="http://doc.nektar.info/tutorials/5.10.0/flow-stability/cylinder/flow-stability-cylinder.tar.gz"
+flow_stability_path="third_party/flow-stability-cylinder"
+flow_stability_archive_path="third_party/flow-stability-cylinder.tar.gz"
+if not os.path.exists(flow_stability_path):
+    os.makedirs("third_party",exist_ok=True)
+    if not os.path.exists(flow_stability_archive_path):
+        urllib.request.urlretrieve(flow_stability_url,flow_stability_archive_path)
+    with tarfile.open(flow_stability_archive_path,"r:gz") as archive:
+        archive.extractall("third_party")

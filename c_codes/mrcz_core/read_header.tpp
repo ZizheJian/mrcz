@@ -11,8 +11,6 @@ namespace mrcz
             read_header_mfem(task);
         else if (format=="nektar++")
             read_header_nektarpp(task);
-        else
-            throw runtime_error("未知的数据格式: "+format);
     }
 
     template<typename T>
@@ -22,7 +20,7 @@ namespace mrcz
         if (task=="compress")
             header_path=data_path;
         else
-            header_path=data_path+"_header.mrcz";
+            header_path=data_path+"_header."+method;
         //////// 读取header文件 ////////
         ifstream data_file(header_path,ios::binary);
         header.original_header.resize(136);
@@ -45,23 +43,23 @@ namespace mrcz
             throw runtime_error("无法识别数据是大端还是小端格式");
         //////// 读取剩余header信息 ////////
         istringstream header_stream(header.original_header);
-        string word;
-        int word_index=0;
-        while (header_stream>>word)
+        string term;
+        int term_index=0;
+        while (header_stream>>term)
         {
-            if (word_index==1)
-                header.word_size=stoi(word);
-            else if (word_index==2)
-                header.element_shape.push_back(stoi(word));
-            else if (word_index==3)
-                header.element_shape.push_back(stoi(word));
-            else if (word_index==4)
-                header.element_shape.push_back(stoi(word));
-            else if (word_index==6)
-                header.file_element_num=stoull(word);
-            else if (word_index==11)
-                header.variables=word;
-            word_index++;
+            if (term_index==1)
+                header.word_size=stoi(term);
+            else if (term_index==2)
+                header.element_shape.push_back(stoi(term));
+            else if (term_index==3)
+                header.element_shape.push_back(stoi(term));
+            else if (term_index==4)
+                header.element_shape.push_back(stoi(term));
+            else if (term_index==6)
+                header.file_element_num=stoull(term);
+            else if (term_index==11)
+                header.variables=term;
+            term_index++;
         }
         header.element_size=header.element_shape[0]*header.element_shape[1]*header.element_shape[2];
         size_t s_pos=header.variables.find('S');
@@ -79,8 +77,12 @@ namespace mrcz
             {
                 all_fields_in_file.push_back("X");
                 field_begin_address["X"]=last_field_end_address;
+                field_begin_address["Y"]=last_field_end_address;
+                field_begin_address["Z"]=last_field_end_address;
                 last_field_end_address+=header.file_element_num*header.element_size*header.word_size*3;
                 field_end_address["X"]=last_field_end_address;
+                field_end_address["Y"]=last_field_end_address;
+                field_end_address["Z"]=last_field_end_address;
             }
             else if (c=='U')
             {
@@ -135,20 +137,21 @@ namespace mrcz
             element_num_to_process=header.file_element_num;
         }
         else
+        {
             element_num_to_process=element_end_index-element_begin_index;
-        
-        //////// 调整fields的起始和结束地址 ////////
-        for (auto field:fields_to_process)
-            if (field=="UX" || field=="UY" || field=="UZ")
-            {
-                field_begin_address[field]+=header.element_size*header.word_size*3*element_begin_index;
-                field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*3*element_num_to_process;
-            }
-            else
-            {
-                field_begin_address[field]+=header.element_size*header.word_size*element_begin_index;
-                field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*element_num_to_process;
-            }
+            //////// 根据实际需要处理的element范围，调整fields的起始和结束地址 ////////
+            for (auto field:fields_to_process)
+                if ((field=="X") || (field=="Y") || (field=="Z") || (field=="UX") || (field=="UY") || (field=="UZ"))
+                {
+                    field_begin_address[field]+=header.element_size*header.word_size*3*element_begin_index;
+                    field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*3*element_num_to_process;
+                }
+                else
+                {
+                    field_begin_address[field]+=header.element_size*header.word_size*element_begin_index;
+                    field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*element_num_to_process;
+                }
+        }
     }
 
     template<typename T>

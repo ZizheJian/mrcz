@@ -13,9 +13,6 @@
 [submodule "c_codes/third_party/nektar++"]
 	path = c_codes/third_party/nektar++
 	url = https://gitlab.nektar.info/nektar/nektar.git
-[submodule "c_codes/third_party/vtk"]
-	path = c_codes/third_party/vtk
-	url = https://gitlab.kitware.com/vtk/vtk.git
 [submodule "c_codes/third_party/tinyxml2"]
 	path = c_codes/third_party/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
@@ -31,3 +28,6 @@
 [submodule "third_party/mfem"]
 	path = third_party/mfem
 	url = git@github.com:mfem/mfem.git
+[submodule "third_party/nektar++"]
+	path = third_party/nektar++
+	url = http://gitlab.nektar.info/nektar/nektar.git

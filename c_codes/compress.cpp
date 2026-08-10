@@ -61,7 +61,7 @@ int main(int argc,char **argv)
                     params.fields_to_process.push_back(field_str);
             }
             else
-                throw runtime_error("缺少-fields参数后的字段列表");
+                throw runtime_error("缺少-fields参数后的物理量列表");
             continue;
         }
         if (arg=="-M")
@@ -105,16 +105,16 @@ int main(int argc,char **argv)
     params.read_header("compress");
     params.default_init();
     params.save_header_and_element_map("compress");
-    params.get_max_cpus();
+    params.max_cpus=get_max_cpus(params.max_cpus);
 
-    params.blocks.resize(params.max_cpus);
+    params.partitions.resize(params.max_cpus);
     for (int i=0;i<params.max_cpus;i++)
     {
-        auto &block=params.blocks[i];
-        block.block_id=i;
-        block.begin_index=(i*params.element_num_to_process)/params.max_cpus;
-        block.end_index=((i+1)*params.element_num_to_process)/params.max_cpus;
-        block.element_num=block.end_index-block.begin_index;
+        auto &partition=params.partitions[i];
+        partition.partition_id=i;
+        partition.begin_index=(i*params.element_num_to_process)/params.max_cpus;
+        partition.end_index=((i+1)*params.element_num_to_process)/params.max_cpus;
+        partition.element_num=partition.end_index-partition.begin_index;
     }
     
     if (params.header.word_size==8)
@@ -132,30 +132,28 @@ void compress1(mrcz::param_class<T> &params) //已经根据原始数据的格式
     for (auto field:params.fields_to_process)
     {
         printf("Field= %s\n",field.c_str());
-        if (field=="X") //直接复制
-        {
-            auto header=params.header;
-            ifstream data_file(params.data_path,ios::binary);
-            data_file.seekg(params.field_begin_address[field],ios::beg);
-            vector<T> coordinate_data(header.file_element_num*3*header.element_size);
-            data_file.read(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
-            data_file.close();
-            ofstream coordinate_file(params.data_path+"_"+field+".mrcz",ios::binary);
-            coordinate_file.write(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
-            coordinate_file.close();
-            continue;
-        }
+        // if (field=="X") //直接复制
+        // {
+        //     auto header=params.header;
+        //     ifstream data_file(params.data_path,ios::binary);
+        //     data_file.seekg(params.field_begin_address[field],ios::beg);
+        //     vector<T> coordinate_data(header.file_element_num*3*header.element_size);
+        //     data_file.read(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
+        //     data_file.close();
+        //     ofstream coordinate_file(params.data_path+"_"+field+".mrcz",ios::binary);
+        //     coordinate_file.write(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
+        //     coordinate_file.close();
+        //     continue;
+        // }
         params.data.resize(params.element_num_to_process*params.header.element_size);
         read_data(params,field);
-        params.data_range_min[field]=params.data[0];
-        params.data_range_max[field]=params.data[0];
         T global_min=params.data[0],global_max=params.data[0];
         #pragma omp parallel for schedule(static) num_threads(params.max_cpus) reduction(min:global_min) reduction(max:global_max)
-        for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
+        for (uint64_t partition_id=0;partition_id<params.partitions.size();partition_id++)
         {
-            auto &block=params.blocks[block_id];
-            uint64_t begin_address=block.begin_index*params.header.element_size;
-            uint64_t end_address=block.end_index*params.header.element_size;
+            auto &partition=params.partitions[partition_id];
+            uint64_t begin_address=partition.begin_index*params.header.element_size;
+            uint64_t end_address=partition.end_index*params.header.element_size;
             for (uint64_t i=begin_address;i<end_address;i++)
             {
                 global_min=min(global_min,params.data[i]);
@@ -181,11 +179,11 @@ void compress1(mrcz::param_class<T> &params) //已经根据原始数据的格式
             mrcz::param_class<double> params_double(params);
             params_double.data.resize(params.element_num_to_process*params.header.element_size);
             #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-            for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
+            for (uint64_t partition_id=0;partition_id<params.partitions.size();partition_id++)
             {
-                auto &block=params.blocks[block_id];
-                uint64_t begin_address=block.begin_index*params.header.element_size;
-                uint64_t end_address=block.end_index*params.header.element_size;
+                auto &partition=params.partitions[partition_id];
+                uint64_t begin_address=partition.begin_index*params.header.element_size;
+                uint64_t end_address=partition.end_index*params.header.element_size;
                 for (uint64_t i=begin_address;i<end_address;i++)
                     params_double.data[i]=params.data[i];
             }
@@ -208,81 +206,92 @@ template<typename T>
 void compress2(mrcz::param_class<T> &params,string field) // 在最终决定params的T后，根据method调用不同的压缩函数，并写出压缩数据
 {
     // get_coordinate_in_element(params); //用于统计每个element中相邻点的距离，验证了点确实在GLL点上。自带exit(0)，压缩时不使用。
-    printf("params.method= %s\n",params.method.c_str());
-    if (params.method=="mrcz")
-        if ((params.header.element_shape[0]==params.header.element_shape[1]) and (params.header.element_shape[1]==params.header.element_shape[2]))
-            params.compress_regular(field);
-        else
-            params.compress_irregular(field);
-    else if (params.method=="sz2-0")
-    {
-        vector<vector<T>> backup_x=params.x;
-        for (int dim=0;dim<3;dim++)
-            if (params.x[dim].size()>1)
-                for (uint32_t i=0;i<params.x[dim].size();i++)
-                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
-            else
-                params.x[dim][0]=0;
-        sz2_1_compress(params,field);
-        params.x=backup_x;
-    }
-    else if (params.method=="sz2-1")
-        sz2_1_compress(params,field);
-    else if (params.method=="sz3-1")
-    {
-        vector<vector<T>> backup_x=params.x;
-        for (int dim=0;dim<3;dim++)
-            if (params.x[dim].size()>1)
-                for (uint32_t i=0;i<params.x[dim].size();i++)
-                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
-            else
-                params.x[dim][0]=0;
-        sz3_2_compress(params,field);
-        params.x=backup_x;
-    }
-    else if (params.method=="sz3-hohs")
-        sz3_2_compress(params,field);
-    else if (params.method=="zfp")
-        zfp_compress(params,field);
-    else if (params.method=="sperr")
-        sperr_compress(params,field);
+    if (params.data_range_min==params.data_range_max)
+        printf("Warning: field %s has constant value %f\n",field.c_str(),params.data_range_min[field]);
     else
-        throw runtime_error("未知的压缩方法: "+params.method);
+    {
+        vector<vector<T>> backup_x=params.x;
+        if (field=="X" or field=="Y" or field=="Z")
+            for (int dim=0;dim<3;dim++)
+                params.x[dim]=mrcz::compute_GLL_nodes<T>(params.header.element_shape[dim]);
+        printf("params.method= %s\n",params.method.c_str());
+        if (params.method=="mrcz")
+            if ((params.header.element_shape[0]==params.header.element_shape[1]) and (params.header.element_shape[1]==params.header.element_shape[2]))
+                params.compress_regular(field);
+            else
+                params.compress_irregular(field);
+        else if (params.method=="sz2-0")
+        {
+            vector<vector<T>> backup_x=params.x;
+            for (int dim=0;dim<3;dim++)
+                if (params.x[dim].size()>1)
+                    for (uint32_t i=0;i<params.x[dim].size();i++)
+                        params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+                else
+                    params.x[dim][0]=0;
+            sz2_1_compress(params,field);
+            params.x=backup_x;
+        }
+        else if (params.method=="sz2-1")
+            sz2_1_compress(params,field);
+        else if (params.method=="sz3-1")
+        {
+            vector<vector<T>> backup_x=params.x;
+            for (int dim=0;dim<3;dim++)
+                if (params.x[dim].size()>1)
+                    for (uint32_t i=0;i<params.x[dim].size();i++)
+                        params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+                else
+                    params.x[dim][0]=0;
+            sz3_2_compress(params,field);
+            params.x=backup_x;
+        }
+        else if (params.method=="sz3-hohs")
+            sz3_2_compress(params,field);
+        else if (params.method=="zfp")
+            zfp_compress(params,field);
+        else if (params.method=="sperr")
+            sperr_compress(params,field);
+        else
+            throw runtime_error("未知的压缩方法: "+params.method);
+        if (field=="X" or field=="Y" or field=="Z")
+            params.x=backup_x;
+    }
         
     double br=0,cr=0;
-    string compressed_path=params.data_path+"_"+field+".mrcz";
+    string compressed_path=params.data_path+"_"+field+"."+params.method;
     ofstream compressed_file(compressed_path,ios::binary);
     uint8_t word_size_during_compression=sizeof(T);
     compressed_file.write(reinterpret_cast<char*>(&word_size_during_compression),1);
-    uint64_t block_num=params.blocks.size();
-    compressed_file.write(reinterpret_cast<char*>(&block_num),8);
-    if (is_same<T,float>::value)
+    if (params.data_range_min==params.data_range_max)
     {
-        compressed_file.write(reinterpret_cast<char*>(&params.data_range_min[field]),4);
-        compressed_file.write(reinterpret_cast<char*>(&params.data_range_max[field]),4);
+        unsigned char is_constant=1;
+        compressed_file.write(reinterpret_cast<char*>(&is_constant),1);
+        compressed_file.write(reinterpret_cast<char*>(&params.data_range_min),sizeof(T));
+        br+=1+sizeof(T);
     }
     else
     {
-        float data_range_min_float=(float)(params.data_range_min[field]);
-        float data_range_max_float=(float)(params.data_range_max[field]);
-        compressed_file.write(reinterpret_cast<char*>(&data_range_min_float),4);
-        compressed_file.write(reinterpret_cast<char*>(&data_range_max_float),4);
-    }
-    br+=17;
-    
-    for (auto &block:params.blocks)
-    {
-        uint64_t zstd_len=block.zstd_bs.size();
-        compressed_file.write(reinterpret_cast<char*>(&zstd_len),8);
-    }
-    br+=8*params.blocks.size();
-
-    for (auto &block:params.blocks)
-    {
-        compressed_file.write(reinterpret_cast<char*>(block.zstd_bs.data()),block.zstd_bs.size());
-        br+=block.zstd_bs.size();
-        block.zstd_bs.clear();
-        block.zstd_bs.shrink_to_fit();
+        unsigned char is_constant=0;
+        compressed_file.write(reinterpret_cast<char*>(&is_constant),1);
+        uint64_t partition_num=params.partitions.size();
+        compressed_file.write(reinterpret_cast<char*>(&partition_num),8);
+        compressed_file.write(reinterpret_cast<char*>(&params.data_range_min[field]),sizeof(T));
+        compressed_file.write(reinterpret_cast<char*>(&params.data_range_max[field]),sizeof(T));
+        br+=9+2*sizeof(T);
+        for (auto &partition:params.partitions)
+        {
+            uint64_t zstd_len=partition.zstd_bs.size();
+            compressed_file.write(reinterpret_cast<char*>(&zstd_len),8);
+        }
+        br+=8*params.partitions.size();
+        for (auto &partition:params.partitions)
+        {
+            compressed_file.write(reinterpret_cast<char*>(partition.zstd_bs.data()),partition.zstd_bs.size());
+            br+=partition.zstd_bs.size();
+            partition.zstd_bs.clear();
+            partition.zstd_bs.shrink_to_fit();
+        }
     }
     compressed_file.close();
     br*=((double)8/(params.element_num_to_process*params.header.element_size));

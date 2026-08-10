@@ -16,14 +16,14 @@ namespace mrcz
         decompressed_data.resize(element_num_to_process*n000);
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
-        for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+        for (uint64_t block_id=0;block_id<partitions.size();block_id++)
         {
-            uint64_t begin_index=blocks[block_id].begin_index;
-            uint64_t end_index=blocks[block_id].end_index;
+            uint64_t begin_index=partitions[block_id].begin_index;
+            uint64_t end_index=partitions[block_id].end_index;
             // 无损解压
-            uint64_t huffman_bs_len=ZSTD_getFrameContentSize(blocks[block_id].zstd_bs.data(),blocks[block_id].zstd_bs.size());
+            uint64_t huffman_bs_len=ZSTD_getFrameContentSize(partitions[block_id].zstd_bs.data(),partitions[block_id].zstd_bs.size());
             vector<unsigned char> huffman_bs_vec(huffman_bs_len);
-            if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,blocks[block_id].zstd_bs.data(),blocks[block_id].zstd_bs.size())!=huffman_bs_len)
+            if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,partitions[block_id].zstd_bs.data(),partitions[block_id].zstd_bs.size())!=huffman_bs_len)
                 throw runtime_error("ZSTD_decompress error in decompress()");
             const unsigned char *huffman_bs=huffman_bs_vec.data();
             if (if_zero_map)
@@ -55,7 +55,7 @@ namespace mrcz
         delete[] err_qb;
         delete[] coeff_qb;
         printf("Decompression time= %f seconds\n",end_time-start_time);
-        printf("\033[91mBandwidth per cpu= %f MB/s\033[0m\n",element_num_to_process*n000*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+        printf("\033[91mField= %s, decompression bandwidth per cpu= %f MB/s\033[0m\n",field.c_str(),element_num_to_process*n000*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
     }
 
     template<typename T>

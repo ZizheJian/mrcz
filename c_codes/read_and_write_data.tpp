@@ -34,19 +34,19 @@ void read_data_nekrs(mrcz::param_class<T> &params,string field)
     auto &header=params.header;
     ifstream data_file(params.data_path,ios::binary);
     data_file.seekg(params.field_begin_address[field],ios::beg);
-    if (field=="UX" or field=="UY" or field=="UZ")
+    if (field=="X" or field=="Y" or field=="Z" or field=="UX" or field=="UY" or field=="UZ")
     {
         vector<T> temp_data(params.element_num_to_process*header.element_size*3);
         data_file.read(reinterpret_cast<char*>(temp_data.data()),params.element_num_to_process*header.element_size*3*header.word_size);
-        if (field=="UX")
+        if (field=="X" or field=="UX")
             for (uint64_t element_id=0;element_id<params.element_num_to_process;element_id++)
                 memcpy(&params.data[element_id*header.element_size],&temp_data[3*element_id*header.element_size],
                     header.element_size*header.word_size);
-        if (field=="UY")
+        if (field=="Y" or field=="UY")
             for (uint64_t element_id=0;element_id<params.element_num_to_process;element_id++)
                 memcpy(&params.data[element_id*header.element_size],&temp_data[(3*element_id+1)*header.element_size],
                     header.element_size*header.word_size);
-        if (field=="UZ")
+        if (field=="Z" or field=="UZ")
             for (uint64_t element_id=0;element_id<params.element_num_to_process;element_id++)
                 memcpy(&params.data[element_id*header.element_size],&temp_data[(3*element_id+2)*header.element_size],
                     header.element_size*header.word_size);

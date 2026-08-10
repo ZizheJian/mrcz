@@ -18,11 +18,11 @@ void get_coordinate_in_element(mrcz::param_class<T> &params)
     vector<T> segment_length(n-1,0);
     vector<T> segment_length_2(n-1,0);
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-    for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
+    for (uint64_t block_id=0;block_id<params.partitions.size();block_id++)
     {
         vector<T> block_segment_length(n-1,0);
         vector<T> block_segment_length_2(n-1,0);
-        auto &block=params.blocks[block_id];
+        auto &block=params.partitions[block_id];
         uint64_t begin_element_index=block.begin_index;
         uint64_t end_element_index=block.end_index;
         for (uint64_t element_id=begin_element_index;element_id<end_element_index;element_id++)

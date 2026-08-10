@@ -25,9 +25,9 @@ namespace mrcz
         int64_t *err_qb=new int64_t[element_num_to_process*n012];
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
-        for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+        for (uint64_t block_id=0;block_id<partitions.size();block_id++)
         {
-            auto &block=blocks[block_id];
+            auto &block=partitions[block_id];
             uint64_t begin_index=block.begin_index;
             uint64_t end_index=block.end_index;
             // 然后量化剩余的数据
@@ -69,7 +69,7 @@ namespace mrcz
         delete[] coeff_qb;
         delete[] err_qb;
         printf("Compression time= %f seconds\n",end_time-start_time);
-        printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
+        printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*max_cpus));
     }
 
     template<typename T>

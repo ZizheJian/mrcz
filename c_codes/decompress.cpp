@@ -1,9 +1,9 @@
 #include "main.hpp"
 
 template<typename T>
-unordered_map<string,vector<double>> decompress1(mrcz::param_class<T> &params);
+void decompress1(mrcz::param_class<T> &params);
 template<typename T>
-vector<double> decompress2(mrcz::param_class<T> &params,string field);
+void decompress2(mrcz::param_class<T> &params,string field);
 
 int main(int argc,char **argv)
 {
@@ -88,7 +88,7 @@ int main(int argc,char **argv)
     if (params.format.empty())
         throw runtime_error("必须指定数据格式，使用-format参数");
     if (params.data_path.empty())
-        throw runtime_error("必须指定原始数据路径，使用-i参数。如果原始数据不存在，寻找解压产生的独立的header文件，文件名以_header.mrcz为结尾），去掉这一后缀作为数据路径");
+        throw runtime_error("必须指定原始数据路径，使用-i参数。如果原始数据不存在，寻找解压产生的独立的header文件，文件名以_header.{method}为结尾），去掉这一后缀作为数据路径");
     if (params.format=="mfem" and params.mesh_path.empty())
         throw runtime_error("使用mfem格式时必须指定网格文件路径，使用-mesh参数");
     if (params.eb_mode.empty())
@@ -105,162 +105,166 @@ int main(int argc,char **argv)
     params.read_header("decompress");
     params.default_init();
     params.save_header_and_element_map("decompress");
-    params.get_max_cpus();
+    params.max_cpus=get_max_cpus(params.max_cpus);
 
     unordered_map<string,vector<double>> result;
     if (params.header.word_size==8)
     {
         mrcz::param_class<double> params_double(params);
-        result=decompress1(params_double);
-        for (auto field:params.fields_to_process)
-            params.abs_eb[field]=params_double.abs_eb[field];
+        decompress1(params_double);
     }
     else
-        result=decompress1(params);
+        decompress1(params);
 }
 
 template<typename T>
-unordered_map<string,vector<double>> decompress1(mrcz::param_class<T> &params) //对不同的field调用decompress2，并修改T至实际压缩的类型
+void decompress1(mrcz::param_class<T> &params) //对不同的field调用decompress2，并修改T至实际压缩的类型
 {
-    unordered_map<string,vector<double>> result;
     for (auto field:params.fields_to_process)
     {
         printf("Field= %s\n",field.c_str());
-        if (field=="X")
-        {
-            auto header=params.header;
-            ifstream compressed_file(params.data_path+"_"+field+".mrcz",ios::binary);
-            vector<T> coordinate_data(header.file_element_num*3*header.element_size);
-            compressed_file.read(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
-            compressed_file.close();
-            ofstream decompressed_file(params.data_path+".mrcz.bin",ios::app|ios::binary);
-            decompressed_file.seekp(0,ios::end);
-            decompressed_file.write(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
-            decompressed_file.close();
-            continue;
-        }
-        ifstream compressed_file(params.data_path+"_"+field+".mrcz",ios::binary);
+        // if (field=="X")
+        // {
+        //     auto header=params.header;
+        //     ifstream compressed_file(params.data_path+"_"+field+".mrcz",ios::binary);
+        //     vector<T> coordinate_data(header.file_element_num*3*header.element_size);
+        //     compressed_file.read(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
+        //     compressed_file.close();
+        //     ofstream decompressed_file(params.data_path+".mrcz.bin",ios::app|ios::binary);
+        //     decompressed_file.seekp(0,ios::end);
+        //     decompressed_file.write(reinterpret_cast<char*>(coordinate_data.data()),header.file_element_num*3*header.element_size*header.word_size);
+        //     decompressed_file.close();
+        //     continue;
+        // }
+        ifstream compressed_file(params.data_path+"_"+field+"."+params.method,ios::binary);
         uint8_t word_size_during_compression;
         compressed_file.read(reinterpret_cast<char*>(&word_size_during_compression),1);
         compressed_file.close();
         if ((is_same<T,float>::value) and (word_size_during_compression==8)) //原始数据类型是float，但是压缩时使用了double
         {
             mrcz::param_class<double> params_double(params);
-            result[field]=decompress2(params_double,field);
-            params.abs_eb[field]=params_double.abs_eb[field];
+            decompress2(params_double,field);
         }
         else
-        {
-            result[field]=decompress2(params,field);
-        }
+            decompress2(params,field);
     }
-    return result;
 }
 
 template<typename T>
-vector<double> decompress2(mrcz::param_class<T> &params,string field)
+void decompress2(mrcz::param_class<T> &params,string field)
 {
-    ifstream compressed_file(params.data_path+"_"+field+".mrcz",ios::binary);
+    double br,cr,max_err=0,mse=0,psnr=0;
+    ifstream compressed_file(params.data_path+"_"+field+"."+params.method,ios::binary);
     compressed_file.seekg(1,ios::beg);
-    uint64_t block_num;
-    compressed_file.read(reinterpret_cast<char*>(&block_num),8);
-    params.blocks.resize(block_num);
-    for (uint64_t i=0;i<block_num;i++)
-    {
-        auto &block=params.blocks[i];
-        block.block_id=i;
-        block.begin_index=(i*params.element_num_to_process)/block_num;
-        block.end_index=((i+1)*params.element_num_to_process)/block_num;
-        block.element_num=block.end_index-block.begin_index;
-    }
-    params.data_range_min[field]=0;
-    params.data_range_max[field]=0;
-    if (is_same<T,float>::value)
+    unsigned char is_constant;
+    compressed_file.read(reinterpret_cast<char*>(&is_constant),1);
+    if (is_constant)
     {
         compressed_file.read(reinterpret_cast<char*>(&params.data_range_min[field]),sizeof(T));
+        params.decompressed_data.resize(params.element_num_to_process*params.header.element_size);
+        #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
+        for (uint64_t partition_id=0;partition_id<params.partitions.size();partition_id++)
+        {
+            auto &partition=params.partitions[partition_id];
+            uint64_t begin_address=partition.begin_index*params.header.element_size;
+            uint64_t end_address=partition.end_index*params.header.element_size;
+            for (uint64_t i=begin_address;i<end_address;i++)
+                params.decompressed_data[i]=params.data_range_min[field];
+        }
+        br=((double)compressed_file.tellg()*8)/(params.element_num_to_process*params.header.element_size);
+        cr=(params.header.word_size*8)/br;
+    }
+    else
+    {
+        uint64_t partition_num;
+        compressed_file.read(reinterpret_cast<char*>(&partition_num),8);
+        params.partitions.resize(partition_num);
+        for (uint64_t i=0;i<partition_num;i++)
+        {
+            auto &partition=params.partitions[i];
+            partition.partition_id=i;
+            partition.begin_index=(i*params.element_num_to_process)/partition_num;
+            partition.end_index=((i+1)*params.element_num_to_process)/partition_num;
+            partition.element_num=partition.end_index-partition.begin_index;
+        }
+        params.data_range_min[field]=0;
+        params.data_range_max[field]=0;
+        compressed_file.read(reinterpret_cast<char*>(&params.data_range_min[field]),sizeof(T));
         compressed_file.read(reinterpret_cast<char*>(&params.data_range_max[field]),sizeof(T));
-    }
-    else
-    {
-        float data_range_min_float,data_range_max_float;
-        compressed_file.read(reinterpret_cast<char*>(&data_range_min_float),sizeof(float));
-        compressed_file.read(reinterpret_cast<char*>(&data_range_max_float),sizeof(float));
-        params.data_range_min[field]=data_range_min_float;
-        params.data_range_max[field]=data_range_max_float;
-    }
-    for (uint64_t i=0;i<block_num;i++)
-    {
-        auto &block=params.blocks[i];
-        uint64_t zstd_len;
-        compressed_file.read(reinterpret_cast<char*>(&zstd_len),8);
-        block.zstd_bs.resize(zstd_len);
-    }
-    for (uint64_t i=0;i<block_num;i++)
-    {
-        auto &block=params.blocks[i];
-        compressed_file.read(reinterpret_cast<char*>(block.zstd_bs.data()),block.zstd_bs.size());
-    }
-    double br=((double)compressed_file.tellg()*8)/(params.element_num_to_process*params.header.element_size);
-    double cr=(params.header.word_size*8)/br;
-    compressed_file.close();
+        for (uint64_t i=0;i<partition_num;i++)
+        {
+            auto &partition=params.partitions[i];
+            uint64_t zstd_len;
+            compressed_file.read(reinterpret_cast<char*>(&zstd_len),8);
+            partition.zstd_bs.resize(zstd_len);
+        }
+        for (uint64_t i=0;i<partition_num;i++)
+        {
+            auto &partition=params.partitions[i];
+            compressed_file.read(reinterpret_cast<char*>(partition.zstd_bs.data()),partition.zstd_bs.size());
+        }
+        br=((double)compressed_file.tellg()*8)/(params.element_num_to_process*params.header.element_size);
+        cr=(params.header.word_size*8)/br;
+        compressed_file.close();
 
-    if (params.eb_mode=="ABS")
-    {
-        params.abs_eb[field]=params.input_eb;
-        params.rel_eb[field]=params.input_eb/(params.data_range_max[field]-params.data_range_min[field]);
-    }
-    else if (params.eb_mode=="REL")
-    {
-        params.rel_eb[field]=params.input_eb;
-        params.abs_eb[field]=params.input_eb*(params.data_range_max[field]-params.data_range_min[field]);
-    }
+        if (params.eb_mode=="ABS")
+        {
+            params.abs_eb[field]=params.input_eb;
+            params.rel_eb[field]=params.input_eb/(params.data_range_max[field]-params.data_range_min[field]);
+        }
+        else if (params.eb_mode=="REL")
+        {
+            params.rel_eb[field]=params.input_eb;
+            params.abs_eb[field]=params.input_eb*(params.data_range_max[field]-params.data_range_min[field]);
+        }
 
-    printf("params.method= %s\n",params.method.c_str());
-    if (params.method=="mrcz")
-        if ((params.header.element_shape[0]==params.header.element_shape[1]) and (params.header.element_shape[1]==params.header.element_shape[2]))
-            params.decompress_regular(field);
+        printf("params.method= %s\n",params.method.c_str());
+        if (params.method=="mrcz")
+            if ((params.header.element_shape[0]==params.header.element_shape[1]) and (params.header.element_shape[1]==params.header.element_shape[2]))
+                params.decompress_regular(field);
+            else
+                params.decompress_irregular(field);
+        else if (params.method=="sz2-0")
+        {
+            vector<vector<T>> backup_x=params.x;
+            for (int dim=0;dim<3;dim++)
+                if (params.x[dim].size()>1)
+                    for (uint32_t i=0;i<params.x[dim].size();i++)
+                        params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+                else
+                    params.x[dim][0]=0;
+            sz2_1_decompress(params,field);
+            params.x=backup_x;
+        }
+        else if (params.method=="sz2-1")
+            sz2_1_decompress(params,field);
+        else if (params.method=="sz3-1")
+        {
+            vector<vector<T>> backup_x=params.x;
+            for (int dim=0;dim<3;dim++)
+                if (params.x[dim].size()>1)
+                    for (uint32_t i=0;i<params.x[dim].size();i++)
+                        params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
+                else
+                    params.x[dim][0]=0;
+            sz3_2_decompress(params,field);
+            params.x=backup_x;
+        }
+        else if (params.method=="sz3-hohs")
+            sz3_2_decompress(params,field);
+        else if (params.method=="zfp")
+            zfp_decompress(params,field);
+        else if (params.method=="sperr")
+            sperr_decompress(params,field);
         else
-            params.decompress_irregular(field);
-    else if (params.method=="sz2-0")
-    {
-        vector<vector<T>> backup_x=params.x;
-        for (int dim=0;dim<3;dim++)
-            if (params.x[dim].size()>1)
-                for (uint32_t i=0;i<params.x[dim].size();i++)
-                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
-            else
-                params.x[dim][0]=0;
-        sz2_1_decompress(params,field);
-        params.x=backup_x;
-    }
-    else if (params.method=="sz2-1")
-        sz2_1_decompress(params,field);
-    else if (params.method=="sz3-1")
-    {
-        vector<vector<T>> backup_x=params.x;
-        for (int dim=0;dim<3;dim++)
-            if (params.x[dim].size()>1)
-                for (uint32_t i=0;i<params.x[dim].size();i++)
-                    params.x[dim][i]=(T)i/(params.x[dim].size()-1)*2-1;
-            else
-                params.x[dim][0]=0;
-        sz3_2_decompress(params,field);
-        params.x=backup_x;
-    }
-    else if (params.method=="sz3-hohs")
-        sz3_2_decompress(params,field);
-    else if (params.method=="zfp")
-        zfp_decompress(params,field);
-    else if (params.method=="sperr")
-        sperr_decompress(params,field);
-    else
-        throw runtime_error("未知的解压方法: "+params.method);
+            throw runtime_error("未知的解压方法: "+params.method);
 
-    //清空zstd_bs
-    for (auto &block:params.blocks)
-    {
-        block.zstd_bs.clear();
-        block.zstd_bs.shrink_to_fit();
+        //清空zstd_bs
+        for (auto &partition:params.partitions)
+        {
+            partition.zstd_bs.clear();
+            partition.zstd_bs.shrink_to_fit();
+        }
     }
     
     //写出解压数据
@@ -272,11 +276,11 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
             mrcz::param_class<float> params_float(params);
             params_float.decompressed_data.resize(params.decompressed_data.size());
             #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-            for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
+            for (uint64_t partition_id=0;partition_id<params.partitions.size();partition_id++)
             {
-                auto &block=params.blocks[block_id];
-                uint64_t begin_address=block.begin_index*params.header.element_size;
-                uint64_t end_address=block.end_index*params.header.element_size;
+                auto &partition=params.partitions[partition_id];
+                uint64_t begin_address=partition.begin_index*params.header.element_size;
+                uint64_t end_address=partition.end_index*params.header.element_size;
                 for (uint64_t i=begin_address;i<end_address;i++)
                     params_float.decompressed_data[i]=params.decompressed_data[i];
             }
@@ -288,7 +292,6 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
             write_data(params,field);
     
     //计算压缩质量
-    vector<double> result;
     ifstream data_file(params.data_path,ios::binary);
     if (data_file.is_open())
     {
@@ -300,11 +303,11 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
             params_float.data.resize(params.element_num_to_process*params.header.element_size);
             read_data(params_float,field);
             #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-            for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
+            for (uint64_t partition_id=0;partition_id<params.partitions.size();partition_id++)
             {
-                auto &block=params.blocks[block_id];
-                uint64_t begin_address=block.begin_index*params.header.element_size;
-                uint64_t end_address=block.end_index*params.header.element_size;
+                auto &partition=params.partitions[partition_id];
+                uint64_t begin_address=partition.begin_index*params.header.element_size;
+                uint64_t end_address=partition.end_index*params.header.element_size;
                 for (uint64_t i=begin_address;i<end_address;i++)
                     params.data[i]=params_float.data[i];
             }
@@ -313,13 +316,12 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
         }
         else
             read_data(params,field);
-        double max_err=0,mse=0,psnr=0;
         #pragma omp parallel for reduction(max:max_err) reduction(+:mse) schedule(static) num_threads(params.max_cpus)
-        for (uint64_t block_id=0;block_id<params.blocks.size();block_id++)
+        for (uint64_t partition_id=0;partition_id<params.partitions.size();partition_id++)
         {
-            auto &block=params.blocks[block_id];
-            uint64_t begin_address=block.begin_index*params.header.element_size;
-            uint64_t end_address=block.end_index*params.header.element_size;
+            auto &partition=params.partitions[partition_id];
+            uint64_t begin_address=partition.begin_index*params.header.element_size;
+            uint64_t end_address=partition.end_index*params.header.element_size;
             for (uint64_t i=begin_address;i<end_address;i++)
             {
                 T err=fabs(params.data[i]-params.decompressed_data[i]);
@@ -336,16 +338,11 @@ vector<double> decompress2(mrcz::param_class<T> &params,string field)
         params.data.shrink_to_fit();
         mse/=(params.element_num_to_process*params.header.element_size);
         psnr=10*log10(pow(params.data_range_max[field]-params.data_range_min[field],2)/mse);
-        result={br,cr,max_err,mse,psnr};
     }
     else
-    {
         printf("原始数据不存在，无法计算压缩质量\n");
-        result={br,cr,0,0,0};
-    }
     params.decompressed_data.clear();
     params.decompressed_data.shrink_to_fit();
-    printf("\033[91mField= %s, abs_eb= %.15f, BR= %.15f, CR= %.15f, max_err= %.15f (%f%%), MSE= %.15f, PSNR= %.15f dB\033[0m\n",
-        field.c_str(),params.abs_eb[field],result[0],result[1],result[2],result[2]/params.abs_eb[field]*100,result[3],result[4]);
-    return result;
+    printf("\033[91mField= %s, abs_eb= %.15f, rel_eb= %.15f, BR= %.15f, CR= %.15f, max_err= %.15f (%f%%), MSE= %.15f, PSNR= %.15f dB\033[0m\n",
+        field.c_str(),params.abs_eb[field],params.rel_eb[field],br,cr,max_err,max_err/params.abs_eb[field]*100,mse,psnr);
 }

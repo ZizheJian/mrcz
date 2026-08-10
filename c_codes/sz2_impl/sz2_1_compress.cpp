@@ -11,7 +11,7 @@ template<typename T>
 void sz2_1_compress(mrcz::param_class<T> &params,string field)
 {
     auto &header=params.header;
-    auto &blocks=params.blocks;
+    auto &blocks=params.partitions;
     auto &data=params.data;
     auto &x0=params.x[0];
     auto &x1=params.x[1];
@@ -131,5 +131,5 @@ void sz2_1_compress(mrcz::param_class<T> &params,string field)
     double end_time=omp_get_wtime();
     delete[] err_qb;
     printf("Compression time= %f seconds\n",end_time-start_time);
-    printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
+    printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
 }

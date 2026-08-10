@@ -7,7 +7,7 @@ template<typename T>
 void sz3_2_decompress(mrcz::param_class<T> &params,string field)
 {
 	auto &header=params.header;
-    auto &blocks=params.blocks;
+    auto &blocks=params.partitions;
     auto &decompressed_data=params.decompressed_data;
     auto &x0=params.x[0];
     auto &x1=params.x[1];
@@ -143,7 +143,7 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
     delete[] err_qb;
     delete[] no_corner_err_qb;
     printf("Decompression time= %f seconds\n",end_time-start_time);
-    printf("\033[91mBandwidth per cpu= %f MB/s\n\033[0m",params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
+    printf("\033[91mField= %s, decompression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
 }
 
 namespace mrcz

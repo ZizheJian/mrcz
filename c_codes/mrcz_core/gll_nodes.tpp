@@ -1,42 +1,35 @@
 #pragma once
 
+using namespace std;
+
 namespace mrcz
 {
-    // Evaluate Legendre P_m(x) and P_{m-1}(x) via recurrence
-    static inline void legendre_Pm_and_Pm1(int m,double x,double &Pm,double &Pm1)
+    // 通过迭代，计算坐标为x时的m阶和m-1阶勒让德多项式的值 // P_m(x)和P_{m-1}(x)
+    static inline void legendre_Pm_and_Pm1(int m,double x,double &Pm,double &P_prev)
     {
-        double P0=1;
-        double P1=x;
         if (m==0)
         {
-            Pm=P0;
-            Pm1=0;
+            Pm=1;
+            P_prev=0;
             return;
         }
-        if (m==1)
-        {
-            Pm=P1;
-            Pm1=P0;
-            return;
-        }
-
+        Pm=x;
+        P_prev=1;
         for (int k=2;k<=m;k++)
         {
-            double Pk=((2*k-1)*x*P1-(k-1)*P0)/k;
-            P0=P1;
-            P1=Pk;
+            double P_next=((2*k-1)*x*Pm-(k-1)*P_prev)/k;
+            P_prev=Pm;
+            Pm=P_next;
         }
-        Pm=P1; // P_m
-        Pm1=P0; // P_{m-1}
     }
 
-    // First derivative P'_m(x) using: P'_m = m/(x^2-1) * (x P_m - P_{m-1})
-    static inline double legendre_dPm(int m,double x,double Pm,double Pm1)
+    // 计算坐标为x时m阶勒让德多项式的一阶导数 // P'_m(x) = m*(x*P_m-P_{m-1})/(x^2-1) 
+    static inline double legendre_dPm(int m,double x,double Pm,double P_prev)
     {
-        return (m*(x*Pm-Pm1))/(x*x-1);
+        return (m*(x*Pm-P_prev))/(x*x-1);
     }
 
-    // Second derivative from Legendre ODE: (1-x^2)P'' - 2x P' + m(m+1)P = 0
+    // 计算坐标为x时m阶勒让德多项式的二阶导数 // P''_m(x) = (2*x*P'_m-m*(m+1)*P_m)/(1-x^2)
     static inline double legendre_ddPm(int m,double x,double Pm,double dPm)
     {
         return (2*x*dPm-m*(m+1)*Pm)/(1-x*x);
@@ -48,7 +41,9 @@ namespace mrcz
         int max_iter=100;
         double tol=1e-14;
 
-        if (n<2)
+        if (n==0)
+            return {};
+        if (n==1)
             return {0};
         if (n==2) 
             return {-1,1};
@@ -65,20 +60,17 @@ namespace mrcz
             double xi=-cos(M_PI*k/m); // initial guess
             for (int it=0;it<max_iter;it++)
             {
-                double Pm,Pm1;
-                legendre_Pm_and_Pm1(m,xi,Pm,Pm1);
-                double dPm=legendre_dPm(m,xi,Pm,Pm1);
+                double Pm,P_prev;
+                legendre_Pm_and_Pm1(m,xi,Pm,P_prev);
+                double dPm=legendre_dPm(m,xi,Pm,P_prev);
                 double ddPm=legendre_ddPm(m,xi,Pm,dPm);
                 double dx=dPm/ddPm;
                 xi-=dx;
-                if (std::abs(dx)<tol)
+                if (abs(dx)<tol)
                     break;
             }
             x[k]=xi;
         }
-        
-        x.front()=-1;
-        x.back()=1;
         return x;
     }
 }

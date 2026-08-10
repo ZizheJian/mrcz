@@ -46,15 +46,4 @@ namespace mrcz
                 inv[i*n+j]=mat[i*2*n+j+n];
         return inv;
     }
-
-    template<typename T>
-    vector<T> param_class<T>::simple_matrix_multiply(vector<T>& A,vector<T>& B,uint32_t n)
-    {
-        vector<T> C(n*n,0.0);
-        for (uint32_t i=0;i<n;i++)
-            for (uint32_t j=0;j<n;j++)
-                for (uint32_t k=0;k<n;k++)
-                    C[i*n+j]+=A[i*n+k]*B[k*n+j];
-        return C;
-    }
 }
