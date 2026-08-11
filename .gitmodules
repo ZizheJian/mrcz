@@ -1,19 +1,13 @@
-[submodule "c_codes/third_party/zstd"]
+[submodule "third_party/zstd"]
 	path = third_party/zstd
 	url = https://github.com/facebook/zstd.git
-[submodule "c_codes/third_party/sz3"]
-	path = c_codes/third_party/sz3
-	url = https://github.com/szcompressor/SZ3.git
-[submodule "c_codes/third_party/zfp"]
+[submodule "third_party/zfp"]
 	path = third_party/zfp
 	url = https://github.com/LLNL/zfp.git
-[submodule "c_codes/third_party/sperr"]
+[submodule "third_party/sperr"]
 	path = third_party/sperr
 	url = https://github.com/NCAR/SPERR.git
-[submodule "c_codes/third_party/nektar++"]
-	path = c_codes/third_party/nektar++
-	url = https://gitlab.nektar.info/nektar/nektar.git
-[submodule "c_codes/third_party/tinyxml2"]
+[submodule "third_party/tinyxml2"]
 	path = third_party/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
 [submodule "third_party/get_max_cpus"]
