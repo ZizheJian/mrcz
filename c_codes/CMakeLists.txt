@@ -6,9 +6,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(tinyxml2_BUILD_TESTING OFF CACHE BOOL "Build tinyxml2 tests" FORCE)
+
 add_subdirectory(mrcz_core)
 add_subdirectory(../third_party/zstd ${CMAKE_BINARY_DIR}/zstd_build)
 add_subdirectory(../third_party/zfp ${CMAKE_BINARY_DIR}/zfp_build)
+add_subdirectory(../third_party/tinyxml2 ${CMAKE_BINARY_DIR}/tinyxml2_build)
 
 set(SPERR_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../install/sperr_install")
 set(MFEM_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../install/mfem_install")

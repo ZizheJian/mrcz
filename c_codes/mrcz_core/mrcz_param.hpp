@@ -15,7 +15,7 @@
 #include "huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
 #include <mfem.hpp>
-#include "../third_party/tinyxml2/tinyxml2.h"
+#include <tinyxml2.h>
 
 using namespace std;
 
