@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mrcz_core/mrcz_param.hpp"
+#include "mrcz_param.hpp"
 
 template<typename T>
 void read_data_nekrs(mrcz::param_class<T> &params,string field);

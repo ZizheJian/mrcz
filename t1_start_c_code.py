@@ -23,8 +23,10 @@ write_to_csv=True
 
 format="nekrs"
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
-fields=["UX","UY","UZ","P","T"]
-eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
+fields=["P"]
+eb_list=[1e-4]
+# fields=["UX","UY","UZ","P","T"]
+# eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 # format="nekrs"
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001" #512*6*6*6

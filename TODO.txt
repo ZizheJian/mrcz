@@ -1,0 +1,268 @@
+MRCZ C++代码整理待办事项
+========================
+
+目标
+----
+在继续使用.hpp + .tpp（header-only）的前提下，把mrcz_core整理成职责清楚、可以被
+其他C++程序直接调用的库。命令行程序只负责解析参数；MRCZ核心流程通过param_class
+调用。外部程序仍然可以自由读取和修改param_class的public成员。
+
+处理原则
+--------
+- 一次只做一个小步骤，每一步都重新编译mrcz_compress和mrcz_decompress。
+- 尽量不同时进行目录移动、接口修改和压缩格式修改。
+- 修改压缩bitstream格式时，必须同时修改解压端并考虑旧文件兼容性。
+- regular/irregular表示element三个离散维度是否相等，不表示物理几何是否规则。
+
+
+第一阶段：整理mrcz_core的职责边界
+=================================
+
+[x] 1. 将read_and_write_data.tpp移入mrcz_core。
+       原因：数据读写是完整MRCZ压缩/解压流程必需的核心功能，并且依赖param_class。
+
+[ ] 2. 将get_coordinate_in_element.tpp从main.hpp的默认依赖中移出。
+       它是验证GLL坐标的诊断程序，并且会主动exit，不属于正式压缩流程。
+       建议以后放到c_codes/tools或c_codes/experiments中，做成独立工具。
+
+[ ] 3. 将模板后端文件的扩展名从.cpp改为.tpp。
+       当前main.hpp直接include以下.cpp文件：SZ2、SZ3、ZFP、SPERR的压缩和解压实现。
+       它们实际上是模板实现，不是独立编译单元，使用.tpp名称更准确，也可避免以后
+       被CMake再次编译而产生重复定义。
+
+[ ] 4. 减少main.hpp的职责。
+       main.hpp目前同时聚合mrcz_core、所有对比后端、数据读写和诊断工具。
+       最终应只保留CLI共同需要的声明或参数解析辅助代码，不再作为“包含所有实现”的
+       总入口。
+
+
+第二阶段：提供完整的header-only调用入口
+=======================================
+
+[ ] 5. 在mrcz_core中增加完整压缩入口，例如：
+
+           mrcz::compress(param_class<T> &params);
+
+       该入口应负责目前compress.cpp中compress1/compress2包含的MRCZ公共流程：
+       - 检查和初始化params；
+       - 读取header；
+       - 保存header和element map；
+       - 确定CPU数量并建立partitions；
+       - 逐field读取数据；
+       - 计算field动态范围及绝对/相对误差界；
+       - 根据原始类型和所需精度选择float或double；
+       - 调用正确的MRCZ压缩实现并写出结果。
+
+[ ] 6. 在mrcz_core中增加完整解压入口，例如：
+
+           mrcz::decompress(param_class<T> &params);
+
+       该入口应负责目前decompress.cpp中decompress1/decompress2包含的MRCZ公共流程。
+
+[ ] 7. 让compress.cpp和decompress.cpp只保留CLI逻辑。
+       - 解析argc/argv；
+       - 将参数写入param_class；
+       - 调用mrcz::compress(params)或mrcz::decompress(params)；
+       - 捕获异常并返回明确的退出码。
+       外部C++程序不需要复制CLI中的compress1/compress2或decompress1/decompress2。
+
+[ ] 8. 抽出并复用参数检查。
+       当前compress.cpp和decompress.cpp重复检查format、data_path、mesh_path、eb_mode、
+       input_eb和fields。应整理成可被CLI与外部调用者共同使用的函数。
+
+
+第三阶段：分离正式压缩与实验压缩
+=================================
+
+[ ] 9. 先为regular/irregular改一个不容易误解的名字，或至少补充明确注释。
+       当前含义：
+       - regular：element_shape为(n,n,n)，使用等尺寸快速变换内核；
+       - irregular：element_shape为(n0,n1,n2)，使用通用尺寸变换内核。
+       它们与element的物理扭曲或退化无关。
+
+[ ] 10. 合并regular和irregular重复的外围流程。
+        两者的系数量化、残差量化、Huffman编码、Zstd压缩和计时逻辑基本相同。
+        最终只保留两个不同的变换内核：
+        - equal-dimension transform kernel；
+        - general-dimension transform kernel。
+        公共压缩流程只写一份，并根据element_shape选择变换内核。
+
+[ ] 11. 建立不含实验功能的正式compress_regular和compress_irregular。
+        正式版本不包含以下两个实验功能：
+        - 扩大量化为0的系数区间（if_zero_freq_expanding）；
+        - partition级zero map（if_zero_map）。
+        正式版本应使用普通均匀量化区间，并完整编码所有系数模式。
+
+[ ] 12. 增加compress_experimental。
+        experimental版本同时启用以下功能：
+        - 扩大系数量化为0的区间；
+        - 记录partition内每个模式是否在所有element中都为0的zero map，并省略这些模式。
+        compress_experimental内部仍应根据element_shape选择等尺寸或通用尺寸变换内核，
+        不应再复制两份完整的regular/irregular压缩流程。
+
+[ ] 13. 将实验参数从普通param配置中整理出来。
+        目前相关成员为：
+        - if_zero_freq_expanding；
+        - zero_coeff_qb_bound；
+        - if_zero_map；
+        - if_coefficient_transpose。
+        需要决定是保留public成员，还是增加一个experimental_options结构；无论采用哪种
+        方式，外部程序都应能自由修改这些参数。
+
+[ ] 14. 设计experimental对应的解压路径和格式标记。
+        zero map会改变bitstream布局，if_coefficient_transpose也影响系数排列；
+        coeff_eb_scale会影响系数重构。这些不能只依赖压缩端和解压端碰巧使用相同默认值。
+        压缩文件中至少应记录：
+        - 是否使用zero map；
+        - 是否转置系数；
+        - coeff_eb_scale；
+        - experimental格式版本。
+        扩大零区间和zero_coeff_qb_bound只影响压缩端的取零决定，解压不一定需要记录，
+        但为了实验可复现，建议也写入metadata。
+
+[ ] 15. 把zero-map公共编解码函数移出regular文件。
+        当前lossless_compress_coeff_qb_with_zero_map定义在compress_regular.tpp，
+        lossless_decompress_coeff_qb_with_zero_map定义在decompress_regular.tpp，
+        但irregular路径也在调用。建议移到独立的coefficient_lossless_codec.tpp中。
+
+[ ] 16. 增加正式版与experimental版的对照测试。
+        对同一小型输入和相同误差界验证：
+        - 两者都满足最大误差界；
+        - 正式版可正确压缩/解压；
+        - experimental版可正确压缩/解压；
+        - zero map的全零、全非零和部分全零三种partition都能解析；
+        - float和double路径都能工作；
+        - 等尺寸与非等尺寸element都能工作。
+
+
+第四阶段：整理公共头文件与CMake
+================================
+
+[ ] 17. 明确公共头文件入口。
+        外部程序最好只需要include一个稳定入口，例如：
+
+            #include <mrcz_core/mrcz.hpp>
+
+        mrcz.hpp再包含param_class和compress/decompress入口。高级用户仍可直接访问
+        param_class及其public成员。
+
+[ ] 18. 保持实现为header-only，但整理include关系。
+        - .hpp放声明和较短的类定义；
+        - .tpp放模板函数实现；
+        - 不直接include名为.cpp的文件；
+        - 避免依赖某个.tpp碰巧先于另一个.tpp被include才能编译。
+
+[ ] 19. 整理CMake header-only target。
+        建议使用：
+
+            add_library(mrcz INTERFACE)
+            add_library(mrcz::mrcz ALIAS mrcz)
+
+        不需要生成libmrcz.a或libmrcz.so。修正当前“库安装到lib”的误导性注释。
+
+[ ] 20. 不要把CLI专用优化选项强制传播给所有库使用者。
+        当前INTERFACE target传播-Wall、-Ofast和-march=native。
+        - OpenMP等真正必需的编译/链接要求可以保留在INTERFACE上；
+        - -Ofast和-march=native更适合放到mrcz_compress/mrcz_decompress，或由CMake
+          option控制；
+        - 避免外部程序被强制使用相同优化和浮点语义。
+
+[ ] 21. 检查public header中的using namespace std。
+        CLI自己的.cpp中可以继续使用using namespace std；公共.hpp中最好避免将整个std
+        命名空间泄漏给外部程序。此项只做代码整理，不改变算法。
+
+[ ] 22. 完善安装后的外部调用示例。
+        增加一个很小的C++示例，展示：
+        - 创建param_class；
+        - 自由修改参数；
+        - 调用mrcz::compress/decompress；
+        - 通过CMake链接mrcz::mrcz。
+        暂时不需要C ABI、Python binding、GNUInstallDirs或CMake package config；等确实
+        需要从其他语言调用或由其他项目find_package时再做。
+
+
+第五阶段：清理实验输出和重复代码
+=================================
+
+[ ] 23. 将mean_abs_coeff统计从正式compress_regular中移出或增加明确开关。
+        当前只有regular路径会额外写.mean_abs_coeff.block*_DLT文件，irregular不会。
+        这属于论文/诊断统计，不应默认成为正式压缩路径的额外I/O。
+
+[ ] 24. 删除已经确认无用的大段注释代码。
+        在新结构、正式版和experimental版测试稳定以后再做，避免整理期间失去参考实现。
+
+[ ] 25. 最终进行完整静态和小数据回归测试。
+        - cmake configure；
+        - 构建mrcz_compress和mrcz_decompress；
+        - 小型NekRS压缩/解压及误差验证；
+        - MFEM和Nektar++至少各运行一个小样例；
+        - git diff --check；
+        - 确认安装目录包含全部需要的.hpp/.tpp文件。
+
+
+第六阶段：重新整理baseline compressors及后续算法实验
+===================================================
+
+[ ] 26. 重新检查并统一baseline compressor的名称。
+        名称应明确表示数据如何组织、使用哪个API以及预测方式，避免当前SZ3-0、SZ3-1、
+        SZ3-HOHS等名称难以直接理解。
+
+[ ] 27. 将当前类似SZ3-0的一维基线重命名并实现为SZ3-1D。
+        计划行为：
+        - 将每个partition中的数据视为一维数组；
+        - 对每个partition分别调用SZ3的一维API；
+        - 保存每个partition产生的bitstream长度并依次拼接bitstream；
+        - 解压时根据长度信息拆分并分别调用SZ3 API；
+        - 统计总bit rate、压缩/解压速度和误差。
+        实现前需要将SZ3以独立依赖的形式安装到third_party，并在CMake中提供可靠的
+        include和link配置。不要继续依赖无法复现的本地安装路径。
+
+[ ] 28. 增加QoZ baseline。
+        QoZ的完整内部实现和参数搜索较复杂，不计划自行复现算法。初步方案是：
+        - 将每个partition视为一个4维数组，其中一个维度是element编号，另外三个维度
+          是element内部的三个维度；
+        - 对每个partition直接调用QoZ官方API；
+        - 拼接各partition的bitstream，并记录必要的长度信息；
+        - 使用官方推荐配置或明确记录的固定配置，保证实验可复现；
+        - 对比rate-distortion、压缩速度、解压速度和内存开销。
+        实现前需要调查QoZ的官方版本、构建方法、API、许可证和4维数据支持方式。
+
+[ ] 29. 评估是否需要增加SZ3-4D baseline。
+        方案与QoZ-4D一致：把每个partition看作[element, dim0, dim1, dim2]四维数据，
+        直接调用SZ3的4维API。
+        是否实施取决于：
+        - 它与SZ3-1D、逐element SZ3和QoZ-4D能否形成有意义的对照；
+        - 论文中是否需要区分“利用4维局部结构”和“仅展平成1维”的效果；
+        - 实验数量和篇幅是否允许。
+
+[ ] 30. 调整并测试SZ3-HOHS的遍历/预测顺序。
+        当前顺序模仿SZ3。需要增加至少一种“从element中间向外围扩展”的顺序，并在
+        完全相同的误差界、量化和无损编码条件下比较：
+        - prediction residual分布；
+        - bit rate或compression ratio；
+        - PSNR/最大误差；
+        - 压缩和解压速度；
+        - 不同element尺寸及不同field上的稳定性。
+        在修改前先把当前遍历顺序写成明确的索引序列或单元测试，保证新旧顺序可复现。
+
+[ ] 31. 评估MRCZ是否需要为每个变换模式使用不同的coefficient error bound。
+        当前所有模式共用由coeff_eb_scale得到的系数误差界。可研究：
+        - 根据模式对重构误差的放大系数分配error bound；
+        - 根据每个模式的平均绝对系数、方差或零频率自适应分配；
+        - 在满足最终point-wise error bound的前提下优化总bit rate；
+        - 参数是否必须写入metadata，以及额外metadata是否抵消压缩收益；
+        - 每个模式一个error bound是否过于复杂，是否应改为少量模式组共享error bound。
+        先用离线实验比较统一error bound、分组error bound和逐模式error bound，再决定
+        是否进入正式压缩格式。
+
+[ ] 32. 为所有baseline建立统一的实验接口和命名记录。
+        每个baseline至少记录：
+        - 正式名称和命令行method名称；
+        - 输入数据的维度组织方式；
+        - partition边界的处理方式；
+        - 调用的第三方库版本和API；
+        - error-bound语义；
+        - bitstream拼接格式；
+        - 是否支持float/double及1D/2D/3D element；
+        - rate-distortion和速度统计方式。
+        在这些定义稳定以后，再修改t1_start_c_code.py中的method_list和论文图例名称。

@@ -18,4 +18,4 @@ using namespace std;
 #include "sperr_impl/sperr_decompress.cpp"
 #include "../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "get_coordinate_in_element.tpp"
-#include "read_and_write_data.tpp"
+#include "mrcz_core/read_and_write_data.tpp"
