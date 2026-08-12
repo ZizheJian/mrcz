@@ -3,3 +3,5 @@ build/
 install/
 /third_party/flow-stability-cylinder.tar.gz
 /third_party/flow-stability-cylinder/
+__pycache__/
+*.py[cod]
