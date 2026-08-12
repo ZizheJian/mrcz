@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mrcz_core/mrcz_param.hpp"
+#include "../mrcz_core/mrcz_param.hpp"
 
 template<typename T>
 void get_coordinate_in_element(mrcz::param_class<T> &params)

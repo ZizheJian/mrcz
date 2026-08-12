@@ -205,7 +205,7 @@ void compress1(mrcz::param_class<T> &params) //已经根据原始数据的格式
 template<typename T>
 void compress2(mrcz::param_class<T> &params,string field) // 在最终决定params的T后，根据method调用不同的压缩函数，并写出压缩数据
 {
-    // get_coordinate_in_element(params); //用于统计每个element中相邻点的距离，验证了点确实在GLL点上。自带exit(0)，压缩时不使用。
+    // tools/get_coordinate_in_element.tpp用于统计每个element中相邻点的距离，验证了点确实在GLL点上。自带exit(0)，压缩时不使用。
     if (params.data_range_min==params.data_range_max)
         printf("Warning: field %s has constant value %f\n",field.c_str(),params.data_range_min[field]);
     else

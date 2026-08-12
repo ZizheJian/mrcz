@@ -21,7 +21,7 @@ MRCZ C++代码整理待办事项
 [x] 1. 将read_and_write_data.tpp移入mrcz_core。
        原因：数据读写是完整MRCZ压缩/解压流程必需的核心功能，并且依赖param_class。
 
-[ ] 2. 将get_coordinate_in_element.tpp从main.hpp的默认依赖中移出。
+[x] 2. 将get_coordinate_in_element.tpp从main.hpp的默认依赖中移出。
        它是验证GLL坐标的诊断程序，并且会主动exit，不属于正式压缩流程。
        建议以后放到c_codes/tools或c_codes/experiments中，做成独立工具。
 
