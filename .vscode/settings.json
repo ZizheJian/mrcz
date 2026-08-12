@@ -9,5 +9,7 @@
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
     "cmake.buildBeforeRun": false,
-    "cmake.buildDirectory": ""
+    "cmake.buildDirectory": "",
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda"
 }
