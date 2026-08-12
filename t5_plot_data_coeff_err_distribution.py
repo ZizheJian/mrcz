@@ -1,3 +1,16 @@
+# 功能：比较一个NekRS标量field、对应变换系数以及误差的概率分布。
+# 程序将三组分布画在同一张1x3图片中，用于观察变换系数和误差是否比原始数据
+# 更集中在零附近。
+#
+# 使用方法：
+# 1. 将data_path设为目标NekRS field文件。
+# 2. 预先准备data_path+"_coeff"和data_path+"_err"两个float64二进制文件；每个文件都应包含header.file_element_num*header.element_size个值，并与原始field逐点对应。
+# 3. 当前代码通过跳过坐标X和速度U来读取后面的第一个标量field；更换数据时应先确认header.variables中的field顺序与此假设一致。
+# 4. 根据目标数据调整三个add_hist调用中的横轴范围和bin_width。
+# 5. 运行python3 t5_plot_data_coeff_err_distribution.py。程序会打印各bin的中心和概率，并生成fig/data_coeff_err_distribution.png。
+#
+# 本程序假定原始数据、_coeff和_err文件均已存在且内容完整。
+
 import os
 import numpy as np
 from matplotlib import pyplot as plt

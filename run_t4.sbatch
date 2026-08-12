@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=mrcz-t3
+#SBATCH --job-name=mrcz-t4
 #SBATCH --account=cis240669
 #SBATCH --partition=shared
 #SBATCH --nodes=1
@@ -14,4 +14,4 @@ set -euo pipefail
 cd "${SLURM_SUBMIT_DIR}"
 source /home/x-zjian1/miniconda3/etc/profile.d/conda.sh
 conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
-python3 -u t3_find_irregular_elements.py
+python3 -u t4_test_interpolation_prediction.py
