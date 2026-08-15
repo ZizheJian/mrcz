@@ -8,7 +8,7 @@ namespace mrcz
         uint32_t n0=header.element_shape[0];
         uint32_t n00=n0*n0;
         uint32_t n000=n00*n0;
-        vector<T> L0=L[0];
+        vector<T> neg_L0=neg_L[0];
         T abs_eb=this->abs_eb[field];
         T coeff_eb=abs_eb*coeff_eb_scale;
         int64_t *coeff_qb=new int64_t[element_num_to_process*n000];
@@ -45,7 +45,7 @@ namespace mrcz
                 for (uint32_t i=0;i<n000;i++)
                     temp_element1[i]=element_coeff_qb[i]*2*coeff_eb;
                 // 反变换
-                inverse_transform_regular(temp_element1,temp_element2,n0,n00,n000,L0);
+                inverse_transform_regular(temp_element1,temp_element2,n0,n00,n000,neg_L0);
                 // 补偿误差
                 for (uint32_t j=0;j<n000;j++)
                     element[j]+=(temp_element2[j]-element_err_qb[j]*2*abs_eb);

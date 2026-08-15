@@ -1,4 +1,4 @@
-import os,subprocess
+import glob,os,subprocess
 from third_party.get_max_cpus.py_codes.get_max_cpus import get_max_cpus
 from third_party.run_command.run_command import run_command
 from third_party.csv_tools.py_codes.write_csv_item import write_csv_item
@@ -7,6 +7,7 @@ redbegin="\033[91m"
 redend="\033[0m"
 silent_build=False
 build_max_cpus=get_max_cpus(8)
+run_max_cpus=1
 
 # method可选:
 #   "mrcz"
@@ -20,11 +21,37 @@ build_max_cpus=get_max_cpus(8)
 method_list=["mrcz","sz3-hohs","sz3-1","sz2-1","sz2-0","zfp", "sperr"]
 eb_mode="REL"
 write_to_csv=True
+cleanup_after_each_test=True
+
+def remove_file_if_exists(path):
+    if os.path.isfile(path):
+        os.remove(path)
+
+def cleanup_test_outputs(data_path,method,selected_fields=None):
+    if selected_fields is None:
+        compressed_paths=glob.glob(f"{glob.escape(data_path)}_*.{glob.escape(method)}")
+        mean_abs_coeff_paths=glob.glob(f"{glob.escape(data_path)}.*.mean_abs_coeff.block*")
+    else:
+        compressed_paths=[f"{data_path}_{field}.{method}" for field in selected_fields]
+        mean_abs_coeff_paths=[]
+        for field in selected_fields:
+            mean_abs_coeff_paths.extend(glob.glob(
+                f"{glob.escape(data_path)}.{glob.escape(field)}.mean_abs_coeff.block*"))
+
+    for path in compressed_paths+mean_abs_coeff_paths:
+        remove_file_if_exists(path)
+    remove_file_if_exists(f"{data_path}_header.mrcz")
+    remove_file_if_exists(f"{data_path}_element_map.mrcz")
+    # 兼容并清理统一命名前由各压缩器生成的旧文件。
+    remove_file_if_exists(f"{data_path}_header.{method}")
+    remove_file_if_exists(f"{data_path}_element_map.{method}")
+    remove_file_if_exists(f"{data_path}.{method}.bin")
+    remove_file_if_exists(f"{data_path}.mrcz.bin")
 
 format="nekrs"
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
 fields=["P"]
-eb_list=[1e-4]
+eb_list=[1e-3]
 # fields=["UX","UY","UZ","P","T"]
 # eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
@@ -107,6 +134,7 @@ for method in method_list:
             elif format in ["mfem"]:
                 command_list=[f"{command} -format {format} -i {data_path} -mesh {mesh_path}" for command in command_list] # type: ignore
             command_list=[f"{command} -M {eb_mode} {eb} -method {method}" for command in command_list]
+            command_list=[f"{command} -max-cpus {run_max_cpus}" for command in command_list]
             if "fields" in locals():
                 command_list=[f"{command} -fields [{','.join(fields)}]" for command in command_list]
             run_command(command_list[0])
@@ -129,6 +157,8 @@ for method in method_list:
                     psnr=float(segments[7].strip().split(" ")[1])
                     write_csv_item(f"{data_path}_{field}.csv",{f"{eb_mode}_EB":eb},f"{method}_BR",br)
                     write_csv_item(f"{data_path}_{field}.csv",{f"{eb_mode}_EB":eb},f"{method}_PSNR",psnr)
+        if cleanup_after_each_test:
+            cleanup_test_outputs(data_path,method,fields if "fields" in locals() else None)
 # elif method=="sz3-0":
 #     import numpy as np
 #     from py_funcs.read_nekrs_header import read_nekrs_header
@@ -222,4 +252,3 @@ for method in method_list:
 #             sz3_0_compress(data_path,data,passive_scalar_name)
 #         else:
 #             f.seek(header.file_element_num*header.element_size*header.word_size,1)
-

@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "../mrcz_core/mrcz_param.hpp"
-#include "sz3_2_compress.tpp"
+#include "mrcz_param.hpp"
+#include "sz3_hohs_compress.tpp"
 
 template<typename T>
 void sz3_2_decompress(mrcz::param_class<T> &params,string field)

@@ -2,9 +2,9 @@
 
 
 #include <set>
-#include "../mrcz_core/mrcz_param.hpp"
-#include "../mrcz_core/huffman.hpp"
-#include "../mrcz_core/quantize.tpp"
+#include "mrcz_param.hpp"
+#include "huffman.hpp"
+#include "quantize.tpp"
 #include "../third_party/zstd/lib/zstd.h"
 
 template<typename T>

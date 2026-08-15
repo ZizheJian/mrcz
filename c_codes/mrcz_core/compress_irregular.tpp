@@ -38,14 +38,14 @@ namespace mrcz
                 int64_t *element_f_qb=coeff_qb+element_id*n012;
                 int64_t *element_err_qb=err_qb+element_id*n012;
                 // 正变换
-                forward_transform_irregular(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
+                forward_transform_irregular(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
                 // 量化
                 if (if_zero_freq_expanding)
                     quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb,zero_coeff_bound);
                 else
                     quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb);
                 // 反变换
-                inverse_transform_irregular(temp_element1,temp_element2,n0,n1,n2,n12,n012,L0,L1,L2);
+                inverse_transform_irregular(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
                 quantize_err_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,neg_2_eb);
             }
             // 无损压缩
@@ -64,6 +64,7 @@ namespace mrcz
             block.zstd_bs.resize(max_zstd_bs_len);
             uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
             block.zstd_bs.resize(zstd_bs_len);
+
         }
         double end_time=omp_get_wtime();
         delete[] coeff_qb;
@@ -74,45 +75,45 @@ namespace mrcz
 
     template<typename T>
     inline void param_class<T>::forward_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
-        vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2)
+        vector<T> &L0,vector<T> &L1,vector<T> &L2)
     {
         memset(temp_element1.data(),0,sizeof(T)*n012);
         for (uint32_t a=0;a<n0;a++)
             for (uint32_t i=0;i<n0;i++)
                 for (uint32_t bn2pc=0;bn2pc<n1*n2;bn2pc++)
-                        temp_element1[i*n12+bn2pc]+=element[a*n12+bn2pc]*neg_L0[a*n0+i];
+                        temp_element1[i*n12+bn2pc]+=element[a*n12+bn2pc]*L0[a*n0+i];
         memset(temp_element2.data(),0,sizeof(T)*n012);
         for (uint32_t in12=0;in12<n012;in12+=n12)
             for (uint32_t b=0;b<n1;b++)
                 for (uint32_t j=0;j<n1;j++)
                     for (uint32_t c=0;c<n2;c++)
-                        temp_element2[in12+j*n2+c]+=temp_element1[in12+b*n2+c]*neg_L1[b*n1+j];
+                        temp_element2[in12+j*n2+c]+=temp_element1[in12+b*n2+c]*L1[b*n1+j];
         memset(temp_element1.data(),0,sizeof(T)*n012);
         for (uint32_t in12pjn2=0;in12pjn2<n012;in12pjn2+=n2)
             for (uint32_t c=0;c<n2;c++)
                 for (uint32_t k=0;k<n2;k++)
-                    temp_element1[in12pjn2+k]+=temp_element2[in12pjn2+c]*neg_L2[c*n2+k];
+                    temp_element1[in12pjn2+k]+=temp_element2[in12pjn2+c]*L2[c*n2+k];
     }
 
     template<typename T>
     inline void param_class<T>::inverse_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
-        vector<T> &L0,vector<T> &L1,vector<T> &L2)
+        vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2)
     {
         memset(temp_element2.data(),0,sizeof(T)*n012);
         for (uint32_t in12pjn2=0;in12pjn2<n012;in12pjn2+=n2)
             for (uint32_t k=0;k<n2;k++)
                 for (uint32_t c=0;c<n2;c++)
-                    temp_element2[in12pjn2+c]+=temp_element1[in12pjn2+k]*L2[k*n2+c];
+                    temp_element2[in12pjn2+c]+=temp_element1[in12pjn2+k]*neg_L2[k*n2+c];
         memset(temp_element1.data(),0,sizeof(T)*n012);
         for (uint32_t in12=0;in12<n012;in12+=n12)
             for (uint32_t j=0;j<n1;j++)
                 for (uint32_t b=0;b<n1;b++)
                     for (uint32_t c=0;c<n2;c++)
-                        temp_element1[in12+b*n2+c]+=temp_element2[in12+j*n2+c]*L1[j*n1+b];
+                        temp_element1[in12+b*n2+c]+=temp_element2[in12+j*n2+c]*neg_L1[j*n1+b];
         memset(temp_element2.data(),0,sizeof(T)*n012);
         for (uint32_t i=0;i<n0;i++)
             for (uint32_t a=0;a<n0;a++)
                 for (uint32_t bn2pc=0;bn2pc<n12;bn2pc++)
-                    temp_element2[a*n12+bn2pc]+=temp_element1[i*n12+bn2pc]*L0[i*n0+a];
+                    temp_element2[a*n12+bn2pc]+=temp_element1[i*n12+bn2pc]*neg_L0[i*n0+a];
     }
 }

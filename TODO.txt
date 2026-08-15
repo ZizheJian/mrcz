@@ -15,6 +15,37 @@ MRCZ C++代码整理待办事项
 - regular/irregular表示element三个离散维度是否相等，不表示物理几何是否规则。
 
 
+近期已完成的修复
+================
+
+[x] 修复变换矩阵语义调整后，压缩和解压调用没有同步更新的问题。
+    当前定义为：
+    - neg_L：反变换矩阵，即基函数在采样点上的取值组成的矩阵；
+    - L：正变换矩阵，即inverse(neg_L)。
+    因此forward_transform_regular/irregular使用L，
+    inverse_transform_regular/irregular使用neg_L。
+
+    问题出现时，程序把neg_L用于正变换、L用于反变换。两者仍互逆，所以解压结果
+    没有明显错误，但产生的系数不再具有正常的低频集中和高频趋零特征，导致系数流
+    异常大，并且最终误差只使用了很小一部分error bound。
+
+    使用mixlay0.f00001的P字段、单CPU、abs_eb约为1e-3验证：
+    - 旧版9e89273：BR=0.929063；
+    - 错误版本：BR=13.020156，max_err约为error bound的2.96%；
+    - 修复后：BR=0.929141，max_err约为error bound的99.61%。
+    修复后重新运行了t1，MRCZ的rate-distortion结果已恢复，其他baseline结果不变。
+    用于对比的9e89273临时副本曾放在/tmp/mrcz-old-WG8Yak；完成回归后已删除。
+    /tmp是节点本地短期空间，可能因空间不足或节点重启被清理，不作为后续工作的
+    持久副本。需要再次对比时直接从Git提交9e89273重新导出。
+
+[x] 统一不同压缩器共用的header和element map文件名。
+    这两类数据只取决于原始文件，与具体压缩器无关。现在统一使用：
+    - <data_path>_header.mrcz；
+    - <data_path>_element_map.mrcz。
+    各压缩器不再分别生成_header.<method>和_element_map.<method>副本；field压缩文件
+    和解压结果仍保留method后缀以区分压缩器。
+
+
 第一阶段：整理mrcz_core的职责边界
 =================================
 
@@ -39,13 +70,17 @@ MRCZ C++代码整理待办事项
 第二阶段：提供完整的header-only调用入口
 =======================================
 
-[ ] 5. 在mrcz_core中增加完整压缩入口，例如：
+[x] 5. 在mrcz_core中增加完整压缩入口，例如：
 
            mrcz::compress(param_class<T> &params);
 
        压缩只保留这一种执行入口，不再增加compress(argc,argv)重载。
        外部用户可以自己创建并修改param_class，也可以调用独立的
-       parse_compress_args(argc,argv)得到params，最后都调用compress(params)。
+       parse_compress_args(argc,argv)得到params，最后都调用mrcz::compress(params)。
+       mrcz::compress是位于mrcz_core之外的顶层分派入口：根据method调用
+       mrcz::core::compress或mrcz::baseline::compress，但不让mrcz_core依赖baseline。
+       mrcz_core应支持项目自身的mrcz和sz3-hohs两种方法；sz2-0、sz2-1、sz3-1、
+       zfp和sperr属于baseline，不应成为mrcz_core的内部依赖。
        该入口应负责目前compress.cpp中compress1/compress2包含的MRCZ公共流程：
        - 检查和初始化params；
        - 读取header；
@@ -55,20 +90,35 @@ MRCZ C++代码整理待办事项
        - 计算field动态范围及绝对/相对误差界；
        - 根据原始类型和所需精度选择float或double；
        - 调用正确的MRCZ压缩实现并写出结果。
+       当前进度：已增加mrcz_core/compress.hpp和compress.tpp，并建立只执行一次的
+       compress_file_with_backend。MRCZ和所有baseline已共用参数检查、header读取、partition创建、
+       field读取、动态范围计算、float/double选择和bitstream写出流程。已删除
+       compress.cpp中重复的compress1/compress2。sz3-hohs已移入mrcz_core，并通过
+       mrcz::core::compress入口调用；sz3-1 baseline仍可复用其预测实现。顶层
+       mrcz::compress已统一分洺core和baseline。增加外部调用
+       已完成独立于CLI的编译测试：外部源文件创建param_class<float>、自由设置format、
+       data_path、error bound、method和max_cpus，并成功实例化
+       mrcz::core::compress(params)。t1也已通过顶层mrcz::compress(params)完成运行时回归。
 
-[ ] 6. 在mrcz_core中增加完整解压入口，例如：
+[x] 6. 在mrcz_core中增加完整解压入口，例如：
 
-           mrcz::decompress(param_class<T> &params);
+           mrcz::core::decompress(param_class<T> &params);
 
        解压端与压缩端对称：提供独立的parse_decompress_args(argc,argv)，但不提供
        decompress(argc,argv)重载。
-       该入口应负责目前decompress.cpp中decompress1/decompress2包含的MRCZ公共流程。
+       该入口现已负责原decompress.cpp中decompress1/decompress2包含的公共流程：
+       参数检查、header读取、field循环、bitstream读取、float/double切换、backend调用、
+       可选解压文件写出和误差统计。mrcz::core::decompress支持mrcz和sz3-hohs；
+       mrcz::baseline::decompress支持其他baseline；顶层mrcz::decompress统一分派。
+       已通过独立于CLI的编译测试，并用t1在REL=1e-3下完成全部7种方法的运行时回归。
 
-[ ] 7. 让compress.cpp和decompress.cpp只保留CLI逻辑。
+[x] 7. 让compress.cpp和decompress.cpp只保留CLI逻辑。
        - 分别调用parse_compress_args(argc,argv)或parse_decompress_args(argc,argv)；
        - 调用mrcz::compress(params)或mrcz::decompress(params)；
        - 捕获异常并返回明确的退出码。
        外部C++程序不需要复制CLI中的compress1/compress2或decompress1/decompress2。
+       当前compress.cpp和decompress.cpp都只保留参数解析、顶层入口调用、异常处理和
+       进程退出码；核心流程与backend分派均已移入header-only入口。
 
 [ ] 8. 抽出并复用参数检查。
        当前compress.cpp和decompress.cpp重复检查format、data_path、mesh_path、eb_mode、

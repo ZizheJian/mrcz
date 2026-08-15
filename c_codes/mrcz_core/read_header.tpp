@@ -20,7 +20,7 @@ namespace mrcz
         if (task=="compress")
             header_path=data_path;
         else
-            header_path=data_path+"_header."+method;
+            header_path=data_path+"_header.mrcz";
         //////// 读取header文件 ////////
         ifstream data_file(header_path,ios::binary);
         header.original_header.resize(136);

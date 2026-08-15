@@ -18,7 +18,7 @@ namespace mrcz
     {
         if (task=="compress")
         {
-            ofstream header_file(data_path+"_header."+method);
+            ofstream header_file(data_path+"_header.mrcz");
             header_file.write(&header.original_header[0],header.original_header.size());
             header_file.close();
             string element_map;
@@ -27,7 +27,7 @@ namespace mrcz
             data_file.seekg(136,ios::beg);
             data_file.read(&element_map[0],header.file_element_num*4);
             data_file.close();
-            ofstream element_map_file(data_path+"_element_map."+method,ios::binary);
+            ofstream element_map_file(data_path+"_element_map.mrcz",ios::binary);
             element_map_file.write(&element_map[0],header.file_element_num*4);
             element_map_file.close();
         }
@@ -37,7 +37,7 @@ namespace mrcz
             decompressed_file.write(&header.original_header[0],header.original_header.size());
             string element_map;
             element_map.resize(header.file_element_num*4);
-            ifstream element_map_file(data_path+"_element_map."+method,ios::binary);
+            ifstream element_map_file(data_path+"_element_map.mrcz",ios::binary);
             element_map_file.read(&element_map[0],header.file_element_num*4);
             element_map_file.close();
             decompressed_file.write(&element_map[0],header.file_element_num*4);
@@ -51,7 +51,7 @@ namespace mrcz
         if (task=="compress")
         {
             // 只需要写header，没有element_map
-            ofstream header_file(data_path+"_header."+method);
+            ofstream header_file(data_path+"_header.mrcz");
             header_file.write(header.original_header.data(),header.original_header.size());
             string s="DofNum="+to_string(header.dof_num)+"\n";
             header_file.write(s.data(),s.size());
@@ -67,7 +67,7 @@ namespace mrcz
     void param_class<T>::save_header_and_element_map_nektarpp(const string &task)
     {
         if (task=="compress")
-            header.header_doc->SaveFile((data_path+"_header."+method).c_str());
+            header.header_doc->SaveFile((data_path+"_header.mrcz").c_str());
         else
         {
             // 什么都不干

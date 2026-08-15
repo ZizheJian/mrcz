@@ -35,7 +35,7 @@ namespace mrcz
                 int64_t *element_f_qb=coeff_qb+element_id*n000;
                 int64_t *element_err_qb=err_qb+element_id*n000;
                 // 正变换
-                forward_transform_regular(temp_element1,temp_element2,element,n0,n00,n000,neg_L0);
+                forward_transform_regular(temp_element1,temp_element2,element,n0,n00,n000,L0);
                 for (uint32_t pos=0;pos<n000;pos++)
                     mean_abs_coeff[pos]+=fabs(temp_element1[pos]);
                 // 量化
@@ -44,7 +44,7 @@ namespace mrcz
                 else
                     quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n000,coeff_eb,neg_2_coeff_eb);
                 // 反变换
-                inverse_transform_regular(temp_element1,temp_element2,n0,n00,n000,L0);
+                inverse_transform_regular(temp_element1,temp_element2,n0,n00,n000,neg_L0);
                 quantize_err_array(temp_element2.data(),element,element_err_qb,n000,abs_eb,neg_2_eb);
             }
             for (uint32_t pos=0;pos<n000;pos++)
@@ -107,45 +107,45 @@ namespace mrcz
     }
 
     template<typename T>
-    inline void param_class<T>::forward_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &neg_L0)
+    inline void param_class<T>::forward_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &L0)
     {
         memset(temp_element1.data(),0,sizeof(T)*n000);
         for (uint32_t an0=0;an0<n00;an0+=n0)
             for (uint32_t i=0;i<n0;i++)
                 for (uint32_t bn0pc=0;bn0pc<n00;bn0pc++)
-                    temp_element1[i*n00+bn0pc]+=element[an0*n0+bn0pc]*neg_L0[an0+i];
+                    temp_element1[i*n00+bn0pc]+=element[an0*n0+bn0pc]*L0[an0+i];
         memset(temp_element2.data(),0,sizeof(T)*n000);
         for (uint32_t in00=0;in00<n000;in00+=n00)
             for (uint32_t bn0=0;bn0<n00;bn0+=n0)
                 for (uint32_t j=0;j<n0;j++)
                     for (uint32_t c=0;c<n0;c++)
-                        temp_element2[in00+j*n0+c]+=temp_element1[in00+bn0+c]*neg_L0[bn0+j];
+                        temp_element2[in00+j*n0+c]+=temp_element1[in00+bn0+c]*L0[bn0+j];
         memset(temp_element1.data(),0,sizeof(T)*n000);
         for (uint32_t in00pjn0=0;in00pjn0<n000;in00pjn0+=n0)
             for (uint32_t c=0;c<n0;c++)
                 for (uint32_t k=0;k<n0;k++)
-                    temp_element1[in00pjn0+k]+=temp_element2[in00pjn0+c]*neg_L0[c*n0+k];
+                    temp_element1[in00pjn0+k]+=temp_element2[in00pjn0+c]*L0[c*n0+k];
     }
 
     template<typename T>
-    inline void param_class<T>::inverse_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &L0)
+    inline void param_class<T>::inverse_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &neg_L0)
     {
         memset(temp_element2.data(),0,sizeof(T)*n000);
         for (uint32_t in00pjn0=0;in00pjn0<n000;in00pjn0+=n0)
             for (uint32_t k=0;k<n0;k++)
                 for (uint32_t c=0;c<n0;c++)
-                    temp_element2[in00pjn0+c]+=temp_element1[in00pjn0+k]*L0[k*n0+c];
+                    temp_element2[in00pjn0+c]+=temp_element1[in00pjn0+k]*neg_L0[k*n0+c];
         memset(temp_element1.data(),0,sizeof(T)*n000);
         for (uint32_t in00=0;in00<n000;in00+=n00)
             for (uint32_t jn0=0;jn0<n00;jn0+=n0)
                 for (uint32_t b=0;b<n0;b++)
                     for (uint32_t c=0;c<n0;c++)
-                        temp_element1[in00+b*n0+c]+=temp_element2[in00+jn0+c]*L0[jn0+b];
+                        temp_element1[in00+b*n0+c]+=temp_element2[in00+jn0+c]*neg_L0[jn0+b];
         memset(temp_element2.data(),0,sizeof(T)*n000);
         for (uint32_t in0=0;in0<n00;in0+=n0)
             for (uint32_t a=0;a<n0;a++)
                 for (uint32_t bn0pc=0;bn0pc<n00;bn0pc++)
-                    temp_element2[a*n00+bn0pc]+=temp_element1[in0*n0+bn0pc]*L0[in0+a];
+                    temp_element2[a*n00+bn0pc]+=temp_element1[in0*n0+bn0pc]*neg_L0[in0+a];
     }
 
     template<typename T>
