@@ -1,4 +1,8 @@
 #include "main.hpp"
+#include "sz2_impl/sz2_1_compress.tpp"
+#include "sz3_impl/sz3_2_compress.tpp"
+#include "zfp_impl/zfp_compress.tpp"
+#include "sperr_impl/sperr_compress.tpp"
 
 template<typename T>
 void compress1(mrcz::param_class<T> &params);

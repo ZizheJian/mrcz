@@ -1,4 +1,8 @@
 #include "main.hpp"
+#include "sz2_impl/sz2_1_decompress.tpp"
+#include "sz3_impl/sz3_2_decompress.tpp"
+#include "zfp_impl/zfp_decompress.tpp"
+#include "sperr_impl/sperr_decompress.tpp"
 
 template<typename T>
 void decompress1(mrcz::param_class<T> &params);

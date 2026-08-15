@@ -25,12 +25,12 @@ MRCZ C++代码整理待办事项
        它是验证GLL坐标的诊断程序，并且会主动exit，不属于正式压缩流程。
        建议以后放到c_codes/tools或c_codes/experiments中，做成独立工具。
 
-[ ] 3. 将模板后端文件的扩展名从.cpp改为.tpp。
+[x] 3. 将模板后端文件的扩展名从.cpp改为.tpp。
        当前main.hpp直接include以下.cpp文件：SZ2、SZ3、ZFP、SPERR的压缩和解压实现。
        它们实际上是模板实现，不是独立编译单元，使用.tpp名称更准确，也可避免以后
        被CMake再次编译而产生重复定义。
 
-[ ] 4. 减少main.hpp的职责。
+[x] 4. 减少main.hpp的职责。
        main.hpp目前同时聚合mrcz_core、所有对比后端、数据读写和诊断工具。
        最终应只保留CLI共同需要的声明或参数解析辅助代码，不再作为“包含所有实现”的
        总入口。
@@ -43,6 +43,9 @@ MRCZ C++代码整理待办事项
 
            mrcz::compress(param_class<T> &params);
 
+       压缩只保留这一种执行入口，不再增加compress(argc,argv)重载。
+       外部用户可以自己创建并修改param_class，也可以调用独立的
+       parse_compress_args(argc,argv)得到params，最后都调用compress(params)。
        该入口应负责目前compress.cpp中compress1/compress2包含的MRCZ公共流程：
        - 检查和初始化params；
        - 读取header；
@@ -57,11 +60,12 @@ MRCZ C++代码整理待办事项
 
            mrcz::decompress(param_class<T> &params);
 
+       解压端与压缩端对称：提供独立的parse_decompress_args(argc,argv)，但不提供
+       decompress(argc,argv)重载。
        该入口应负责目前decompress.cpp中decompress1/decompress2包含的MRCZ公共流程。
 
 [ ] 7. 让compress.cpp和decompress.cpp只保留CLI逻辑。
-       - 解析argc/argv；
-       - 将参数写入param_class；
+       - 分别调用parse_compress_args(argc,argv)或parse_decompress_args(argc,argv)；
        - 调用mrcz::compress(params)或mrcz::decompress(params)；
        - 捕获异常并返回明确的退出码。
        外部C++程序不需要复制CLI中的compress1/compress2或decompress1/decompress2。
@@ -69,6 +73,8 @@ MRCZ C++代码整理待办事项
 [ ] 8. 抽出并复用参数检查。
        当前compress.cpp和decompress.cpp重复检查format、data_path、mesh_path、eb_mode、
        input_eb和fields。应整理成可被CLI与外部调用者共同使用的函数。
+       parse_compress_args和parse_decompress_args只负责把命令行写入param_class；参数检查
+       仍应由compress(params)/decompress(params)调用，保证手动创建params的用户也会经过同样的检查。
 
 
 第三阶段：分离正式压缩与实验压缩
@@ -266,3 +272,25 @@ MRCZ C++代码整理待办事项
         - 是否支持float/double及1D/2D/3D element；
         - rate-distortion和速度统计方式。
         在这些定义稳定以后，再修改t1_start_c_code.py中的method_list和论文图例名称。
+
+
+第七阶段：坐标与文件尾metadata压缩
+=====================================
+
+[ ] 33. 增加坐标字段的压缩。
+        坐标X、Y、Z的结构和普通物理field不同，不应直接沿用当前的field压缩算法。
+        需要先明确坐标压缩的目标和约束：
+        - 利用element内GLL点及相邻element之间的几何结构；
+        - 确定坐标的error-bound语义，以及是否需要保证公共面上的点严格重合；
+        - 评估坐标误差对网格拓扑、element几何和后续数值计算的影响；
+        - 为坐标压缩设计独立的bitstream标记和解压路径；
+        - 与直接无损保存坐标的方案比较压缩率、速度和几何误差。
+
+[ ] 34. 调查并处理NekRS文件末尾的metadata。
+        NekRS开发者提到，这部分数据没有严格的格式约定，官方文档中也没有给出
+        完整定义。在实现压缩前需要：
+        - 对多个来源和版本的NekRS文件检查正式field数据结束后是否仍有字节；
+        - 记录尾部数据的长度、变化情况、生成来源及其是否对原程序有实际用途；
+        - 在无法可靠解析时，优先将尾部字节视为opaque blob并无损保存，保证解压后逐字节还原；
+        - 比较直接保存、通用无损压缩和不保存三种方案的大小与兼容性；
+        - 只有在确认稳定结构后，才考虑为其设计专用压缩方法。

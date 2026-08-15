@@ -1,10 +1,11 @@
 #pragma once
 
+
 #include "../mrcz_core/mrcz_param.hpp"
-#include "../third_party/zfp/include/zfp.h"
+#include "../third_party/sperr/include/SPERR_C_API.h"
 
 template<typename T>
-void zfp_compress(mrcz::param_class<T> &params,string field)
+void sperr_compress(mrcz::param_class<T> &params,string field)
 {
     auto &header=params.header;
     auto &blocks=params.partitions;
@@ -14,7 +15,7 @@ void zfp_compress(mrcz::param_class<T> &params,string field)
     uint32_t n1=header.element_shape[1];
     uint32_t n2=header.element_shape[2];
     T abs_eb=params.abs_eb[field];
-    zfp_type type=std::is_same<T,float>::value ? zfp_type_float : zfp_type_double;
+    int is_float=std::is_same<T,float>::value?1:0;
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
     for (uint64_t block_id=0;block_id<blocks.size();block_id++)
@@ -22,19 +23,14 @@ void zfp_compress(mrcz::param_class<T> &params,string field)
         auto &block=blocks[block_id];
         uint64_t begin_index=block.begin_index;
         uint64_t end_index=block.end_index;
-        
-        zfp_stream *zfp=zfp_stream_open(NULL);
-        zfp_stream_set_accuracy(zfp,abs_eb);
-        zfp_field *field=zfp_field_4d(data.data()+begin_index*header.element_size,type,n2,n1,n0,end_index-begin_index);
-        size_t block_max_buffer_size=zfp_stream_maximum_size(zfp,field);
-        block.zstd_bs.resize(block_max_buffer_size);
-        bitstream *output_bs=stream_open(block.zstd_bs.data(),block_max_buffer_size);
-        zfp_stream_set_bit_stream(zfp,output_bs);
-        size_t block_zstd_bs_len=zfp_compress(zfp,field);
+
+        void *temp_zstd_bs=nullptr;
+        size_t block_zstd_bs_len=0;
+        C_API::sperr_comp_3d((const void*)(data.data()+begin_index*header.element_size),
+            is_float,n2,n1,(end_index-begin_index)*n0,n2,n1,n0,3,abs_eb,0,&temp_zstd_bs,&block_zstd_bs_len);
         block.zstd_bs.resize(block_zstd_bs_len);
-        stream_close(output_bs);
-        zfp_field_free(field);
-        zfp_stream_close(zfp);
+        memcpy(block.zstd_bs.data(),temp_zstd_bs,block_zstd_bs_len);
+        free(temp_zstd_bs);
     }
     double end_time=omp_get_wtime();
     printf("Compression time= %f seconds\n",end_time-start_time);
