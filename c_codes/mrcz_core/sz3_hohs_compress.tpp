@@ -2,7 +2,7 @@
 
 
 #include <set>
-#include "mrcz_param.hpp"
+#include "mrcz.hpp"
 #include "huffman.hpp"
 #include "quantize.tpp"
 #include "../third_party/zstd/lib/zstd.h"

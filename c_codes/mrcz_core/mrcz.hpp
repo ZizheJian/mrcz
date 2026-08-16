@@ -105,20 +105,16 @@ namespace mrcz
             void save_tail_metadata_compress();
             void save_tail_metadata_decompress();
 
-            void compress_irregular(string field);
-            void forward_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+            void compress_mrcz(string field);
+            void forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &L0,vector<T> &L1,vector<T> &L2);
-            void inverse_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+            void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
-            void compress_regular(string field);
-            void forward_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &L0);
-            void inverse_transform_regular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n00,uint32_t n000,vector<T> &neg_L0);
             
             void lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *f_qb,unsigned char *&huffman_bs,uint32_t n012);
             void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
 
-            void decompress_irregular(string field);
-            void decompress_regular(string field);
+            void decompress_mrcz(string field);
             void lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
             
@@ -248,15 +244,26 @@ namespace mrcz
                 default_init();
             }
     };
+
+    namespace core
+    {
+        template<typename T>
+        void compress(param_class<T> &params);
+
+        template<typename T>
+        void decompress(param_class<T> &params);
+    }
 }
 
-#include "compress_irregular.tpp"
-#include "compress_regular.tpp"
-#include "decompress_irregular.tpp"
-#include "decompress_regular.tpp"
+#include "coefficient_lossless_compress.tpp"
+#include "coefficient_lossless_decompress.tpp"
+#include "mrcz_compress.tpp"
+#include "mrcz_decompress.tpp"
 #include "gll_nodes.tpp"
 #include "quantize.tpp"
 #include "read_header.tpp"
 #include "save_header_and_element_map.tpp"
 #include "save_tail_metadata.tpp"
 #include "simple_matrix_tools.tpp"
+#include "compress.tpp"
+#include "decompress.tpp"

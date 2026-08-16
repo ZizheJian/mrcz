@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "mrcz_param.hpp"
+#include "mrcz.hpp"
 #include "sz3_hohs_compress.tpp"
 
 template<typename T>

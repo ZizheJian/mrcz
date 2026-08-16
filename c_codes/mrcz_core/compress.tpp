@@ -10,6 +10,7 @@
 #include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "read_and_write_data.tpp"
 #include "sz3_hohs_compress.tpp"
+#include "validate_params.hpp"
 
 namespace mrcz
 {
@@ -143,39 +144,30 @@ namespace mrcz
         template<typename T,typename Backend>
         void compress_file_with_backend(param_class<T> &params,Backend backend)
         {
-        if (params.format!="nekrs" and params.format!="mfem" and params.format!="nektar++")
-            throw std::runtime_error("必须指定数据格式，目前支持: nekrs, mfem, nektar++");
-        if (params.data_path.empty())
-            throw std::runtime_error("必须指定原始数据路径");
-        if (params.format=="mfem" and params.mesh_path.empty())
-            throw std::runtime_error("使用mfem格式时必须指定网格文件路径");
-        if (params.eb_mode!="ABS" and params.eb_mode!="REL")
-            throw std::runtime_error("误差控制模式必须是ABS或REL");
-        if (params.input_eb<=0)
-            throw std::runtime_error("误差值必须为正数");
-        params.all_fields_to_process=params.fields_to_process.empty();
-        params.read_header("compress");
-        params.default_init();
-        params.save_header_and_element_map("compress");
-        params.max_cpus=get_max_cpus(params.max_cpus);
+            validate_common_params(params);
+            params.all_fields_to_process=params.fields_to_process.empty();
+            params.read_header("compress");
+            params.default_init();
+            params.save_header_and_element_map("compress");
+            params.max_cpus=get_max_cpus(params.max_cpus);
 
-        params.partitions.resize(params.max_cpus);
-        for (int i=0;i<params.max_cpus;i++)
-        {
-            auto &partition=params.partitions[i];
-            partition.partition_id=i;
-            partition.begin_index=(i*params.element_num_to_process)/params.max_cpus;
-            partition.end_index=((i+1)*params.element_num_to_process)/params.max_cpus;
-            partition.element_num=partition.end_index-partition.begin_index;
-        }
+            params.partitions.resize(params.max_cpus);
+            for (int i=0;i<params.max_cpus;i++)
+            {
+                auto &partition=params.partitions[i];
+                partition.partition_id=i;
+                partition.begin_index=(i*params.element_num_to_process)/params.max_cpus;
+                partition.end_index=((i+1)*params.element_num_to_process)/params.max_cpus;
+                partition.element_num=partition.end_index-partition.begin_index;
+            }
 
-        if (params.header.word_size==8 and std::is_same_v<T,float>)
-        {
-            param_class<double> double_params(params);
-            compress_all_fields_with_backend(double_params,backend);
-        }
-        else
-            compress_all_fields_with_backend(params,backend);
+            if (params.header.word_size==8 and std::is_same_v<T,float>)
+            {
+                param_class<double> double_params(params);
+                compress_all_fields_with_backend(double_params,backend);
+            }
+            else
+                compress_all_fields_with_backend(params,backend);
         }
     }
 
@@ -186,18 +178,15 @@ namespace mrcz
         {
             if (params.method.empty())
                 params.method="mrcz";
-            if (params.method!="mrcz" and params.method!="sz3-hohs")
+            if (params.method!="mrcz" and params.method!="mrcz-experimental" and params.method!="sz3-hohs")
                 throw std::runtime_error("mrcz::core::compress不支持方法: "+params.method);
 
             auto backend=[]<typename U>(param_class<U> &backend_params,const std::string &field)
             {
                 if (backend_params.method=="sz3-hohs")
                     sz3_2_compress(backend_params,field);
-                else if ((backend_params.header.element_shape[0]==backend_params.header.element_shape[1]) and
-                    (backend_params.header.element_shape[1]==backend_params.header.element_shape[2]))
-                    backend_params.compress_regular(field);
                 else
-                    backend_params.compress_irregular(field);
+                    backend_params.compress_mrcz(field);
             };
             detail::compress_file_with_backend(params,backend);
         }

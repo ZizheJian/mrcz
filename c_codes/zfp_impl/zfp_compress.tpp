@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "../mrcz_core/mrcz_param.hpp"
+#include "../mrcz_core/mrcz.hpp"
 #include "../third_party/zfp/include/zfp.h"
 
 template<typename T>

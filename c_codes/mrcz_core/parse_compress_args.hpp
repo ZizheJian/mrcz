@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "mrcz_param.hpp"
+#include "mrcz.hpp"
 
 namespace mrcz
 {
@@ -79,6 +79,24 @@ namespace mrcz
                 params.max_cpus=std::stoi(argv[++i]);
                 if (params.max_cpus<=0)
                     throw std::runtime_error("-max-cpus必须是正整数");
+            }
+            else if (arg=="-zero-freq-expanding")
+            {
+                if (i+1>=argc)
+                    throw std::runtime_error("缺少-zero-freq-expanding参数后的0或1");
+                const std::string value=argv[++i];
+                if (value!="0" and value!="1")
+                    throw std::runtime_error("-zero-freq-expanding必须是0或1");
+                params.if_zero_freq_expanding=value=="1";
+            }
+            else if (arg=="-zero-map")
+            {
+                if (i+1>=argc)
+                    throw std::runtime_error("缺少-zero-map参数后的0或1");
+                const std::string value=argv[++i];
+                if (value!="0" and value!="1")
+                    throw std::runtime_error("-zero-map必须是0或1");
+                params.if_zero_map=value=="1";
             }
             else
                 throw std::runtime_error("未知的命令行参数: "+arg);

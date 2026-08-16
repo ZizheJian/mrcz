@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "../mrcz_core/mrcz_param.hpp"
+#include "../mrcz_core/mrcz.hpp"
 #include "../third_party/sperr/include/SPERR_C_API.h"
 
 template<typename T>

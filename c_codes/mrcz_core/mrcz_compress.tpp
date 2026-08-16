@@ -3,8 +3,9 @@
 namespace mrcz
 {
     template<typename T>
-    void param_class<T>::compress_irregular(string field)
+    void param_class<T>::compress_mrcz(string field)
     {
+        const bool experimental=method=="mrcz-experimental";
         uint32_t n0=header.element_shape[0];
         uint32_t n1=header.element_shape[1];
         uint32_t n2=header.element_shape[2];
@@ -38,20 +39,20 @@ namespace mrcz
                 int64_t *element_f_qb=coeff_qb+element_id*n012;
                 int64_t *element_err_qb=err_qb+element_id*n012;
                 // 正变换
-                forward_transform_irregular(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
+                forward_transform(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
                 // 量化
-                if (if_zero_freq_expanding)
+                if (experimental and if_zero_freq_expanding)
                     quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb,zero_coeff_bound);
                 else
                     quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb);
                 // 反变换
-                inverse_transform_irregular(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
+                inverse_transform(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
                 quantize_err_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,neg_2_eb);
             }
             // 无损压缩
             vector<unsigned char> huffman_bs_vec(2*n012*(end_index-begin_index)*sizeof(int64_t),0);
             unsigned char *huffman_bs=huffman_bs_vec.data();
-            if (if_zero_map)
+            if (experimental and if_zero_map)
                 lossless_compress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n012);
             else
                 lossless_compress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
@@ -74,7 +75,7 @@ namespace mrcz
     }
 
     template<typename T>
-    inline void param_class<T>::forward_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+    inline void param_class<T>::forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
         vector<T> &L0,vector<T> &L1,vector<T> &L2)
     {
         memset(temp_element1.data(),0,sizeof(T)*n012);
@@ -96,7 +97,7 @@ namespace mrcz
     }
 
     template<typename T>
-    inline void param_class<T>::inverse_transform_irregular(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+    inline void param_class<T>::inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
         vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2)
     {
         memset(temp_element2.data(),0,sizeof(T)*n012);

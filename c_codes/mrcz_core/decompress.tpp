@@ -11,6 +11,7 @@
 #include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "read_and_write_data.tpp"
 #include "sz3_hohs_decompress.tpp"
+#include "validate_params.hpp"
 
 namespace mrcz
 {
@@ -186,16 +187,7 @@ namespace mrcz
         template<typename T,typename Backend>
         void decompress_file_with_backend(param_class<T> &params,Backend backend)
         {
-            if (params.format!="nekrs" and params.format!="mfem" and params.format!="nektar++")
-                throw std::runtime_error("必须指定数据格式，目前支持: nekrs, mfem, nektar++");
-            if (params.data_path.empty())
-                throw std::runtime_error("必须指定原始数据路径；如果原始数据不存在，去掉_header.mrcz后缀作为data_path");
-            if (params.format=="mfem" and params.mesh_path.empty())
-                throw std::runtime_error("使用mfem格式时必须指定网格文件路径");
-            if (params.eb_mode!="ABS" and params.eb_mode!="REL")
-                throw std::runtime_error("误差控制模式必须是ABS或REL");
-            if (params.input_eb<=0)
-                throw std::runtime_error("误差值必须为正数");
+            validate_common_params(params);
             if (params.method.empty())
                 params.method="mrcz";
             params.all_fields_to_process=params.fields_to_process.empty();
@@ -220,17 +212,14 @@ namespace mrcz
         {
             if (params.method.empty())
                 params.method="mrcz";
-            if (params.method!="mrcz" and params.method!="sz3-hohs")
+            if (params.method!="mrcz" and params.method!="mrcz-experimental" and params.method!="sz3-hohs")
                 throw std::runtime_error("mrcz::core::decompress不支持方法: "+params.method);
             auto backend=[]<typename U>(param_class<U> &backend_params,const std::string &field)
             {
                 if (backend_params.method=="sz3-hohs")
                     sz3_2_decompress(backend_params,field);
-                else if (backend_params.header.element_shape[0]==backend_params.header.element_shape[1] and
-                    backend_params.header.element_shape[1]==backend_params.header.element_shape[2])
-                    backend_params.decompress_regular(field);
                 else
-                    backend_params.decompress_irregular(field);
+                    backend_params.decompress_mrcz(field);
             };
             detail::decompress_file_with_backend(params,backend);
         }

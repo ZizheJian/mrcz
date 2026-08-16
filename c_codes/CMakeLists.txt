@@ -19,7 +19,7 @@ set(MFEM_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../install/mfem_install")
 function(add_mrcz_executable target source)
     add_executable(${target} ${source})
     target_include_directories(${target} PRIVATE ${SPERR_INSTALL_PATH}/include ${MFEM_INSTALL_PATH}/include)
-    target_link_libraries(${target} PRIVATE libmrcz zfp
+    target_link_libraries(${target} PRIVATE mrcz::mrcz zfp
         ${SPERR_INSTALL_PATH}/lib64/libSPERR.a ${MFEM_INSTALL_PATH}/lib/libmfem.a)
 endfunction()
 

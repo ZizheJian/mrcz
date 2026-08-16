@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "../mrcz_core/mrcz_param.hpp"
+#include "../mrcz_core/mrcz.hpp"
 #include "../mrcz_core/huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
 

@@ -90,12 +90,12 @@ MRCZ C++代码整理待办事项
        - 计算field动态范围及绝对/相对误差界；
        - 根据原始类型和所需精度选择float或double；
        - 调用正确的MRCZ压缩实现并写出结果。
-       当前进度：已增加mrcz_core/compress.hpp和compress.tpp，并建立只执行一次的
+       当前进度：已增加mrcz_core/mrcz.hpp和compress.tpp，并建立只执行一次的
        compress_file_with_backend。MRCZ和所有baseline已共用参数检查、header读取、partition创建、
        field读取、动态范围计算、float/double选择和bitstream写出流程。已删除
        compress.cpp中重复的compress1/compress2。sz3-hohs已移入mrcz_core，并通过
        mrcz::core::compress入口调用；sz3-1 baseline仍可复用其预测实现。顶层
-       mrcz::compress已统一分洺core和baseline。增加外部调用
+       mrcz::compress已统一分派core和baseline。
        已完成独立于CLI的编译测试：外部源文件创建param_class<float>、自由设置format、
        data_path、error bound、method和max_cpus，并成功实例化
        mrcz::core::compress(params)。t1也已通过顶层mrcz::compress(params)完成运行时回归。
@@ -120,114 +120,122 @@ MRCZ C++代码整理待办事项
        当前compress.cpp和decompress.cpp都只保留参数解析、顶层入口调用、异常处理和
        进程退出码；核心流程与backend分派均已移入header-only入口。
 
-[ ] 8. 抽出并复用参数检查。
+[x] 8. 抽出并复用参数检查。
        当前compress.cpp和decompress.cpp重复检查format、data_path、mesh_path、eb_mode、
        input_eb和fields。应整理成可被CLI与外部调用者共同使用的函数。
        parse_compress_args和parse_decompress_args只负责把命令行写入param_class；参数检查
        仍应由compress(params)/decompress(params)调用，保证手动创建params的用户也会经过同样的检查。
+       已增加validate_common_params(params)，压缩和解压入口共同检查format、data_path、
+       MFEM mesh_path、eb_mode、input_eb、max_cpus和element范围。CLI解析函数只负责
+       填充param_class；外部程序手动创建param_class时也会经过同一套检查。
 
 
 第三阶段：分离正式压缩与实验压缩
 =================================
 
-[ ] 9. 先为regular/irregular改一个不容易误解的名字，或至少补充明确注释。
+[x] 9. 先为regular/irregular改一个不容易误解的名字，或至少补充明确注释。
        当前含义：
        - regular：element_shape为(n,n,n)，使用等尺寸快速变换内核；
        - irregular：element_shape为(n0,n1,n2)，使用通用尺寸变换内核。
        它们与element的物理扭曲或退化无关。
+       微基准显示，在8x8x8 element上两套正/反变换内核的性能差异不到1%，regular
+       没有可测量的优势。因此不再重命名两套路径，而是决定删除regular专用内核，
+       统一使用支持(n0,n1,n2)的general-dimension内核。
 
-[ ] 10. 合并regular和irregular重复的外围流程。
-        两者的系数量化、残差量化、Huffman编码、Zstd压缩和计时逻辑基本相同。
-        最终只保留两个不同的变换内核：
-        - equal-dimension transform kernel；
-        - general-dimension transform kernel。
-        公共压缩流程只写一份，并根据element_shape选择变换内核。
+[x] 10. 合并regular和irregular重复的外围流程。
+        微基准和小数据回归均未显示equal-dimension内核具有实际优势，因此不再保留
+        两套变换内核。现在所有MRCZ数据统一调用支持任意(n0,n1,n2)尺寸的
+        forward_transform/inverse_transform，并只保留一套compress_mrcz/decompress_mrcz
+        外围流程。原compress_regular、compress_irregular、decompress_regular和
+        decompress_irregular文件均已删除。
 
-[ ] 11. 建立不含实验功能的正式compress_regular和compress_irregular。
+[x] 11. 建立不含实验功能的正式mrcz方法。
         正式版本不包含以下两个实验功能：
         - 扩大量化为0的系数区间（if_zero_freq_expanding）；
         - partition级zero map（if_zero_map）。
-        正式版本应使用普通均匀量化区间，并完整编码所有系数模式。
+        method=mrcz时使用普通均匀量化区间，并完整编码所有系数模式。即使param中的
+        实验开关为true，也不会影响正式mrcz方法。
 
-[ ] 12. 增加compress_experimental。
-        experimental版本同时启用以下功能：
+[x] 12. 增加mrcz-experimental方法。
+        experimental版本可独立启用以下功能：
         - 扩大系数量化为0的区间；
         - 记录partition内每个模式是否在所有element中都为0的zero map，并省略这些模式。
-        compress_experimental内部仍应根据element_shape选择等尺寸或通用尺寸变换内核，
-        不应再复制两份完整的regular/irregular压缩流程。
+        mrcz-experimental复用compress_mrcz/decompress_mrcz公共流程，没有复制正式版本；
+        两项功能分别由if_zero_freq_expanding和if_zero_map控制，便于之后进行消融测试。
 
-[ ] 13. 将实验参数从普通param配置中整理出来。
+[x] 13. 整理实验参数及其开关。
         目前相关成员为：
         - if_zero_freq_expanding；
         - zero_coeff_qb_bound；
         - if_zero_map；
         - if_coefficient_transpose。
-        需要决定是保留public成员，还是增加一个experimental_options结构；无论采用哪种
-        方式，外部程序都应能自由修改这些参数。
+        为保持param_class易于直接修改，暂时继续保留public成员，不额外包装
+        experimental_options。命令行增加：
+        - -zero-freq-expanding 0|1；
+        - -zero-map 0|1。
+        两个开关只在method=mrcz-experimental时生效。zero_coeff_qb_bound仍可通过
+        param_class直接调整；if_coefficient_transpose是现有公共系数布局选项，暂未
+        作为本次两项实验优化的消融开关处理。
 
-[ ] 14. 设计experimental对应的解压路径和格式标记。
-        zero map会改变bitstream布局，if_coefficient_transpose也影响系数排列；
-        coeff_eb_scale会影响系数重构。这些不能只依赖压缩端和解压端碰巧使用相同默认值。
-        压缩文件中至少应记录：
-        - 是否使用zero map；
-        - 是否转置系数；
-        - coeff_eb_scale；
-        - experimental格式版本。
-        扩大零区间和zero_coeff_qb_bound只影响压缩端的取零决定，解压不一定需要记录，
-        但为了实验可复现，建议也写入metadata。
+[x] 14. 决定暂不增加experimental格式metadata。
+        当前实验只用于受控消融，没有必要为其设计长期存储格式。method后缀区分正式版
+        与实验版；使用zero map时，解压命令必须提供与压缩时相同的-zero-map设置。
+        zero-frequency-expanding只改变压缩端的量化结果，不改变解压布局，因此解压时
+        不需要同名开关。若未来需要长期保存或交换experimental文件，再设计版本化metadata。
 
-[ ] 15. 把zero-map公共编解码函数移出regular文件。
-        当前lossless_compress_coeff_qb_with_zero_map定义在compress_regular.tpp，
-        lossless_decompress_coeff_qb_with_zero_map定义在decompress_regular.tpp，
-        但irregular路径也在调用。建议移到独立的coefficient_lossless_codec.tpp中。
-
-[ ] 16. 增加正式版与experimental版的对照测试。
-        对同一小型输入和相同误差界验证：
-        - 两者都满足最大误差界；
-        - 正式版可正确压缩/解压；
-        - experimental版可正确压缩/解压；
-        - zero map的全零、全非零和部分全零三种partition都能解析；
-        - float和double路径都能工作；
-        - 等尺寸与非等尺寸element都能工作。
-
+[x] 15. 把系数无损编解码函数移出原regular文件。
+        压缩端函数已移入coefficient_lossless_compress.tpp，解压端函数已移入
+        coefficient_lossless_decompress.tpp。它们同时包含普通系数流和zero-map系数流
+        的编解码实现，不再依赖已经删除的regular流程文件。
 
 第四阶段：整理公共头文件与CMake
 ================================
 
-[ ] 17. 明确公共头文件入口。
+[x] 16. 明确公共头文件入口。
         外部程序最好只需要include一个稳定入口，例如：
 
             #include <mrcz_core/mrcz.hpp>
 
         mrcz.hpp再包含param_class和compress/decompress入口。高级用户仍可直接访问
         param_class及其public成员。
+        已将原mrcz_param.hpp重命名为mrcz.hpp，并把原compress.hpp和decompress.hpp
+        中的core入口声明及实现入口合并进来。外部程序使用MRCZ核心功能时只需包含
+        mrcz_core/mrcz.hpp；包含baseline分派的项目级入口仍为mrcz_compress.hpp和
+        mrcz_decompress.hpp。
 
-[ ] 18. 保持实现为header-only，但整理include关系。
+[x] 17. 保持实现为header-only，但整理include关系。
         - .hpp放声明和较短的类定义；
         - .tpp放模板函数实现；
         - 不直接include名为.cpp的文件；
         - 避免依赖某个.tpp碰巧先于另一个.tpp被include才能编译。
+        当前公共入口通过先声明、再include对应.tpp的方式提供全部模板实现，不再
+        include .cpp。算法文件统一采用“算法名_操作.tpp”的顺序，例如
+        mrcz_compress.tpp、mrcz_decompress.tpp、sz3_hohs_compress.tpp和
+        sz3_hohs_decompress.tpp。
 
-[ ] 19. 整理CMake header-only target。
+[x] 18. 整理CMake header-only target。
         建议使用：
 
             add_library(mrcz INTERFACE)
             add_library(mrcz::mrcz ALIAS mrcz)
 
         不需要生成libmrcz.a或libmrcz.so。修正当前“库安装到lib”的误导性注释。
+        已将原libmrcz INTERFACE target重命名为mrcz，并增加mrcz::mrcz ALIAS。
+        项目内的mrcz_compress和mrcz_decompress均通过mrcz::mrcz链接。安装规则只登记
+        INTERFACE target并复制.hpp/.tpp，不再声明将不存在的静态库或动态库安装到lib。
 
-[ ] 20. 不要把CLI专用优化选项强制传播给所有库使用者。
+[ ] 19. 不要把CLI专用优化选项强制传播给所有库使用者。
         当前INTERFACE target传播-Wall、-Ofast和-march=native。
         - OpenMP等真正必需的编译/链接要求可以保留在INTERFACE上；
         - -Ofast和-march=native更适合放到mrcz_compress/mrcz_decompress，或由CMake
           option控制；
         - 避免外部程序被强制使用相同优化和浮点语义。
 
-[ ] 21. 检查public header中的using namespace std。
+[ ] 20. 检查public header中的using namespace std。
         CLI自己的.cpp中可以继续使用using namespace std；公共.hpp中最好避免将整个std
         命名空间泄漏给外部程序。此项只做代码整理，不改变算法。
 
-[ ] 22. 完善安装后的外部调用示例。
+[ ] 21. 完善安装后的外部调用示例。
         增加一个很小的C++示例，展示：
         - 创建param_class；
         - 自由修改参数；
@@ -240,14 +248,14 @@ MRCZ C++代码整理待办事项
 第五阶段：清理实验输出和重复代码
 =================================
 
-[ ] 23. 将mean_abs_coeff统计从正式compress_regular中移出或增加明确开关。
+[ ] 22. 将mean_abs_coeff统计从正式compress_mrcz中移出或增加明确开关。
         当前只有regular路径会额外写.mean_abs_coeff.block*_DLT文件，irregular不会。
         这属于论文/诊断统计，不应默认成为正式压缩路径的额外I/O。
 
-[ ] 24. 删除已经确认无用的大段注释代码。
+[ ] 23. 删除已经确认无用的大段注释代码。
         在新结构、正式版和experimental版测试稳定以后再做，避免整理期间失去参考实现。
 
-[ ] 25. 最终进行完整静态和小数据回归测试。
+[ ] 24. 最终进行完整静态和小数据回归测试。
         - cmake configure；
         - 构建mrcz_compress和mrcz_decompress；
         - 小型NekRS压缩/解压及误差验证；
@@ -258,6 +266,15 @@ MRCZ C++代码整理待办事项
 
 第六阶段：重新整理baseline compressors及后续算法实验
 ===================================================
+
+[ ] 25. 增加正式版与experimental版的对照测试。
+        对同一小型输入和相同误差界验证：
+        - 两者都满足最大误差界；
+        - 正式版可正确压缩/解压；
+        - experimental版可正确压缩/解压；
+        - zero map的全零、全非零和部分全零三种partition都能解析；
+        - float和double路径都能工作；
+        - 等尺寸与非等尺寸element都能工作。
 
 [ ] 26. 重新检查并统一baseline compressor的名称。
         名称应明确表示数据如何组织、使用哪个API以及预测方式，避免当前SZ3-0、SZ3-1、

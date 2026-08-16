@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mrcz_core/compress.hpp"
+#include "mrcz_core/mrcz.hpp"
 #include "sz2_impl/sz2_1_compress.tpp"
 #include "zfp_impl/zfp_compress.tpp"
 #include "sperr_impl/sperr_compress.tpp"

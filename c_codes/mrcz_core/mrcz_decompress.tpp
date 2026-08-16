@@ -3,8 +3,9 @@
 namespace mrcz
 {
     template<typename T>
-    void param_class<T>::decompress_irregular(string field)
+    void param_class<T>::decompress_mrcz(string field)
     {
+        const bool experimental=method=="mrcz-experimental";
         uint32_t n0=header.element_shape[0];
         uint32_t n1=header.element_shape[1];
         uint32_t n2=header.element_shape[2];
@@ -30,7 +31,7 @@ namespace mrcz
             if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,partitions[block_id].zstd_bs.data(),partitions[block_id].zstd_bs.size())!=huffman_bs_len)
                 throw runtime_error("ZSTD_decompress error in decompress()");
             const unsigned char *huffman_bs=huffman_bs_vec.data();
-            if (if_zero_map)
+            if (experimental and if_zero_map)
                 lossless_decompress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n012);
             else
                 lossless_decompress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
@@ -49,7 +50,7 @@ namespace mrcz
                 for (uint32_t i=0;i<n012;i++)
                     temp_element1[i]=element_coeff_qb[i]*2*coeff_eb;
                 // 反变换
-                inverse_transform_irregular(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
+                inverse_transform(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
                 for (uint32_t j=0;j<n012;j++)
                     element[j]+=(temp_element2[j]-element_err_qb[j]*2*abs_eb);
             }

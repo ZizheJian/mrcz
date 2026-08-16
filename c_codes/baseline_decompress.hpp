@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mrcz_core/decompress.hpp"
+#include "mrcz_core/mrcz.hpp"
 #include "sz2_impl/sz2_1_decompress.tpp"
 #include "zfp_impl/zfp_decompress.tpp"
 #include "sperr_impl/sperr_decompress.tpp"
