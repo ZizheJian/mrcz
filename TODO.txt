@@ -224,33 +224,38 @@ MRCZ C++代码整理待办事项
         项目内的mrcz_compress和mrcz_decompress均通过mrcz::mrcz链接。安装规则只登记
         INTERFACE target并复制.hpp/.tpp，不再声明将不存在的静态库或动态库安装到lib。
 
-[ ] 19. 不要把CLI专用优化选项强制传播给所有库使用者。
+[x] 19. 不要把CLI专用优化选项强制传播给所有库使用者。
         当前INTERFACE target传播-Wall、-Ofast和-march=native。
         - OpenMP等真正必需的编译/链接要求可以保留在INTERFACE上；
         - -Ofast和-march=native更适合放到mrcz_compress/mrcz_decompress，或由CMake
           option控制；
         - 避免外部程序被强制使用相同优化和浮点语义。
+        已将-Wall、-Ofast、-march=native和-Wno-dangling-else移到
+        mrcz_compress/mrcz_decompress的PRIVATE编译选项。MRCZ、SZ3-HOHS及baseline的
+        header-only模板都在这两个可执行文件中实例化，因此仍会获得相同优化；外部程序
+        链接mrcz::mrcz时则可自行选择优化等级。OpenMP作为实际依赖继续由INTERFACE
+        target传播，不再手工重复添加-fopenmp。
 
-[ ] 20. 检查public header中的using namespace std。
-        CLI自己的.cpp中可以继续使用using namespace std；公共.hpp中最好避免将整个std
-        命名空间泄漏给外部程序。此项只做代码整理，不改变算法。
+[x] 20. 检查public header中的using namespace std。
+        已确认mrcz.hpp、huffman.hpp及部分.tpp依赖using namespace std。考虑到当前项目
+        主要由可控的自有代码使用，并且更重视代码简洁性，决定保留现有写法，不进行
+        全面添加std::前缀或迁移内部函数命名空间的大范围重构。若未来作为通用第三方库
+        发布，再重新评估公共header的命名空间污染问题。
 
-[ ] 21. 完善安装后的外部调用示例。
-        增加一个很小的C++示例，展示：
-        - 创建param_class；
-        - 自由修改参数；
-        - 调用mrcz::compress/decompress；
-        - 通过CMake链接mrcz::mrcz。
-        暂时不需要C ABI、Python binding、GNUInstallDirs或CMake package config；等确实
-        需要从其他语言调用或由其他项目find_package时再做。
+[x] 21. 决定不增加单独的C++直接调用示例。
+        当前C++示例与compress.cpp/decompress.cpp的差别只有手工填写param_class，而实际
+        测试主要通过t1_start_c_code.py生成命令行并启动程序。为避免维护几乎重复的入口，
+        暂不保留单独示例；mrcz.hpp和mrcz::mrcz target仍支持外部C++程序直接调用。
+        如果未来确实有另一个C++项目需要嵌入MRCZ，再根据真实用法增加示例和
+        find_package配置。
 
 
 第五阶段：清理实验输出和重复代码
 =================================
 
-[ ] 22. 将mean_abs_coeff统计从正式compress_mrcz中移出或增加明确开关。
-        当前只有regular路径会额外写.mean_abs_coeff.block*_DLT文件，irregular不会。
-        这属于论文/诊断统计，不应默认成为正式压缩路径的额外I/O。
+[x] 22. 删除mean_abs_coeff统计及相关清理逻辑。
+        检查确认当前压缩实现已经不再计算或写出mean_abs_coeff；相关代码随原regular
+        路径一同删除。t1_start_c_code.py中仅剩用于兼容旧输出的清理代码，现也已删除。
 
 [ ] 23. 删除已经确认无用的大段注释代码。
         在新结构、正式版和experimental版测试稳定以后再做，避免整理期间失去参考实现。

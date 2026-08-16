@@ -25,3 +25,9 @@
 [submodule "third_party/nektar++"]
 	path = third_party/nektar++
 	url = http://gitlab.nektar.info/nektar/nektar.git
+[submodule "third_party/pySEMTools"]
+	path = third_party/pySEMTools
+	url = https://github.com/ExtremeFLOW/pySEMTools.git
+[submodule "third_party/fld_pyutils"]
+	path = third_party/fld_pyutils
+	url = https://github.com/RonRahaman/fld_pyutils.git

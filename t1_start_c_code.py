@@ -22,6 +22,7 @@ method_list=["mrcz","sz3-hohs","sz3-1","sz2-1","sz2-0","zfp", "sperr"]
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
+project_root=os.path.dirname(os.path.abspath(__file__))
 
 def remove_file_if_exists(path):
     if os.path.isfile(path):
@@ -30,15 +31,10 @@ def remove_file_if_exists(path):
 def cleanup_test_outputs(data_path,method,selected_fields=None):
     if selected_fields is None:
         compressed_paths=glob.glob(f"{glob.escape(data_path)}_*.{glob.escape(method)}")
-        mean_abs_coeff_paths=glob.glob(f"{glob.escape(data_path)}.*.mean_abs_coeff.block*")
     else:
         compressed_paths=[f"{data_path}_{field}.{method}" for field in selected_fields]
-        mean_abs_coeff_paths=[]
-        for field in selected_fields:
-            mean_abs_coeff_paths.extend(glob.glob(
-                f"{glob.escape(data_path)}.{glob.escape(field)}.mean_abs_coeff.block*"))
 
-    for path in compressed_paths+mean_abs_coeff_paths:
+    for path in compressed_paths:
         remove_file_if_exists(path)
     remove_file_if_exists(f"{data_path}_header.mrcz")
     remove_file_if_exists(f"{data_path}_element_map.mrcz")
@@ -49,19 +45,19 @@ def cleanup_test_outputs(data_path,method,selected_fields=None):
     remove_file_if_exists(f"{data_path}.mrcz.bin")
 
 format="nekrs"
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/mixlay0.f00001" #1600*8*8*1
+data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001") #1600*8*8*1
 fields=["P"]
 eb_list=[1e-3]
 # fields=["UX","UY","UZ","P","T"]
 # eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 # format="nekrs"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001" #512*6*6*6
+# data_path=os.path.join(project_root,"third_party/fld_pyutils/demos/data/test0.f00001") #512*6*6*6
 # fields=["UZ","T","S00","S01"]
 # eb_list=[1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8,3.162e-9,1e-9,3.162e-10,1e-10]
 
 # format="nekrs"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/pySEMTools/examples/data/tc_channel0.f00001" #512*8*8*8 (double)
+# data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/tc_channel0.f00001") #512*8*8*8 (double)
 # fields=["UX","UY","UZ"]
 # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8]
 
