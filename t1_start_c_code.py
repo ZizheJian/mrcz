@@ -7,7 +7,7 @@ redbegin="\033[91m"
 redend="\033[0m"
 silent_build=False
 build_max_cpus=get_max_cpus(8)
-run_max_cpus=1
+run_max_cpus=128
 
 # method可选:
 #   "mrcz"
@@ -18,7 +18,7 @@ run_max_cpus=1
 #   "sz2-1": 对每个element执行sz2的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
 #   "zfp": 对每个element执行zfp的3维压缩
 #   "sperr": 对每个element执行sperr的3维压缩
-method_list=["mrcz","sz3-hohs","sz3-1","sz2-1","sz2-0","zfp", "sperr"]
+method_list=["mrcz"]
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
@@ -44,12 +44,11 @@ def cleanup_test_outputs(data_path,method,selected_fields=None):
     remove_file_if_exists(f"{data_path}.{method}.bin")
     remove_file_if_exists(f"{data_path}.mrcz.bin")
 
-format="nekrs"
-data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001") #1600*8*8*1
-fields=["P"]
-eb_list=[1e-3]
+# format="nekrs"
+# data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001") #1600*8*8*1
+# fields=["P"]
+# eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7]
 # fields=["UX","UY","UZ","P","T"]
-# eb_list=[1e-1,3.162e-2,1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
 
 # format="nekrs"
 # data_path=os.path.join(project_root,"third_party/fld_pyutils/demos/data/test0.f00001") #512*6*6*6
@@ -72,10 +71,11 @@ eb_list=[1e-3]
 # ZFP的相对误差为3.16e-1时，T的CR=27.974553
 # eb_list=[1e-1,1e-2,1e-3,1e-4]
 
-# format="nekrs"
-# data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
-# fields=["UX","UY","UZ","P","S00"]
+format="nekrs"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
+fields=["UX","UY","UZ","P","S00"]
 # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
+eb_list=[1e-4,1e-5,1e-6,1e-7,1e-8]
 
 # format="mfem"
 # data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex0examples/sol.gf"
@@ -151,8 +151,9 @@ for method in method_list:
                     field=segments[0].strip().split(" ")[1]
                     br=float(segments[3].strip().split(" ")[1])
                     psnr=float(segments[7].strip().split(" ")[1])
-                    write_csv_item(f"{data_path}_{field}.csv",{f"{eb_mode}_EB":eb},f"{method}_BR",br)
-                    write_csv_item(f"{data_path}_{field}.csv",{f"{eb_mode}_EB":eb},f"{method}_PSNR",psnr)
+                    csv_method_name=method.upper()
+                    write_csv_item(f"{data_path}_{field}.csv",{f"{eb_mode}_EB":eb},f"{csv_method_name}_BR",br)
+                    write_csv_item(f"{data_path}_{field}.csv",{f"{eb_mode}_EB":eb},f"{csv_method_name}_PSNR",psnr)
         if cleanup_after_each_test:
             cleanup_test_outputs(data_path,method,fields if "fields" in locals() else None)
 # elif method=="sz3-0":

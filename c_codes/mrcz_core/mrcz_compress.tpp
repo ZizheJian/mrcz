@@ -5,7 +5,6 @@ namespace mrcz
     template<typename T>
     void param_class<T>::compress_mrcz(string field)
     {
-        const bool experimental=method=="mrcz-experimental";
         uint32_t n0=header.element_shape[0];
         uint32_t n1=header.element_shape[1];
         uint32_t n2=header.element_shape[2];
@@ -19,7 +18,6 @@ namespace mrcz
         vector<T> neg_L2=neg_L[2];
         T abs_eb=this->abs_eb[field];
         T coeff_eb=abs_eb*coeff_eb_scale;
-        T zero_coeff_bound=coeff_eb*zero_coeff_qb_bound;
         T neg_2_coeff_eb=1/(2*coeff_eb);
         T neg_2_eb=1/(2*abs_eb);
         int64_t *coeff_qb=new int64_t[element_num_to_process*n012];
@@ -41,10 +39,7 @@ namespace mrcz
                 // 正变换
                 forward_transform(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
                 // 量化
-                if (experimental and if_zero_freq_expanding)
-                    quantize_and_overwrite_array2(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb,zero_coeff_bound);
-                else
-                    quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb);
+                quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb);
                 // 反变换
                 inverse_transform(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
                 quantize_err_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,neg_2_eb);
@@ -52,10 +47,7 @@ namespace mrcz
             // 无损压缩
             vector<unsigned char> huffman_bs_vec(2*n012*(end_index-begin_index)*sizeof(int64_t),0);
             unsigned char *huffman_bs=huffman_bs_vec.data();
-            if (experimental and if_zero_map)
-                lossless_compress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n012);
-            else
-                lossless_compress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
+            lossless_compress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
             huffman_encoder_class<int64_t> err_encoder;
             err_encoder.preprocess_encode(err_qb+begin_index*n012,n012*(end_index-begin_index));
             err_encoder.save(huffman_bs);

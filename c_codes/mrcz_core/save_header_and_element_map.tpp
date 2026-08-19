@@ -3,7 +3,7 @@
 namespace mrcz
 {
     template<typename T>
-    void param_class<T>::save_header_and_element_map(const string &task)
+    void param_class<T>::save_header_and_element_map(string task)
     {
         if (format=="nekrs")
             save_header_and_element_map_nekrs(task);
@@ -14,7 +14,7 @@ namespace mrcz
     }
 
     template<typename T>
-    void param_class<T>::save_header_and_element_map_nekrs(const string &task)
+    void param_class<T>::save_header_and_element_map_nekrs(string task)
     {
         if (task=="compress")
         {
@@ -46,7 +46,7 @@ namespace mrcz
     }
 
     template<typename T>
-    void param_class<T>::save_header_and_element_map_mfem(const string &task)
+    void param_class<T>::save_header_and_element_map_mfem(string task)
     {
         if (task=="compress")
         {
@@ -64,7 +64,7 @@ namespace mrcz
     }
 
     template<typename T>
-    void param_class<T>::save_header_and_element_map_nektarpp(const string &task)
+    void param_class<T>::save_header_and_element_map_nektarpp(string task)
     {
         if (task=="compress")
             header.header_doc->SaveFile((data_path+"_header.mrcz").c_str());

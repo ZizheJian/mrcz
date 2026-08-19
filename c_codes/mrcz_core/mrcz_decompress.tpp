@@ -5,7 +5,6 @@ namespace mrcz
     template<typename T>
     void param_class<T>::decompress_mrcz(string field)
     {
-        const bool experimental=method=="mrcz-experimental";
         uint32_t n0=header.element_shape[0];
         uint32_t n1=header.element_shape[1];
         uint32_t n2=header.element_shape[2];
@@ -31,10 +30,7 @@ namespace mrcz
             if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,partitions[block_id].zstd_bs.data(),partitions[block_id].zstd_bs.size())!=huffman_bs_len)
                 throw runtime_error("ZSTD_decompress error in decompress()");
             const unsigned char *huffman_bs=huffman_bs_vec.data();
-            if (experimental and if_zero_map)
-                lossless_decompress_coeff_qb_with_zero_map(begin_index,end_index,coeff_qb,huffman_bs,n012);
-            else
-                lossless_decompress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
+            lossless_decompress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
             huffman_encoder_class<int64_t> err_encoder;
             err_encoder.load(huffman_bs);
             err_encoder.decode(huffman_bs,err_qb+n012*begin_index,n012*(end_index-begin_index));

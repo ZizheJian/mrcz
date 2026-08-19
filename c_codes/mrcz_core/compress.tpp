@@ -17,41 +17,41 @@ namespace mrcz
     namespace detail
     {
         template<typename T,typename Backend>
-        void compress_field_and_write(param_class<T> &params,const std::string &field,Backend backend)
+        void compress_field_and_write(param_class<T> &params,const string &field,Backend backend)
         {
-            const bool is_constant=params.data_range_min[field]==params.data_range_max[field];
+            bool is_constant=params.data_range_min[field]==params.data_range_max[field];
             if (is_constant)
                 printf("Warning: field %s has constant value %f\n",field.c_str(),params.data_range_min[field]);
             else
                 backend(params,field);
 
             double compressed_bytes=0;
-            const std::string compressed_path=params.data_path+"_"+field+"."+params.method;
-            std::ofstream compressed_file(compressed_path,std::ios::binary);
+            string compressed_path=params.data_path+"_"+field+"."+params.method;
+            ofstream compressed_file(compressed_path,ios::binary);
             if (!compressed_file)
-                throw std::runtime_error("无法创建压缩文件: "+compressed_path);
+                throw runtime_error("无法创建压缩文件: "+compressed_path);
 
-            const uint8_t word_size_during_compression=sizeof(T);
+            uint8_t word_size_during_compression=sizeof(T);
             compressed_file.write(reinterpret_cast<const char*>(&word_size_during_compression),1);
             if (is_constant)
             {
-                const unsigned char constant_flag=1;
+                unsigned char constant_flag=1;
                 compressed_file.write(reinterpret_cast<const char*>(&constant_flag),1);
                 compressed_file.write(reinterpret_cast<const char*>(&params.data_range_min[field]),sizeof(T));
                 compressed_bytes=2+sizeof(T);
             }
             else
             {
-                const unsigned char constant_flag=0;
+                unsigned char constant_flag=0;
                 compressed_file.write(reinterpret_cast<const char*>(&constant_flag),1);
-                const uint64_t partition_num=params.partitions.size();
+                uint64_t partition_num=params.partitions.size();
                 compressed_file.write(reinterpret_cast<const char*>(&partition_num),sizeof(partition_num));
                 compressed_file.write(reinterpret_cast<const char*>(&params.data_range_min[field]),sizeof(T));
                 compressed_file.write(reinterpret_cast<const char*>(&params.data_range_max[field]),sizeof(T));
                 compressed_bytes=2+sizeof(partition_num)+2*sizeof(T);
                 for (auto &partition:params.partitions)
                 {
-                    const uint64_t compressed_size=partition.zstd_bs.size();
+                    uint64_t compressed_size=partition.zstd_bs.size();
                     compressed_file.write(reinterpret_cast<const char*>(&compressed_size),sizeof(compressed_size));
                     compressed_bytes+=sizeof(compressed_size);
                 }
@@ -65,15 +65,15 @@ namespace mrcz
             }
             compressed_file.close();
 
-            const double bits_per_value=compressed_bytes*8/(params.element_num_to_process*params.header.element_size);
-            const double compression_ratio=(8*params.header.word_size)/bits_per_value;
+            double bits_per_value=compressed_bytes*8/(params.element_num_to_process*params.header.element_size);
+            double compression_ratio=(8*params.header.word_size)/bits_per_value;
             printf("\033[91mBR= %f bits/value, CR= %f\n\033[0m",bits_per_value,compression_ratio);
         }
 
         template<typename T,typename Backend>
         void compress_all_fields_with_backend(param_class<T> &params,Backend backend)
         {
-            for (const auto &field:params.fields_to_process)
+            for (auto &field:params.fields_to_process)
             {
                 printf("Field= %s\n",field.c_str());
                 params.data.resize(params.element_num_to_process*params.header.element_size);
@@ -85,17 +85,17 @@ namespace mrcz
                 for (uint64_t partition_id=0;partition_id<params.partitions.size();partition_id++)
                 {
                     auto &partition=params.partitions[partition_id];
-                    const uint64_t begin_address=partition.begin_index*params.header.element_size;
-                    const uint64_t end_address=partition.end_index*params.header.element_size;
+                    uint64_t begin_address=partition.begin_index*params.header.element_size;
+                    uint64_t end_address=partition.end_index*params.header.element_size;
                     for (uint64_t i=begin_address;i<end_address;i++)
                     {
-                        global_min=std::min(global_min,params.data[i]);
-                        global_max=std::max(global_max,params.data[i]);
+                        global_min=min(global_min,params.data[i]);
+                        global_max=max(global_max,params.data[i]);
                     }
                 }
                 params.data_range_min[field]=global_min;
                 params.data_range_max[field]=global_max;
-                const T data_range=global_max-global_min;
+                T data_range=global_max-global_min;
                 if (params.eb_mode=="ABS")
                 {
                     params.abs_eb[field]=params.input_eb;
@@ -108,7 +108,7 @@ namespace mrcz
                 }
                 printf("Data range: [%f, %f], abs_eb=%e, rel_eb=%e\n",global_min,global_max,params.abs_eb[field],params.rel_eb[field]);
 
-                if constexpr (std::is_same_v<T,float>)
+                if constexpr (is_same_v<T,float>)
                 {
                     if (params.rel_eb[field]<1e-4)
                     {
@@ -161,7 +161,7 @@ namespace mrcz
                 partition.element_num=partition.end_index-partition.begin_index;
             }
 
-            if (params.header.word_size==8 and std::is_same_v<T,float>)
+            if (params.header.word_size==8 and is_same_v<T,float>)
             {
                 param_class<double> double_params(params);
                 compress_all_fields_with_backend(double_params,backend);
@@ -179,9 +179,9 @@ namespace mrcz
             if (params.method.empty())
                 params.method="mrcz";
             if (params.method!="mrcz" and params.method!="mrcz-experimental" and params.method!="sz3-hohs")
-                throw std::runtime_error("mrcz::core::compress不支持方法: "+params.method);
+                throw runtime_error("mrcz::core::compress不支持方法: "+params.method);
 
-            auto backend=[]<typename U>(param_class<U> &backend_params,const std::string &field)
+            auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
                 if (backend_params.method=="sz3-hohs")
                     sz3_2_compress(backend_params,field);

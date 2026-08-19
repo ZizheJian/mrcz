@@ -10,11 +10,11 @@ namespace mrcz::baseline
     template<typename T>
     void decompress(param_class<T> &params)
     {
-        auto backend=[]<typename U>(param_class<U> &backend_params,const std::string &field)
+        auto backend=[]<typename U>(param_class<U> &backend_params,string field)
         {
             if (backend_params.method=="sz2-0" or backend_params.method=="sz3-1")
             {
-                std::vector<std::vector<U>> backup_x=backend_params.x;
+                vector<vector<U>> backup_x=backend_params.x;
                 for (int dim=0;dim<3;dim++)
                     if (backend_params.x[dim].size()>1)
                         for (uint32_t i=0;i<backend_params.x[dim].size();i++)
@@ -34,7 +34,7 @@ namespace mrcz::baseline
             else if (backend_params.method=="sperr")
                 sperr_decompress(backend_params,field);
             else
-                throw std::runtime_error("未知的baseline解压方法: "+backend_params.method);
+                throw runtime_error("未知的baseline解压方法: "+backend_params.method);
         };
         detail::decompress_file_with_backend(params,backend);
     }

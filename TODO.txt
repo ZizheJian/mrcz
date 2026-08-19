@@ -150,43 +150,34 @@ MRCZ C++代码整理待办事项
         decompress_irregular文件均已删除。
 
 [x] 11. 建立不含实验功能的正式mrcz方法。
-        正式版本不包含以下两个实验功能：
-        - 扩大量化为0的系数区间（if_zero_freq_expanding）；
-        - partition级zero map（if_zero_map）。
-        method=mrcz时使用普通均匀量化区间，并完整编码所有系数模式。即使param中的
-        实验开关为true，也不会影响正式mrcz方法。
+        method=mrcz使用普通均匀量化区间，并完整编码所有系数模式。
 
-[x] 12. 增加mrcz-experimental方法。
-        experimental版本可独立启用以下功能：
-        - 扩大系数量化为0的区间；
-        - 记录partition内每个模式是否在所有element中都为0的zero map，并省略这些模式。
-        mrcz-experimental复用compress_mrcz/decompress_mrcz公共流程，没有复制正式版本；
-        两项功能分别由if_zero_freq_expanding和if_zero_map控制，便于之后进行消融测试。
+[x] 12. 评估mrcz-experimental中的两项实验优化。
+        mrcz-experimental复用compress_mrcz/decompress_mrcz公共流程，没有复制正式版本。
+        曾测试扩大系数量化为0的区间，但它在mixlay0.f00001和jicf0.f00000上按相同
+        PSNR比较时性能均更差，因此已从正式代码删除，原实现备份在
+        c_codes/trash/zero_freq_expanding.tpp且不参与构建。
+        partition级zero map会记录一个partition内在所有element中都量化为0的系数位置，
+        并省略这些位置。在jicf0.f00000的5个field、5个REL error bound上，它不改变
+        PSNR，但CR平均只提高约0.107%，最大约0.486%，收益不足以抵消实现和格式复杂度。
+        因此也已从正式代码删除，原压缩与解压实现分别备份在
+        c_codes/trash/zero_map_compress.tpp和zero_map_decompress.tpp且不参与构建。
+        mrcz-experimental方法名暂时保留，作为未来实验的入口；当前行为与mrcz相同。
 
 [x] 13. 整理实验参数及其开关。
-        目前相关成员为：
-        - if_zero_freq_expanding；
-        - zero_coeff_qb_bound；
-        - if_zero_map；
-        - if_coefficient_transpose。
+        当前只保留if_coefficient_transpose。它是mrcz和mrcz-experimental共用的系数
+        无损压缩前布局选项，不再有只属于experimental的开关。
         为保持param_class易于直接修改，暂时继续保留public成员，不额外包装
-        experimental_options。命令行增加：
-        - -zero-freq-expanding 0|1；
-        - -zero-map 0|1。
-        两个开关只在method=mrcz-experimental时生效。zero_coeff_qb_bound仍可通过
-        param_class直接调整；if_coefficient_transpose是现有公共系数布局选项，暂未
-        作为本次两项实验优化的消融开关处理。
+        experimental_options。命令行不提供实验开关。
 
 [x] 14. 决定暂不增加experimental格式metadata。
-        当前实验只用于受控消融，没有必要为其设计长期存储格式。method后缀区分正式版
-        与实验版；使用zero map时，解压命令必须提供与压缩时相同的-zero-map设置。
-        zero-frequency-expanding只改变压缩端的量化结果，不改变解压布局，因此解压时
-        不需要同名开关。若未来需要长期保存或交换experimental文件，再设计版本化metadata。
+        当前没有启用会改变bitstream格式的实验优化，不需要额外metadata。若未来加入并
+        需要长期保存或交换experimental文件，再设计版本化metadata。
 
 [x] 15. 把系数无损编解码函数移出原regular文件。
         压缩端函数已移入coefficient_lossless_compress.tpp，解压端函数已移入
-        coefficient_lossless_decompress.tpp。它们同时包含普通系数流和zero-map系数流
-        的编解码实现，不再依赖已经删除的regular流程文件。
+        coefficient_lossless_decompress.tpp。当前只包含普通系数流的编解码实现，不再
+        依赖已经删除的regular流程文件。
 
 第四阶段：整理公共头文件与CMake
 ================================
@@ -257,10 +248,7 @@ MRCZ C++代码整理待办事项
         检查确认当前压缩实现已经不再计算或写出mean_abs_coeff；相关代码随原regular
         路径一同删除。t1_start_c_code.py中仅剩用于兼容旧输出的清理代码，现也已删除。
 
-[ ] 23. 删除已经确认无用的大段注释代码。
-        在新结构、正式版和experimental版测试稳定以后再做，避免整理期间失去参考实现。
-
-[ ] 24. 最终进行完整静态和小数据回归测试。
+[ ] 23. 最终进行完整静态和小数据回归测试。
         - cmake configure；
         - 构建mrcz_compress和mrcz_decompress；
         - 小型NekRS压缩/解压及误差验证；
@@ -272,20 +260,16 @@ MRCZ C++代码整理待办事项
 第六阶段：重新整理baseline compressors及后续算法实验
 ===================================================
 
-[ ] 25. 增加正式版与experimental版的对照测试。
-        对同一小型输入和相同误差界验证：
-        - 两者都满足最大误差界；
-        - 正式版可正确压缩/解压；
-        - experimental版可正确压缩/解压；
-        - zero map的全零、全非零和部分全零三种partition都能解析；
-        - float和double路径都能工作；
-        - 等尺寸与非等尺寸element都能工作。
+[x] 24. 完成正式版与experimental版的对照测试并结束当前实验。
+        小数据测试确认两者都满足误差界；jicf0.f00000测试表明zero map收益可以忽略，
+        因而已归档并删除该优化。当前mrcz-experimental没有启用实验优化，行为与mrcz
+        相同；未来加入新实验功能时再为它补充相应的对照测试。
 
-[ ] 26. 重新检查并统一baseline compressor的名称。
+[ ] 25. 重新检查并统一baseline compressor的名称。
         名称应明确表示数据如何组织、使用哪个API以及预测方式，避免当前SZ3-0、SZ3-1、
         SZ3-HOHS等名称难以直接理解。
 
-[ ] 27. 将当前类似SZ3-0的一维基线重命名并实现为SZ3-1D。
+[ ] 26. 将当前类似SZ3-0的一维基线重命名并实现为SZ3-1D。
         计划行为：
         - 将每个partition中的数据视为一维数组；
         - 对每个partition分别调用SZ3的一维API；
@@ -295,7 +279,7 @@ MRCZ C++代码整理待办事项
         实现前需要将SZ3以独立依赖的形式安装到third_party，并在CMake中提供可靠的
         include和link配置。不要继续依赖无法复现的本地安装路径。
 
-[ ] 28. 增加QoZ baseline。
+[ ] 27. 增加QoZ baseline。
         QoZ的完整内部实现和参数搜索较复杂，不计划自行复现算法。初步方案是：
         - 将每个partition视为一个4维数组，其中一个维度是element编号，另外三个维度
           是element内部的三个维度；
@@ -305,7 +289,7 @@ MRCZ C++代码整理待办事项
         - 对比rate-distortion、压缩速度、解压速度和内存开销。
         实现前需要调查QoZ的官方版本、构建方法、API、许可证和4维数据支持方式。
 
-[ ] 29. 评估是否需要增加SZ3-4D baseline。
+[ ] 28. 评估是否需要增加SZ3-4D baseline。
         方案与QoZ-4D一致：把每个partition看作[element, dim0, dim1, dim2]四维数据，
         直接调用SZ3的4维API。
         是否实施取决于：
@@ -313,7 +297,7 @@ MRCZ C++代码整理待办事项
         - 论文中是否需要区分“利用4维局部结构”和“仅展平成1维”的效果；
         - 实验数量和篇幅是否允许。
 
-[ ] 30. 调整并测试SZ3-HOHS的遍历/预测顺序。
+[ ] 29. 调整并测试SZ3-HOHS的遍历/预测顺序。
         当前顺序模仿SZ3。需要增加至少一种“从element中间向外围扩展”的顺序，并在
         完全相同的误差界、量化和无损编码条件下比较：
         - prediction residual分布；
@@ -323,7 +307,7 @@ MRCZ C++代码整理待办事项
         - 不同element尺寸及不同field上的稳定性。
         在修改前先把当前遍历顺序写成明确的索引序列或单元测试，保证新旧顺序可复现。
 
-[ ] 31. 评估MRCZ是否需要为每个变换模式使用不同的coefficient error bound。
+[ ] 30. 评估MRCZ是否需要为每个变换模式使用不同的coefficient error bound。
         当前所有模式共用由coeff_eb_scale得到的系数误差界。可研究：
         - 根据模式对重构误差的放大系数分配error bound；
         - 根据每个模式的平均绝对系数、方差或零频率自适应分配；
@@ -333,7 +317,7 @@ MRCZ C++代码整理待办事项
         先用离线实验比较统一error bound、分组error bound和逐模式error bound，再决定
         是否进入正式压缩格式。
 
-[ ] 32. 为所有baseline建立统一的实验接口和命名记录。
+[ ] 31. 为所有baseline建立统一的实验接口和命名记录。
         每个baseline至少记录：
         - 正式名称和命令行method名称；
         - 输入数据的维度组织方式；
@@ -349,7 +333,7 @@ MRCZ C++代码整理待办事项
 第七阶段：坐标与文件尾metadata压缩
 =====================================
 
-[ ] 33. 增加坐标字段的压缩。
+[ ] 32. 增加坐标字段的压缩。
         坐标X、Y、Z的结构和普通物理field不同，不应直接沿用当前的field压缩算法。
         需要先明确坐标压缩的目标和约束：
         - 利用element内GLL点及相邻element之间的几何结构；
@@ -358,7 +342,7 @@ MRCZ C++代码整理待办事项
         - 为坐标压缩设计独立的bitstream标记和解压路径；
         - 与直接无损保存坐标的方案比较压缩率、速度和几何误差。
 
-[ ] 34. 调查并处理NekRS文件末尾的metadata。
+[ ] 33. 调查并处理NekRS文件末尾的metadata。
         NekRS开发者提到，这部分数据没有严格的格式约定，官方文档中也没有给出
         完整定义。在实现压缩前需要：
         - 对多个来源和版本的NekRS文件检查正式field数据结束后是否仍有字节；
@@ -366,3 +350,11 @@ MRCZ C++代码整理待办事项
         - 在无法可靠解析时，优先将尾部字节视为opaque blob并无损保存，保证解压后逐字节还原；
         - 比较直接保存、通用无损压缩和不保存三种方案的大小与兼容性；
         - 只有在确认稳定结构后，才考虑为其设计专用压缩方法。
+
+
+第八阶段：最后清理
+==================
+
+[ ] 34. 删除已经确认无用的大段注释代码。
+        等新结构、baseline重构和后续算法实验稳定以后再做，避免提前失去可供参考的
+        旧实现；其中t1_start_c_code.py内的旧SZ3-0代码至少保留到SZ3-1D实现完成。

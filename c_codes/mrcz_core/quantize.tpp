@@ -33,16 +33,4 @@ namespace mrcz
         }
     }
 
-    template<typename T>
-    inline void param_class<T>::quantize_and_overwrite_array2(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb,T zero_coeff_bound)
-    {
-        for (uint32_t i=0;i<size;i++)
-        {
-            if (-zero_coeff_bound<=data[i] and data[i]<=zero_coeff_bound)
-                qb[i]=0;
-            else
-                qb[i]=static_cast<int64_t>(round(data[i]*neg_2_eb));
-            data[i]=qb[i]*2*eb;
-        }
-    }
 }

@@ -11,7 +11,7 @@ void sperr_decompress(mrcz::param_class<T> &params,string field)
     auto &blocks=params.partitions;
     auto &decompressed_data=params.decompressed_data;
 
-    int is_float=std::is_same<T,float>::value?1:0;
+    int is_float=is_same<T,float>::value?1:0;
     decompressed_data.resize(params.element_num_to_process*header.element_size);
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)

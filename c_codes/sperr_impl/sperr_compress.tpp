@@ -15,7 +15,7 @@ void sperr_compress(mrcz::param_class<T> &params,string field)
     uint32_t n1=header.element_shape[1];
     uint32_t n2=header.element_shape[2];
     T abs_eb=params.abs_eb[field];
-    int is_float=std::is_same<T,float>::value?1:0;
+    int is_float=is_same<T,float>::value?1:0;
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
     for (uint64_t block_id=0;block_id<blocks.size();block_id++)

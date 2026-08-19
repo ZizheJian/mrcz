@@ -12,9 +12,9 @@ int main(int argc,char **argv)
         mrcz::compress(params);
         return 0;
     }
-    catch (const std::exception &error)
+    catch (exception &error)
     {
-        std::fprintf(stderr,"Error: %s\n",error.what());
+        fprintf(stderr,"Error: %s\n",error.what());
         return 1;
     }
 }

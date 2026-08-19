@@ -61,7 +61,7 @@ namespace mrcz
                         {
                             mplen[u->c]=len;
                             mpcode[u->c]=vec;
-                            limit=std::max(limit,len);
+                            limit=max(limit,len);
                             return;
                         }
                         ++len;
@@ -78,7 +78,7 @@ namespace mrcz
                         {
                             veclen[u->c]=len;
                             veccode[u->c]=vec;
-                            limit=std::max(limit,len);
+                            limit=max(limit,len);
                             return;
                         }
                         ++len;
@@ -93,8 +93,8 @@ namespace mrcz
                     // 0 : vec
                     // 1 : mp
 
-                    std::vector<unsigned char> veclen;
-                    std::vector<int> veccode;
+                    vector<unsigned char> veclen;
+                    vector<int> veccode;
                     unordered_map<uint64_t,unsigned char> mplen;
                     unordered_map<uint64_t,int> mpcode;
 
@@ -130,8 +130,8 @@ namespace mrcz
                     uint64_t root;
                     uint64_t n;//node数量
                     T maxval;
-                    std::vector<Node> ht;
-                    std::vector<uint64_t> vecfreq;//以vector形式存储的freq
+                    vector<Node> ht;
+                    vector<uint64_t> vecfreq;//以vector形式存储的freq
                     unordered_map<uint64_t,uint64_t> mpfreq;//以map形式存储的freq
 
                     void addElementInMap(uint64_t c,uint64_t freqc)
@@ -226,7 +226,7 @@ namespace mrcz
             HuffmanTree tree;
 
         public:
-            void preprocess_encode(const T* const bins,uint64_t num_bin)
+            void preprocess_encode(const T *bins,uint64_t num_bin)
             {
                 tree.init();
                 T __minval,__maxval;
@@ -260,7 +260,7 @@ namespace mrcz
                     tree.vecfreq.resize(tree.maxval);
                     tree.veclen.resize(tree.maxval);
                     tree.veccode.resize(tree.maxval);
-                    std::vector<uint64_t> freq(tree.maxval);
+                    vector<uint64_t> freq(tree.maxval);
                     for (uint64_t i=0;i<num_bin;i++)
                         ++freq[static_cast<uint64_t>(bins[i]-tree.offset)];
                     tree.ht.reserve(freq.size()<<1);
@@ -293,18 +293,18 @@ namespace mrcz
                 if (tree.usemp)
                     for (uint64_t i=0;i<num_bin;i++)
                     {
-                        const T& it=bins[i];
-                        const unsigned char& len_i=tree.mplen[it-tree.offset];
-                        const int& code_i=tree.mpcode[it-tree.offset];
+                        T it=bins[i];
+                        unsigned char len_i=tree.mplen[it-tree.offset];
+                        int code_i=tree.mpcode[it-tree.offset];
                         len+=len_i;
                         writeBytes(bytes,code_i,len_i,mask,index);
                     }
                 else
                     for (uint64_t i=0;i<num_bin;i++) 
                     {
-                        const T& it=bins[i];
-                        const unsigned char& len_i=tree.veclen[it-tree.offset];
-                        const int& code_i=tree.veccode[it-tree.offset];
+                        T it=bins[i];
+                        unsigned char len_i=tree.veclen[it-tree.offset];
+                        int code_i=tree.veccode[it-tree.offset];
                         len+=len_i;
                         writeBytes(bytes,code_i,len_i,mask,index);
                     }
@@ -517,7 +517,7 @@ namespace mrcz
                     *c++=mask;
             }
 
-            static unsigned char readBit(const unsigned char* const &c,int i)
+            static unsigned char readBit(const unsigned char *c,int i)
             { 
                 return ((*(c+(i>>3)))>>(i&7))&1;
             }
@@ -539,7 +539,7 @@ namespace mrcz
                     return;
                 }
 
-                std::stack<Node*> stk;
+                stack<Node*> stk;
 
                 stk.push(&tree.ht[tree.root]);
 
@@ -618,7 +618,7 @@ namespace mrcz
 
                 tree.root=0;
                 tree.ht.push_back(Node());
-                std::stack<Node*> stk;
+                stack<Node*> stk;
                 stk.push(&tree.ht[0]);
                 uint64_t i=1;
 

@@ -56,9 +56,7 @@ namespace mrcz
     class param_class
     {
         public:
-            bool if_zero_freq_expanding=true;
-            bool if_zero_map=true;
-            bool if_coefficient_transpose=true;
+            bool if_coefficient_transpose=true; // mrcz和mrcz-experimental都使用
             string grid_assumption="GLL"; //GLL ,chebyshev, uniform
             string transform="DChT"; //DLT, DChT, DST, DCT
 
@@ -89,19 +87,18 @@ namespace mrcz
 
             int max_cpus=128;
             T coeff_eb_scale=0.05;
-            T zero_coeff_qb_bound=3;
             vector<vector<T>> x;
             vector<vector<T>> L,neg_L;
 
             vector<T> simple_invert_matrix(vector<T>& A,uint32_t n);
-            void read_header(const string &task);
-            void read_header_nekrs(const string &task);
-            void read_header_mfem(const string &task);
-            void read_header_nektarpp(const string &task);
-            void save_header_and_element_map(const string &task);
-            void save_header_and_element_map_nekrs(const string &task);
-            void save_header_and_element_map_mfem(const string &task);
-            void save_header_and_element_map_nektarpp(const string &task);
+            void read_header(string task);
+            void read_header_nekrs(string task);
+            void read_header_mfem(string task);
+            void read_header_nektarpp(string task);
+            void save_header_and_element_map(string task);
+            void save_header_and_element_map_nekrs(string task);
+            void save_header_and_element_map_mfem(string task);
+            void save_header_and_element_map_nektarpp(string task);
             void save_tail_metadata_compress();
             void save_tail_metadata_decompress();
 
@@ -111,11 +108,9 @@ namespace mrcz
             void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
             
-            void lossless_compress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *f_qb,unsigned char *&huffman_bs,uint32_t n012);
             void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
 
             void decompress_mrcz(string field);
-            void lossless_decompress_coeff_qb_with_zero_map(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
             
             void quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
@@ -128,11 +123,10 @@ namespace mrcz
             void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
             void quantize_err_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
             void quantize_and_overwrite_array1(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
-            void quantize_and_overwrite_array2(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb,T zero_coeff_bound);
 
             void default_init()
             {
-                if ((!std::is_same<T,float>::value) and (!std::is_same<T,double>::value))
+                if ((!is_same<T,float>::value) and (!is_same<T,double>::value))
                     throw runtime_error("仅能以float或double类型处理数据");
                 if (header.element_shape.size()!=3)
                     throw runtime_error("element必须是三维的。如果是二维的，应该补上一个维度为1的维度。");
@@ -202,8 +196,6 @@ namespace mrcz
             template<typename T2>
             param_class(param_class<T2> &other)
             {
-                if_zero_freq_expanding=other.if_zero_freq_expanding;
-                if_zero_map=other.if_zero_map;
                 if_coefficient_transpose=other.if_coefficient_transpose;
                 grid_assumption=other.grid_assumption;
                 transform=other.transform;
@@ -240,7 +232,6 @@ namespace mrcz
                 
                 max_cpus=other.max_cpus;
                 coeff_eb_scale=other.coeff_eb_scale;
-                zero_coeff_qb_bound=other.zero_coeff_qb_bound;
                 default_init();
             }
     };

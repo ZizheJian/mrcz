@@ -15,7 +15,7 @@ void zfp_decompress(mrcz::param_class<T> &params,string field)
     uint32_t n1=header.element_shape[1];
     uint32_t n2=header.element_shape[2];
     T abs_eb=params.abs_eb[field];
-    zfp_type type=std::is_same<T,float>::value ? zfp_type_float : zfp_type_double;
+    zfp_type type=is_same<T,float>::value ? zfp_type_float : zfp_type_double;
     decompressed_data.resize(params.element_num_to_process*header.element_size);
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)

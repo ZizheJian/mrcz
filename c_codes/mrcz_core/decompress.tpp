@@ -18,13 +18,13 @@ namespace mrcz
     namespace detail
     {
         template<typename T,typename Backend>
-        void decompress_field(param_class<T> &params,const std::string &field,Backend backend)
+        void decompress_field(param_class<T> &params,const string &field,Backend backend)
         {
             double br=0,cr=0,max_err=0,mse=0,psnr=0;
-            std::ifstream compressed_file(params.data_path+"_"+field+"."+params.method,std::ios::binary);
+            ifstream compressed_file(params.data_path+"_"+field+"."+params.method,ios::binary);
             if (!compressed_file)
-                throw std::runtime_error("无法打开压缩文件: "+params.data_path+"_"+field+"."+params.method);
-            compressed_file.seekg(1,std::ios::beg);
+                throw runtime_error("无法打开压缩文件: "+params.data_path+"_"+field+"."+params.method);
+            compressed_file.seekg(1,ios::beg);
             unsigned char is_constant=0;
             compressed_file.read(reinterpret_cast<char*>(&is_constant),1);
             if (is_constant)
@@ -62,7 +62,7 @@ namespace mrcz
                 cr=(params.header.word_size*8)/br;
                 compressed_file.close();
 
-                const T data_range=params.data_range_max[field]-params.data_range_min[field];
+                T data_range=params.data_range_max[field]-params.data_range_min[field];
                 if (params.eb_mode=="ABS")
                 {
                     params.abs_eb[field]=params.input_eb;
@@ -85,7 +85,7 @@ namespace mrcz
             if (params.fields_to_process.size()!=params.all_fields_in_file.size() or
                 params.header.file_element_num!=params.element_num_to_process)
                 printf("没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件\n");
-            else if constexpr (std::is_same_v<T,double>)
+            else if constexpr (is_same_v<T,double>)
             {
                 if (params.header.word_size==4)
                 {
@@ -99,12 +99,12 @@ namespace mrcz
             else
                 write_data(params,field);
 
-            std::ifstream original_file(params.data_path,std::ios::binary);
+            ifstream original_file(params.data_path,ios::binary);
             if (original_file)
             {
                 original_file.close();
                 params.data.resize(params.element_num_to_process*params.header.element_size);
-                if constexpr (std::is_same_v<T,double>)
+                if constexpr (is_same_v<T,double>)
                 {
                     if (params.header.word_size==4)
                     {
@@ -122,15 +122,15 @@ namespace mrcz
                 #pragma omp parallel for reduction(max:max_err) reduction(+:mse) schedule(static) num_threads(params.max_cpus)
                 for (uint64_t i=0;i<params.data.size();i++)
                 {
-                    const T error=std::fabs(params.data[i]-params.decompressed_data[i]);
-                    max_err=std::max(max_err,static_cast<double>(error));
+                    T error=fabs(params.data[i]-params.decompressed_data[i]);
+                    max_err=max(max_err,static_cast<double>(error));
                     mse+=error*error;
                 }
                 if (!is_constant and max_err>params.abs_eb[field]*1.1)
                 {
                     uint64_t max_err_index=0;
                     for (uint64_t i=0;i<params.data.size();i++)
-                        if (std::fabs(params.data[i]-params.decompressed_data[i])==max_err)
+                        if (fabs(params.data[i]-params.decompressed_data[i])==max_err)
                         {
                             max_err_index=i;
                             break;
@@ -140,8 +140,8 @@ namespace mrcz
                         static_cast<double>(params.decompressed_data[max_err_index]),max_err,params.abs_eb[field]);
                 }
                 mse/=params.data.size();
-                const double data_range=params.data_range_max[field]-params.data_range_min[field];
-                psnr=(mse==0) ? INFINITY : 10*std::log10(data_range*data_range/mse);
+                double data_range=params.data_range_max[field]-params.data_range_min[field];
+                psnr=(mse==0) ? INFINITY : 10*log10(data_range*data_range/mse);
             }
             else
                 printf("原始数据不存在，无法计算压缩质量\n");
@@ -161,15 +161,15 @@ namespace mrcz
         template<typename T,typename Backend>
         void decompress_all_fields_with_backend(param_class<T> &params,Backend backend)
         {
-            for (const auto &field:params.fields_to_process)
+            for (auto &field:params.fields_to_process)
             {
                 printf("Field= %s\n",field.c_str());
-                std::ifstream compressed_file(params.data_path+"_"+field+"."+params.method,std::ios::binary);
+                ifstream compressed_file(params.data_path+"_"+field+"."+params.method,ios::binary);
                 if (!compressed_file)
-                    throw std::runtime_error("无法打开压缩文件: "+params.data_path+"_"+field+"."+params.method);
+                    throw runtime_error("无法打开压缩文件: "+params.data_path+"_"+field+"."+params.method);
                 uint8_t compressed_word_size=0;
                 compressed_file.read(reinterpret_cast<char*>(&compressed_word_size),1);
-                if constexpr (std::is_same_v<T,float>)
+                if constexpr (is_same_v<T,float>)
                 {
                     if (compressed_word_size==8)
                     {
@@ -195,7 +195,7 @@ namespace mrcz
             params.default_init();
             params.save_header_and_element_map("decompress");
             params.max_cpus=get_max_cpus(params.max_cpus);
-            if (params.header.word_size==8 and std::is_same_v<T,float>)
+            if (params.header.word_size==8 and is_same_v<T,float>)
             {
                 param_class<double> double_params(params);
                 decompress_all_fields_with_backend(double_params,backend);
@@ -213,8 +213,8 @@ namespace mrcz
             if (params.method.empty())
                 params.method="mrcz";
             if (params.method!="mrcz" and params.method!="mrcz-experimental" and params.method!="sz3-hohs")
-                throw std::runtime_error("mrcz::core::decompress不支持方法: "+params.method);
-            auto backend=[]<typename U>(param_class<U> &backend_params,const std::string &field)
+                throw runtime_error("mrcz::core::decompress不支持方法: "+params.method);
+            auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
                 if (backend_params.method=="sz3-hohs")
                     sz3_2_decompress(backend_params,field);

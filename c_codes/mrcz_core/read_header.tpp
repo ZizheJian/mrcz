@@ -3,7 +3,7 @@
 namespace mrcz
 {
     template<typename T>
-    void param_class<T>::read_header(const string &task)
+    void param_class<T>::read_header(string task)
     {
         if (format=="nekrs")
             read_header_nekrs(task);
@@ -14,7 +14,7 @@ namespace mrcz
     }
 
     template<typename T>
-    void param_class<T>::read_header_nekrs(const string &task)
+    void param_class<T>::read_header_nekrs(string task)
     {
         string header_path;
         if (task=="compress")
@@ -155,7 +155,7 @@ namespace mrcz
     }
 
     template<typename T>
-    void param_class<T>::read_header_mfem(const string &task)
+    void param_class<T>::read_header_mfem(string task)
     {
         //////// 读取gf文件的开头 ////////
         string header_path;
@@ -246,7 +246,7 @@ namespace mrcz
     }
 
     template<typename T>
-    void param_class<T>::read_header_nektarpp(const string &task)
+    void param_class<T>::read_header_nektarpp(string task)
     {
         string header_path;
         if (task=="compress")
