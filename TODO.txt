@@ -79,7 +79,7 @@ MRCZ C++代码整理待办事项
        parse_compress_args(argc,argv)得到params，最后都调用mrcz::compress(params)。
        mrcz::compress是位于mrcz_core之外的顶层分派入口：根据method调用
        mrcz::core::compress或mrcz::baseline::compress，但不让mrcz_core依赖baseline。
-       mrcz_core应支持项目自身的mrcz和sz3-hohs两种方法；sz2-0、sz2-1、sz3-1、
+       mrcz_core应支持项目自身的mrcz-3d-gll和sz3-3d-gll两种方法；sz2-3d-uniform、sz2-3d-gll、sz3-3d-uniform、
        zfp和sperr属于baseline，不应成为mrcz_core的内部依赖。
        该入口应负责目前compress.cpp中compress1/compress2包含的MRCZ公共流程：
        - 检查和初始化params；
@@ -93,8 +93,8 @@ MRCZ C++代码整理待办事项
        当前进度：已增加mrcz_core/mrcz.hpp和compress.tpp，并建立只执行一次的
        compress_file_with_backend。MRCZ和所有baseline已共用参数检查、header读取、partition创建、
        field读取、动态范围计算、float/double选择和bitstream写出流程。已删除
-       compress.cpp中重复的compress1/compress2。sz3-hohs已移入mrcz_core，并通过
-       mrcz::core::compress入口调用；sz3-1 baseline仍可复用其预测实现。顶层
+       compress.cpp中重复的compress1/compress2。sz3-3d-gll已移入mrcz_core，并通过
+       mrcz::core::compress入口调用；sz3-3d-uniform baseline仍可复用其预测实现。顶层
        mrcz::compress已统一分派core和baseline。
        已完成独立于CLI的编译测试：外部源文件创建param_class<float>、自由设置format、
        data_path、error bound、method和max_cpus，并成功实例化
@@ -108,7 +108,7 @@ MRCZ C++代码整理待办事项
        decompress(argc,argv)重载。
        该入口现已负责原decompress.cpp中decompress1/decompress2包含的公共流程：
        参数检查、header读取、field循环、bitstream读取、float/double切换、backend调用、
-       可选解压文件写出和误差统计。mrcz::core::decompress支持mrcz和sz3-hohs；
+       可选解压文件写出和误差统计。mrcz::core::decompress支持mrcz-3d-gll和sz3-3d-gll；
        mrcz::baseline::decompress支持其他baseline；顶层mrcz::decompress统一分派。
        已通过独立于CLI的编译测试，并用t1在REL=1e-3下完成全部7种方法的运行时回归。
 
@@ -152,8 +152,8 @@ MRCZ C++代码整理待办事项
 [x] 11. 建立不含实验功能的正式mrcz方法。
         method=mrcz使用普通均匀量化区间，并完整编码所有系数模式。
 
-[x] 12. 评估mrcz-experimental中的两项实验优化。
-        mrcz-experimental复用compress_mrcz/decompress_mrcz公共流程，没有复制正式版本。
+[x] 12. 评估mrcz-3d-gll-experimental中的两项实验优化。
+        mrcz-3d-gll-experimental复用compress_mrcz/decompress_mrcz公共流程，没有复制正式版本。
         曾测试扩大系数量化为0的区间，但它在mixlay0.f00001和jicf0.f00000上按相同
         PSNR比较时性能均更差，因此已从正式代码删除，原实现备份在
         c_codes/trash/zero_freq_expanding.tpp且不参与构建。
@@ -162,10 +162,11 @@ MRCZ C++代码整理待办事项
         PSNR，但CR平均只提高约0.107%，最大约0.486%，收益不足以抵消实现和格式复杂度。
         因此也已从正式代码删除，原压缩与解压实现分别备份在
         c_codes/trash/zero_map_compress.tpp和zero_map_decompress.tpp且不参与构建。
-        mrcz-experimental方法名暂时保留，作为未来实验的入口；当前行为与mrcz相同。
+        mrcz-3d-gll-experimental方法名暂时保留，作为未来实验的入口；当前行为与
+        mrcz-3d-gll相同。
 
 [x] 13. 整理实验参数及其开关。
-        当前只保留if_coefficient_transpose。它是mrcz和mrcz-experimental共用的系数
+        当前只保留if_coefficient_transpose。它是mrcz-3d-gll及其experimental变体共用的系数
         无损压缩前布局选项，不再有只属于experimental的开关。
         为保持param_class易于直接修改，暂时继续保留public成员，不额外包装
         experimental_options。命令行不提供实验开关。
@@ -222,7 +223,7 @@ MRCZ C++代码整理待办事项
           option控制；
         - 避免外部程序被强制使用相同优化和浮点语义。
         已将-Wall、-Ofast、-march=native和-Wno-dangling-else移到
-        mrcz_compress/mrcz_decompress的PRIVATE编译选项。MRCZ、SZ3-HOHS及baseline的
+        mrcz_compress/mrcz_decompress的PRIVATE编译选项。MRCZ、SZ3-3D-GLL及baseline的
         header-only模板都在这两个可执行文件中实例化，因此仍会获得相同优化；外部程序
         链接mrcz::mrcz时则可自行选择优化等级。OpenMP作为实际依赖继续由INTERFACE
         target传播，不再手工重复添加-fopenmp。
@@ -248,13 +249,20 @@ MRCZ C++代码整理待办事项
         检查确认当前压缩实现已经不再计算或写出mean_abs_coeff；相关代码随原regular
         路径一同删除。t1_start_c_code.py中仅剩用于兼容旧输出的清理代码，现也已删除。
 
-[ ] 23. 最终进行完整静态和小数据回归测试。
+[x] 23. 最终进行完整静态和小数据回归测试。
         - cmake configure；
         - 构建mrcz_compress和mrcz_decompress；
         - 小型NekRS压缩/解压及误差验证；
         - MFEM和Nektar++至少各运行一个小样例；
         - git diff --check；
         - 确认安装目录包含全部需要的.hpp/.tpp文件。
+        本次按测试需求跳过已多次验证的NekRS。MFEM使用ex0examples/sol.gf及mesh.mesh
+        的no_name_field，Nektar++使用Cylinder_Direct.rst.vtu的u，均采用REL=1e-4、
+        max-cpus=1。当时使用的全部方法（现已统一重命名为mrcz-3d-gll、
+        mrcz-3d-gll-experimental、sz3-3d-gll、sz3-3d-uniform、sz2-3d-uniform、
+        sz2-3d-gll、zfp-4d-uniform和sperr-3d-uniform）均成功完成压缩、解压并满足
+        最大误差界。CMake重新配置、两个主程序构建、
+        安装及git diff --check也均通过，安装目录包含当前mrcz_core的全部.hpp/.tpp。
 
 
 第六阶段：重新整理baseline compressors及后续算法实验
@@ -262,14 +270,19 @@ MRCZ C++代码整理待办事项
 
 [x] 24. 完成正式版与experimental版的对照测试并结束当前实验。
         小数据测试确认两者都满足误差界；jicf0.f00000测试表明zero map收益可以忽略，
-        因而已归档并删除该优化。当前mrcz-experimental没有启用实验优化，行为与mrcz
-        相同；未来加入新实验功能时再为它补充相应的对照测试。
+        因而已归档并删除该优化。当前mrcz-3d-gll-experimental没有启用实验优化，行为与
+        mrcz-3d-gll相同；未来加入新实验功能时再为它补充相应的对照测试。
 
-[ ] 25. 重新检查并统一baseline compressor的名称。
-        名称应明确表示数据如何组织、使用哪个API以及预测方式，避免当前SZ3-0、SZ3-1、
-        SZ3-HOHS等名称难以直接理解。
+[x] 25. 重新检查并统一compressor名称。
+        命令行、压缩文件后缀和CSV列名统一采用“算法-维度-坐标[-变体]”：
+        - mrcz-3d-gll、mrcz-3d-gll-experimental；
+        - sz3-3d-uniform、sz3-3d-gll；
+        - sz2-3d-uniform、sz2-3d-gll；
+        - zfp-4d-uniform、sperr-3d-uniform。
+        旧名称不再作为alias执行，使用时会提示对应的新名称。未来官方API baseline使用
+        sz3-1d-uniform、sz3-4d-uniform和qoz-4d-uniform。
 
-[ ] 26. 将当前类似SZ3-0的一维基线重命名并实现为SZ3-1D。
+[ ] 26. 实现官方API baseline sz3-1d-uniform。
         计划行为：
         - 将每个partition中的数据视为一维数组；
         - 对每个partition分别调用SZ3的一维API；
@@ -289,7 +302,7 @@ MRCZ C++代码整理待办事项
         - 对比rate-distortion、压缩速度、解压速度和内存开销。
         实现前需要调查QoZ的官方版本、构建方法、API、许可证和4维数据支持方式。
 
-[ ] 28. 评估是否需要增加SZ3-4D baseline。
+[ ] 28. 评估是否需要增加sz3-4d-uniform baseline。
         方案与QoZ-4D一致：把每个partition看作[element, dim0, dim1, dim2]四维数据，
         直接调用SZ3的4维API。
         是否实施取决于：
@@ -297,7 +310,7 @@ MRCZ C++代码整理待办事项
         - 论文中是否需要区分“利用4维局部结构”和“仅展平成1维”的效果；
         - 实验数量和篇幅是否允许。
 
-[ ] 29. 调整并测试SZ3-HOHS的遍历/预测顺序。
+[ ] 29. 调整并测试sz3-3d-gll的遍历/预测顺序。
         当前顺序模仿SZ3。需要增加至少一种“从element中间向外围扩展”的顺序，并在
         完全相同的误差界、量化和无损编码条件下比较：
         - prediction residual分布；
@@ -357,4 +370,4 @@ MRCZ C++代码整理待办事项
 
 [ ] 34. 删除已经确认无用的大段注释代码。
         等新结构、baseline重构和后续算法实验稳定以后再做，避免提前失去可供参考的
-        旧实现；其中t1_start_c_code.py内的旧SZ3-0代码至少保留到SZ3-1D实现完成。
+        旧实现；其中t1_start_c_code.py内的旧SZ3-0代码至少保留到sz3-1d-uniform实现完成。

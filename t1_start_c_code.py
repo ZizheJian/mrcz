@@ -10,15 +10,15 @@ build_max_cpus=get_max_cpus(8)
 run_max_cpus=128
 
 # method可选:
-#   "mrcz"
-#   "sz3-0": 把数据展成1维的，然后用SZ3的1维压缩
-#   "sz3-1": 对每个element执行sz3的3维压缩，在block内共用huffman tree
-#   "sz3-hohs": 对每个element执行sz3的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
-#   "sz2-0": 对每个element执行sz2的3维压缩，在block内共用huffman tree
-#   "sz2-1": 对每个element执行sz2的3维压缩，考虑到点的间隔不一致，在block内共用huffman tree
-#   "zfp": 对每个element执行zfp的3维压缩
-#   "sperr": 对每个element执行sperr的3维压缩
-method_list=["mrcz"]
+#   "mrcz-3d-gll"
+#   "mrcz-3d-gll-experimental"
+#   "sz3-3d-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
+#   "sz3-3d-gll": 项目内实现的逐element 3D分层插值，使用真实GLL坐标
+#   "sz2-3d-uniform": 项目内实现的逐element 3D线性拟合，假定点等间距
+#   "sz2-3d-gll": 项目内实现的逐element 3D线性拟合，使用真实GLL坐标
+#   "zfp-4d-uniform": 把partition视为[element,n0,n1,n2]四维规则数组
+#   "sperr-3d-uniform": 把partition重组为SPERR接收的三维规则数组
+method_list=["mrcz-3d-gll"]
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
@@ -64,11 +64,11 @@ def cleanup_test_outputs(data_path,method,selected_fields=None):
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
 # eb_list=[1e-3]
 # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
-# SZ3-HOHS的相对误差为7.9e-4时，T的CR=26.052934653717053
-# SZ3-1的相对误差为2e-3时，T的CR=26.078980036305357
-# SZ2-1的相对误差为4.2e-3时，T的CR=26.051779
-# SPERR的相对误差为4.52e-2时，T的CR=26.084365
-# ZFP的相对误差为3.16e-1时，T的CR=27.974553
+# sz3-3d-gll的相对误差为7.9e-4时，T的CR=26.052934653717053
+# sz3-3d-uniform的相对误差为2e-3时，T的CR=26.078980036305357
+# sz2-3d-gll的相对误差为4.2e-3时，T的CR=26.051779
+# sperr-3d-uniform的相对误差为4.52e-2时，T的CR=26.084365
+# zfp-4d-uniform的相对误差为3.16e-1时，T的CR=27.974553
 # eb_list=[1e-1,1e-2,1e-3,1e-4]
 
 format="nekrs"
@@ -123,7 +123,7 @@ run_command(f"cmake --build {main_build_path} --parallel {build_max_cpus}",silen
 run_command(f"cmake --install {main_build_path}",silent=silent_build)
 for method in method_list:
     for eb in eb_list:
-        if format=="nekrs" or format=="nektar++":
+        if format in ["nekrs","mfem","nektar++"]:
             command_list=["./install/bin/mrcz_compress","./install/bin/mrcz_decompress"]
             if format in ["nekrs","nektar++"]:
                 command_list=[f"{command} -format {format} -i {data_path}" for command in command_list]

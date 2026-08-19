@@ -56,7 +56,7 @@ namespace mrcz
     class param_class
     {
         public:
-            bool if_coefficient_transpose=true; // mrcz和mrcz-experimental都使用
+            bool if_coefficient_transpose=true; // mrcz-3d-gll和experimental变体都使用
             string grid_assumption="GLL"; //GLL ,chebyshev, uniform
             string transform="DChT"; //DLT, DChT, DST, DCT
 

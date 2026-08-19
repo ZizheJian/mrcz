@@ -12,7 +12,7 @@ namespace mrcz::baseline
     {
         auto backend=[]<typename U>(param_class<U> &backend_params,string field)
         {
-            if (backend_params.method=="sz2-0" or backend_params.method=="sz3-1")
+            if (backend_params.method=="sz2-3d-uniform" or backend_params.method=="sz3-3d-uniform")
             {
                 vector<vector<U>> backup_x=backend_params.x;
                 for (int dim=0;dim<3;dim++)
@@ -21,17 +21,17 @@ namespace mrcz::baseline
                             backend_params.x[dim][i]=(U)i/(backend_params.x[dim].size()-1)*2-1;
                     else
                         backend_params.x[dim][0]=0;
-                if (backend_params.method=="sz2-0")
+                if (backend_params.method=="sz2-3d-uniform")
                     sz2_1_compress(backend_params,field);
                 else
                     sz3_2_compress(backend_params,field);
                 backend_params.x=backup_x;
             }
-            else if (backend_params.method=="sz2-1")
+            else if (backend_params.method=="sz2-3d-gll")
                 sz2_1_compress(backend_params,field);
-            else if (backend_params.method=="zfp")
+            else if (backend_params.method=="zfp-4d-uniform")
                 zfp_compress(backend_params,field);
-            else if (backend_params.method=="sperr")
+            else if (backend_params.method=="sperr-3d-uniform")
                 sperr_compress(backend_params,field);
             else
                 throw runtime_error("未知的baseline压缩方法: "+backend_params.method);
