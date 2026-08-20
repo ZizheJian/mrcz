@@ -282,33 +282,42 @@ MRCZ C++代码整理待办事项
         旧名称不再作为alias执行，使用时会提示对应的新名称。未来官方API baseline使用
         sz3-1d-uniform、sz3-4d-uniform和qoz-4d-uniform。
 
-[ ] 26. 实现官方API baseline sz3-1d-uniform。
-        计划行为：
+[x] 26. 实现官方API baseline sz3-1d-uniform。
+        实际行为：
         - 将每个partition中的数据视为一维数组；
         - 对每个partition分别调用SZ3的一维API；
         - 保存每个partition产生的bitstream长度并依次拼接bitstream；
         - 解压时根据长度信息拆分并分别调用SZ3 API；
         - 统计总bit rate、压缩/解压速度和误差。
-        实现前需要将SZ3以独立依赖的形式安装到third_party，并在CMake中提供可靠的
-        include和link配置。不要继续依赖无法复现的本地安装路径。
+        官方szcompressor/SZ3已作为third_party/SZ3 submodule加入。SZ3核心提供
+        header-only INTERFACE target，因此通过add_subdirectory随MRCZ自动配置和构建，
+        不需要像SPERR一样在Python中预先安装；SZ3自带CLI和C API工具已关闭。
+        现有MRCZ文件格式本来就逐partition保存bitstream长度并拼接数据，因此没有增加
+        第二套容器格式。MFEM double数据和NekRS float数据均以4个partition、REL=1e-4
+        完成压缩/解压测试，最大误差分别为error bound的99.9966%和99.9978%。
 
-[ ] 27. 增加QoZ baseline。
-        QoZ的完整内部实现和参数搜索较复杂，不计划自行复现算法。初步方案是：
-        - 将每个partition视为一个4维数组，其中一个维度是element编号，另外三个维度
-          是element内部的三个维度；
-        - 对每个partition直接调用QoZ官方API；
-        - 拼接各partition的bitstream，并记录必要的长度信息；
-        - 使用官方推荐配置或明确记录的固定配置，保证实验可复现；
-        - 对比rate-distortion、压缩速度、解压速度和内存开销。
-        实现前需要调查QoZ的官方版本、构建方法、API、许可证和4维数据支持方式。
+[x] 27. 增加QoZ baseline。
+        官方szcompressor/QoZ的2.0分支已作为third_party/QoZ submodule加入，并实现
+        qoz-4d-uniform：每个partition按[element,n2,n1,n0]传给QoZ四维API，使用
+        ABS error bound和QoZ=4，各partition独立调用并沿用MRCZ现有的bitstream容器。
+        QoZ与SZ3的API都在全局namespace中定义SZ_compress/SZ_decompress，而且部分
+        include guard也重名，因此不能在同一翻译单元包含两套头文件。当前使用独立的
+        qoz_bridge.cpp隔离QoZ API，避免与SZ3冲突。QoZ是header-only；MRCZ不执行QoZ
+        自带的install规则，而是复用项目中的Zstd，所以不会覆盖SZ3的build/install文件。
+        需要注意：官方Tuning<T,N>会在N不是2或3时关闭大部分q4调优选项，因此官方
+        q4+4D并不等同于论文中完整的q4自动调优。当前保持官方实现，不自行修改算法。
+        error-bound初测未复现超界：test0.f00001的UZ/T/S00/S01在REL=1e-8、1e-10、
+        1e-12，以及double数据tc_channel0.f00001的UX在REL=1e-10，最大误差均未超过
+        error bound；这只是小数据验证，正式实验仍需继续检查每个field的max error。
 
-[ ] 28. 评估是否需要增加sz3-4d-uniform baseline。
-        方案与QoZ-4D一致：把每个partition看作[element, dim0, dim1, dim2]四维数据，
-        直接调用SZ3的4维API。
-        是否实施取决于：
-        - 它与SZ3-1D、逐element SZ3和QoZ-4D能否形成有意义的对照；
-        - 论文中是否需要区分“利用4维局部结构”和“仅展平成1维”的效果；
-        - 实验数量和篇幅是否允许。
+[x] 28. 增加sz3-4d-uniform baseline。
+        每个partition按[element,n2,n1,n0]调用官方SZ3四维API，与sz3-1d-uniform
+        使用完全相同的partition和容器格式。这项对照有必要保留，因为它直接衡量保留
+        四维局部结构相对于展平为一维的影响，而且不同数据上的结论并不一致。
+        单核、REL=1e-4初测：float test0.f00001的UZ上，1D/4D的BR分别为0.3065/
+        0.4643；double tc_channel0.f00001的UX上，1D/4D的BR分别为4.5373/2.8530。
+        两种方法都满足error bound。该结果说明不能预先假定4D一定优于或劣于1D，
+        正式实验应在相同PSNR下跨多个field比较。
 
 [ ] 29. 调整并测试sz3-3d-gll的遍历/预测顺序。
         当前顺序模仿SZ3。需要增加至少一种“从element中间向外围扩展”的顺序，并在
@@ -319,6 +328,22 @@ MRCZ C++代码整理待办事项
         - 压缩和解压速度；
         - 不同element尺寸及不同field上的稳定性。
         在修改前先把当前遍历顺序写成明确的索引序列或单元测试，保证新旧顺序可复现。
+
+        候选方案一是类似QoZ multidimensional interpolation paradigm的分层预测。
+        在每个细化层级中，先处理只有一个新坐标的点，对它们做一维内插；
+        再处理有两个新坐标的点，将两个方向的一维内插结果加权为二维预测；
+        最后处理有三个新坐标的点，将三个方向的预测结果加权。每个方向
+        必须使用真实GLL坐标计算内插权重。该方案与QoZ已有方法相似，新颖性
+        可能有限，但可作为低风险对照和后续更新遍历方法的基准。
+
+        在改动正式压缩流程前，先做不量化、不写bitstream的prediction residual诊断，
+        验证GLL网格上“角点用附近内部点外插”与“中心点用两侧点内插”哪个
+        更容易预测。对每个element和field至少统计：
+        - 一维中心点由相邻两侧点内插的residual；
+        - 端点由最近的两个内部GLL点线性外插的residual；
+        - 二维/三维中心预测和4/8个角点预测的MAE、RMSE、分位数及预期量化为0的比例。
+        由于角点外插所依赖的内部点必须先解码，此诊断只判断局部可预测性；
+        如果外插明显更好，再设计中心向外的完整无循环依赖遍历，并计入额外初始点的代价。
 
 [ ] 30. 评估MRCZ是否需要为每个变换模式使用不同的coefficient error bound。
         当前所有模式共用由coeff_eb_scale得到的系数误差界。可研究：
@@ -371,3 +396,45 @@ MRCZ C++代码整理待办事项
 [ ] 34. 删除已经确认无用的大段注释代码。
         等新结构、baseline重构和后续算法实验稳定以后再做，避免提前失去可供参考的
         旧实现；其中t1_start_c_code.py内的旧SZ3-0代码至少保留到sz3-1d-uniform实现完成。
+
+[ ] 35. 按新的质量归一化方案整理并补充论文实验。
+        已完成pb0.f00001的初步大数据实验：1947154个8*8*8 float element，使用128核，
+        测试UX/UY/UZ/P/T、REL=1e-2/1e-3/1e-4/1e-5/1e-6，以及当前10种正式方法。
+        每个方法的field throughput已经按“总原始字节数/总时间”计算，即调和平均，
+        无需再修改聚合方式。当前计时只覆盖compress/decompress backend，不包含读文件、
+        求数据范围、写文件和误差统计，论文中应明确称为kernel throughput。
+
+        初步rate-distortion观察：各方法在相同REL下并没有达到相同PSNR。ZFP的最大误差
+        通常只使用error bound的约10%-20%，SPERR约为75%，MRCZ及多数SZ方法通常接近
+        100%，因此不能用相同REL下的BR直接代表相同质量的压缩效果。对每个field的
+        log(BR)-PSNR曲线插值后，在所有方法共同覆盖的固定PSNR=100 dB处，五个field的
+        平均BR从低到高为：MRCZ-3D-GLL 1.183、SZ3-3D-GLL 4.558、
+        ZFP-4D-UNIFORM 6.007、SZ3-3D-UNIFORM 6.237、SZ3-4D-UNIFORM 6.257、
+        QoZ-4D-UNIFORM 6.517、SZ3-1D-UNIFORM 8.385、SZ2-3D-GLL 8.572、
+        SZ2-3D-UNIFORM 8.810、SPERR-3D-UNIFORM 9.768。MRCZ在相同PSNR下的BR
+        优势明显；ZFP在该数据上略优于其余普通baseline，与旧实验趋势一致。
+        全部原始实验中的最小BR为0.0207644（SZ3-3D-GLL、P、REL=1e-2、
+        PSNR=45.89 dB），最大BR为16.6683（ZFP-4D-UNIFORM、T、REL=1e-6、
+        PSNR=157.49 dB）；两者质量不同，不能直接用于方法排名。
+
+        初步速度观察：在REL从1e-2降到1e-6时，ZFP的每核压缩throughput约为
+        173/170/90/88/84 MB/s，解压约为176/106/54/50/48 MB/s。REL=1e-4
+        及以下会进入为保证point-wise error bound所必需的double计算路径；命令行
+        1e-4经float解析后略小于1e-4，也会触发该路径。其他方法同样普遍在这里出现
+        速度下降。进入double路径以后，ZFP和SPERR的压缩速度对EB相对不敏感；MRCZ、
+        SZ2及SZ3-1D在更严格EB下有更明显的减速。旧论文使用ABS=1e-6；在pb0上它
+        分别约等于UX/UY/UZ的REL=6e-8、P的1.6e-9和T的6.3e-7，明显严于本次多数
+        测试点，因此旧记录中ZFP约50 MB/s与当前结果并不矛盾。
+
+        论文计划：
+        - 使用一组REL error bound生成实验点，但用实际达到的PSNR作为质量坐标；REL
+          和最大误差/error bound比例在实验配置及正确性表中报告；
+        - 主rate-distortion图画BR-PSNR曲线，不在相同REL下直接给压缩效果排名；
+        - 固定128核画throughput-PSNR曲线，比较相同重建质量下的压缩和解压速度；
+        - 并行扩展图固定一个代表性目标PSNR（初步选100 dB），横轴为线程数、纵轴为
+          throughput；需要时在附录增加80/100/120 dB三个并列面板，而不是设置两个横轴；
+        - 为每个compressor和field通过已有曲线插值选择达到目标PSNR的REL，再进行线程
+          扩展实验；同一方法、field和目标PSNR在线程数变化时保持REL不变；
+        - 补测更小REL或直接补测ABS=1e-6，以便和旧论文的速度记录做严格对应；
+        - 主文建议包含BR-PSNR、128核throughput-PSNR、100 dB strong-scaling三类图，
+          更完整的REL原始结果和多个目标PSNR的扩展性放入附录。

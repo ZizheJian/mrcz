@@ -149,7 +149,7 @@ namespace mrcz
             params.read_header("compress");
             params.default_init();
             params.save_header_and_element_map("compress");
-            params.max_cpus=get_max_cpus(params.max_cpus);
+            params.max_cpus=get_max_cpus(static_cast<int>(min<uint64_t>(params.max_cpus,params.element_num_to_process)));
 
             params.partitions.resize(params.max_cpus);
             for (int i=0;i<params.max_cpus;i++)

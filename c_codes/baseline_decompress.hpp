@@ -2,6 +2,9 @@
 
 #include "mrcz_core/mrcz.hpp"
 #include "sz2_impl/sz2_1_decompress.tpp"
+#include "sz3_impl/sz3_1d_decompress.tpp"
+#include "sz3_impl/sz3_4d_decompress.tpp"
+#include "qoz_impl/qoz_decompress.tpp"
 #include "zfp_impl/zfp_decompress.tpp"
 #include "sperr_impl/sperr_decompress.tpp"
 
@@ -29,6 +32,12 @@ namespace mrcz::baseline
             }
             else if (backend_params.method=="sz2-3d-gll")
                 sz2_1_decompress(backend_params,field);
+            else if (backend_params.method=="sz3-1d-uniform")
+                sz3_1d_decompress(backend_params,field);
+            else if (backend_params.method=="sz3-4d-uniform")
+                sz3_4d_decompress(backend_params,field);
+            else if (backend_params.method=="qoz-4d-uniform")
+                qoz_decompress(backend_params,field);
             else if (backend_params.method=="zfp-4d-uniform")
                 zfp_decompress(backend_params,field);
             else if (backend_params.method=="sperr-3d-uniform")

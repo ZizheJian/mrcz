@@ -31,3 +31,10 @@
 [submodule "third_party/fld_pyutils"]
 	path = third_party/fld_pyutils
 	url = https://github.com/RonRahaman/fld_pyutils.git
+[submodule "third_party/SZ3"]
+	path = third_party/SZ3
+	url = https://github.com/szcompressor/SZ3.git
+[submodule "third_party/QoZ"]
+	path = third_party/QoZ
+	url = https://github.com/szcompressor/QoZ.git
+	branch = 2.0

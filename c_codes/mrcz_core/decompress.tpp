@@ -194,7 +194,7 @@ namespace mrcz
             params.read_header("decompress");
             params.default_init();
             params.save_header_and_element_map("decompress");
-            params.max_cpus=get_max_cpus(params.max_cpus);
+            params.max_cpus=get_max_cpus(static_cast<int>(min<uint64_t>(params.max_cpus,params.element_num_to_process)));
             if (params.header.word_size==8 and is_same_v<T,float>)
             {
                 param_class<double> double_params(params);

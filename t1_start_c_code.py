@@ -8,17 +8,33 @@ redend="\033[0m"
 silent_build=False
 build_max_cpus=get_max_cpus(8)
 run_max_cpus=128
+build_before_test=False # 两个大数据实验并行时禁止同时改写公共build/install目录
 
 # method可选:
 #   "mrcz-3d-gll"
 #   "mrcz-3d-gll-experimental"
 #   "sz3-3d-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
 #   "sz3-3d-gll": 项目内实现的逐element 3D分层插值，使用真实GLL坐标
+#   "sz3-1d-uniform": 把每个partition展平为一维数组，调用官方SZ3 API
+#   "sz3-4d-uniform": 把每个partition视为[element,n0,n1,n2]四维数组，调用官方SZ3 API
+#   "qoz-4d-uniform": 把每个partition视为[element,n0,n1,n2]四维数组，调用QoZ 2.0 q4 API
 #   "sz2-3d-uniform": 项目内实现的逐element 3D线性拟合，假定点等间距
 #   "sz2-3d-gll": 项目内实现的逐element 3D线性拟合，使用真实GLL坐标
 #   "zfp-4d-uniform": 把partition视为[element,n0,n1,n2]四维规则数组
 #   "sperr-3d-uniform": 把partition重组为SPERR接收的三维规则数组
-method_list=["mrcz-3d-gll"]
+# mrcz-3d-gll-experimental目前与mrcz-3d-gll完全相同，不重复测试。
+method_list=[
+    "mrcz-3d-gll",
+    "sz3-3d-uniform",
+    "sz3-3d-gll",
+    "sz3-1d-uniform",
+    "sz3-4d-uniform",
+    "qoz-4d-uniform",
+    "sz2-3d-uniform",
+    "sz2-3d-gll",
+    "zfp-4d-uniform",
+    "sperr-3d-uniform",
+]
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
@@ -96,31 +112,34 @@ eb_list=[1e-4,1e-5,1e-6,1e-7,1e-8]
 sperr_source_path="third_party/sperr"
 sperr_build_path="build/sperr_build"
 sperr_install_path="install/sperr_install"
-os.makedirs(sperr_build_path,exist_ok=True)
-if not os.path.exists(os.path.join(sperr_build_path,"CMakeCache.txt")):
-    run_command(f"cmake -S \"{sperr_source_path}\" -B \"{sperr_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{sperr_install_path}\" \
-                -DBUILD_SHARED_LIBS=OFF",silent=silent_build)
-run_command(f"cmake --build {sperr_build_path} --parallel {build_max_cpus}",silent=silent_build)
-run_command(f"cmake --install {sperr_build_path}",silent=silent_build)
+if build_before_test:
+    os.makedirs(sperr_build_path,exist_ok=True)
+    if not os.path.exists(os.path.join(sperr_build_path,"CMakeCache.txt")):
+        run_command(f"cmake -S \"{sperr_source_path}\" -B \"{sperr_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{sperr_install_path}\" \
+                    -DBUILD_SHARED_LIBS=OFF",silent=silent_build)
+    run_command(f"cmake --build {sperr_build_path} --parallel {build_max_cpus}",silent=silent_build)
+    run_command(f"cmake --install {sperr_build_path}",silent=silent_build)
 ######## build mfem ########
 mfem_source_path="third_party/mfem"
 mfem_build_path="build/mfem_build"
 mfem_install_path="install/mfem_install"
-os.makedirs(mfem_build_path,exist_ok=True)
-if not os.path.exists(os.path.join(mfem_build_path,"CMakeCache.txt")):
-    run_command(f"cmake -S \"{mfem_source_path}\" -B \"{mfem_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{mfem_install_path}\"",
-                silent=silent_build)
-run_command(f"cmake --build {mfem_build_path} --parallel {build_max_cpus}",silent=silent_build)
-run_command(f"cmake --install {mfem_build_path}",silent=silent_build)
+if build_before_test:
+    os.makedirs(mfem_build_path,exist_ok=True)
+    if not os.path.exists(os.path.join(mfem_build_path,"CMakeCache.txt")):
+        run_command(f"cmake -S \"{mfem_source_path}\" -B \"{mfem_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{mfem_install_path}\"",
+                    silent=silent_build)
+    run_command(f"cmake --build {mfem_build_path} --parallel {build_max_cpus}",silent=silent_build)
+    run_command(f"cmake --install {mfem_build_path}",silent=silent_build)
 ######## build main ########
 main_source_path="c_codes"
 main_build_path="build"
 main_install_path="install"
-os.makedirs(main_build_path,exist_ok=True)
-run_command(f"cmake -S \"{main_source_path}\" -B \"{main_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{main_install_path}\"",
-            silent=silent_build)
-run_command(f"cmake --build {main_build_path} --parallel {build_max_cpus}",silent=silent_build)
-run_command(f"cmake --install {main_build_path}",silent=silent_build)
+if build_before_test:
+    os.makedirs(main_build_path,exist_ok=True)
+    run_command(f"cmake -S \"{main_source_path}\" -B \"{main_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{main_install_path}\"",
+                silent=silent_build)
+    run_command(f"cmake --build {main_build_path} --parallel {build_max_cpus}",silent=silent_build)
+    run_command(f"cmake --install {main_build_path}",silent=silent_build)
 for method in method_list:
     for eb in eb_list:
         if format in ["nekrs","mfem","nektar++"]:
