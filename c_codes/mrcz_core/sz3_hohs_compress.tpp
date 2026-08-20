@@ -4,6 +4,7 @@
 #include <set>
 #include "mrcz.hpp"
 #include "huffman.hpp"
+#include "qoz_3d_gll_prediction.tpp"
 #include "quantize.tpp"
 #include "../third_party/zstd/lib/zstd.h"
 
@@ -97,6 +98,7 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
         sz3_generate_weight(left_indices2,right_indices2,mid_indices2,compressed_indices2,left_weight2,right_weight2,x2);
     }
     uint32_t max_level=max(max(left_indices0.size(),left_indices1.size()),left_indices2.size());
+    mrcz::detail::qoz_3d_gll_prediction_plan<T> qoz_plan(params.x);
 
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
@@ -114,6 +116,16 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
             T *element=data.data()+i*n012;
             int64_t *element_err_qb=err_qb+i*n012;
             int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(n012-corner_num);
+            if (params.method=="QoZ-3D-GLL")
+            {
+                auto apply_prediction=[&](T prediction,T &truth,int64_t &qb)
+                {
+                    params.quantize_and_overwrite_err(prediction,truth,qb,abs_eb,neg_2_eb);
+                };
+                mrcz::detail::qoz_3d_gll_process_element(element,element_err_qb,qoz_plan,n1,n2,apply_prediction);
+            }
+            else
+            {
             uint32_t level0=0,level1=0,level2=0;
             for (uint32_t level=0;level<max_level;level++)
             {
@@ -162,6 +174,7 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
                             }
                     level2++;
                 }
+            }
             }
             params.convert_err_eb_to_no_corner_err_eb(element_no_corner_err_qb,element_err_qb,n0,n1,n2,n12,n012);
         }

@@ -56,7 +56,7 @@ namespace mrcz
     class param_class
     {
         public:
-            bool if_coefficient_transpose=true; // mrcz-3d-gll和experimental变体都使用
+            bool if_coefficient_transpose=true; // MRCZ-3D-GLL和experimental变体都使用
             string grid_assumption="GLL"; //GLL ,chebyshev, uniform
             string transform="DChT"; //DLT, DChT, DST, DCT
 
@@ -74,7 +74,7 @@ namespace mrcz
             unordered_map<string,uint64_t> field_end_address;
             bool got_element_range=false;
             uint64_t element_begin_index=0;
-            uint64_t element_end_index=0;
+            uint64_t element_end_index=0; //内部统一使用[begin,end)半开区间
 
             header_class header;
             unordered_map<string,T> data_range_min;

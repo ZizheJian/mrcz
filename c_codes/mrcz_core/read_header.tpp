@@ -189,7 +189,7 @@ namespace mrcz
             if (last_line.rfind("DofNum=",0)==0)
                 header.dof_num=stoll(last_line.substr(7));
             header.original_header=header.original_header.substr(0,last2n+1);
-            ofstream dummy_decompressed_file(data_path+".mrcz.bin");
+            ofstream dummy_decompressed_file(data_path+"."+method+".bin");
             dummy_decompressed_file.write(header.original_header.c_str(),header.original_header.size());
             dummy_decompressed_file.put('\n');
             for (uint64_t i=0;i<header.dof_num;i++)

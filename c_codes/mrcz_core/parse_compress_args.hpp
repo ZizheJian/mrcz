@@ -3,11 +3,41 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <limits>
 
+#include <parsers.hpp>
 #include "mrcz.hpp"
 
 namespace mrcz
 {
+    inline void parse_element_range(string elements,uint64_t &begin,uint64_t &end)
+    {
+        if (elements.size()<5 or elements.front()!='[' or
+            (elements.back()!=']' and elements.back()!=')'))
+            throw runtime_error("-elements必须使用[begin,end]或[begin,end)格式");
+
+        char right_bracket=elements.back();
+        string range_body=elements.substr(1,elements.size()-2);
+        size_t comma=range_body.find(',');
+        if (comma==string::npos or comma==0 or comma==range_body.size()-1 or
+            range_body.find(',',comma+1)!=string::npos)
+            throw runtime_error("-elements必须使用[begin,end]或[begin,end)格式");
+
+        string begin_string=range_body.substr(0,comma);
+        string end_string=range_body.substr(comma+1);
+        begin=parse_uint64(begin_string,"-elements的begin");
+        uint64_t input_end=parse_uint64(end_string,"-elements的end");
+
+        if (right_bracket==']')
+        {
+            if (input_end==numeric_limits<uint64_t>::max())
+                throw runtime_error("-elements闭区间的end过大");
+            end=input_end+1;
+        }
+        else
+            end=input_end;
+    }
+
     inline param_class<float> parse_compress_args(int argc,char **argv)
     {
         param_class<float> params;
@@ -36,12 +66,7 @@ namespace mrcz
                 if (i+1>=argc)
                     throw runtime_error("缺少-elements参数后的element范围");
                 string elements=argv[++i];
-                if (elements.size()<5 or elements.front()!='[' or elements.back()!=']' or elements.find(',')==string::npos)
-                    throw runtime_error("-elements必须使用[begin,end]格式");
-                elements=elements.substr(1,elements.size()-2);
-                size_t comma=elements.find(',');
-                params.element_begin_index=stoull(elements.substr(0,comma));
-                params.element_end_index=stoull(elements.substr(comma+1));
+                parse_element_range(elements,params.element_begin_index,params.element_end_index);
                 params.got_element_range=true;
             }
             else if (string(argv[i])=="-fields")
@@ -63,7 +88,7 @@ namespace mrcz
                 if (i+2>=argc)
                     throw runtime_error("缺少-M参数后的误差控制模式和误差值");
                 params.eb_mode=argv[++i];
-                params.input_eb=stof(argv[++i]);
+                params.input_eb=parse_positive_float(argv[++i],"-M的error bound");
             }
             else if (string(argv[i])=="-method")
             {
@@ -75,9 +100,10 @@ namespace mrcz
             {
                 if (i+1>=argc)
                     throw runtime_error("缺少-max-cpus参数后的CPU数量");
-                params.max_cpus=stoi(argv[++i]);
-                if (params.max_cpus<=0)
-                    throw runtime_error("-max-cpus必须是正整数");
+                uint32_t max_cpus=parse_positive_uint32(argv[++i],"-max-cpus");
+                if (max_cpus>numeric_limits<int>::max())
+                    throw runtime_error("-max-cpus超出int范围");
+                params.max_cpus=max_cpus;
             }
             else
                 throw runtime_error("未知的命令行参数: "+string(argv[i]));

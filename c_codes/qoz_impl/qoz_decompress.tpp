@@ -17,7 +17,7 @@ void qoz_decompress(mrcz::param_class<T> &params,string field)
     {
         auto &partition=partitions[partition_id];
         if (partition.zstd_bs.empty())
-            throw runtime_error("qoz-4d-uniform partition bitstream为空");
+            throw runtime_error("QoZ-4D-uniform partition bitstream为空");
         uint64_t begin=partition.begin_index*header.element_size;
         qoz_decompress_4d(partition.zstd_bs,decompressed_data.data()+begin);
     }

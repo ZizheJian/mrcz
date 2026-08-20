@@ -15,7 +15,7 @@ namespace mrcz::baseline
     {
         auto backend=[]<typename U>(param_class<U> &backend_params,string field)
         {
-            if (backend_params.method=="sz2-3d-uniform" or backend_params.method=="sz3-3d-uniform")
+            if (backend_params.method=="SZ2-3D-uniform" or backend_params.method=="SZ3-3D-uniform")
             {
                 vector<vector<U>> backup_x=backend_params.x;
                 for (int dim=0;dim<3;dim++)
@@ -24,23 +24,23 @@ namespace mrcz::baseline
                             backend_params.x[dim][i]=(U)i/(backend_params.x[dim].size()-1)*2-1;
                     else
                         backend_params.x[dim][0]=0;
-                if (backend_params.method=="sz2-3d-uniform")
+                if (backend_params.method=="SZ2-3D-uniform")
                     sz2_1_compress(backend_params,field);
                 else
                     sz3_2_compress(backend_params,field);
                 backend_params.x=backup_x;
             }
-            else if (backend_params.method=="sz2-3d-gll")
+            else if (backend_params.method=="SZ2-3D-GLL")
                 sz2_1_compress(backend_params,field);
-            else if (backend_params.method=="sz3-1d-uniform")
+            else if (backend_params.method=="SZ3-1D-uniform")
                 sz3_1d_compress(backend_params,field);
-            else if (backend_params.method=="sz3-4d-uniform")
+            else if (backend_params.method=="SZ3-4D-uniform")
                 sz3_4d_compress(backend_params,field);
-            else if (backend_params.method=="qoz-4d-uniform")
+            else if (backend_params.method=="QoZ-4D-uniform")
                 qoz_compress(backend_params,field);
-            else if (backend_params.method=="zfp-4d-uniform")
+            else if (backend_params.method=="ZFP-4D-uniform")
                 zfp_compress(backend_params,field);
-            else if (backend_params.method=="sperr-3d-uniform")
+            else if (backend_params.method=="SPERR-3D-uniform")
                 sperr_compress(backend_params,field);
             else
                 throw runtime_error("未知的baseline压缩方法: "+backend_params.method);

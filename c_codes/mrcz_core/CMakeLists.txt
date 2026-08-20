@@ -7,7 +7,7 @@ target_include_directories(mrcz INTERFACE
     $<INSTALL_INTERFACE:include>)
 
 find_package(OpenMP REQUIRED)
-target_link_libraries(mrcz INTERFACE libzstd_static tinyxml2::tinyxml2 OpenMP::OpenMP_CXX)
+target_link_libraries(mrcz INTERFACE parsers::parsers libzstd_static tinyxml2::tinyxml2 OpenMP::OpenMP_CXX)
 
 # INTERFACE target不生成.a或.so文件；安装时只登记target并复制公共头文件
 install(TARGETS mrcz)

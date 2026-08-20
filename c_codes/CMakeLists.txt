@@ -12,6 +12,7 @@ set(tinyxml2_BUILD_TESTING OFF CACHE BOOL "Build tinyxml2 tests" FORCE)
 set(BUILD_SZ3_BINARY OFF CACHE BOOL "Build SZ3 command-line and C API tools" FORCE)
 set(SZ3_USE_BUNDLED_ZSTD OFF CACHE BOOL "Use SZ3 bundled Zstd" FORCE)
 
+add_subdirectory(../third_party/parsers/c_codes ${CMAKE_BINARY_DIR}/parsers_build)
 add_subdirectory(mrcz_core)
 add_subdirectory(../third_party/zstd ${CMAKE_BINARY_DIR}/zstd_build)
 add_subdirectory(../third_party/zfp ${CMAKE_BINARY_DIR}/zfp_build)

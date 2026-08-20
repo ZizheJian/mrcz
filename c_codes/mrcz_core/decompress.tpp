@@ -189,7 +189,7 @@ namespace mrcz
         {
             validate_common_params(params);
             if (params.method.empty())
-                params.method="mrcz-3d-gll";
+                params.method="MRCZ-3D-GLL";
             params.all_fields_to_process=params.fields_to_process.empty();
             params.read_header("decompress");
             params.default_init();
@@ -211,12 +211,13 @@ namespace mrcz
         void decompress(param_class<T> &params)
         {
             if (params.method.empty())
-                params.method="mrcz-3d-gll";
-            if (params.method!="mrcz-3d-gll" and params.method!="mrcz-3d-gll-experimental" and params.method!="sz3-3d-gll")
+                params.method="MRCZ-3D-GLL";
+            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-experimental" and
+                params.method!="SZ3-3D-GLL" and params.method!="QoZ-3D-GLL")
                 throw runtime_error("mrcz::core::decompress不支持方法: "+params.method);
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
-                if (backend_params.method=="sz3-3d-gll")
+                if (backend_params.method=="SZ3-3D-GLL" or backend_params.method=="QoZ-3D-GLL")
                     sz3_2_decompress(backend_params,field);
                 else
                     backend_params.decompress_mrcz(field);

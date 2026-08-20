@@ -145,7 +145,7 @@ void write_data(mrcz::param_class<T> &params,string field)
 template<typename T>
 void write_data_nekrs(mrcz::param_class<T> &params,string field)
 {
-    fstream decompressed_file(params.data_path+".mrcz.bin",ios::app|ios::binary);
+    fstream decompressed_file(params.data_path+"."+params.method+".bin",ios::app|ios::binary);
     if (field=="UX" || field=="UY" || field=="UZ")
     {
         if (field=="UX")
@@ -201,7 +201,7 @@ void write_data_mfem(mrcz::param_class<T> &params,string field)
     auto &header=params.header;
     vector<T> dof_values(header.dof_num,0);
     vector<uint64_t> dof_duplicate_times(header.dof_num,0);
-    ifstream data_file(params.data_path+".mrcz.bin");
+    ifstream data_file(params.data_path+"."+params.method+".bin");
     ifstream mesh_file(params.mesh_path);
     mfem::Mesh mesh(mesh_file,1,1);
     mfem::GridFunction gf(&mesh,data_file);
@@ -243,7 +243,7 @@ void write_data_mfem(mrcz::param_class<T> &params,string field)
         assert(dof_duplicate_times[i]>0);
         dof_values[i]/=dof_duplicate_times[i];
     }
-    ofstream decompressed_file(params.data_path+".mrcz.bin");
+    ofstream decompressed_file(params.data_path+"."+params.method+".bin");
     decompressed_file.write(header.original_header.c_str(),header.original_header.size());
     decompressed_file.put('\n');
     char buf[64];

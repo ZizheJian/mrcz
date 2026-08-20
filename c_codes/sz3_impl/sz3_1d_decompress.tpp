@@ -18,14 +18,14 @@ void sz3_1d_decompress(mrcz::param_class<T> &params,string field)
         auto &partition=partitions[partition_id];
         uint64_t begin=partition.begin_index*header.element_size;
         if (partition.zstd_bs.empty())
-            throw runtime_error("sz3-1d-uniform partition bitstream为空");
+            throw runtime_error("SZ3-1D-uniform partition bitstream为空");
 
         SZ3::Config config;
         T *output=decompressed_data.data()+begin;
         SZ_decompress<T>(config,reinterpret_cast<const char*>(partition.zstd_bs.data()),
             partition.zstd_bs.size(),output);
         if (config.N!=1 or config.num!=partition.element_num*header.element_size)
-            throw runtime_error("sz3-1d-uniform partition尺寸与bitstream不一致");
+            throw runtime_error("SZ3-1D-uniform partition尺寸与bitstream不一致");
     }
     double end_time=omp_get_wtime();
     printf("Decompression time= %f seconds\n",end_time-start_time);

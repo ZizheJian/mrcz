@@ -79,7 +79,7 @@ MRCZ C++代码整理待办事项
        parse_compress_args(argc,argv)得到params，最后都调用mrcz::compress(params)。
        mrcz::compress是位于mrcz_core之外的顶层分派入口：根据method调用
        mrcz::core::compress或mrcz::baseline::compress，但不让mrcz_core依赖baseline。
-       mrcz_core应支持项目自身的mrcz-3d-gll和sz3-3d-gll两种方法；sz2-3d-uniform、sz2-3d-gll、sz3-3d-uniform、
+       mrcz_core应支持项目自身的MRCZ-3D-GLL和SZ3-3D-GLL两种方法；SZ2-3D-uniform、SZ2-3D-GLL、SZ3-3D-uniform、
        zfp和sperr属于baseline，不应成为mrcz_core的内部依赖。
        该入口应负责目前compress.cpp中compress1/compress2包含的MRCZ公共流程：
        - 检查和初始化params；
@@ -93,8 +93,8 @@ MRCZ C++代码整理待办事项
        当前进度：已增加mrcz_core/mrcz.hpp和compress.tpp，并建立只执行一次的
        compress_file_with_backend。MRCZ和所有baseline已共用参数检查、header读取、partition创建、
        field读取、动态范围计算、float/double选择和bitstream写出流程。已删除
-       compress.cpp中重复的compress1/compress2。sz3-3d-gll已移入mrcz_core，并通过
-       mrcz::core::compress入口调用；sz3-3d-uniform baseline仍可复用其预测实现。顶层
+       compress.cpp中重复的compress1/compress2。SZ3-3D-GLL已移入mrcz_core，并通过
+       mrcz::core::compress入口调用；SZ3-3D-uniform baseline仍可复用其预测实现。顶层
        mrcz::compress已统一分派core和baseline。
        已完成独立于CLI的编译测试：外部源文件创建param_class<float>、自由设置format、
        data_path、error bound、method和max_cpus，并成功实例化
@@ -108,7 +108,7 @@ MRCZ C++代码整理待办事项
        decompress(argc,argv)重载。
        该入口现已负责原decompress.cpp中decompress1/decompress2包含的公共流程：
        参数检查、header读取、field循环、bitstream读取、float/double切换、backend调用、
-       可选解压文件写出和误差统计。mrcz::core::decompress支持mrcz-3d-gll和sz3-3d-gll；
+       可选解压文件写出和误差统计。mrcz::core::decompress支持MRCZ-3D-GLL和SZ3-3D-GLL；
        mrcz::baseline::decompress支持其他baseline；顶层mrcz::decompress统一分派。
        已通过独立于CLI的编译测试，并用t1在REL=1e-3下完成全部7种方法的运行时回归。
 
@@ -152,8 +152,8 @@ MRCZ C++代码整理待办事项
 [x] 11. 建立不含实验功能的正式mrcz方法。
         method=mrcz使用普通均匀量化区间，并完整编码所有系数模式。
 
-[x] 12. 评估mrcz-3d-gll-experimental中的两项实验优化。
-        mrcz-3d-gll-experimental复用compress_mrcz/decompress_mrcz公共流程，没有复制正式版本。
+[x] 12. 评估MRCZ-3D-GLL-experimental中的两项实验优化。
+        MRCZ-3D-GLL-experimental复用compress_mrcz/decompress_mrcz公共流程，没有复制正式版本。
         曾测试扩大系数量化为0的区间，但它在mixlay0.f00001和jicf0.f00000上按相同
         PSNR比较时性能均更差，因此已从正式代码删除，原实现备份在
         c_codes/trash/zero_freq_expanding.tpp且不参与构建。
@@ -162,11 +162,12 @@ MRCZ C++代码整理待办事项
         PSNR，但CR平均只提高约0.107%，最大约0.486%，收益不足以抵消实现和格式复杂度。
         因此也已从正式代码删除，原压缩与解压实现分别备份在
         c_codes/trash/zero_map_compress.tpp和zero_map_decompress.tpp且不参与构建。
-        mrcz-3d-gll-experimental方法名暂时保留，作为未来实验的入口；当前行为与
-        mrcz-3d-gll相同。
+        MRCZ-3D-GLL-experimental方法名作为未来实验的入口。当前临时用于第31项的
+        角点/中心点prediction residual诊断，只读取field、打印汇总结果后正常返回，
+        不执行正式压缩，也不写bitstream。
 
 [x] 13. 整理实验参数及其开关。
-        当前只保留if_coefficient_transpose。它是mrcz-3d-gll及其experimental变体共用的系数
+        当前只保留if_coefficient_transpose。它是MRCZ-3D-GLL及其experimental变体共用的系数
         无损压缩前布局选项，不再有只属于experimental的开关。
         为保持param_class易于直接修改，暂时继续保留public成员，不额外包装
         experimental_options。命令行不提供实验开关。
@@ -258,9 +259,9 @@ MRCZ C++代码整理待办事项
         - 确认安装目录包含全部需要的.hpp/.tpp文件。
         本次按测试需求跳过已多次验证的NekRS。MFEM使用ex0examples/sol.gf及mesh.mesh
         的no_name_field，Nektar++使用Cylinder_Direct.rst.vtu的u，均采用REL=1e-4、
-        max-cpus=1。当时使用的全部方法（现已统一重命名为mrcz-3d-gll、
-        mrcz-3d-gll-experimental、sz3-3d-gll、sz3-3d-uniform、sz2-3d-uniform、
-        sz2-3d-gll、zfp-4d-uniform和sperr-3d-uniform）均成功完成压缩、解压并满足
+        max-cpus=1。当时使用的全部方法（现已统一重命名为MRCZ-3D-GLL、
+        MRCZ-3D-GLL-experimental、SZ3-3D-GLL、SZ3-3D-uniform、SZ2-3D-uniform、
+        SZ2-3D-GLL、ZFP-4D-uniform和SPERR-3D-uniform）均成功完成压缩、解压并满足
         最大误差界。CMake重新配置、两个主程序构建、
         安装及git diff --check也均通过，安装目录包含当前mrcz_core的全部.hpp/.tpp。
 
@@ -270,19 +271,19 @@ MRCZ C++代码整理待办事项
 
 [x] 24. 完成正式版与experimental版的对照测试并结束当前实验。
         小数据测试确认两者都满足误差界；jicf0.f00000测试表明zero map收益可以忽略，
-        因而已归档并删除该优化。当前mrcz-3d-gll-experimental没有启用实验优化，行为与
-        mrcz-3d-gll相同；未来加入新实验功能时再为它补充相应的对照测试。
+        因而已归档并删除该优化。MRCZ-3D-GLL-experimental现临时用于第31项的纯预测
+        诊断，不生成可解压的bitstream；未来加入新实验压缩功能时再补充对照测试。
 
 [x] 25. 重新检查并统一compressor名称。
         命令行、压缩文件后缀和CSV列名统一采用“算法-维度-坐标[-变体]”：
-        - mrcz-3d-gll、mrcz-3d-gll-experimental；
-        - sz3-3d-uniform、sz3-3d-gll；
-        - sz2-3d-uniform、sz2-3d-gll；
-        - zfp-4d-uniform、sperr-3d-uniform。
+        - MRCZ-3D-GLL、MRCZ-3D-GLL-experimental；
+        - SZ3-3D-uniform、SZ3-3D-GLL；
+        - SZ2-3D-uniform、SZ2-3D-GLL；
+        - ZFP-4D-uniform、SPERR-3D-uniform。
         旧名称不再作为alias执行，使用时会提示对应的新名称。未来官方API baseline使用
-        sz3-1d-uniform、sz3-4d-uniform和qoz-4d-uniform。
+        SZ3-1D-uniform、SZ3-4D-uniform和QoZ-4D-uniform。
 
-[x] 26. 实现官方API baseline sz3-1d-uniform。
+[x] 26. 实现官方API baseline SZ3-1D-uniform。
         实际行为：
         - 将每个partition中的数据视为一维数组；
         - 对每个partition分别调用SZ3的一维API；
@@ -298,7 +299,7 @@ MRCZ C++代码整理待办事项
 
 [x] 27. 增加QoZ baseline。
         官方szcompressor/QoZ的2.0分支已作为third_party/QoZ submodule加入，并实现
-        qoz-4d-uniform：每个partition按[element,n2,n1,n0]传给QoZ四维API，使用
+        QoZ-4D-uniform：每个partition按[element,n2,n1,n0]传给QoZ四维API，使用
         ABS error bound和QoZ=4，各partition独立调用并沿用MRCZ现有的bitstream容器。
         QoZ与SZ3的API都在全局namespace中定义SZ_compress/SZ_decompress，而且部分
         include guard也重名，因此不能在同一翻译单元包含两套头文件。当前使用独立的
@@ -310,8 +311,8 @@ MRCZ C++代码整理待办事项
         1e-12，以及double数据tc_channel0.f00001的UX在REL=1e-10，最大误差均未超过
         error bound；这只是小数据验证，正式实验仍需继续检查每个field的max error。
 
-[x] 28. 增加sz3-4d-uniform baseline。
-        每个partition按[element,n2,n1,n0]调用官方SZ3四维API，与sz3-1d-uniform
+[x] 28. 增加SZ3-4D-uniform baseline。
+        每个partition按[element,n2,n1,n0]调用官方SZ3四维API，与SZ3-1D-uniform
         使用完全相同的partition和容器格式。这项对照有必要保留，因为它直接衡量保留
         四维局部结构相对于展平为一维的影响，而且不同数据上的结论并不一致。
         单核、REL=1e-4初测：float test0.f00001的UZ上，1D/4D的BR分别为0.3065/
@@ -319,7 +320,28 @@ MRCZ C++代码整理待办事项
         两种方法都满足error bound。该结果说明不能预先假定4D一定优于或劣于1D，
         正式实验应在相同PSNR下跨多个field比较。
 
-[ ] 29. 调整并测试sz3-3d-gll的遍历/预测顺序。
+[ ] 29. 为所有baseline建立统一的实验接口和命名记录。
+        每个baseline至少记录：
+        - 正式名称和命令行method名称；
+        - 输入数据的维度组织方式；
+        - partition边界的处理方式；
+        - 调用的第三方库版本和API；
+        - error-bound语义；
+        - bitstream拼接格式；
+        - 是否支持float/double及1D/2D/3D element；
+        - rate-distortion和速度统计方式。
+        这是一项只整理现状、不修改bitstream的低风险工作，应最先完成。整理结果应放在
+        README或单独的实验说明文件中，TODO只记录结论，避免长期维护两份详细定义。
+
+[ ] 30. 简化单个无名field的压缩文件名。
+        当前MFEM等只有一个无名field的输入会将其内部命名为no_name_field，并生成
+        <data_path>_no_name_field.<method>。这种情况下文件名不应包含人为补充的field名称，
+        应改为<data_path>.<method>。压缩和解压端必须使用完全相同的路径规则，并检查
+        与现有解压输出及其他辅助文件是否存在命名冲突；还需决定是否兼容读取旧的
+        _no_name_field文件。多field或有正式field名称的输入继续使用现有命名规则。
+        该项改动范围较小，但会改变文件名，因此排在纯文档整理之后并单独回归MFEM。
+
+[ ] 31. 调整并测试SZ3-3D-GLL的遍历/预测顺序。
         当前顺序模仿SZ3。需要增加至少一种“从element中间向外围扩展”的顺序，并在
         完全相同的误差界、量化和无损编码条件下比较：
         - prediction residual分布；
@@ -330,11 +352,19 @@ MRCZ C++代码整理待办事项
         在修改前先把当前遍历顺序写成明确的索引序列或单元测试，保证新旧顺序可复现。
 
         候选方案一是类似QoZ multidimensional interpolation paradigm的分层预测。
+        实现后的正式method名称为QoZ-3D-GLL：对每个element独立做3D分层多维预测，
+        并使用真实GLL坐标。它与QoZ-4D-uniform不同；后者将每个partition视为四维
+        均匀网格并直接调用QoZ官方API。
         在每个细化层级中，先处理只有一个新坐标的点，对它们做一维内插；
         再处理有两个新坐标的点，将两个方向的一维内插结果加权为二维预测；
         最后处理有三个新坐标的点，将三个方向的预测结果加权。每个方向
         必须使用真实GLL坐标计算内插权重。该方案与QoZ已有方法相似，新颖性
         可能有限，但可作为低风险对照和后续更新遍历方法的基准。
+
+        目前已完成压缩/解压实现并接入t1。test0.f00001的UZ、REL=1e-4、单核测试
+        满足误差界限，但BR=0.56894，明显差于SZ3-3D-GLL的0.08825；
+        mixlay0.f00001的二维退化数据也能正确压缩和解压。因此当前实现先作为
+        待扩大测试的实验压缩器保留，不预设其性能优于SZ3遍历。
 
         在改动正式压缩流程前，先做不量化、不写bitstream的prediction residual诊断，
         验证GLL网格上“角点用附近内部点外插”与“中心点用两侧点内插”哪个
@@ -345,7 +375,22 @@ MRCZ C++代码整理待办事项
         由于角点外插所依赖的内部点必须先解码，此诊断只判断局部可预测性；
         如果外插明显更好，再设计中心向外的完整无循环依赖遍历，并计入额外初始点的代价。
 
-[ ] 30. 评估MRCZ是否需要为每个变换模式使用不同的coefficient error bound。
+        已在test0.f00001的UZ、T、S00和S01上完成上述诊断（REL=1e-4）。
+        6点中心内插和6点角点外插的总体NMAE分别为1.0558e-2和1.0673e-2，
+        NRMSE分别为2.9174e-2和3.2875e-2，预期量化为0的比例分别为61.35%和
+        59.55%。角点外插在部分field上的MAE略好，但改善没有稳定转化为更高的
+        零量化比例；在T上则明显变差，且总体尾部误差更大。3点角点最近邻平均
+        则在所有总体指标上都明显较差。因此排除“从中心向外、最后外插角点”的
+        遍历方案，不再实现完整压缩流程；第31项后续只保留QoZ式分层1D/2D/3D内插方向。
+
+        候选方案二是在分层遍历不变的前提下尝试三次（cubic）插值。每个方向
+        使用四个已重建的reference point，按真实GLL坐标计算Lagrange插值权重；
+        边界或当前层级没有四个可用reference时回退到二次或线性插值。在相同遍历、
+        error bound和无损编码下与线性插值比较residual分布、量化为0的比例、BR、
+        PSNR和速度。还需单独检查三次权重对已量化reference error的放大，避免少量
+        overshoot残差抵消平滑区域的收益。
+
+[ ] 32. 评估MRCZ是否需要为每个变换模式使用不同的coefficient error bound。
         当前所有模式共用由coeff_eb_scale得到的系数误差界。可研究：
         - 根据模式对重构误差的放大系数分配error bound；
         - 根据每个模式的平均绝对系数、方差或零频率自适应分配；
@@ -355,30 +400,8 @@ MRCZ C++代码整理待办事项
         先用离线实验比较统一error bound、分组error bound和逐模式error bound，再决定
         是否进入正式压缩格式。
 
-[ ] 31. 为所有baseline建立统一的实验接口和命名记录。
-        每个baseline至少记录：
-        - 正式名称和命令行method名称；
-        - 输入数据的维度组织方式；
-        - partition边界的处理方式；
-        - 调用的第三方库版本和API；
-        - error-bound语义；
-        - bitstream拼接格式；
-        - 是否支持float/double及1D/2D/3D element；
-        - rate-distortion和速度统计方式。
-        在这些定义稳定以后，再修改t1_start_c_code.py中的method_list和论文图例名称。
-
-
 第七阶段：坐标与文件尾metadata压缩
 =====================================
-
-[ ] 32. 增加坐标字段的压缩。
-        坐标X、Y、Z的结构和普通物理field不同，不应直接沿用当前的field压缩算法。
-        需要先明确坐标压缩的目标和约束：
-        - 利用element内GLL点及相邻element之间的几何结构；
-        - 确定坐标的error-bound语义，以及是否需要保证公共面上的点严格重合；
-        - 评估坐标误差对网格拓扑、element几何和后续数值计算的影响；
-        - 为坐标压缩设计独立的bitstream标记和解压路径；
-        - 与直接无损保存坐标的方案比较压缩率、速度和几何误差。
 
 [ ] 33. 调查并处理NekRS文件末尾的metadata。
         NekRS开发者提到，这部分数据没有严格的格式约定，官方文档中也没有给出
@@ -388,14 +411,19 @@ MRCZ C++代码整理待办事项
         - 在无法可靠解析时，优先将尾部字节视为opaque blob并无损保存，保证解压后逐字节还原；
         - 比较直接保存、通用无损压缩和不保存三种方案的大小与兼容性；
         - 只有在确认稳定结构后，才考虑为其设计专用压缩方法。
+        先做只读调查，再决定是否修改格式；它比坐标压缩更容易独立推进。
 
+[ ] 34. 增加坐标字段的压缩。
+        坐标X、Y、Z的结构和普通物理field不同，不应直接沿用当前的field压缩算法。
+        需要先明确坐标压缩的目标和约束：
+        - 利用element内GLL点及相邻element之间的几何结构；
+        - 确定坐标的error-bound语义，以及是否需要保证公共面上的点严格重合；
+        - 评估坐标误差对网格拓扑、element几何和后续数值计算的影响；
+        - 为坐标压缩设计独立的bitstream标记和解压路径；
+        - 与直接无损保存坐标的方案比较压缩率、速度和几何误差。
 
 第八阶段：最后清理
 ==================
-
-[ ] 34. 删除已经确认无用的大段注释代码。
-        等新结构、baseline重构和后续算法实验稳定以后再做，避免提前失去可供参考的
-        旧实现；其中t1_start_c_code.py内的旧SZ3-0代码至少保留到sz3-1d-uniform实现完成。
 
 [ ] 35. 按新的质量归一化方案整理并补充论文实验。
         已完成pb0.f00001的初步大数据实验：1947154个8*8*8 float element，使用128核，
@@ -409,12 +437,12 @@ MRCZ C++代码整理待办事项
         100%，因此不能用相同REL下的BR直接代表相同质量的压缩效果。对每个field的
         log(BR)-PSNR曲线插值后，在所有方法共同覆盖的固定PSNR=100 dB处，五个field的
         平均BR从低到高为：MRCZ-3D-GLL 1.183、SZ3-3D-GLL 4.558、
-        ZFP-4D-UNIFORM 6.007、SZ3-3D-UNIFORM 6.237、SZ3-4D-UNIFORM 6.257、
-        QoZ-4D-UNIFORM 6.517、SZ3-1D-UNIFORM 8.385、SZ2-3D-GLL 8.572、
-        SZ2-3D-UNIFORM 8.810、SPERR-3D-UNIFORM 9.768。MRCZ在相同PSNR下的BR
+        ZFP-4D-uniform 6.007、SZ3-3D-uniform 6.237、SZ3-4D-uniform 6.257、
+        QoZ-4D-uniform 6.517、SZ3-1D-uniform 8.385、SZ2-3D-GLL 8.572、
+        SZ2-3D-uniform 8.810、SPERR-3D-uniform 9.768。MRCZ在相同PSNR下的BR
         优势明显；ZFP在该数据上略优于其余普通baseline，与旧实验趋势一致。
         全部原始实验中的最小BR为0.0207644（SZ3-3D-GLL、P、REL=1e-2、
-        PSNR=45.89 dB），最大BR为16.6683（ZFP-4D-UNIFORM、T、REL=1e-6、
+        PSNR=45.89 dB），最大BR为16.6683（ZFP-4D-uniform、T、REL=1e-6、
         PSNR=157.49 dB）；两者质量不同，不能直接用于方法排名。
 
         初步速度观察：在REL从1e-2降到1e-6时，ZFP的每核压缩throughput约为
@@ -438,3 +466,17 @@ MRCZ C++代码整理待办事项
         - 补测更小REL或直接补测ABS=1e-6，以便和旧论文的速度记录做严格对应；
         - 主文建议包含BR-PSNR、128核throughput-PSNR、100 dB strong-scaling三类图，
           更完整的REL原始结果和多个目标PSNR的扩展性放入附录。
+
+[ ] 36. 删除已经确认无用的大段注释代码。
+        等新结构、baseline重构和后续算法实验稳定以后再做，避免提前失去可供参考的
+        旧实现。t1_start_c_code.py内的旧SZ3-0代码已在SZ3-1D-uniform完成后删除；
+        其他注释代码仍应逐段确认用途后再删除。
+
+[ ] 37. 将值域不超过两倍绝对误差界的field按常数压缩。
+        当前只有data_range_min==data_range_max时才进入常数压缩路径。以后可在得到每个
+        field最终使用的abs_eb后，将判定扩展为data_range_max-data_range_min<=2*abs_eb，
+        并保存一个能保证所有点逐点误差不超过abs_eb的代表值。候选值为值域中点，计算时
+        应使用min+(max-min)/2以避免min+max溢出；还要考虑浮点舍入，必要时验证代表值到
+        两个端点的距离。ABS和REL模式都应使用换算后的实际abs_eb执行同一判定。
+        该优化应复用或版本化现有constant flag，使压缩和解压格式保持对称，并补充float、
+        double、边界恰好等于2*abs_eb、负值区间及单个无名field等端到端回归测试。

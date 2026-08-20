@@ -9,6 +9,7 @@
 
 #include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "read_and_write_data.tpp"
+#include "experimental_prediction_analysis.tpp"
 #include "sz3_hohs_compress.tpp"
 #include "validate_params.hpp"
 
@@ -177,13 +178,20 @@ namespace mrcz
         void compress(param_class<T> &params)
         {
             if (params.method.empty())
-                params.method="mrcz-3d-gll";
-            if (params.method!="mrcz-3d-gll" and params.method!="mrcz-3d-gll-experimental" and params.method!="sz3-3d-gll")
+                params.method="MRCZ-3D-GLL";
+            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-experimental" and
+                params.method!="SZ3-3D-GLL" and params.method!="QoZ-3D-GLL")
                 throw runtime_error("mrcz::core::compress不支持方法: "+params.method);
+
+            if (params.method=="MRCZ-3D-GLL-experimental")
+            {
+                detail::analyze_experimental_prediction(params);
+                return;
+            }
 
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
-                if (backend_params.method=="sz3-3d-gll")
+                if (backend_params.method=="SZ3-3D-GLL" or backend_params.method=="QoZ-3D-GLL")
                     sz3_2_compress(backend_params,field);
                 else
                     backend_params.compress_mrcz(field);

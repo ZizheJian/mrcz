@@ -31,7 +31,7 @@ namespace mrcz
         tail_file.read(reinterpret_cast<char*>(tail_data.data()),tail_size);
         tail_file.close();
 
-        ofstream decompressed_file(data_path+".mrcz.bin",ios::app|ios::binary);
+        ofstream decompressed_file(data_path+"."+method+".bin",ios::app|ios::binary);
         decompressed_file.seekp(0,ios::end);
         decompressed_file.write(reinterpret_cast<char*>(tail_data.data()),tail_size);
         decompressed_file.close();

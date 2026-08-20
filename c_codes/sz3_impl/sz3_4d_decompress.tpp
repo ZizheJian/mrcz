@@ -17,7 +17,7 @@ void sz3_4d_decompress(mrcz::param_class<T> &params,string field)
     {
         auto &partition=partitions[partition_id];
         if (partition.zstd_bs.empty())
-            throw runtime_error("sz3-4d-uniform partition bitstream为空");
+            throw runtime_error("SZ3-4D-uniform partition bitstream为空");
 
         uint64_t begin=partition.begin_index*header.element_size;
         SZ3::Config config;
@@ -27,7 +27,7 @@ void sz3_4d_decompress(mrcz::param_class<T> &params,string field)
         if (config.N!=4 or config.dims[0]!=partition.element_num or
             config.dims[1]!=header.element_shape[2] or config.dims[2]!=header.element_shape[1] or
             config.dims[3]!=header.element_shape[0])
-            throw runtime_error("sz3-4d-uniform partition尺寸与bitstream不一致");
+            throw runtime_error("SZ3-4D-uniform partition尺寸与bitstream不一致");
     }
     double end_time=omp_get_wtime();
     printf("Decompression time= %f seconds\n",end_time-start_time);

@@ -38,3 +38,6 @@
 	path = third_party/QoZ
 	url = https://github.com/szcompressor/QoZ.git
 	branch = 2.0
+[submodule "third_party/parsers"]
+	path = third_party/parsers
+	url = git@github.com:ZizheJian/parsers.git
