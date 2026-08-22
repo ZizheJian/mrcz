@@ -5,7 +5,7 @@
 #include "sz3_hohs_compress.tpp"
 
 template<typename T>
-void sz3_2_decompress(mrcz::param_class<T> &params,string field)
+void sz3_2_decompress(mrcz::param_class<T> &params,string field,bool prediction_order_residual=false)
 {
 	auto &header=params.header;
     auto &blocks=params.partitions;
@@ -23,10 +23,11 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
     for (uint32_t dim=0;dim<3;dim++)
         if (header.element_shape[dim]>1)
             corner_num*=2;
+    uint32_t residual_num=n012-corner_num;
     T abs_eb=params.abs_eb[field];
     int64_t *corner_qb=new int64_t[corner_num*params.element_num_to_process];
     int64_t *err_qb=new int64_t[params.element_num_to_process*n012];
-    int64_t *no_corner_err_qb=new int64_t[params.element_num_to_process*(n012-corner_num)];
+    int64_t *no_corner_err_qb=new int64_t[params.element_num_to_process*residual_num];
     decompressed_data.resize(params.element_num_to_process*n012);
     vector<vector<uint32_t>> left_indices0,right_indices0,mid_indices0,compressed_indices0;
     vector<vector<uint32_t>> left_indices1,right_indices1,mid_indices1,compressed_indices1;
@@ -58,7 +59,10 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
         sz3_generate_weight(left_indices2,right_indices2,mid_indices2,compressed_indices2,left_weight2,right_weight2,x2);
     }
     uint32_t max_level=max(max(left_indices0.size(),left_indices1.size()),left_indices2.size());
-    mrcz::detail::qoz_3d_gll_prediction_plan<T> qoz_plan(params.x);
+    vector<uint32_t> prediction_positions;
+    if (prediction_order_residual)
+        prediction_positions=sz3_generate_prediction_positions(n0,n1,n2,n12,max_level,left_indices0,mid_indices0,compressed_indices0,
+            left_indices1,mid_indices1,compressed_indices1,left_indices2,mid_indices2,compressed_indices2);
 
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
@@ -75,30 +79,27 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
         const unsigned char *huffman_bs=huffman_bs_vec.data();
         mrcz::huffman_encoder_class<int64_t> corner_encoder;
         corner_encoder.load(huffman_bs);
-        corner_encoder.decode(huffman_bs,corner_qb+corner_num*begin_index,corner_num*(end_index-begin_index));
+        uint64_t element_num=end_index-begin_index;
+        int64_t *block_corner_qb=corner_qb+corner_num*begin_index;
+        corner_encoder.decode(huffman_bs,block_corner_qb,corner_num*element_num);
         mrcz::huffman_encoder_class<int64_t> err_encoder;
         err_encoder.load(huffman_bs);
-        err_encoder.decode(huffman_bs,no_corner_err_qb+(n012-corner_num)*begin_index,(n012-corner_num)*(end_index-begin_index));
+        int64_t *block_no_corner_err_qb=no_corner_err_qb+residual_num*begin_index;
+        err_encoder.decode(huffman_bs,block_no_corner_err_qb,residual_num*element_num);
         // 重构每个element角上的数据
         params.reconstruct_corner_number(corner_qb,begin_index,end_index,n0,n1,n2,n12,n012,abs_eb);
         //把no_corner_err_qb转换成err_qb
         for (uint64_t i=begin_index;i<end_index;i++)
         {
             int64_t *element_err_qb=err_qb+i*n012;
-            int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(n012-corner_num);
-            params.convert_no_corner_err_eb_to_err_eb(element_no_corner_err_qb,element_err_qb,n0,n1,n2,n12,n012);
+            int64_t *element_no_corner_err_qb=no_corner_err_qb+i*residual_num;
+            if (prediction_order_residual)
+                for (uint32_t residual_id=0;residual_id<residual_num;residual_id++)
+                    element_err_qb[prediction_positions[residual_id]]=element_no_corner_err_qb[residual_id];
+            else
+                params.convert_no_corner_err_eb_to_err_eb(element_no_corner_err_qb,element_err_qb,n0,n1,n2,n12,n012);
 
             T *element=decompressed_data.data()+i*n012;
-            if (params.method=="QoZ-3D-GLL")
-            {
-                auto apply_prediction=[&](T prediction,T &truth,int64_t &qb)
-                {
-                    truth=prediction-2*abs_eb*qb;
-                };
-                mrcz::detail::qoz_3d_gll_process_element(element,element_err_qb,qoz_plan,n1,n2,apply_prediction);
-            }
-            else
-            {
             uint32_t level0=0,level1=0,level2=0;
             for (uint32_t level=0;level<max_level;level++)
             {
@@ -147,7 +148,6 @@ void sz3_2_decompress(mrcz::param_class<T> &params,string field)
                             }
                     level2++;
                 }
-            }
             }
         }
     }

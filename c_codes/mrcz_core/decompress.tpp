@@ -10,6 +10,7 @@
 
 #include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "read_and_write_data.tpp"
+#include "qoz_3d_gll_decompress.tpp"
 #include "sz3_hohs_decompress.tpp"
 #include "validate_params.hpp"
 
@@ -213,12 +214,16 @@ namespace mrcz
             if (params.method.empty())
                 params.method="MRCZ-3D-GLL";
             if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-experimental" and
-                params.method!="SZ3-3D-GLL" and params.method!="QoZ-3D-GLL")
+                params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-experimental" and params.method!="QoZ-3D-GLL")
                 throw runtime_error("mrcz::core::decompress不支持方法: "+params.method);
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
-                if (backend_params.method=="SZ3-3D-GLL" or backend_params.method=="QoZ-3D-GLL")
+                if (backend_params.method=="SZ3-3D-GLL")
                     sz3_2_decompress(backend_params,field);
+                else if (backend_params.method=="SZ3-3D-GLL-experimental")
+                    sz3_2_decompress(backend_params,field,true);
+                else if (backend_params.method=="QoZ-3D-GLL")
+                    qoz_3d_gll_decompress(backend_params,field);
                 else
                     backend_params.decompress_mrcz(field);
             };

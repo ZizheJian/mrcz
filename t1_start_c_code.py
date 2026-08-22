@@ -14,6 +14,7 @@ build_before_test=True # 多个slurm实验并行时，应该先完成build和ins
 #   "MRCZ-3D-GLL-experimental"
 #   "SZ3-3D-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
 #   "SZ3-3D-GLL": 项目内实现的逐element 3D分层插值，使用真实GLL坐标
+#   "SZ3-3D-GLL-experimental": 每个element内按实际预测访问顺序排列非角点prediction residual
 #   "QoZ-3D-GLL": 项目内实现的逐element QoZ式分阶段多维插值，使用真实GLL坐标
 #   "SZ3-1D-uniform": 把每个partition展平为一维数组，调用官方SZ3 API
 #   "SZ3-4D-uniform": 把每个partition视为[element,n0,n1,n2]四维数组，调用官方SZ3 API

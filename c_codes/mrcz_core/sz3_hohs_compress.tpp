@@ -4,7 +4,6 @@
 #include <set>
 #include "mrcz.hpp"
 #include "huffman.hpp"
-#include "qoz_3d_gll_prediction.tpp"
 #include "quantize.tpp"
 #include "../third_party/zstd/lib/zstd.h"
 
@@ -44,8 +43,59 @@ void sz3_generate_weight(vector<vector<uint32_t>> &left_indices,vector<vector<ui
     }
 }
 
+inline vector<uint32_t> sz3_generate_prediction_positions(uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t max_level,
+    vector<vector<uint32_t>> &left_indices0,vector<vector<uint32_t>> &mid_indices0,vector<vector<uint32_t>> &compressed_indices0,
+    vector<vector<uint32_t>> &left_indices1,vector<vector<uint32_t>> &mid_indices1,vector<vector<uint32_t>> &compressed_indices1,
+    vector<vector<uint32_t>> &left_indices2,vector<vector<uint32_t>> &mid_indices2,vector<vector<uint32_t>> &compressed_indices2)
+{
+    vector<uint32_t> positions;
+    uint32_t level0=0,level1=0,level2=0;
+    for (uint32_t level=0;level<max_level;level++)
+    {
+        if (n0>1 and level0<left_indices0.size())
+        {
+            for (uint32_t i0=0;i0<left_indices0[level0].size();i0++)
+                for (auto i1:compressed_indices1[level1])
+                    for (auto i2:compressed_indices2[level2])
+                        positions.push_back(i1*n2+i2+mid_indices0[level0][i0]*n12);
+            level0++;
+        }
+        if (n1>1 and level1<left_indices1.size())
+        {
+            for (auto i0:compressed_indices0[level0])
+                for (uint32_t i1=0;i1<left_indices1[level1].size();i1++)
+                    for (auto i2:compressed_indices2[level2])
+                        positions.push_back(i0*n12+i2+mid_indices1[level1][i1]*n2);
+            level1++;
+        }
+        if (n2>1 and level2<left_indices2.size())
+        {
+            for (auto i0:compressed_indices0[level0])
+                for (auto i1:compressed_indices1[level1])
+                    for (uint32_t i2=0;i2<left_indices2[level2].size();i2++)
+                        positions.push_back(i0*n12+i1*n2+mid_indices2[level2][i2]);
+            level2++;
+        }
+    }
+    uint32_t corner_num=1;
+    for (uint32_t dim_size:{n0,n1,n2})
+        if (dim_size>1)
+            corner_num*=2;
+    uint32_t n012=n0*n1*n2;
+    if (positions.size()!=n012-corner_num)
+        throw runtime_error("SZ3 prediction position数量错误");
+    vector<bool> seen(n012,false);
+    for (auto position:positions)
+    {
+        if (position>=n012 or seen[position])
+            throw runtime_error("SZ3 prediction position重复或越界");
+        seen[position]=true;
+    }
+    return positions;
+}
+
 template<typename T>
-void sz3_2_compress(mrcz::param_class<T> &params,string field)
+void sz3_2_compress(mrcz::param_class<T> &params,string field,bool prediction_order_residual=false)
 {
     auto &header=params.header;
     auto &blocks=params.partitions;
@@ -63,11 +113,12 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
     for (uint32_t dim=0;dim<3;dim++)
         if (header.element_shape[dim]>1)
             corner_num*=2;
+    uint32_t residual_num=n012-corner_num;
     T abs_eb=params.abs_eb[field];
     T neg_2_eb=1/(2*abs_eb);
     int64_t *corner_qb=new int64_t[corner_num*params.element_num_to_process];
     int64_t *err_qb=new int64_t[params.element_num_to_process*n012];
-    int64_t *no_corner_err_qb=new int64_t[params.element_num_to_process*(n012-corner_num)];
+    int64_t *no_corner_err_qb=new int64_t[params.element_num_to_process*residual_num];
     vector<vector<uint32_t>> left_indices0,right_indices0,mid_indices0,compressed_indices0;
     vector<vector<uint32_t>> left_indices1,right_indices1,mid_indices1,compressed_indices1;
     vector<vector<uint32_t>> left_indices2,right_indices2,mid_indices2,compressed_indices2;
@@ -98,8 +149,10 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
         sz3_generate_weight(left_indices2,right_indices2,mid_indices2,compressed_indices2,left_weight2,right_weight2,x2);
     }
     uint32_t max_level=max(max(left_indices0.size(),left_indices1.size()),left_indices2.size());
-    mrcz::detail::qoz_3d_gll_prediction_plan<T> qoz_plan(params.x);
-
+    vector<uint32_t> prediction_positions;
+    if (prediction_order_residual)
+        prediction_positions=sz3_generate_prediction_positions(n0,n1,n2,n12,max_level,left_indices0,mid_indices0,compressed_indices0,
+            left_indices1,mid_indices1,compressed_indices1,left_indices2,mid_indices2,compressed_indices2);
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
     for (uint64_t block_id=0;block_id<blocks.size();block_id++) //这个block_id是假的，指的是在需要处理的blocks中的编号，而不是header文件中的编号
@@ -107,6 +160,8 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
         auto &block=blocks[block_id];
         uint64_t begin_index=block.begin_index;
         uint64_t end_index=block.end_index;
+        uint64_t element_num=end_index-begin_index;
+        int64_t *block_no_corner_err_qb=no_corner_err_qb+begin_index*residual_num;
         // 先量化位于每个element位于角上的点，覆盖原数据
         // 之后可能要改成压缩率更高的方法
         params.quantize_and_overwrite_corner_numbers(corner_qb,begin_index,end_index,n0,n1,n2,n12,n012,abs_eb,neg_2_eb);
@@ -115,17 +170,7 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
         {
             T *element=data.data()+i*n012;
             int64_t *element_err_qb=err_qb+i*n012;
-            int64_t *element_no_corner_err_qb=no_corner_err_qb+i*(n012-corner_num);
-            if (params.method=="QoZ-3D-GLL")
-            {
-                auto apply_prediction=[&](T prediction,T &truth,int64_t &qb)
-                {
-                    params.quantize_and_overwrite_err(prediction,truth,qb,abs_eb,neg_2_eb);
-                };
-                mrcz::detail::qoz_3d_gll_process_element(element,element_err_qb,qoz_plan,n1,n2,apply_prediction);
-            }
-            else
-            {
+            int64_t *element_no_corner_err_qb=no_corner_err_qb+i*residual_num;
             uint32_t level0=0,level1=0,level2=0;
             for (uint32_t level=0;level<max_level;level++)
             {
@@ -175,20 +220,24 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
                     level2++;
                 }
             }
-            }
-            params.convert_err_eb_to_no_corner_err_eb(element_no_corner_err_qb,element_err_qb,n0,n1,n2,n12,n012);
+            if (prediction_order_residual)
+                for (uint32_t residual_id=0;residual_id<residual_num;residual_id++)
+                    element_no_corner_err_qb[residual_id]=element_err_qb[prediction_positions[residual_id]];
+            else
+                params.convert_err_eb_to_no_corner_err_eb(element_no_corner_err_qb,element_err_qb,n0,n1,n2,n12,n012);
         }
+        int64_t *block_corner_qb=corner_qb+corner_num*begin_index;
         // 把两种qb无损压缩到一起
-        vector<unsigned char> huffman_bs_vec(n012*(end_index-begin_index)*sizeof(int64_t));
+        vector<unsigned char> huffman_bs_vec(n012*element_num*sizeof(int64_t));
         unsigned char *huffman_bs=huffman_bs_vec.data();
         mrcz::huffman_encoder_class<int64_t> corner_encoder;
-        corner_encoder.preprocess_encode(corner_qb+corner_num*begin_index,corner_num*(end_index-begin_index));
+        corner_encoder.preprocess_encode(block_corner_qb,corner_num*element_num);
         corner_encoder.save(huffman_bs);
-        corner_encoder.encode(corner_qb+corner_num*begin_index,corner_num*(end_index-begin_index),huffman_bs);
+        corner_encoder.encode(block_corner_qb,corner_num*element_num,huffman_bs);
         mrcz::huffman_encoder_class<int64_t> err_encoder;
-        err_encoder.preprocess_encode(no_corner_err_qb+begin_index*(n012-corner_num),(n012-corner_num)*(end_index-begin_index));
+        err_encoder.preprocess_encode(block_no_corner_err_qb,residual_num*element_num);
         err_encoder.save(huffman_bs);
-        err_encoder.encode(no_corner_err_qb+begin_index*(n012-corner_num),(n012-corner_num)*(end_index-begin_index),huffman_bs);
+        err_encoder.encode(block_no_corner_err_qb,residual_num*element_num,huffman_bs);
         uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
         uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
         block.zstd_bs.resize(max_zstd_bs_len);
@@ -196,11 +245,17 @@ void sz3_2_compress(mrcz::param_class<T> &params,string field)
         block.zstd_bs.resize(zstd_bs_len);
     }
     double end_time=omp_get_wtime();
+    printf("Compression time= %f seconds\n",end_time-start_time);
+    printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
     delete[] corner_qb;
     delete[] err_qb;
     delete[] no_corner_err_qb;
-    printf("Compression time= %f seconds\n",end_time-start_time);
-    printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
+}
+
+template<typename T>
+void sz3_3d_gll_experimental_compress(mrcz::param_class<T> &params,string field)
+{
+    sz3_2_compress(params,field,true);
 }
 
 namespace mrcz

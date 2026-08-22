@@ -341,54 +341,161 @@ MRCZ C++代码整理待办事项
         _no_name_field文件。多field或有正式field名称的输入继续使用现有命名规则。
         该项改动范围较小，但会改变文件名，因此排在纯文档整理之后并单独回归MFEM。
 
-[ ] 31. 调整并测试SZ3-3D-GLL的遍历/预测顺序。
-        当前顺序模仿SZ3。需要增加至少一种“从element中间向外围扩展”的顺序，并在
-        完全相同的误差界、量化和无损编码条件下比较：
-        - prediction residual分布；
-        - bit rate或compression ratio；
-        - PSNR/最大误差；
-        - 压缩和解压速度；
-        - 不同element尺寸及不同field上的稳定性。
-        在修改前先把当前遍历顺序写成明确的索引序列或单元测试，保证新旧顺序可复现。
+[ ] 31. 逐项测试SZ3-3D-GLL的改进方案。
+        目标是在不明显降低速度的前提下降低同PSNR下的BR。正式SZ3-3D-GLL暂时不改；
+        每次只测试一个改动，并与当前版本使用相同的GLL坐标、量化和Huffman+Zstd流程。
+        不能只看prediction RMSE或量化整数熵，最终必须比较真实BR、最大误差和速度。
 
-        候选方案一是类似QoZ multidimensional interpolation paradigm的分层预测。
-        实现后的正式method名称为QoZ-3D-GLL：对每个element独立做3D分层多维预测，
-        并使用真实GLL坐标。它与QoZ-4D-uniform不同；后者将每个partition视为四维
-        均匀网格并直接调用QoZ官方API。
-        在每个细化层级中，先处理只有一个新坐标的点，对它们做一维内插；
-        再处理有两个新坐标的点，将两个方向的一维内插结果加权为二维预测；
-        最后处理有三个新坐标的点，将三个方向的预测结果加权。每个方向
-        必须使用真实GLL坐标计算内插权重。该方案与QoZ已有方法相似，新颖性
-        可能有限，但可作为低风险对照和后续更新遍历方法的基准。
+        当前SZ3-3D-GLL的基本流程：每个element的4/8个角点直接量化；其余节点按照固定
+        顺序由两个已重建节点做真实GLL坐标线性内插；最后无损压缩角点和prediction
+        residual。修改前先把当前顺序写成明确的索引序列或测试，防止实验版本意外改变
+        多个部分。
 
-        目前已完成压缩/解压实现并接入t1。test0.f00001的UZ、REL=1e-4、单核测试
-        满足误差界限，但BR=0.56894，明显差于SZ3-3D-GLL的0.08825；
-        mixlay0.f00001的二维退化数据也能正确压缩和解压。因此当前实现先作为
-        待扩大测试的实验压缩器保留，不预设其性能优于SZ3遍历。
+        按以下顺序测试：
 
-        在改动正式压缩流程前，先做不量化、不写bitstream的prediction residual诊断，
-        验证GLL网格上“角点用附近内部点外插”与“中心点用两侧点内插”哪个
-        更容易预测。对每个element和field至少统计：
-        - 一维中心点由相邻两侧点内插的residual；
-        - 端点由最近的两个内部GLL点线性外插的residual；
-        - 二维/三维中心预测和4/8个角点预测的MAE、RMSE、分位数及预期量化为0的比例。
-        由于角点外插所依赖的内部点必须先解码，此诊断只判断局部可预测性；
-        如果外插明显更好，再设计中心向外的完整无循环依赖遍历，并计入额外初始点的代价。
+        1. 角点压缩（已完成）。只改变角点，不改变其余节点的预测顺序。生成真实
+           Huffman+Zstd bitstream并比较2*3*2种组合。第一维是初始量预测为0或由前一编号
+           element预测；第二维是角点表示方式：
+           - independent：8个角点不互相参考；预测为0时就是当前直接量化方案，使用
+             前一element时，每个角点由前一element的同位置重建角点预测；
+           - Lorenzo：第一个anchor角点预测为0或由前一element同位置角点预测，其余
+             角点依次由当前element中已经重建的角点预测；
+           - mean+deviation：8个角点的mean预测为0或由前一element的重建mean预测，
+             然后量化每个角点相对于当前已重建mean的deviation。
+           第三维是角点量化流保持element-contiguous（offset=element_id*local_symbol_num+
+           local_symbol_id），或在每个partition内转置为local-symbol-contiguous
+           （offset=local_symbol_id*element_num+element_id）；mean方案的9种local symbol
+           为mean和8个deviation。这里的角点流转置与
+           第2步对全部非角点prediction residual的转置是两个独立实验。
+           mean+deviation在3D中由8个增加到9个量化符号，在2D中由4个增加到5个，必须
+           检查分离共同分量的收益能否覆盖符号数开销。
+           e10_compare_corner_predictability.py已完成三种预测方案的UZ误差/零阶熵初筛，
+           并已修正早期把NekRS速度分量误读为整场连续布局的问题。现已完成6种组合的
+           真实角点Huffman+Zstd快速筛选：UZ、全局REL=1e-4、小数据
+           使用全部element，pb0和jicf0各使用3段4096个element。当前independent+zero
+           在test0、tc_channel0、pb0全部3段以及jicf0的极平滑片段最小；
+           Lorenzo+previous在mixlay0上将角点流由9895降到7619 bytes，在jicf0两个普通
+           片段上分别由19460降到14054、由27495降到19623 bytes。independent+previous、
+           Lorenzo+zero和两个mean方案没有赢得任何一组。mean+deviation增加符号数的
+           代价没有被共同分量收益抵消；依赖前一编号element的方案明显依赖数据排列，
+           不能直接替换当前稳定方案。上述结果只比较角点流；不同角点重建值还可能改变
+           后续prediction residual，因此若继续研究Lorenzo+previous，必须生成完整
+           SZ3 bitstream验证，不能把角点流节省量直接当作总BR收益。
+           现已继续完成其余6种转置角点流。转置没有让任何Lorenzo或mean方案成为新的
+           全局赢家：test0仍由未转置independent+zero以72 bytes最小；mixlay0仍由
+           Lorenzo+previous以7619 bytes最小（转置后大小相同）；jicf0三段的赢家也不变。
+           但转置对部分流很有效：test0的Lorenzo+previous由208降到144 bytes；
+           tc_channel0的四种Lorenzo/mean流均下降约21%--30%，而independent+zero转置
+           后由1926降到445 bytes并成为明显最优。pb0三段中，independent+zero转置分别
+           由35923降到34642、保持33879不变、由33648降到31305 bytes。说明角点转置
+           可以利用特定数据的跨element同位置重复，但收益不稳定；在tc_channel0上的
+           角点节省折算为当前完整角点+非角点流约1.45%，pb0上不超过约0.31%。是否采用
+           仍需计入转置时间，并且不能据此推断第2步的非角点residual转置也会有效。
+           12种角点流综合比较后，下一项完整bitstream候选固定为independent+zero并将
+           角点流转置为local-symbol-contiguous。它相对当前角点流在三个小数据、pb0
+           三段和jicf0三段上的平均变化分别为-17.07%、-3.50%和+1.55%；没有任何候选
+           同时改善pb0和jicf0，而该方案是最稳定的折中。旧诊断实现已完整备份到
+           c_codes/trash/sz3_3d_gll_corner_variants_experimental.tpp，不参与构建。随后曾将
+           SZ3-3D-GLL-experimental改成能够完整压缩和解压的上述候选：只在每个partition
+           内将4/8个角点量化值转置为local-symbol-contiguous，非角点prediction residual
+           保持正式SZ3-3D-GLL的布局，不增加格式metadata，解压时根据method执行逆转置。
+           使用UZ、单CPU和固定error bound完成完整bitstream回归。REL=1e-4的三个小数据
+           中，test0的BR由0.088252升至0.090061（+2.05%），mixlay0由2.508984升至
+           2.512422（+0.14%），tc_channel0由3.113861降至3.068665（-1.45%）。pb0和
+           jicf0分别随机抽取3段4096个element，并使用全局REL=1e-4对应的固定ABS error
+           bound。随机种子为20260821；pb0使用ABS=1.683629458334e-3和闭区间
+           [162007,166102]、[1868652,1872747]、[1913544,1917639]，jicf0使用
+           ABS=1.04476763947e-3和[1167027,1171122]、[1886866,1890961]、
+           [1898778,1902873]。pb0三段均改善，平均BR由2.935294降至2.926476（-0.30%），jicf0平均
+           BR由0.199952升至0.202054（+1.05%）。全部样例中两种方法的PSNR、MSE和最大
+           误差完全相同，证明转置及逆转置没有改变重建值。小样本计时波动较大，暂时
+           不能判断速度差异。该优化收益不稳定且幅度很小，因此不合并进正式
+           SZ3-3D-GLL；完整压缩和解压实现分别备份在
+           c_codes/trash/sz3_3d_gll_corner_transpose_compress.tpp和
+           sz3_3d_gll_corner_transpose_decompress.tpp，活动experimental入口已复用于第2步。
 
-        已在test0.f00001的UZ、T、S00和S01上完成上述诊断（REL=1e-4）。
-        6点中心内插和6点角点外插的总体NMAE分别为1.0558e-2和1.0673e-2，
-        NRMSE分别为2.9174e-2和3.2875e-2，预期量化为0的比例分别为61.35%和
-        59.55%。角点外插在部分field上的MAE略好，但改善没有稳定转化为更高的
-        零量化比例；在T上则明显变差，且总体尾部误差更大。3点角点最近邻平均
-        则在所有总体指标上都明显较差。因此排除“从中心向外、最后外插角点”的
-        遍历方案，不再实现完整压缩流程；第31项后续只保留QoZ式分层1D/2D/3D内插方向。
+        2. 转置prediction residual后再无损压缩。当前布局是element-contiguous，即依次
+           保存element 0的所有residual、element 1的所有residual；候选布局是local-
+           position-contiguous，即先连续保存所有element在同一个局部GLL位置的residual，再处理下一个
+           局部位置。该操作不改变预测、量化、误差和Huffman符号频率，只可能通过改变
+           相邻符号结构影响后续Zstd。MRCZ的系数转置有效是因为同模式高阶系数常连续为0，
+           SZ3 residual不一定有相同规律，因此只做一次真实bitstream对照；同时计入转置
+           和逆转置时间，若BR没有稳定改善就停止。
+           当前每个element内先把量化residual写入原始局部数组位置，再去掉角点，因此
+           无损流采用原始数据顺序，而不是实际预测访问顺序。除了跨element转置，还要
+           直接比较原始局部位置顺序和预测访问顺序；即使采用local-position-contiguous，
+           不同local-position流在Zstd输入中的排列仍可能影响结果，因此两者都要测试。
+           后续不要遗漏多Huffman tree变体：按每一轮预测的(level,dimension)，或合并成
+           较少的预测层级、edge/face/interior节点类别，将量化residual拆成多个无损流并
+           分别建立Huffman码表。不同轮次可能具有不同符号分布，但每个tree会增加码表头，
+           每个独立Zstd frame也有额外开销。先统计各轮次和类别的分布差异，并同时计算
+           “多个Huffman tree共用一个Zstd frame”和“每个tree单独使用Zstd frame”两种
+           实际bitstream；只有收益能覆盖metadata和编码开销时才保留。
+           已完成仅转置全部非角点residual的完整压缩和解压测试，角点保持正式版顺序。
+           实现直接按转置地址散写现有数组，解压时每个partition只使用一个element大小的
+           临时缓冲，没有额外复制整场数组。UZ、REL=1e-4的test0和mixlay0 BR分别增加
+           22.87%和2.73%，tc_channel0降低4.23%。沿用第1步相同的pb0和jicf0三段抽样及
+           固定ABS error bound，pb0三段BR分别增加4.28%、4.09%和4.35%，平均增加4.23%；
+           jicf0普通段增加3.63%，两个近乎全零的片段分别降低2.47%和1.23%，三段平均仍
+           增加3.46%。所有重建指标与正式版完全相同，但跨大步长散写和收集破坏缓存局部
+           性，三个小数据的压缩速度下降4%--22%，大数据抽样中的下降更明显。该布局在
+           主要数据上同时降低压缩率和速度，因此停止，不再与角点转置组合。完整失败实现
+           已备份到c_codes/trash/sz3_3d_gll_residual_transpose_compress.tpp和
+           sz3_3d_gll_residual_transpose_decompress.tpp，不参与构建。
+           随后完成“仍保持element-contiguous，但每个element内按实际预测访问顺序排列
+           residual”的完整实现。压缩端预先生成并检查无重复、无越界的target位置序列，
+           按该序列收集已量化residual；解压端使用相同序列放回原局部位置，不需要metadata
+           或跨element访问。当前SZ3-3D-GLL-experimental即为这个候选。UZ、REL=1e-4时，
+           test0和mixlay0的BR分别降低9.75%和1.17%，tc_channel0增加1.93%。沿用相同的
+           pb0和jicf0三段4096-element抽样，pb0三段分别降低6.07%、5.03%和5.27%，平均
+           BR由2.935294降至2.775986（-5.43%）；jicf0三段分别降低4.51%、3.00%和2.45%，
+           平均由0.199952降至0.191040（-4.46%）。另取16384个element的连续段，pb0由
+           2.881476降至2.723315（-5.49%），jicf0由0.900686降至0.855078（-5.06%）。
+           全部重建指标与正式版完全相同。小数据和4096-element计时波动较大；16384-
+           element测试未显示稳定的解压减速，但jicf0压缩计时仍有明显波动，因此速度尚未
+           得出可靠结论。该布局是目前第一个在pb0和jicf0上都稳定改善约5%的候选，下一步
+           应扩展到更多field和error bound并在计算节点上测量稳定速度，再决定是否进入正式版。
 
-        候选方案二是在分层遍历不变的前提下尝试三次（cubic）插值。每个方向
-        使用四个已重建的reference point，按真实GLL坐标计算Lagrange插值权重；
-        边界或当前层级没有四个可用reference时回退到二次或线性插值。在相同遍历、
-        error bound和无损编码下与线性插值比较residual分布、量化为0的比例、BR、
-        PSNR和速度。还需单独检查三次权重对已量化reference error的放大，避免少量
-        overshoot残差抵消平滑区域的收益。
+        3. 三次插值。保持当前遍历顺序，只把满足条件的线性内插换成使用4个已重建点的
+           GLL坐标Lagrange插值；reference不足时仍用线性插值。若多数数据的最终BR没有
+           稳定改善，就停止，不与其他方案组合。
+
+        4. 维度顺序。固定测试最多6种X/Y/Z顺序，先判断顺序是否真的显著影响BR。
+           当前不实现运行时采样或自动选择；只有实验确认某个固定顺序普遍更好以后，
+           再决定是否需要把顺序作为选项或写进bitstream。
+
+        5. 先研究element内不同局部位置的可预测性，再考虑修改访问顺序。不能预设“靠近
+           边界的内部节点更容易预测”或“中心节点更容易预测”。先在当前5个NekRS数据上，
+           按每个维度的局部GLL索引统计线性内插的MAE、RMSE、量化为0的比例和量化整数熵；
+           同时记录target到左右reference的物理距离、插值权重和reference区间长度，区分
+           靠近边界、靠近中心以及不同X/Y/Z方向；三维汇总还要区分edge、face和interior
+           节点，必要时保留局部索引(i0,i1,i2)。第一轮只使用原始reference值判断局部
+           插值本身的难度，第二轮再使用已量化重建的reference，检查误差传播是否改变排名。
+           得到稳定的位置规律后，才据此设计一个满足“所有reference必须先解码”的固定
+           访问顺序，并生成真实bitstream与当前顺序比较；如果没有稳定规律，就不改顺序。
+
+        6. 研究跨element可预测性。使用当前5个NekRS数据，将同一目标分别用当前element
+           内插值、前一编号element的同局部位置，以及真正共享面的相邻element中经过
+           坐标匹配的对应位置预测。分别统计角点和非角点的MAE、RMSE、量化为0的比例和
+           量化整数熵，并区分原始reference与已量化重建reference。还要记录寻找共享面
+           邻居和坐标匹配的时间、无邻居的边界element比例；只有跨element预测具有稳定且
+           足以覆盖邻居搜索及metadata成本的优势，才进一步设计正式预测器。
+
+        7. reference使用更严格的error bound。当前预测树中，较早重建的点会被多个后续
+           节点引用。可以让这些reference使用较小EB，叶子节点仍使用完整EB，检查reference
+           增加的bits能否换来更多后续residual的下降。分配只根据固定预测树提前确定。
+
+        8. residual bias correction。根据少量离线统计，为不同预测层级增加固定bias。
+           该方案涉及额外参数和稳定性问题，优先级低于前七项，暂不实现partition采样。
+
+        已完成或不再继续：
+        - QoZ-3D-GLL已经实现并保留为独立对照。fld_pyutils的test0.f00001上，UZ、
+          REL=1e-4时BR=0.56894，明显差于SZ3-3D-GLL的0.08825。
+        - “先处理中心、最后向外外插角点”已经由角点/中心点误差实验排除。
+        - QoZ residual按预测顺序转置后BR从0.56894升到0.58355；转置暂不继续。
+        - 不采用根据前面编号element不断更新统计量的在线自适应。
+
+        AVX2只属于实现加速，不算新的预测方案。等最终算法稳定后再单独处理。
 
 [ ] 32. 评估MRCZ是否需要为每个变换模式使用不同的coefficient error bound。
         当前所有模式共用由coeff_eb_scale得到的系数误差界。可研究：

@@ -34,8 +34,10 @@ namespace mrcz::detail
                     return;
                 }
 
-                vector<array<uint32_t,2>> intervals={{0,static_cast<uint32_t>(x.size()-1)}};
                 final_indices={0,static_cast<uint32_t>(x.size()-1)};
+                vector<array<uint32_t,2>> intervals;
+                if (x.size()>2)
+                    intervals.push_back({0,static_cast<uint32_t>(x.size()-1)});
                 while (!intervals.empty())
                 {
                     level_class level;
@@ -121,7 +123,7 @@ namespace mrcz::detail
             bool new1=level_id<plan.axes[1].levels.size();
             bool new2=level_id<plan.axes[2].levels.size();
 
-            // One new coordinate: ordinary one-dimensional interpolation.
+            // 先预测边上的点：每个点使用所在方向上的2个旧点。
             if (new0)
             {
                 auto &level0=plan.axes[0].levels[level_id];
@@ -162,7 +164,7 @@ namespace mrcz::detail
                         }
             }
 
-            // Two new coordinates: average the two directional predictions.
+            // 再预测面内的点：每个方向使用2个刚重建的边点，总共使用4个点。
             if (new0 and new1)
             {
                 auto &level0=plan.axes[0].levels[level_id];
@@ -212,7 +214,7 @@ namespace mrcz::detail
                         }
             }
 
-            // Three new coordinates: average all three directional predictions.
+            // 最后预测体内的点：每个方向使用2个刚重建的面点，总共使用6个点。
             if (new0 and new1 and new2)
             {
                 auto &level0=plan.axes[0].levels[level_id];
