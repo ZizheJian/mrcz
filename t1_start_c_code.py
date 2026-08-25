@@ -10,7 +10,9 @@ build_max_cpus=get_max_cpus(8)
 build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in ["1","true","yes"] # 多个slurm实验并行时，应该先完成build和install，再把这个设为False，再开始运行
 
 # method可选:
-#   "MRCZ-3D-GLL"
+#   "MRCZ-3D-GLL": 正式MRCZ，element内变换由编译器自动向量化，系数QB使用32x32分块转置
+#   "MRCZ-3D-GLL-element-batched": 每批同时处理8个float或4个double element，沿element编号维度向量化变换并直接生成coefficient-major QB
+#   "MRCZ-3D-GLL-element-batched-original-transpose": 仅测试跨element向量化，仍使用原始全partition转置
 #   "MRCZ-prediction-diagnostics"
 #   "SZ3-3D-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
 #   "SZ3-3D-GLL": 无优化baseline；逐element GLL分层线性插值，单Huffman tree，按实际预测访问顺序保存量化值

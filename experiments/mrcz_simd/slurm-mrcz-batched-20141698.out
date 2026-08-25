@@ -1,0 +1,17 @@
+MRCZ element-batched large comparison: repeat=1 method=MRCZ-3D-GLL field=T elements=[1000000,1100000) REL=1e-4 application_cpus=1
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244591e-04, rel_eb=1.000000e-04
+MRCZ compression accumulated partition CPU times: element packing= 0.000000, forward= 0.411282, coefficient quantization= 0.710068, inverse= 0.388652, residual quantization= 0.745829, coefficient Huffman= 4.066221, residual Huffman= 6.749084, Zstd= 0.082383 seconds
+MRCZ compression stage shares: element packing= 0.00%, forward= 3.13%, coefficient quantization= 5.40%, inverse= 2.95%, residual quantization= 5.67%, coefficient Huffman= 30.91%, residual Huffman= 51.31%, Zstd= 0.63%
+Compression time= 19.085931 seconds
+[91mField= T, compression bandwidth per cpu= 10.233323 MB/s
+[0m[91mBR= 1.433392 bits/value, CR= 22.324662
+[0mField= T
+params.method= MRCZ-3D-GLL
+MRCZ decompression accumulated partition CPU times: Zstd= 0.029693, coefficient Huffman= 1.498741, residual Huffman= 0.248123, coefficient reconstruction= 0.051463, inverse= 0.370076, residual reconstruction= 0.100849 seconds
+MRCZ decompression stage shares: Zstd= 1.29%, coefficient Huffman= 65.19%, residual Huffman= 10.79%, coefficient reconstruction= 2.24%, inverse= 16.10%, residual reconstruction= 4.39%
+Decompression time= 2.329869 seconds
+[91mField= T, decompression bandwidth per cpu= 83.829822 MB/s[0m
+没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000124459138349, rel_eb= 0.000099999997474, BR= 1.433392343750000, CR= 22.324662287704506, max_err= 0.000124458603417 (99.999570%), MSE= 0.000000000479020, PSNR= 95.096996897078100 dB[0m
+MRCZ element-batched large comparison: repeat=1 method=MRCZ-3D-GLL-element-batched field=T elements=[1000000,1100000) REL=1e-4 application_cpus=1

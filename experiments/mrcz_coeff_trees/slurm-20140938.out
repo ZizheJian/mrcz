@@ -1,0 +1,163 @@
+TEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-4 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-06, rel_eb=1.000000e-04
+Compression time= 1.485873 seconds
+[91mField= S00, compression bandwidth per cpu= 64.182770 MB/s
+[0m[91mBR= 0.033790 bits/value, CR= 947.021263
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-4 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-06, rel_eb=1.000000e-04
+Compression time= 1.504105 seconds
+[91mField= S00, compression bandwidth per cpu= 63.404759 MB/s
+[0m[91mBR= 0.033513 bits/value, CR= 954.847642
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-4 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-06, rel_eb=1.000000e-04
+Compression time= 1.533945 seconds
+[91mField= S00, compression bandwidth per cpu= 62.171366 MB/s
+[0m[91mBR= 0.033581 bits/value, CR= 952.909590
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-6 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-08, rel_eb=1.000000e-06
+Compression time= 1.572627 seconds
+[91mField= S00, compression bandwidth per cpu= 60.642111 MB/s
+[0m[91mBR= 0.349903 bits/value, CR= 91.454011
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-6 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-08, rel_eb=1.000000e-06
+Compression time= 1.557979 seconds
+[91mField= S00, compression bandwidth per cpu= 61.212273 MB/s
+[0m[91mBR= 0.345853 bits/value, CR= 92.524848
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-6 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-08, rel_eb=1.000000e-06
+Compression time= 1.677045 seconds
+[91mField= S00, compression bandwidth per cpu= 56.866366 MB/s
+[0m[91mBR= 0.347124 bits/value, CR= 92.186120
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-8 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-10, rel_eb=1.000000e-08
+Compression time= 2.650756 seconds
+[91mField= S00, compression bandwidth per cpu= 35.977443 MB/s
+[0m[91mBR= 1.993802 bits/value, CR= 16.049734
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-8 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-10, rel_eb=1.000000e-08
+Compression time= 2.417155 seconds
+[91mField= S00, compression bandwidth per cpu= 39.454418 MB/s
+[0m[91mBR= 1.987792 bits/value, CR= 16.098264
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-8 elements=[0,100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-10, rel_eb=1.000000e-08
+Compression time= 2.415109 seconds
+[91mField= S00, compression bandwidth per cpu= 39.487834 MB/s
+[0m[91mBR= 1.988010 bits/value, CR= 16.096497
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-4 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-03, rel_eb=1.000000e-04
+Compression time= 1.568438 seconds
+[91mField= S00, compression bandwidth per cpu= 60.804065 MB/s
+[0m[91mBR= 0.844061 bits/value, CR= 37.911936
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-4 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-03, rel_eb=1.000000e-04
+Compression time= 1.571558 seconds
+[91mField= S00, compression bandwidth per cpu= 60.683379 MB/s
+[0m[91mBR= 0.844373 bits/value, CR= 37.897963
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-4 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-03, rel_eb=1.000000e-04
+Compression time= 1.541599 seconds
+[91mField= S00, compression bandwidth per cpu= 61.862663 MB/s
+[0m[91mBR= 0.843294 bits/value, CR= 37.946445
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-6 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-05, rel_eb=1.000000e-06
+Compression time= 1.821305 seconds
+[91mField= S00, compression bandwidth per cpu= 52.362130 MB/s
+[0m[91mBR= 2.426588 bits/value, CR= 13.187241
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-6 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-05, rel_eb=1.000000e-06
+Compression time= 2.126287 seconds
+[91mField= S00, compression bandwidth per cpu= 44.851635 MB/s
+[0m[91mBR= 2.431412 bits/value, CR= 13.161079
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-6 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-05, rel_eb=1.000000e-06
+Compression time= 1.652881 seconds
+[91mField= S00, compression bandwidth per cpu= 57.697711 MB/s
+[0m[91mBR= 2.439415 bits/value, CR= 13.117897
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-8 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-07, rel_eb=1.000000e-08
+Compression time= 6.860820 seconds
+[91mField= S00, compression bandwidth per cpu= 13.900297 MB/s
+[0m[91mBR= 5.349157 bits/value, CR= 5.982251
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-8 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-07, rel_eb=1.000000e-08
+Compression time= 6.769282 seconds
+[91mField= S00, compression bandwidth per cpu= 14.088264 MB/s
+[0m[91mBR= 5.361308 bits/value, CR= 5.968693
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-8 elements=[1500000,1600000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-07, rel_eb=1.000000e-08
+Compression time= 6.776956 seconds
+[91mField= S00, compression bandwidth per cpu= 14.072310 MB/s
+[0m[91mBR= 5.364617 bits/value, CR= 5.965011
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-4 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-08, rel_eb=1.000000e-04
+Compression time= 1.636117 seconds
+[91mField= S00, compression bandwidth per cpu= 58.288899 MB/s
+[0m[91mBR= 0.125926 bits/value, CR= 254.116690
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-4 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-08, rel_eb=1.000000e-04
+Compression time= 1.638480 seconds
+[91mField= S00, compression bandwidth per cpu= 58.204833 MB/s
+[0m[91mBR= 0.118173 bits/value, CR= 270.789344
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-4 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-08, rel_eb=1.000000e-04
+Compression time= 1.513761 seconds
+[91mField= S00, compression bandwidth per cpu= 63.000337 MB/s
+[0m[91mBR= 0.118365 bits/value, CR= 270.349731
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-6 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-10, rel_eb=1.000000e-06
+Compression time= 1.608500 seconds
+[91mField= S00, compression bandwidth per cpu= 59.289651 MB/s
+[0m[91mBR= 1.108461 bits/value, CR= 28.868867
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-6 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-10, rel_eb=1.000000e-06
+Compression time= 1.717519 seconds
+[91mField= S00, compression bandwidth per cpu= 55.526287 MB/s
+[0m[91mBR= 1.092766 bits/value, CR= 29.283492
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-6 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-10, rel_eb=1.000000e-06
+Compression time= 1.802237 seconds
+[91mField= S00, compression bandwidth per cpu= 52.916153 MB/s
+[0m[91mBR= 1.080914 bits/value, CR= 29.604567
+[0mTEST method=MRCZ-3D-GLL field=S00 REL_EB=1e-8 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-12, rel_eb=1.000000e-08
+Compression time= 3.269104 seconds
+[91mField= S00, compression bandwidth per cpu= 29.172346 MB/s
+[0m[91mBR= 5.226330 bits/value, CR= 6.122843
+[0mTEST method=MRCZ-3D-GLL-coeff-3tree field=S00 REL_EB=1e-8 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-12, rel_eb=1.000000e-08
+Compression time= 3.481157 seconds
+[91mField= S00, compression bandwidth per cpu= 27.395330 MB/s
+[0m[91mBR= 5.192778 bits/value, CR= 6.162405
+[0mTEST method=MRCZ-3D-GLL-coeff-4tree field=S00 REL_EB=1e-8 elements=[3000000,3100000) max_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-12, rel_eb=1.000000e-08
+Compression time= 2.603083 seconds
+[91mField= S00, compression bandwidth per cpu= 36.636332 MB/s
+[0m[91mBR= 5.191728 bits/value, CR= 6.163651
+[0m

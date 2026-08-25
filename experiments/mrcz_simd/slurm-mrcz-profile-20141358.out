@@ -1,0 +1,16 @@
+MRCZ phase profile: data=pb0 field=T elements=[1000000,1100000) REL=1e-4 application_cpus=1 allocated_cpus=4
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244591e-04, rel_eb=1.000000e-04
+MRCZ compression accumulated partition CPU times: forward= 0.773426, coefficient quantization= 0.090543, inverse= 0.779152, residual quantization= 0.077651, coefficient Huffman= 0.889785, residual Huffman= 0.140720, Zstd= 0.045192 seconds
+MRCZ compression stage shares: forward= 27.66%, coefficient quantization= 3.24%, inverse= 27.86%, residual quantization= 2.78%, coefficient Huffman= 31.82%, residual Huffman= 5.03%, Zstd= 1.62%
+Compression time= 2.896769 seconds
+[91mField= T, compression bandwidth per cpu= 67.424261 MB/s
+[0m[91mBR= 1.433392 bits/value, CR= 22.324662
+[0mField= T
+params.method= MRCZ-3D-GLL
+MRCZ decompression accumulated partition CPU times: Zstd= 0.010108, coefficient Huffman= 0.908881, residual Huffman= 0.087109, coefficient reconstruction= 0.036956, inverse= 0.879212, residual reconstruction= 0.056703 seconds
+MRCZ decompression stage shares: Zstd= 0.51%, coefficient Huffman= 45.93%, residual Huffman= 4.40%, coefficient reconstruction= 1.87%, inverse= 44.43%, residual reconstruction= 2.87%
+Decompression time= 1.991796 seconds
+[91mField= T, decompression bandwidth per cpu= 98.058481 MB/s[0m
+没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000124459138349, rel_eb= 0.000099999997474, BR= 1.433392343750000, CR= 22.324662287704506, max_err= 0.000124458603417 (99.999570%), MSE= 0.000000000479020, PSNR= 95.096996897078100 dB[0m

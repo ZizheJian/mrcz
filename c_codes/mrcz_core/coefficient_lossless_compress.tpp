@@ -7,14 +7,25 @@ namespace mrcz
     {
         if (if_coefficient_transpose)
         {
-            int64_t *temp_coeff_qb=new int64_t[n000*(end_index-begin_index)];
-            for (uint32_t pos=0;pos<n000;pos++)
-                for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
-                    temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[element_id*n000+pos];
+            uint64_t block_element_num=end_index-begin_index;
+            int64_t *temp_coeff_qb=new int64_t[n000*block_element_num];
+            if (method!="MRCZ-3D-GLL-element-batched-original-transpose")
+            {
+                constexpr uint32_t tile_size=32;
+                for (uint32_t pos_begin=0;pos_begin<n000;pos_begin+=tile_size)
+                    for (uint64_t element_begin=begin_index;element_begin<end_index;element_begin+=tile_size)
+                        for (uint32_t pos=pos_begin;pos<min<uint32_t>(pos_begin+tile_size,n000);pos++)
+                            for (uint64_t element_id=element_begin;element_id<min<uint64_t>(element_begin+tile_size,end_index);element_id++)
+                                temp_coeff_qb[pos*block_element_num+(element_id-begin_index)]=coeff_qb[element_id*n000+pos];
+            }
+            else
+                for (uint32_t pos=0;pos<n000;pos++)
+                    for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
+                        temp_coeff_qb[pos*block_element_num+(element_id-begin_index)]=coeff_qb[element_id*n000+pos];
             huffman_encoder_class<int64_t> f_encoder;
-            f_encoder.preprocess_encode(temp_coeff_qb,n000*(end_index-begin_index));
+            f_encoder.preprocess_encode(temp_coeff_qb,n000*block_element_num);
             f_encoder.save(huffman_bs);
-            f_encoder.encode(temp_coeff_qb,n000*(end_index-begin_index),huffman_bs);
+            f_encoder.encode(temp_coeff_qb,n000*block_element_num,huffman_bs);
             delete[] temp_coeff_qb;
         }
         else

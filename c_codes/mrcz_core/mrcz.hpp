@@ -12,6 +12,7 @@
 #include <charconv>
 #include <limits>
 #include <algorithm>
+#include <cstdlib>
 #include "huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
 #include <mfem.hpp>
@@ -106,6 +107,10 @@ namespace mrcz
             void forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &L0,vector<T> &L1,vector<T> &L2);
             void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+                vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
+            void forward_transform_element_batched(vector<T> &temp_element1,vector<T> &temp_element2,T *element_batch,uint32_t batch_width,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
+                vector<T> &L0,vector<T> &L1,vector<T> &L2);
+            void inverse_transform_element_batched(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t batch_width,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
             
             void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
@@ -250,6 +255,7 @@ namespace mrcz
 #include "coefficient_lossless_decompress.tpp"
 #include "mrcz_compress.tpp"
 #include "mrcz_decompress.tpp"
+#include "mrcz_element_batched_transform.tpp"
 #include "gll_nodes.tpp"
 #include "quantize.tpp"
 #include "read_header.tpp"

@@ -231,7 +231,7 @@ namespace mrcz
                 params.method="MRCZ-3D-GLL";
             if (params.method=="MRCZ-prediction-diagnostics" or params.method=="MRCZ-3D-GLL-experimental")
                 throw runtime_error("MRCZ prediction diagnostics不生成bitstream，不能解压");
-            if (params.method!="MRCZ-3D-GLL" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and
+            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-element-batched" and params.method!="MRCZ-3D-GLL-element-batched-original-transpose" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and
                 params.method!="SZ3-3D-GLL-experimental" and params.method!="SZ3-3D-GLL-cubic" and params.method!="SZ3-3D-GLL-surface-first" and params.method!="SZ3-3D-GLL-normal-boundary" and params.method!="SZ3-3D-GLL-index-order" and params.method!="SZ3-3D-GLL-index-midpoint" and params.method!="QoZ-3D-GLL" and
                 params.method.rfind("SZ3-3D-GLL-order-",0)!=0 and params.method.rfind("SZ3-3D-GLL-reference-EB-",0)!=0 and params.method.rfind("SZ3-3D-GLL-sampled-",0)!=0 and params.method.rfind("SZ3-3D-GLL-position-bias-",0)!=0)
                 throw runtime_error("mrcz::core::decompress不支持方法: "+params.method);

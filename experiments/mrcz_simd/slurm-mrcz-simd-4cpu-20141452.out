@@ -1,0 +1,73 @@
+MRCZ SIMD multicore profile: field=S00 elements=[0,100000) REL=1e-4 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-06, rel_eb=1.000000e-04
+MRCZ compression accumulated partition CPU times: forward= 1.414759, coefficient quantization= 0.320160, inverse= 1.418990, residual quantization= 0.270078, coefficient Huffman= 0.812591, residual Huffman= 0.359851, Zstd= 0.028543 seconds
+MRCZ compression stage shares: forward= 30.59%, coefficient quantization= 6.92%, inverse= 30.68%, residual quantization= 5.84%, coefficient Huffman= 17.57%, residual Huffman= 7.78%, Zstd= 0.62%
+Compression time= 1.466154 seconds
+[91mField= S00, compression bandwidth per cpu= 65.045964 MB/s
+[0m[91mBR= 0.033790 bits/value, CR= 947.021263
+[0mMRCZ SIMD multicore profile: field=S00 elements=[0,100000) REL=1e-6 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-08, rel_eb=1.000000e-06
+MRCZ compression accumulated partition CPU times: forward= 2.827361, coefficient quantization= 0.553994, inverse= 2.897967, residual quantization= 0.491869, coefficient Huffman= 1.412016, residual Huffman= 0.522754, Zstd= 0.069178 seconds
+MRCZ compression stage shares: forward= 32.22%, coefficient quantization= 6.31%, inverse= 33.02%, residual quantization= 5.61%, coefficient Huffman= 16.09%, residual Huffman= 5.96%, Zstd= 0.79%
+Compression time= 2.552572 seconds
+[91mField= S00, compression bandwidth per cpu= 37.361312 MB/s
+[0m[91mBR= 0.349903 bits/value, CR= 91.454011
+[0mMRCZ SIMD multicore profile: field=S00 elements=[0,100000) REL=1e-8 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.009529, 0.068424], abs_eb=7.795313e-10, rel_eb=1.000000e-08
+MRCZ compression accumulated partition CPU times: forward= 1.559835, coefficient quantization= 0.538928, inverse= 1.739297, residual quantization= 0.438343, coefficient Huffman= 5.451109, residual Huffman= 0.489367, Zstd= 0.272330 seconds
+MRCZ compression stage shares: forward= 14.87%, coefficient quantization= 5.14%, inverse= 16.58%, residual quantization= 4.18%, coefficient Huffman= 51.97%, residual Huffman= 4.67%, Zstd= 2.60%
+Compression time= 3.615240 seconds
+[91mField= S00, compression bandwidth per cpu= 26.379279 MB/s
+[0m[91mBR= 1.993802 bits/value, CR= 16.049734
+[0mMRCZ SIMD multicore profile: field=S00 elements=[1500000,1600000) REL=1e-4 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-03, rel_eb=1.000000e-04
+MRCZ compression accumulated partition CPU times: forward= 1.569166, coefficient quantization= 0.345870, inverse= 1.855041, residual quantization= 0.334347, coefficient Huffman= 0.732437, residual Huffman= 0.284369, Zstd= 0.111069 seconds
+MRCZ compression stage shares: forward= 29.99%, coefficient quantization= 6.61%, inverse= 35.45%, residual quantization= 6.39%, coefficient Huffman= 14.00%, residual Huffman= 5.43%, Zstd= 2.12%
+Compression time= 1.615067 seconds
+[91mField= S00, compression bandwidth per cpu= 59.048589 MB/s
+[0m[91mBR= 0.844061 bits/value, CR= 37.911936
+[0mMRCZ SIMD multicore profile: field=S00 elements=[1500000,1600000) REL=1e-6 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-05, rel_eb=1.000000e-06
+MRCZ compression accumulated partition CPU times: forward= 1.270490, coefficient quantization= 0.262712, inverse= 1.237572, residual quantization= 0.257261, coefficient Huffman= 1.093467, residual Huffman= 0.389321, Zstd= 0.220379 seconds
+MRCZ compression stage shares: forward= 26.85%, coefficient quantization= 5.55%, inverse= 26.16%, residual quantization= 5.44%, coefficient Huffman= 23.11%, residual Huffman= 8.23%, Zstd= 4.66%
+Compression time= 1.455293 seconds
+[91mField= S00, compression bandwidth per cpu= 65.531409 MB/s
+[0m[91mBR= 2.426588 bits/value, CR= 13.187241
+[0mMRCZ SIMD multicore profile: field=S00 elements=[1500000,1600000) REL=1e-8 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-34.550278, 21.994251], abs_eb=5.654453e-07, rel_eb=1.000000e-08
+MRCZ compression accumulated partition CPU times: forward= 1.884175, coefficient quantization= 0.493900, inverse= 1.542048, residual quantization= 0.436788, coefficient Huffman= 18.407073, residual Huffman= 0.469883, Zstd= 0.336750 seconds
+MRCZ compression stage shares: forward= 7.99%, coefficient quantization= 2.10%, inverse= 6.54%, residual quantization= 1.85%, coefficient Huffman= 78.09%, residual Huffman= 1.99%, Zstd= 1.43%
+Compression time= 9.590438 seconds
+[91mField= S00, compression bandwidth per cpu= 9.944012 MB/s
+[0m[91mBR= 5.349157 bits/value, CR= 5.982251
+[0mMRCZ SIMD multicore profile: field=S00 elements=[3000000,3100000) REL=1e-4 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-08, rel_eb=1.000000e-04
+MRCZ compression accumulated partition CPU times: forward= 1.500307, coefficient quantization= 0.396194, inverse= 1.787792, residual quantization= 0.340202, coefficient Huffman= 1.300030, residual Huffman= 0.489775, Zstd= 0.022910 seconds
+MRCZ compression stage shares: forward= 25.70%, coefficient quantization= 6.79%, inverse= 30.63%, residual quantization= 5.83%, coefficient Huffman= 22.27%, residual Huffman= 8.39%, Zstd= 0.39%
+Compression time= 1.722706 seconds
+[91mField= S00, compression bandwidth per cpu= 55.359075 MB/s
+[0m[91mBR= 0.125926 bits/value, CR= 254.116690
+[0mMRCZ SIMD multicore profile: field=S00 elements=[3000000,3100000) REL=1e-6 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-10, rel_eb=1.000000e-06
+MRCZ compression accumulated partition CPU times: forward= 2.108738, coefficient quantization= 0.375699, inverse= 2.270397, residual quantization= 0.390624, coefficient Huffman= 1.193184, residual Huffman= 0.440852, Zstd= 0.177175 seconds
+MRCZ compression stage shares: forward= 30.31%, coefficient quantization= 5.40%, inverse= 32.64%, residual quantization= 5.62%, coefficient Huffman= 17.15%, residual Huffman= 6.34%, Zstd= 2.55%
+Compression time= 2.076642 seconds
+[91mField= S00, compression bandwidth per cpu= 45.923869 MB/s
+[0m[91mBR= 1.108461 bits/value, CR= 28.868867
+[0mMRCZ SIMD multicore profile: field=S00 elements=[3000000,3100000) REL=1e-8 application_cpus=4 partition_size=25000
+Field= S00
+Data range: [-0.000433, 0.000071], abs_eb=5.037928e-12, rel_eb=1.000000e-08
+MRCZ compression accumulated partition CPU times: forward= 1.260986, coefficient quantization= 0.330972, inverse= 1.316737, residual quantization= 0.240813, coefficient Huffman= 8.174363, residual Huffman= 0.429879, Zstd= 0.287698 seconds
+MRCZ compression stage shares: forward= 10.47%, coefficient quantization= 2.75%, inverse= 10.94%, residual quantization= 2.00%, coefficient Huffman= 67.89%, residual Huffman= 3.57%, Zstd= 2.39%
+Compression time= 3.709535 seconds
+[91mField= S00, compression bandwidth per cpu= 25.708727 MB/s
+[0m[91mBR= 5.226330 bits/value, CR= 6.122843
+[0m
