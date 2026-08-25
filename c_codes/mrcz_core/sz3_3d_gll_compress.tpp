@@ -1,6 +1,9 @@
 #pragma once
 
 
+#if defined(__AVX2__)
+#include <immintrin.h>
+#endif
 #include <set>
 #include "mrcz.hpp"
 #include "huffman.hpp"
@@ -57,6 +60,13 @@ struct sz3_cubic_stencil
     uint32_t point_num=0;
     uint32_t indices[4]={0,0,0,0};
     T weights[4]={0,0,0,0};
+};
+
+enum class sz3_avx2_rounding:uint8_t
+{
+    disabled,
+    ties_to_even,
+    ties_away_from_zero
 };
 
 template<typename T>
@@ -292,6 +302,87 @@ inline T sz3_predict_from_stencil(T *element,sz3_prediction_stencil<T> &stencil)
     return prediction;
 }
 
+template<sz3_avx2_rounding rounding_mode,typename T>
+inline void sz3_quantize_scalar(T pred,T &truth,int64_t &qb,T abs_eb,T neg_2_eb)
+{
+    T scaled=(pred-truth)*neg_2_eb;
+    if constexpr (rounding_mode==sz3_avx2_rounding::ties_to_even)
+        qb=static_cast<int64_t>(nearbyint(scaled));
+    else
+        qb=static_cast<int64_t>(round(scaled));
+    truth=pred-qb*2*abs_eb;
+}
+
+#if defined(__AVX2__)
+template<sz3_avx2_rounding rounding_mode>
+inline bool sz3_quantize_stencil_avx2(float *first_element,uint32_t n012,sz3_prediction_stencil<float> &stencil,float abs_eb,float neg_2_eb,int64_t *qb,float *reconstructed)
+{
+    __m256i offsets=_mm256_setr_epi32(0,n012,2*n012,3*n012,4*n012,5*n012,6*n012,7*n012);
+    __m256 prediction=_mm256_setzero_ps();
+    for (uint32_t reference=0;reference<stencil.point_num;reference++)
+    {
+        __m256 values=_mm256_i32gather_ps(first_element+stencil.indices[reference],offsets,4);
+        prediction=_mm256_add_ps(prediction,_mm256_mul_ps(_mm256_set1_ps(stencil.weights[reference]),values));
+    }
+    __m256 truth=_mm256_i32gather_ps(first_element+stencil.target,offsets,4);
+    __m256 scaled=_mm256_mul_ps(_mm256_sub_ps(prediction,truth),_mm256_set1_ps(neg_2_eb));
+    __m256 sign_mask=_mm256_set1_ps(-0.0f);
+    __m256 magnitude=_mm256_andnot_ps(sign_mask,scaled);
+    __m256 in_range=_mm256_cmp_ps(magnitude,_mm256_set1_ps(2147483520.0f),_CMP_LE_OQ);
+    if (_mm256_movemask_ps(in_range)!=0xff)
+        return false;
+    __m256i qb32;
+    if constexpr (rounding_mode==sz3_avx2_rounding::ties_to_even)
+        qb32=_mm256_cvttps_epi32(_mm256_round_ps(scaled,_MM_FROUND_TO_NEAREST_INT|_MM_FROUND_NO_EXC));
+    else
+    {
+        __m256 half_with_sign=_mm256_or_ps(_mm256_and_ps(scaled,sign_mask),_mm256_set1_ps(0.5f));
+        qb32=_mm256_cvttps_epi32(_mm256_add_ps(scaled,half_with_sign));
+    }
+    __m256 reconstructed_vector=_mm256_sub_ps(prediction,_mm256_mul_ps(_mm256_cvtepi32_ps(qb32),_mm256_set1_ps(2*abs_eb)));
+    alignas(32) int32_t qb32_array[8];
+    _mm256_store_si256(reinterpret_cast<__m256i*>(qb32_array),qb32);
+    _mm256_store_ps(reconstructed,reconstructed_vector);
+    for (uint32_t lane=0;lane<8;lane++)
+        qb[lane]=qb32_array[lane];
+    return true;
+}
+
+template<sz3_avx2_rounding rounding_mode>
+inline bool sz3_quantize_stencil_avx2(double *first_element,uint32_t n012,sz3_prediction_stencil<double> &stencil,double abs_eb,double neg_2_eb,int64_t *qb,double *reconstructed)
+{
+    __m128i offsets=_mm_setr_epi32(0,n012,2*n012,3*n012);
+    __m256d prediction=_mm256_setzero_pd();
+    for (uint32_t reference=0;reference<stencil.point_num;reference++)
+    {
+        __m256d values=_mm256_i32gather_pd(first_element+stencil.indices[reference],offsets,8);
+        prediction=_mm256_add_pd(prediction,_mm256_mul_pd(_mm256_set1_pd(stencil.weights[reference]),values));
+    }
+    __m256d truth=_mm256_i32gather_pd(first_element+stencil.target,offsets,8);
+    __m256d scaled=_mm256_mul_pd(_mm256_sub_pd(prediction,truth),_mm256_set1_pd(neg_2_eb));
+    __m256d sign_mask=_mm256_set1_pd(-0.0);
+    __m256d magnitude=_mm256_andnot_pd(sign_mask,scaled);
+    __m256d in_range=_mm256_cmp_pd(magnitude,_mm256_set1_pd(2147483647.0),_CMP_LE_OQ);
+    if (_mm256_movemask_pd(in_range)!=0xf)
+        return false;
+    __m128i qb32;
+    if constexpr (rounding_mode==sz3_avx2_rounding::ties_to_even)
+        qb32=_mm256_cvttpd_epi32(_mm256_round_pd(scaled,_MM_FROUND_TO_NEAREST_INT|_MM_FROUND_NO_EXC));
+    else
+    {
+        __m256d half_with_sign=_mm256_or_pd(_mm256_and_pd(scaled,sign_mask),_mm256_set1_pd(0.5));
+        qb32=_mm256_cvttpd_epi32(_mm256_add_pd(scaled,half_with_sign));
+    }
+    __m256d reconstructed_vector=_mm256_sub_pd(prediction,_mm256_mul_pd(_mm256_cvtepi32_pd(qb32),_mm256_set1_pd(2*abs_eb)));
+    alignas(16) int32_t qb32_array[4];
+    _mm_store_si128(reinterpret_cast<__m128i*>(qb32_array),qb32);
+    _mm256_store_pd(reconstructed,reconstructed_vector);
+    for (uint32_t lane=0;lane<4;lane++)
+        qb[lane]=qb32_array[lane];
+    return true;
+}
+#endif
+
 template<typename T>
 vector<sz3_prediction_stencil<T>> sz3_generate_prediction_stencils(uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t max_level,
     vector<vector<uint32_t>> &left_indices0,vector<vector<uint32_t>> &right_indices0,vector<vector<uint32_t>> &mid_indices0,vector<vector<uint32_t>> &compressed_indices0,vector<vector<T>> &left_weight0,vector<vector<T>> &right_weight0,vector<vector<sz3_cubic_stencil<T>>> &cubic_stencils0,
@@ -488,7 +579,7 @@ inline double sz3_reference_eb_scale_from_method(string method)
     return scale;
 }
 
-template<typename T>
+template<typename T,sz3_avx2_rounding avx2_rounding=sz3_avx2_rounding::disabled>
 void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num,vector<uint32_t> dimension_order={0,1,2},bool use_cubic=false,bool use_surface_first=false,bool use_normal_boundary=false,bool use_index_order=false,bool use_index_midpoint=false,T reference_eb_scale=1,bool use_position_bias=false,bool sample_configuration=false)
 {
     auto &header=params.header;
@@ -630,6 +721,14 @@ void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t
                 sampled_plans.push_back(move(plan));
             }
     }
+    if constexpr (avx2_rounding!=sz3_avx2_rounding::disabled)
+    {
+#if !defined(__AVX2__)
+        throw runtime_error("当前编译未启用AVX2");
+#endif
+        if (!sample_configuration)
+            throw runtime_error("SZ3 AVX2实验当前只支持采样优化版");
+    }
     double sampling_time=0;
     vector<unsigned char> selected_plan_ids(blocks.size(),0);
     if (sample_configuration)
@@ -672,25 +771,32 @@ void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t
                 printf(" %c%c%c-%s=%lu","XYZ"[all_orders[plan_id%6][0]],"XYZ"[all_orders[plan_id%6][1]],"XYZ"[all_orders[plan_id%6][2]],plan_id<6?"linear":"cubic",configuration_counts[plan_id]);
         printf("\n");
     }
-    int64_t *corner_qb=new int64_t[seed_num*params.element_num_to_process];
-    int64_t *err_qb=new int64_t[params.element_num_to_process*n012];
-    int64_t *no_corner_err_qb=huffman_tree_num>=3?nullptr:new int64_t[params.element_num_to_process*residual_num];
+    int64_t *corner_qb=huffman_tree_num==1?nullptr:new int64_t[seed_num*params.element_num_to_process];
+    int64_t *no_corner_err_qb=huffman_tree_num==2?new int64_t[params.element_num_to_process*residual_num]:nullptr;
     vector<int64_t*> residual_group_qb;
     for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
         residual_group_qb.push_back(new int64_t[params.element_num_to_process*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])]);
-    #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
+    vector<uint32_t> residual_group_ids(residual_num),residual_group_local_ids(residual_num);
+    for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
+        for (uint32_t residual_id=residual_group_offsets[group_id];residual_id<residual_group_offsets[group_id+1];residual_id++)
+            residual_group_ids[residual_id]=group_id,residual_group_local_ids[residual_id]=residual_id-residual_group_offsets[group_id];
+    double prediction_quantization_time=0,huffman_time=0,zstd_time=0;
+    uint64_t avx2_value_num=0,avx2_fallback_value_num=0,avx2_scalar_tail_value_num=0;
+    #pragma omp parallel for schedule(static) num_threads(params.max_cpus) reduction(+:prediction_quantization_time,huffman_time,zstd_time,avx2_value_num,avx2_fallback_value_num,avx2_scalar_tail_value_num)
     for (uint64_t block_id=0;block_id<blocks.size();block_id++) //这个block_id是假的，指的是在需要处理的blocks中的编号，而不是header文件中的编号
     {
         auto &block=blocks[block_id];
         uint64_t begin_index=block.begin_index;
         uint64_t end_index=block.end_index;
         uint64_t element_num=end_index-begin_index;
-        auto &block_prediction_positions=sample_configuration?sampled_plans[selected_plan_ids[block_id]].positions:prediction_positions;
         vector<sz3_prediction_stencil<T>> *block_prediction_stencils=sample_configuration?&sampled_plans[selected_plan_ids[block_id]].stencils:nullptr;
-        int64_t *block_no_corner_err_qb=huffman_tree_num>=3?nullptr:no_corner_err_qb+begin_index*residual_num;
+        vector<int64_t> block_qb(huffman_tree_num==1?n012*element_num:0);
+        int64_t *block_corner_qb=huffman_tree_num==1?nullptr:corner_qb+seed_num*begin_index;
+        int64_t *block_no_corner_err_qb=huffman_tree_num==2?no_corner_err_qb+begin_index*residual_num:nullptr;
         vector<int64_t*> block_residual_group_qb;
         for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
             block_residual_group_qb.push_back(residual_group_qb[group_id]+begin_index*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id]));
+        double prediction_quantization_start_time=omp_get_wtime();
         vector<int32_t> position_bias(n012,0);
         T bias_unit=abs_eb/8;
         if (use_position_bias)
@@ -765,151 +871,211 @@ void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t
                 }
             }
         }
+        auto corner_qb_at=[&](uint64_t element_id,uint32_t corner_id)->int64_t&
+        {
+            if (huffman_tree_num==1)
+                return block_qb[(element_id-begin_index)*n012+corner_id];
+            return corner_qb[element_id*seed_num+corner_id];
+        };
+        auto residual_qb_at=[&](uint64_t element_id,uint32_t residual_id)->int64_t&
+        {
+            if (huffman_tree_num==1)
+                return block_qb[(element_id-begin_index)*n012+seed_num+residual_id];
+            if (huffman_tree_num==2)
+                return no_corner_err_qb[element_id*residual_num+residual_id];
+            uint32_t group_id=residual_group_ids[residual_id];
+            uint32_t group_size=residual_group_offsets[group_id+1]-residual_group_offsets[group_id];
+            return residual_group_qb[group_id][element_id*group_size+residual_group_local_ids[residual_id]];
+        };
         // 先量化位于每个element位于角上的点，覆盖原数据
         // 之后可能要改成压缩率更高的方法
         if (use_position_bias)
             for (uint64_t i=begin_index;i<end_index;i++)
-                for (uint32_t corner_id=0;corner_id<corner_positions.size();corner_id++)
+                for (uint32_t corner_id=0;corner_id<seed_num;corner_id++)
                 {
                     uint32_t target=corner_positions[corner_id];
                     T prediction=position_bias[target]*bias_unit;
-                    params.quantize_and_overwrite_err(prediction,data[i*n012+target],corner_qb[i*seed_num+corner_id],abs_eb,neg_2_eb);
+                    params.quantize_and_overwrite_err(prediction,data[i*n012+target],corner_qb_at(i,corner_id),abs_eb,neg_2_eb);
                 }
         else if (reference_eb_scale<1)
-            params.quantize_and_overwrite_corner_numbers(corner_qb,begin_index,end_index,n0,n1,n2,n12,n012,reference_abs_eb,reference_neg_2_eb);
-        else if (use_index_order)
             for (uint64_t i=begin_index;i<end_index;i++)
-                params.quantize_and_overwrite(data[i*n012],corner_qb[i],abs_eb,neg_2_eb);
+                for (uint32_t corner_id=0;corner_id<seed_num;corner_id++)
+                {
+                    uint32_t target=corner_positions[corner_id];
+                    params.quantize_and_overwrite(data[i*n012+target],corner_qb_at(i,corner_id),reference_abs_eb,reference_neg_2_eb);
+                }
         else
-            params.quantize_and_overwrite_corner_numbers(corner_qb,begin_index,end_index,n0,n1,n2,n12,n012,abs_eb,neg_2_eb);
+            for (uint64_t i=begin_index;i<end_index;i++)
+                for (uint32_t corner_id=0;corner_id<seed_num;corner_id++)
+                {
+                    uint32_t target=corner_positions[corner_id];
+                    params.quantize_and_overwrite(data[i*n012+target],corner_qb_at(i,corner_id),abs_eb,neg_2_eb);
+                }
         // 然后量化剩余的数据
-        for (uint64_t i=begin_index;i<end_index;i++)
+        if constexpr (avx2_rounding!=sz3_avx2_rounding::disabled)
         {
-            T *element=data.data()+i*n012;
-            int64_t *element_err_qb=err_qb+i*n012;
-            auto quantize_prediction=[&](T pred_value,uint32_t target)
+#if defined(__AVX2__)
+            constexpr uint32_t lane_num=is_same_v<T,float>?8:4;
+            uint64_t tile_element_num=max<uint64_t>(lane_num,(256*1024)/(n012*sizeof(T)));
+            tile_element_num-=tile_element_num%lane_num;
+            alignas(32) int64_t vector_qb[lane_num];
+            alignas(32) T reconstructed[lane_num];
+            for (uint64_t tile_begin=begin_index;tile_begin<end_index;tile_begin+=tile_element_num)
             {
-                if (use_position_bias)
-                    pred_value+=position_bias[target]*bias_unit;
-                if (reference_eb_scale<1 and reference_mask[target])
-                    params.quantize_and_overwrite_err(pred_value,element[target],element_err_qb[target],reference_abs_eb,reference_neg_2_eb);
-                else
-                    params.quantize_and_overwrite_err(pred_value,element[target],element_err_qb[target],abs_eb,neg_2_eb);
-            };
-            if (sample_configuration)
-            {
-                for (auto &stencil:*block_prediction_stencils)
-                    quantize_prediction(sz3_predict_from_stencil(element,stencil),stencil.target);
-            }
-            else if (use_index_order)
-            {
-                for (auto &stencil:index_order_stencils)
+                uint64_t tile_end=min(end_index,tile_begin+tile_element_num);
+                for (uint32_t residual_id=0;residual_id<block_prediction_stencils->size();residual_id++)
                 {
-                    T pred_value=sz3_index_order_predict(element,stencil);
-                    quantize_prediction(pred_value,stencil.target);
-                }
-            }
-            else if (use_normal_boundary)
-            {
-                for (auto &stencil:normal_boundary_stencils)
-                {
-                    T pred_value=sz3_normal_boundary_predict(element,stencil);
-                    quantize_prediction(pred_value,stencil.target);
-                }
-            }
-            else if (use_surface_first)
-            {
-                for (auto &stencil:surface_first_stencils)
-                {
-                    T pred_value=sz3_surface_first_predict(element,stencil);
-                    quantize_prediction(pred_value,stencil.target);
-                }
-            }
-            else
-            {
-                uint32_t level0=0,level1=0,level2=0;
-                for (uint32_t level=0;level<max_level;level++)
-                {
-                    for (auto dimension:dimension_order)
+                    auto &stencil=(*block_prediction_stencils)[residual_id];
+                    uint64_t i=tile_begin;
+                    for (;i+lane_num<=tile_end;i+=lane_num)
                     {
-                        if (dimension==0 and n0>1 and level0<left_indices0.size())
+                        bool used_avx2=sz3_quantize_stencil_avx2<avx2_rounding>(data.data()+i*n012,n012,stencil,abs_eb,neg_2_eb,vector_qb,reconstructed);
+                        if (used_avx2)
                         {
-                            for (uint32_t i0=0;i0<left_indices0[level0].size();i0++)
-                                for (auto i1:compressed_indices1[level1])
-                                    for (auto i2:compressed_indices2[level2])
-                                    {
-                                        uint32_t pos_base=i1*n2+i2;
-                                        uint32_t mid_pos=pos_base+mid_indices0[level0][i0]*n12;
-                                        T pred_value=0;
-                                        if (use_cubic and cubic_stencils0[level0][i0].point_num>0)
-                                            for (uint32_t j=0;j<cubic_stencils0[level0][i0].point_num;j++)
-                                                pred_value+=cubic_stencils0[level0][i0].weights[j]*element[pos_base+cubic_stencils0[level0][i0].indices[j]*n12];
-                                        else
-                                            pred_value=left_weight0[level0][i0]*element[pos_base+left_indices0[level0][i0]*n12]+
-                                                right_weight0[level0][i0]*element[pos_base+right_indices0[level0][i0]*n12];
-                                        quantize_prediction(pred_value,mid_pos);
-                                    }
-                            level0++;
+                            for (uint32_t lane=0;lane<lane_num;lane++)
+                            {
+                                data[(i+lane)*n012+stencil.target]=reconstructed[lane];
+                                residual_qb_at(i+lane,residual_id)=vector_qb[lane];
+                            }
+                            avx2_value_num+=lane_num;
                         }
-                        else if (dimension==1 and n1>1 and level1<left_indices1.size())
+                        else
                         {
-                            for (auto i0:compressed_indices0[level0])
-                                for (uint32_t i1=0;i1<left_indices1[level1].size();i1++)
-                                    for (auto i2:compressed_indices2[level2])
-                                    {
-                                        uint32_t pos_base=i0*n12+i2;
-                                        uint32_t mid_pos=pos_base+mid_indices1[level1][i1]*n2;
-                                        T pred_value=0;
-                                        if (use_cubic and cubic_stencils1[level1][i1].point_num>0)
-                                            for (uint32_t j=0;j<cubic_stencils1[level1][i1].point_num;j++)
-                                                pred_value+=cubic_stencils1[level1][i1].weights[j]*element[pos_base+cubic_stencils1[level1][i1].indices[j]*n2];
-                                        else
-                                            pred_value=left_weight1[level1][i1]*element[pos_base+left_indices1[level1][i1]*n2]+
-                                                right_weight1[level1][i1]*element[pos_base+right_indices1[level1][i1]*n2];
-                                        quantize_prediction(pred_value,mid_pos);
-                                    }
-                            level1++;
+                            for (uint32_t lane=0;lane<lane_num;lane++)
+                            {
+                                T *element=data.data()+(i+lane)*n012;
+                                T prediction=sz3_predict_from_stencil(element,stencil);
+                                sz3_quantize_scalar<avx2_rounding>(prediction,element[stencil.target],residual_qb_at(i+lane,residual_id),abs_eb,neg_2_eb);
+                            }
+                            avx2_fallback_value_num+=lane_num;
                         }
-                        else if (dimension==2 and n2>1 and level2<left_indices2.size())
-                        {
-                            for (auto i0:compressed_indices0[level0])
-                                for (auto i1:compressed_indices1[level1])
-                                    for (uint32_t i2=0;i2<left_indices2[level2].size();i2++)
-                                    {
-                                        uint32_t pos_base=i0*n12+i1*n2;
-                                        uint32_t mid_pos=pos_base+mid_indices2[level2][i2];
-                                        T pred_value=0;
-                                        if (use_cubic and cubic_stencils2[level2][i2].point_num>0)
-                                            for (uint32_t j=0;j<cubic_stencils2[level2][i2].point_num;j++)
-                                                pred_value+=cubic_stencils2[level2][i2].weights[j]*element[pos_base+cubic_stencils2[level2][i2].indices[j]];
-                                        else
-                                            pred_value=left_weight2[level2][i2]*element[pos_base+left_indices2[level2][i2]]+
-                                                right_weight2[level2][i2]*element[pos_base+right_indices2[level2][i2]];
-                                        quantize_prediction(pred_value,mid_pos);
-                                    }
-                            level2++;
-                        }
+                    }
+                    for (;i<tile_end;i++)
+                    {
+                        T *element=data.data()+i*n012;
+                        T prediction=sz3_predict_from_stencil(element,stencil);
+                        sz3_quantize_scalar<avx2_rounding>(prediction,element[stencil.target],residual_qb_at(i,residual_id),abs_eb,neg_2_eb);
+                        avx2_scalar_tail_value_num++;
                     }
                 }
             }
-            if (huffman_tree_num>=3)
-            {
-                for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
-                {
-                    uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
-                    int64_t *element_group_qb=residual_group_qb[group_id]+i*group_size;
-                    for (uint32_t residual_id=group_begin;residual_id<residual_group_offsets[group_id+1];residual_id++)
-                        element_group_qb[residual_id-group_begin]=element_err_qb[block_prediction_positions[residual_id]];
-                }
-            }
-            else
-            {
-                int64_t *element_no_corner_err_qb=no_corner_err_qb+i*residual_num;
-                for (uint32_t residual_id=0;residual_id<residual_num;residual_id++)
-                    element_no_corner_err_qb[residual_id]=element_err_qb[block_prediction_positions[residual_id]];
-            }
+#endif
         }
-        int64_t *block_corner_qb=corner_qb+seed_num*begin_index;
+        else
+            for (uint64_t i=begin_index;i<end_index;i++)
+            {
+                T *element=data.data()+i*n012;
+                uint32_t residual_id=0;
+                auto quantize_prediction=[&](T pred_value,uint32_t target)
+                {
+                    int64_t &qb=residual_qb_at(i,residual_id++);
+                    if (use_position_bias)
+                        pred_value+=position_bias[target]*bias_unit;
+                    if (reference_eb_scale<1 and reference_mask[target])
+                        params.quantize_and_overwrite_err(pred_value,element[target],qb,reference_abs_eb,reference_neg_2_eb);
+                    else
+                        params.quantize_and_overwrite_err(pred_value,element[target],qb,abs_eb,neg_2_eb);
+                };
+                if (sample_configuration)
+                {
+                    for (auto &stencil:*block_prediction_stencils)
+                        quantize_prediction(sz3_predict_from_stencil(element,stencil),stencil.target);
+                }
+                else if (use_index_order)
+                {
+                    for (auto &stencil:index_order_stencils)
+                    {
+                        T pred_value=sz3_index_order_predict(element,stencil);
+                        quantize_prediction(pred_value,stencil.target);
+                    }
+                }
+                else if (use_normal_boundary)
+                {
+                    for (auto &stencil:normal_boundary_stencils)
+                    {
+                        T pred_value=sz3_normal_boundary_predict(element,stencil);
+                        quantize_prediction(pred_value,stencil.target);
+                    }
+                }
+                else if (use_surface_first)
+                {
+                    for (auto &stencil:surface_first_stencils)
+                    {
+                        T pred_value=sz3_surface_first_predict(element,stencil);
+                        quantize_prediction(pred_value,stencil.target);
+                    }
+                }
+                else
+                {
+                    uint32_t level0=0,level1=0,level2=0;
+                    for (uint32_t level=0;level<max_level;level++)
+                    {
+                        for (auto dimension:dimension_order)
+                        {
+                            if (dimension==0 and n0>1 and level0<left_indices0.size())
+                            {
+                                for (uint32_t i0=0;i0<left_indices0[level0].size();i0++)
+                                    for (auto i1:compressed_indices1[level1])
+                                        for (auto i2:compressed_indices2[level2])
+                                        {
+                                            uint32_t pos_base=i1*n2+i2;
+                                            uint32_t mid_pos=pos_base+mid_indices0[level0][i0]*n12;
+                                            T pred_value=0;
+                                            if (use_cubic and cubic_stencils0[level0][i0].point_num>0)
+                                                for (uint32_t j=0;j<cubic_stencils0[level0][i0].point_num;j++)
+                                                    pred_value+=cubic_stencils0[level0][i0].weights[j]*element[pos_base+cubic_stencils0[level0][i0].indices[j]*n12];
+                                            else
+                                                pred_value=left_weight0[level0][i0]*element[pos_base+left_indices0[level0][i0]*n12]+
+                                                    right_weight0[level0][i0]*element[pos_base+right_indices0[level0][i0]*n12];
+                                            quantize_prediction(pred_value,mid_pos);
+                                        }
+                                level0++;
+                            }
+                            else if (dimension==1 and n1>1 and level1<left_indices1.size())
+                            {
+                                for (auto i0:compressed_indices0[level0])
+                                    for (uint32_t i1=0;i1<left_indices1[level1].size();i1++)
+                                        for (auto i2:compressed_indices2[level2])
+                                        {
+                                            uint32_t pos_base=i0*n12+i2;
+                                            uint32_t mid_pos=pos_base+mid_indices1[level1][i1]*n2;
+                                            T pred_value=0;
+                                            if (use_cubic and cubic_stencils1[level1][i1].point_num>0)
+                                                for (uint32_t j=0;j<cubic_stencils1[level1][i1].point_num;j++)
+                                                    pred_value+=cubic_stencils1[level1][i1].weights[j]*element[pos_base+cubic_stencils1[level1][i1].indices[j]*n2];
+                                            else
+                                                pred_value=left_weight1[level1][i1]*element[pos_base+left_indices1[level1][i1]*n2]+
+                                                    right_weight1[level1][i1]*element[pos_base+right_indices1[level1][i1]*n2];
+                                            quantize_prediction(pred_value,mid_pos);
+                                        }
+                                level1++;
+                            }
+                            else if (dimension==2 and n2>1 and level2<left_indices2.size())
+                            {
+                                for (auto i0:compressed_indices0[level0])
+                                    for (auto i1:compressed_indices1[level1])
+                                        for (uint32_t i2=0;i2<left_indices2[level2].size();i2++)
+                                        {
+                                            uint32_t pos_base=i0*n12+i1*n2;
+                                            uint32_t mid_pos=pos_base+mid_indices2[level2][i2];
+                                            T pred_value=0;
+                                            if (use_cubic and cubic_stencils2[level2][i2].point_num>0)
+                                                for (uint32_t j=0;j<cubic_stencils2[level2][i2].point_num;j++)
+                                                    pred_value+=cubic_stencils2[level2][i2].weights[j]*element[pos_base+cubic_stencils2[level2][i2].indices[j]];
+                                            else
+                                                pred_value=left_weight2[level2][i2]*element[pos_base+left_indices2[level2][i2]]+
+                                                    right_weight2[level2][i2]*element[pos_base+right_indices2[level2][i2]];
+                                            quantize_prediction(pred_value,mid_pos);
+                                        }
+                                level2++;
+                            }
+                        }
+                    }
+                }
+                if (residual_id!=residual_num)
+                    throw runtime_error("SZ3预测产生的QB数量错误");
+            }
+        prediction_quantization_time+=omp_get_wtime()-prediction_quantization_start_time;
         // 把两种qb无损压缩到一起
         uint64_t configuration_bytes=sample_configuration?1:0;
         uint64_t position_bias_bytes=use_position_bias?n012*sizeof(int32_t):0;
@@ -922,14 +1088,9 @@ void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t
             memcpy(huffman_bs,position_bias.data(),position_bias_bytes);
             huffman_bs+=position_bias_bytes;
         }
+        double huffman_start_time=omp_get_wtime();
         if (huffman_tree_num==1)
         {
-            vector<int64_t> block_qb(n012*element_num);
-            for (uint64_t element_id=0;element_id<element_num;element_id++)
-            {
-                copy(block_corner_qb+element_id*seed_num,block_corner_qb+(element_id+1)*seed_num,block_qb.begin()+element_id*n012);
-                copy(block_no_corner_err_qb+element_id*residual_num,block_no_corner_err_qb+(element_id+1)*residual_num,block_qb.begin()+element_id*n012+seed_num);
-            }
             mrcz::huffman_encoder_class<int64_t> encoder;
             encoder.preprocess_encode(block_qb.data(),block_qb.size());
             encoder.save(huffman_bs);
@@ -960,19 +1121,27 @@ void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t
                 }
             }
         }
+        huffman_time+=omp_get_wtime()-huffman_start_time;
         uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
+        double zstd_start_time=omp_get_wtime();
         uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
         block.zstd_bs.resize(max_zstd_bs_len);
         uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
         block.zstd_bs.resize(zstd_bs_len);
+        zstd_time+=omp_get_wtime()-zstd_start_time;
     }
     double end_time=omp_get_wtime();
     if (sample_configuration)
         printf("Sampling time= %f seconds\n",sampling_time);
+    if constexpr (avx2_rounding!=sz3_avx2_rounding::disabled)
+        printf("AVX2 residual values= %lu, int64 fallback values= %lu, scalar tail values= %lu\n",avx2_value_num,avx2_fallback_value_num,avx2_scalar_tail_value_num);
+    double measured_stage_time=prediction_quantization_time+huffman_time+zstd_time;
+    printf("Compression accumulated partition times: prediction+quantization+QB placement= %f, Huffman= %f, Zstd= %f seconds\n",prediction_quantization_time,huffman_time,zstd_time);
+    if (measured_stage_time>0)
+        printf("Compression stage shares: prediction+quantization+QB placement= %.2f%%, Huffman= %.2f%%, Zstd= %.2f%%\n",100*prediction_quantization_time/measured_stage_time,100*huffman_time/measured_stage_time,100*zstd_time/measured_stage_time);
     printf("Compression time= %f seconds\n",end_time-start_time);
     printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
     delete[] corner_qb;
-    delete[] err_qb;
     delete[] no_corner_err_qb;
     for (auto group_qb:residual_group_qb)
         delete[] group_qb;
@@ -988,6 +1157,18 @@ template<typename T>
 void sz3_3d_gll_optimized_compress(mrcz::param_class<T> &params,string field)
 {
     sz3_3d_gll_compress_impl(params,field,0,{0,1,2},false,false,false,false,false,T(1),false,true);
+}
+
+template<typename T>
+void sz3_3d_gll_optimized_avx2_even_compress(mrcz::param_class<T> &params,string field)
+{
+    sz3_3d_gll_compress_impl<T,sz3_avx2_rounding::ties_to_even>(params,field,0,{0,1,2},false,false,false,false,false,T(1),false,true);
+}
+
+template<typename T>
+void sz3_3d_gll_optimized_avx2_away_compress(mrcz::param_class<T> &params,string field)
+{
+    sz3_3d_gll_compress_impl<T,sz3_avx2_rounding::ties_away_from_zero>(params,field,0,{0,1,2},false,false,false,false,false,T(1),false,true);
 }
 
 template<typename T>

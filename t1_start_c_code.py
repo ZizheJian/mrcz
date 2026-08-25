@@ -15,6 +15,8 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 #   "SZ3-3D-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
 #   "SZ3-3D-GLL": 无优化baseline；逐element GLL分层线性插值，单Huffman tree，按实际预测访问顺序保存量化值
 #   "SZ3-3D-GLL-optimized": 使用最大有效Huffman tree数，并在每个partition采样选择维度顺序和linear/cubic预测
+#   "SZ3-3D-GLL-optimized-avx2-even": 优化版的跨element AVX2原型，量化使用ties-to-even
+#   "SZ3-3D-GLL-optimized-avx2-away": 优化版的跨element AVX2原型，量化模拟std::round的ties-away-from-zero
 #   "SZ3-3D-GLL-predictability": 只统计element编号和各空间轴的一阶预测误差，不写bitstream
 #   "SZ3-3D-GLL-cubic": 实验性GLL坐标Lagrange插值，中心使用四点三次、边界使用三点二次、reference不足时退化为线性
 #   "SZ3-3D-GLL-surface-first": 角点、边、面、体依次处理，各部分从中心向外扩展，同层按轴向、面对角、体对角处理并平均可用方向

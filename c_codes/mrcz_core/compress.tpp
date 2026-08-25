@@ -181,7 +181,7 @@ namespace mrcz
         {
             if (params.method.empty())
                 params.method="MRCZ-3D-GLL";
-            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-experimental" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-predictability" and
+            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-experimental" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and params.method!="SZ3-3D-GLL-predictability" and
                 params.method!="SZ3-3D-GLL-experimental" and params.method!="SZ3-3D-GLL-cubic" and params.method!="SZ3-3D-GLL-surface-first" and params.method!="SZ3-3D-GLL-normal-boundary" and params.method!="SZ3-3D-GLL-index-order" and params.method!="SZ3-3D-GLL-index-midpoint" and params.method!="QoZ-3D-GLL" and
                 params.method.rfind("SZ3-3D-GLL-order-",0)!=0 and params.method.rfind("SZ3-3D-GLL-reference-EB-",0)!=0 and params.method.rfind("SZ3-3D-GLL-sampled-",0)!=0 and params.method.rfind("SZ3-3D-GLL-position-bias-",0)!=0)
                 throw runtime_error("mrcz::core::compress不支持方法: "+params.method);
@@ -203,6 +203,10 @@ namespace mrcz
                     sz3_3d_gll_compress(backend_params,field);
                 else if (backend_params.method=="SZ3-3D-GLL-optimized")
                     sz3_3d_gll_optimized_compress(backend_params,field);
+                else if (backend_params.method=="SZ3-3D-GLL-optimized-avx2-even")
+                    sz3_3d_gll_optimized_avx2_even_compress(backend_params,field);
+                else if (backend_params.method=="SZ3-3D-GLL-optimized-avx2-away")
+                    sz3_3d_gll_optimized_avx2_away_compress(backend_params,field);
                 else if (backend_params.method=="SZ3-3D-GLL-experimental")
                     sz3_3d_gll_experimental_compress(backend_params,field);
                 else if (backend_params.method=="SZ3-3D-GLL-cubic")

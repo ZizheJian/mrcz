@@ -135,25 +135,31 @@ void sz3_3d_gll_decompress_impl(mrcz::param_class<T> &params,string field,uint32
                 sampled_plans.push_back(move(plan));
             }
     }
-    int64_t *corner_qb=new int64_t[seed_num*params.element_num_to_process];
-    int64_t *err_qb=new int64_t[params.element_num_to_process*n012];
-    int64_t *no_corner_err_qb=huffman_tree_num>=3?nullptr:new int64_t[params.element_num_to_process*residual_num];
+    int64_t *corner_qb=huffman_tree_num==1?nullptr:new int64_t[seed_num*params.element_num_to_process];
+    int64_t *no_corner_err_qb=huffman_tree_num==2?new int64_t[params.element_num_to_process*residual_num]:nullptr;
     vector<int64_t*> residual_group_qb;
     for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
         residual_group_qb.push_back(new int64_t[params.element_num_to_process*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])]);
+    vector<uint32_t> residual_group_ids(residual_num),residual_group_local_ids(residual_num);
+    for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
+        for (uint32_t residual_id=residual_group_offsets[group_id];residual_id<residual_group_offsets[group_id+1];residual_id++)
+            residual_group_ids[residual_id]=group_id,residual_group_local_ids[residual_id]=residual_id-residual_group_offsets[group_id];
 
     double start_time=omp_get_wtime();
-    #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
+    double zstd_time=0,huffman_time=0,prediction_reconstruction_time=0;
+    #pragma omp parallel for schedule(static) num_threads(params.max_cpus) reduction(+:zstd_time,huffman_time,prediction_reconstruction_time)
     for (uint64_t block_id=0;block_id<blocks.size();block_id++)
     {
         auto &block=blocks[block_id];
         uint64_t begin_index=block.begin_index;
         uint64_t end_index=block.end_index;
         // 先无损解压
+        double zstd_start_time=omp_get_wtime();
         uint64_t huffman_bs_len=ZSTD_getFrameContentSize(block.zstd_bs.data(),block.zstd_bs.size());
         vector<unsigned char> huffman_bs_vec(huffman_bs_len);
         if (ZSTD_decompress(huffman_bs_vec.data(),huffman_bs_len,block.zstd_bs.data(),block.zstd_bs.size())!=huffman_bs_len)
             throw runtime_error("ZSTD_decompress error in decompress()");
+        zstd_time+=omp_get_wtime()-zstd_start_time;
         const unsigned char *huffman_bs=huffman_bs_vec.data();
         uint32_t selected_plan_id=0;
         if (sample_configuration)
@@ -164,7 +170,6 @@ void sz3_3d_gll_decompress_impl(mrcz::param_class<T> &params,string field,uint32
             if (selected_plan_id>=sampled_plans.size())
                 throw runtime_error("SZ3采样配置metadata无效");
         }
-        auto &block_prediction_positions=sample_configuration?sampled_plans[selected_plan_id].positions:prediction_positions;
         vector<sz3_prediction_stencil<T>> *block_prediction_stencils=sample_configuration?&sampled_plans[selected_plan_id].stencils:nullptr;
         vector<int32_t> position_bias(n012,0);
         T bias_unit=abs_eb/8;
@@ -177,22 +182,19 @@ void sz3_3d_gll_decompress_impl(mrcz::param_class<T> &params,string field,uint32
             huffman_bs+=position_bias_bytes;
         }
         uint64_t element_num=end_index-begin_index;
-        int64_t *block_corner_qb=corner_qb+seed_num*begin_index;
-        int64_t *block_no_corner_err_qb=huffman_tree_num>=3?nullptr:no_corner_err_qb+residual_num*begin_index;
+        int64_t *block_corner_qb=huffman_tree_num==1?nullptr:corner_qb+seed_num*begin_index;
+        int64_t *block_no_corner_err_qb=huffman_tree_num==2?no_corner_err_qb+residual_num*begin_index:nullptr;
         vector<int64_t*> block_residual_group_qb;
         for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
             block_residual_group_qb.push_back(residual_group_qb[group_id]+begin_index*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id]));
+        vector<int64_t> block_qb;
+        double huffman_start_time=omp_get_wtime();
         if (huffman_tree_num==1)
         {
-            vector<int64_t> block_qb(n012*element_num);
+            block_qb.resize(n012*element_num);
             mrcz::huffman_encoder_class<int64_t> encoder;
             encoder.load(huffman_bs);
             encoder.decode(huffman_bs,block_qb.data(),block_qb.size());
-            for (uint64_t element_id=0;element_id<element_num;element_id++)
-            {
-                copy(block_qb.begin()+element_id*n012,block_qb.begin()+element_id*n012+seed_num,block_corner_qb+element_id*seed_num);
-                copy(block_qb.begin()+element_id*n012+seed_num,block_qb.begin()+(element_id+1)*n012,block_no_corner_err_qb+element_id*residual_num);
-            }
         }
         else
         {
@@ -216,49 +218,50 @@ void sz3_3d_gll_decompress_impl(mrcz::param_class<T> &params,string field,uint32
                 }
             }
         }
+        huffman_time+=omp_get_wtime()-huffman_start_time;
+        auto corner_qb_at=[&](uint64_t element_id,uint32_t corner_id)->int64_t
+        {
+            if (huffman_tree_num==1)
+                return block_qb[(element_id-begin_index)*n012+corner_id];
+            return corner_qb[element_id*seed_num+corner_id];
+        };
+        auto residual_qb_at=[&](uint64_t element_id,uint32_t residual_id)->int64_t
+        {
+            if (huffman_tree_num==1)
+                return block_qb[(element_id-begin_index)*n012+seed_num+residual_id];
+            if (huffman_tree_num==2)
+                return no_corner_err_qb[element_id*residual_num+residual_id];
+            uint32_t group_id=residual_group_ids[residual_id];
+            uint32_t group_size=residual_group_offsets[group_id+1]-residual_group_offsets[group_id];
+            return residual_group_qb[group_id][element_id*group_size+residual_group_local_ids[residual_id]];
+        };
+        double prediction_reconstruction_start_time=omp_get_wtime();
         // 重构每个element角上的数据
         if (use_position_bias)
             for (uint64_t i=begin_index;i<end_index;i++)
-                for (uint32_t corner_id=0;corner_id<corner_positions.size();corner_id++)
+                for (uint32_t corner_id=0;corner_id<seed_num;corner_id++)
                 {
                     uint32_t target=corner_positions[corner_id];
-                    decompressed_data[i*n012+target]=position_bias[target]*bias_unit-2*abs_eb*corner_qb[i*seed_num+corner_id];
+                    decompressed_data[i*n012+target]=position_bias[target]*bias_unit-2*abs_eb*corner_qb_at(i,corner_id);
                 }
         else if (reference_eb_scale<1)
-            params.reconstruct_corner_number(corner_qb,begin_index,end_index,n0,n1,n2,n12,n012,reference_abs_eb);
-        else if (use_index_order)
             for (uint64_t i=begin_index;i<end_index;i++)
-                decompressed_data[i*n012]=corner_qb[i]*2*abs_eb;
+                for (uint32_t corner_id=0;corner_id<seed_num;corner_id++)
+                    decompressed_data[i*n012+corner_positions[corner_id]]=corner_qb_at(i,corner_id)*2*reference_abs_eb;
         else
-            params.reconstruct_corner_number(corner_qb,begin_index,end_index,n0,n1,n2,n12,n012,abs_eb);
-        //把no_corner_err_qb转换成err_qb
+            for (uint64_t i=begin_index;i<end_index;i++)
+                for (uint32_t corner_id=0;corner_id<seed_num;corner_id++)
+                    decompressed_data[i*n012+corner_positions[corner_id]]=corner_qb_at(i,corner_id)*2*abs_eb;
         for (uint64_t i=begin_index;i<end_index;i++)
         {
-            int64_t *element_err_qb=err_qb+i*n012;
-            if (huffman_tree_num>=3)
-            {
-                for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
-                {
-                    uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
-                    int64_t *element_group_qb=residual_group_qb[group_id]+i*group_size;
-                    for (uint32_t residual_id=group_begin;residual_id<residual_group_offsets[group_id+1];residual_id++)
-                        element_err_qb[block_prediction_positions[residual_id]]=element_group_qb[residual_id-group_begin];
-                }
-            }
-            else
-            {
-                int64_t *element_no_corner_err_qb=no_corner_err_qb+i*residual_num;
-                for (uint32_t residual_id=0;residual_id<residual_num;residual_id++)
-                    element_err_qb[block_prediction_positions[residual_id]]=element_no_corner_err_qb[residual_id];
-            }
-
             T *element=decompressed_data.data()+i*n012;
+            uint32_t residual_id=0;
             auto reconstruct_prediction=[&](T pred_value,uint32_t target)
             {
                 if (use_position_bias)
                     pred_value+=position_bias[target]*bias_unit;
                 T point_abs_eb=reference_eb_scale<1 and reference_mask[target]?reference_abs_eb:abs_eb;
-                element[target]=pred_value-2*point_abs_eb*element_err_qb[target];
+                element[target]=pred_value-2*point_abs_eb*residual_qb_at(i,residual_id++);
             };
             if (sample_configuration)
             {
@@ -356,14 +359,20 @@ void sz3_3d_gll_decompress_impl(mrcz::param_class<T> &params,string field,uint32
                     }
                 }
             }
+            if (residual_id!=residual_num)
+                throw runtime_error("SZ3重构读取的QB数量错误");
         }
+        prediction_reconstruction_time+=omp_get_wtime()-prediction_reconstruction_start_time;
     }
     double end_time=omp_get_wtime();
     delete[] corner_qb;
-    delete[] err_qb;
     delete[] no_corner_err_qb;
     for (auto group_qb:residual_group_qb)
         delete[] group_qb;
+    double measured_stage_time=zstd_time+huffman_time+prediction_reconstruction_time;
+    printf("Decompression accumulated partition times: Zstd= %f, Huffman= %f, QB consumption+prediction+reconstruction= %f seconds\n",zstd_time,huffman_time,prediction_reconstruction_time);
+    if (measured_stage_time>0)
+        printf("Decompression stage shares: Zstd= %.2f%%, Huffman= %.2f%%, QB consumption+prediction+reconstruction= %.2f%%\n",100*zstd_time/measured_stage_time,100*huffman_time/measured_stage_time,100*prediction_reconstruction_time/measured_stage_time);
     printf("Decompression time= %f seconds\n",end_time-start_time);
     printf("\033[91mField= %s, decompression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
 }

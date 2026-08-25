@@ -1,0 +1,120 @@
+######## REL=1e-3 ########
+===== SZ3-3D-GLL-optimized compression =====
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244592e-03, rel_eb=1.000000e-03
+Sampled configurations: ZYX-cubic=1
+Sampling time= 0.075667 seconds
+Compression accumulated partition times: prediction+quantization+QB placement= 0.493372, Huffman= 0.202479, Zstd= 0.044203 seconds
+Compression stage shares: prediction+quantization+QB placement= 66.67%, Huffman= 27.36%, Zstd= 5.97%
+Compression time= 0.855629 seconds
+[91mField= T, compression bandwidth per cpu= 228.267612 MB/s
+[0m[91mBR= 0.755652 bits/value, CR= 42.347551
+[0m===== SZ3-3D-GLL-optimized decompression =====
+Field= T
+params.method= SZ3-3D-GLL-optimized
+Decompression accumulated partition times: Zstd= 0.012536, Huffman= 0.167687, QB consumption+prediction+reconstruction= 0.230627 seconds
+Decompression stage shares: Zstd= 3.05%, Huffman= 40.81%, QB consumption+prediction+reconstruction= 56.13%
+Decompression time= 0.411138 seconds
+[91mField= T, decompression bandwidth per cpu= 475.052970 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.001244591549039, rel_eb= 0.001000000047497, BR= 0.755651718750000, CR= 42.347551399650669, max_err= 0.001244544982910 (99.996259%), MSE= 0.000000365016232, PSNR= 66.277414660130930 dB[0m
+===== SZ3-3D-GLL-optimized-avx2-even compression =====
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244592e-03, rel_eb=1.000000e-03
+Sampled configurations: ZYX-cubic=1
+Sampling time= 0.076395 seconds
+AVX2 residual values= 50400000, int64 fallback values= 0, scalar tail values= 0
+Compression accumulated partition times: prediction+quantization+QB placement= 0.504050, Huffman= 0.202187, Zstd= 0.043529 seconds
+Compression stage shares: prediction+quantization+QB placement= 67.23%, Huffman= 26.97%, Zstd= 5.81%
+Compression time= 0.864187 seconds
+[91mField= T, compression bandwidth per cpu= 226.007321 MB/s
+[0m[91mBR= 0.755652 bits/value, CR= 42.347551
+[0m===== SZ3-3D-GLL-optimized-avx2-even decompression =====
+Field= T
+params.method= SZ3-3D-GLL-optimized-avx2-even
+Decompression accumulated partition times: Zstd= 0.011808, Huffman= 0.168609, QB consumption+prediction+reconstruction= 0.225737 seconds
+Decompression stage shares: Zstd= 2.91%, Huffman= 41.51%, QB consumption+prediction+reconstruction= 55.58%
+Decompression time= 0.406284 seconds
+[91mField= T, decompression bandwidth per cpu= 480.728822 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.001244591549039, rel_eb= 0.001000000047497, BR= 0.755651718750000, CR= 42.347551399650669, max_err= 0.001244544982910 (99.996259%), MSE= 0.000000365016232, PSNR= 66.277414660130930 dB[0m
+===== SZ3-3D-GLL-optimized-avx2-away compression =====
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244592e-03, rel_eb=1.000000e-03
+Sampled configurations: ZYX-cubic=1
+Sampling time= 0.076471 seconds
+AVX2 residual values= 50400000, int64 fallback values= 0, scalar tail values= 0
+Compression accumulated partition times: prediction+quantization+QB placement= 0.506980, Huffman= 0.201252, Zstd= 0.044058 seconds
+Compression stage shares: prediction+quantization+QB placement= 67.39%, Huffman= 26.75%, Zstd= 5.86%
+Compression time= 0.869117 seconds
+[91mField= T, compression bandwidth per cpu= 224.725223 MB/s
+[0m[91mBR= 0.755652 bits/value, CR= 42.347551
+[0m===== SZ3-3D-GLL-optimized-avx2-away decompression =====
+Field= T
+params.method= SZ3-3D-GLL-optimized-avx2-away
+Decompression accumulated partition times: Zstd= 0.012465, Huffman= 0.167853, QB consumption+prediction+reconstruction= 0.229497 seconds
+Decompression stage shares: Zstd= 3.04%, Huffman= 40.96%, QB consumption+prediction+reconstruction= 56.00%
+Decompression time= 0.410108 seconds
+[91mField= T, decompression bandwidth per cpu= 476.246524 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.001244591549039, rel_eb= 0.001000000047497, BR= 0.755651718750000, CR= 42.347551399650669, max_err= 0.001244544982910 (99.996259%), MSE= 0.000000365016232, PSNR= 66.277414660130930 dB[0m
+######## REL=1e-5 ########
+===== SZ3-3D-GLL-optimized compression =====
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244591e-05, rel_eb=1.000000e-05
+Sampled configurations: ZYX-cubic=1
+Sampling time= 0.108869 seconds
+Compression accumulated partition times: prediction+quantization+QB placement= 0.488662, Huffman= 0.298830, Zstd= 0.190718 seconds
+Compression stage shares: prediction+quantization+QB placement= 49.95%, Huffman= 30.55%, Zstd= 19.50%
+Compression time= 1.128682 seconds
+[91mField= T, compression bandwidth per cpu= 173.044753 MB/s
+[0m[91mBR= 4.536437 bits/value, CR= 7.053994
+[0m===== SZ3-3D-GLL-optimized decompression =====
+Field= T
+params.method= SZ3-3D-GLL-optimized
+Decompression accumulated partition times: Zstd= 0.032425, Huffman= 0.599197, QB consumption+prediction+reconstruction= 0.245114 seconds
+Decompression stage shares: Zstd= 3.70%, Huffman= 68.34%, QB consumption+prediction+reconstruction= 27.96%
+Decompression time= 0.877004 seconds
+[91mField= T, decompression bandwidth per cpu= 222.704160 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000012445913835, rel_eb= 0.000009999999747, BR= 4.536437187500000, CR= 7.053993845252597, max_err= 0.000012445913766 (99.999999%), MSE= 0.000000000048069, PSNR= 105.081915793095703 dB[0m
+===== SZ3-3D-GLL-optimized-avx2-even compression =====
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244591e-05, rel_eb=1.000000e-05
+Sampled configurations: ZYX-cubic=1
+Sampling time= 0.110931 seconds
+AVX2 residual values= 50400000, int64 fallback values= 0, scalar tail values= 0
+Compression accumulated partition times: prediction+quantization+QB placement= 0.398909, Huffman= 0.297503, Zstd= 0.186370 seconds
+Compression stage shares: prediction+quantization+QB placement= 45.19%, Huffman= 33.70%, Zstd= 21.11%
+Compression time= 1.037894 seconds
+[91mField= T, compression bandwidth per cpu= 188.181610 MB/s
+[0m[91mBR= 4.536437 bits/value, CR= 7.053994
+[0m===== SZ3-3D-GLL-optimized-avx2-even decompression =====
+Field= T
+params.method= SZ3-3D-GLL-optimized-avx2-even
+Decompression accumulated partition times: Zstd= 0.032547, Huffman= 0.598355, QB consumption+prediction+reconstruction= 0.243637 seconds
+Decompression stage shares: Zstd= 3.72%, Huffman= 68.42%, QB consumption+prediction+reconstruction= 27.86%
+Decompression time= 0.874806 seconds
+[91mField= T, decompression bandwidth per cpu= 223.263666 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000012445913835, rel_eb= 0.000009999999747, BR= 4.536437187500000, CR= 7.053993845252597, max_err= 0.000012445913766 (99.999999%), MSE= 0.000000000048069, PSNR= 105.081915793095703 dB[0m
+===== SZ3-3D-GLL-optimized-avx2-away compression =====
+Field= T
+Data range: [0.993475, 2.238066], abs_eb=1.244591e-05, rel_eb=1.000000e-05
+Sampled configurations: ZYX-cubic=1
+Sampling time= 0.111391 seconds
+AVX2 residual values= 50400000, int64 fallback values= 0, scalar tail values= 0
+Compression accumulated partition times: prediction+quantization+QB placement= 0.382252, Huffman= 0.297967, Zstd= 0.192681 seconds
+Compression stage shares: prediction+quantization+QB placement= 43.79%, Huffman= 34.14%, Zstd= 22.07%
+Compression time= 1.025681 seconds
+[91mField= T, compression bandwidth per cpu= 190.422293 MB/s
+[0m[91mBR= 4.536437 bits/value, CR= 7.053994
+[0m===== SZ3-3D-GLL-optimized-avx2-away decompression =====
+Field= T
+params.method= SZ3-3D-GLL-optimized-avx2-away
+Decompression accumulated partition times: Zstd= 0.033426, Huffman= 0.596866, QB consumption+prediction+reconstruction= 0.243414 seconds
+Decompression stage shares: Zstd= 3.83%, Huffman= 68.31%, QB consumption+prediction+reconstruction= 27.86%
+Decompression time= 0.874139 seconds
+[91mField= T, decompression bandwidth per cpu= 223.434145 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000012445913835, rel_eb= 0.000009999999747, BR= 4.536437187500000, CR= 7.053993845252597, max_err= 0.000012445913766 (99.999999%), MSE= 0.000000000048069, PSNR= 105.081915793095703 dB[0m
