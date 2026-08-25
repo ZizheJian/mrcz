@@ -1,0 +1,44 @@
+SZ3-3D-GLL baseline与官方SZ3的比较
+==================================
+
+# XXX 对照版本：third_party/SZ3 commit e08c0ba830dc192d45d19c223dbf5de712a76629。
+# XXX 结论：SZ3-3D-GLL是SZ3-style GLL baseline，不是官方SZ3的逐行复现。
+
+相同点
+======
+
+- 都使用分层插值，并且后续预测只引用已经量化重建的值。
+- 都让量化符号按照预测器的实际访问顺序进入无损编码。
+- baseline都只使用一棵Huffman tree，并在之后使用Zstd。
+- 默认都按固定维度顺序推进；当前SZ3-3D-GLL为XYZ。
+
+SZ3-3D-GLL特有行为
+==================
+
+- 将每个unstructured element独立视为1D/2D/3D小tensor。
+- 先把element的2/4/8个角点全部以0为预测值量化，作为后续插值的seed。
+- 每次递归选择物理坐标最接近区间中点的GLL节点，不要求索引中点或2幂stride。
+- 根据真实GLL节点距离计算线性插值权重。
+- 所有角点和预测层使用同一个point-wise absolute error bound。
+- 使用signed int64量化残差，不设置有限radius，也没有单独的unpredictable value流。
+- partition只决定并行和Huffman/Zstd block边界，不会把多个element拼成一个规则4D tensor预测。
+
+官方SZ3默认路径还包含的行为
+============================
+
+- 对规则tensor/block执行插值；默认block size和数据维度相关。
+- 使用2幂stride层级、initial point或anchor grid以及边界外插。
+- 默认插值器为cubic，并可调优linear/cubic、维度顺序以及Lorenzo/插值算法选择。
+- 默认interpAlpha=1.25、interpBeta=2，对不同插值层缩放error bound。
+- LinearQuantizer使用有限radius；超出可预测量化区间的值写入unpredictable value流。
+- 量化索引为经过radius偏移的非负int，而不是当前baseline的signed int64残差。
+
+命名建议
+========
+
+论文或README中将SZ3-3D-GLL描述为：
+
+SZ3-style hierarchical interpolation adapted to per-element GLL grids
+
+若需要代表官方SZ3本身，应使用现有的SZ3-1D-uniform或SZ3-4D-uniform API baseline，并明确
+输入展平或4D重组方式；不要用SZ3-3D-GLL替代官方SZ3名称。

@@ -7,14 +7,22 @@ redbegin="\033[91m"
 redend="\033[0m"
 silent_build=False
 build_max_cpus=get_max_cpus(8)
-build_before_test=True # 多个slurm实验并行时，应该先完成build和install，再把这个设为False，再开始运行
+build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in ["1","true","yes"] # 多个slurm实验并行时，应该先完成build和install，再把这个设为False，再开始运行
 
 # method可选:
 #   "MRCZ-3D-GLL"
 #   "MRCZ-3D-GLL-experimental"
 #   "SZ3-3D-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
-#   "SZ3-3D-GLL": 项目内实现的逐element 3D分层插值，使用真实GLL坐标
-#   "SZ3-3D-GLL-experimental": 每个element内按实际预测访问顺序排列非角点prediction residual
+#   "SZ3-3D-GLL": 无优化baseline；逐element GLL分层线性插值，单Huffman tree，按实际预测访问顺序保存量化值
+#   "SZ3-3D-GLL-optimized": 使用最大有效Huffman tree数，并在每个partition采样选择维度顺序和linear/cubic预测
+#   "SZ3-3D-GLL-predictability": 只统计element编号和各空间轴的一阶预测误差，不写bitstream
+#   "SZ3-3D-GLL-cubic": 实验性GLL坐标Lagrange插值，中心使用四点三次、边界使用三点二次、reference不足时退化为线性
+#   "SZ3-3D-GLL-surface-first": 角点、边、面、体依次处理，各部分从中心向外扩展，同层按轴向、面对角、体对角处理并平均可用方向
+#   "SZ3-3D-GLL-normal-boundary": 由角点建立中心块，沿法向外插边界锚点，再从中心向外内插内部点
+#   "SZ3-3D-GLL-index-order": 严格使用SZ3的2幂stride访问顺序，但按真实GLL距离计算线性插值和外插权重
+#   "SZ3-3D-GLL-index-midpoint": 保留每个element的角点seed，递归时选择索引中点，但按真实GLL距离计算权重
+#   "SZ3-3D-GLL-reference-EB-0.5": 所有之后还会作为reference的节点使用0.5倍EB，叶子节点使用完整EB
+#   "SZ3-3D-GLL-experimental": 角点和四个预测层分别使用一棵Huffman tree，要求element至少有4个预测层
 #   "QoZ-3D-GLL": 项目内实现的逐element QoZ式分阶段多维插值，使用真实GLL坐标
 #   "SZ3-1D-uniform": 把每个partition展平为一维数组，调用官方SZ3 API
 #   "SZ3-4D-uniform": 把每个partition视为[element,n0,n1,n2]四维数组，调用官方SZ3 API
@@ -24,19 +32,7 @@ build_before_test=True # 多个slurm实验并行时，应该先完成build和ins
 #   "ZFP-4D-uniform": 把partition视为[element,n0,n1,n2]四维规则数组
 #   "SPERR-3D-uniform": 把partition重组为SPERR接收的三维规则数组
 # MRCZ-3D-GLL-experimental目前是角点/中心点预测诊断入口，不写bitstream，不加入正式t1。
-method_list=[
-    "MRCZ-3D-GLL",
-    "SZ3-3D-uniform",
-    "SZ3-3D-GLL",
-    "QoZ-3D-GLL",
-    "SZ3-1D-uniform",
-    "SZ3-4D-uniform",
-    "QoZ-4D-uniform",
-    "SZ2-3D-uniform",
-    "SZ2-3D-GLL",
-    "ZFP-4D-uniform",
-    "SPERR-3D-uniform",
-]
+method_list=os.environ.get("MRCZ_T1_METHODS","SZ3-3D-GLL,SZ3-3D-GLL-optimized").split(",")
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
@@ -68,11 +64,18 @@ project_root=os.path.dirname(os.path.abspath(__file__))
 # ZFP-4D-uniform的相对误差为3.16e-1时，T的CR=27.974553
 # eb_list=[1e-1,1e-2,1e-3,1e-4]
 
+test_case=os.environ.get("MRCZ_T1_DATASET","jicf0")
 format="nekrs"
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
-fields=["UX","UY","UZ","P","S00"]
-# eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
-eb_list=[1e-4,1e-5,1e-6,1e-7,1e-8]
+if test_case=="pb0":
+    data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8
+    fields=["UX","UY","UZ","P","T"]
+    eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
+elif test_case=="jicf0":
+    data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
+    fields=["UX","UY","UZ","P","S00"]
+    eb_list=[1e-4,1e-5,1e-6,1e-7,1e-8]
+else:
+    raise ValueError(f"未知的MRCZ_T1_DATASET: {test_case}")
 max_cpus_list=[128]
 
 # format="mfem"

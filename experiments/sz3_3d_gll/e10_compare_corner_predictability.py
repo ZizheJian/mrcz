@@ -8,7 +8,8 @@ import numpy as np
 from py_funcs.read_nekrs_header import read_nekrs_header
 
 rel_eb=1e-4
-project_root=os.path.dirname(os.path.abspath(__file__))
+experiment_dir=os.path.dirname(os.path.abspath(__file__))
+project_root=os.path.abspath(os.path.join(experiment_dir,"../.."))
 datasets=(
     ("test0",os.path.join(project_root,"third_party/fld_pyutils/demos/data/test0.f00001"),None,None),
     ("mixlay0",os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001"),None,None),

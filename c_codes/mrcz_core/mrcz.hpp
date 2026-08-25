@@ -12,6 +12,8 @@
 #include <immintrin.h>
 #include <cmath>
 #include <charconv>
+#include <limits>
+#include <algorithm>
 #include "huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
 #include <mfem.hpp>

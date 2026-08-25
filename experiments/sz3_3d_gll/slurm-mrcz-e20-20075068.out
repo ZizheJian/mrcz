@@ -1,0 +1,673 @@
+Running pb0 five-tree experiment
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-01, rel_eb=1.000000e-02
+Compression time= 0.632481 seconds
+[91mField= UX, compression bandwidth per cpu= 46.975654 MB/s
+[0m[91mBR= 0.092798 bits/value, CR= 344.833819
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-01, rel_eb=1.000000e-02
+Compression time= 0.589978 seconds
+[91mField= UY, compression bandwidth per cpu= 50.359850 MB/s
+[0m[91mBR= 0.095447 bits/value, CR= 335.264949
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-01, rel_eb=1.000000e-02
+Compression time= 0.627626 seconds
+[91mField= UZ, compression bandwidth per cpu= 47.339043 MB/s
+[0m[91mBR= 0.130325 bits/value, CR= 245.540874
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079924e+00, rel_eb=1.000000e-02
+Compression time= 0.546891 seconds
+[91mField= P, compression bandwidth per cpu= 54.327439 MB/s
+[0m[91mBR= 0.018642 bits/value, CR= 1716.555548
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584239e-02, rel_eb=1.000000e-02
+Compression time= 0.620492 seconds
+[91mField= T, compression bandwidth per cpu= 47.883298 MB/s
+[0m[91mBR= 0.194585 bits/value, CR= 164.452543
+[0mField= UX
+params.method= SZ3-3D-GLL
+Decompression time= 0.505643 seconds
+[91mField= UX, decompression bandwidth per cpu= 58.759301 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.168854400515556, rel_eb= 0.009999999776483, BR= 0.092798322577464, CR= 344.833819310555668, max_err= 0.168854475021362 (100.000044%), MSE= 0.003862727010237, PSNR= 48.681307899800714 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL
+Decompression time= 0.469427 seconds
+[91mField= UY, decompression bandwidth per cpu= 63.292500 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.163990929722786, rel_eb= 0.009999999776483, BR= 0.095446899680251, CR= 335.264949487102683, max_err= 0.163990974426270 (100.000027%), MSE= 0.003660552380979, PSNR= 48.660930650120797 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL
+Decompression time= 0.232546 seconds
+[91mField= UZ, decompression bandwidth per cpu= 127.764948 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.168362945318222, rel_eb= 0.009999999776483, BR= 0.130324533909490, CR= 245.540874308622421, max_err= 0.168363094329834 (100.000089%), MSE= 0.003928384633238, PSNR= 48.582790072775460 dB[0m
+Field= P
+params.method= SZ3-3D-GLL
+Decompression time= 0.221435 seconds
+[91mField= P, decompression bandwidth per cpu= 134.176050 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 6.079923629760742, rel_eb= 0.009999999776483, BR= 0.018641983376764, CR= 1716.555548476964532, max_err= 6.079925537109375 (100.000031%), MSE= 9.517948239159280, PSNR= 45.892529204483601 dB[0m
+Field= T
+params.method= SZ3-3D-GLL
+Decompression time= 0.226220 seconds
+[91mField= T, decompression bandwidth per cpu= 131.337956 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.015842385590076, rel_eb= 0.009999999776483, BR= 0.194585011958479, CR= 164.452542762277375, max_err= 0.015842437744141 (100.000329%), MSE= 0.000051560416740, PSNR= 46.873247236328915 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-02, rel_eb=1.000000e-03
+Compression time= 0.658162 seconds
+[91mField= UX, compression bandwidth per cpu= 45.142695 MB/s
+[0m[91mBR= 0.601820 bits/value, CR= 53.172080
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-02, rel_eb=1.000000e-03
+Compression time= 0.636218 seconds
+[91mField= UY, compression bandwidth per cpu= 46.699769 MB/s
+[0m[91mBR= 0.615543 bits/value, CR= 51.986583
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-02, rel_eb=1.000000e-03
+Compression time= 0.639614 seconds
+[91mField= UZ, compression bandwidth per cpu= 46.451812 MB/s
+[0m[91mBR= 0.786598 bits/value, CR= 40.681501
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079924e-01, rel_eb=1.000000e-03
+Compression time= 0.571071 seconds
+[91mField= P, compression bandwidth per cpu= 52.027178 MB/s
+[0m[91mBR= 0.190860 bits/value, CR= 167.662302
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584239e-03, rel_eb=1.000000e-03
+Compression time= 0.596681 seconds
+[91mField= T, compression bandwidth per cpu= 49.794125 MB/s
+[0m[91mBR= 1.098917 bits/value, CR= 29.119567
+[0mField= UX
+params.method= SZ3-3D-GLL
+Decompression time= 0.499610 seconds
+[91mField= UX, decompression bandwidth per cpu= 59.468764 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.016885440796614, rel_eb= 0.001000000047497, BR= 0.601819606012159, CR= 53.172079607113140, max_err= 0.016885519027710 (100.000463%), MSE= 0.000057543947337, PSNR= 66.950251565631845 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL
+Decompression time= 0.490130 seconds
+[91mField= UY, decompression bandwidth per cpu= 60.619046 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.016399094834924, rel_eb= 0.001000000047497, BR= 0.615543433839850, CR= 51.986583303113640, max_err= 0.016399145126343 (100.000307%), MSE= 0.000054510025769, PSNR= 66.931633034872434 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL
+Decompression time= 0.222470 seconds
+[91mField= UZ, decompression bandwidth per cpu= 133.551274 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.016836294904351, rel_eb= 0.001000000047497, BR= 0.786598302573910, CR= 40.681501466872561, max_err= 0.016836643218994 (100.002069%), MSE= 0.000059855958918, PSNR= 66.753856180361211 dB[0m
+Field= P
+params.method= SZ3-3D-GLL
+Decompression time= 0.209680 seconds
+[91mField= P, decompression bandwidth per cpu= 141.698156 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.607992410659790, rel_eb= 0.001000000047497, BR= 0.190859839540170, CR= 167.662301703156459, max_err= 0.608001708984375 (100.001529%), MSE= 0.076431422370135, PSNR= 66.845243173474060 dB[0m
+Field= T
+params.method= SZ3-3D-GLL
+Decompression time= 0.237274 seconds
+[91mField= T, decompression bandwidth per cpu= 125.218887 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.001584238605574, rel_eb= 0.001000000047497, BR= 1.098917445666855, CR= 29.119566830228507, max_err= 0.001584291458130 (100.003336%), MSE= 0.000000687932240, PSNR= 65.620954791090853 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-03, rel_eb=1.000000e-04
+Compression time= 0.975977 seconds
+[91mField= UX, compression bandwidth per cpu= 30.442533 MB/s
+[0m[91mBR= 2.396202 bits/value, CR= 13.354469
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-03, rel_eb=1.000000e-04
+Compression time= 0.959610 seconds
+[91mField= UY, compression bandwidth per cpu= 30.961768 MB/s
+[0m[91mBR= 2.431001 bits/value, CR= 13.163300
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-03, rel_eb=1.000000e-04
+Compression time= 0.988115 seconds
+[91mField= UZ, compression bandwidth per cpu= 30.068590 MB/s
+[0m[91mBR= 2.827682 bits/value, CR= 11.316690
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079924e-02, rel_eb=1.000000e-04
+Compression time= 0.944326 seconds
+[91mField= P, compression bandwidth per cpu= 31.462886 MB/s
+[0m[91mBR= 1.025404 bits/value, CR= 31.207198
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584238e-04, rel_eb=1.000000e-04
+Compression time= 0.976129 seconds
+[91mField= T, compression bandwidth per cpu= 30.437801 MB/s
+[0m[91mBR= 3.494612 bits/value, CR= 9.156954
+[0mField= UX
+params.method= SZ3-3D-GLL
+Decompression time= 0.746629 seconds
+[91mField= UX, decompression bandwidth per cpu= 39.793812 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.001688544039985, rel_eb= 0.000099999997474, BR= 2.396201536319161, CR= 13.354469361185558, max_err= 0.001688544039743 (100.000000%), MSE= 0.000000778073519, PSNR= 85.640041717025483 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL
+Decompression time= 0.736871 seconds
+[91mField= UY, decompression bandwidth per cpu= 40.320771 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.001639909225998, rel_eb= 0.000099999997474, BR= 2.431001364684047, CR= 13.163299891507460, max_err= 0.001639909225816 (100.000000%), MSE= 0.000000735927471, PSNR= 85.628046254693558 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL
+Decompression time= 0.693685 seconds
+[91mField= UZ, decompression bandwidth per cpu= 42.830990 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.001683629458334, rel_eb= 0.000099999997474, BR= 2.827682045821748, CR= 11.316689599979595, max_err= 0.001683629457716 (100.000000%), MSE= 0.000000792459588, PSNR= 85.535159294075171 dB[0m
+Field= P
+params.method= SZ3-3D-GLL
+Decompression time= 0.684334 seconds
+[91mField= P, decompression bandwidth per cpu= 43.416242 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.060799235524629, rel_eb= 0.000099999997474, BR= 1.025404465311937, CR= 31.207197825362801, max_err= 0.060799235095345 (99.999999%), MSE= 0.000934419107568, PSNR= 85.972545485462973 dB[0m
+Field= T
+params.method= SZ3-3D-GLL
+Decompression time= 0.720098 seconds
+[91mField= T, decompression bandwidth per cpu= 41.259957 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000158423842958, rel_eb= 0.000099999997474, BR= 3.494612016114288, CR= 9.156953576660932, max_err= 0.000158423842892 (100.000000%), MSE= 0.000000007875025, PSNR= 85.033891909922801 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-04, rel_eb=1.000000e-05
+Compression time= 1.037954 seconds
+[91mField= UX, compression bandwidth per cpu= 28.624789 MB/s
+[0m[91mBR= 5.443105 bits/value, CR= 5.878998
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-04, rel_eb=1.000000e-05
+Compression time= 0.955714 seconds
+[91mField= UY, compression bandwidth per cpu= 31.087965 MB/s
+[0m[91mBR= 5.490229 bits/value, CR= 5.828537
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-04, rel_eb=1.000000e-05
+Compression time= 0.988473 seconds
+[91mField= UZ, compression bandwidth per cpu= 30.057692 MB/s
+[0m[91mBR= 5.987896 bits/value, CR= 5.344114
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079923e-03, rel_eb=1.000000e-05
+Compression time= 0.964980 seconds
+[91mField= P, compression bandwidth per cpu= 30.789455 MB/s
+[0m[91mBR= 3.255812 bits/value, CR= 9.828579
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584238e-05, rel_eb=1.000000e-05
+Compression time= 1.046237 seconds
+[91mField= T, compression bandwidth per cpu= 28.398166 MB/s
+[0m[91mBR= 6.762087 bits/value, CR= 4.732267
+[0mField= UX
+params.method= SZ3-3D-GLL
+Decompression time= 0.808838 seconds
+[91mField= UX, decompression bandwidth per cpu= 36.733192 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000168854403999, rel_eb= 0.000009999999747, BR= 5.443104838844283, CR= 5.878997547802967, max_err= 0.000168854403924 (100.000000%), MSE= 0.000000008725256, PSNR= 105.142466342851804 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL
+Decompression time= 0.747337 seconds
+[91mField= UY, decompression bandwidth per cpu= 39.756126 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000163990922600, rel_eb= 0.000009999999747, BR= 5.490228671563728, CR= 5.828536826843271, max_err= 0.000163990922253 (100.000000%), MSE= 0.000000008233826, PSNR= 105.140379743277094 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL
+Decompression time= 0.743795 seconds
+[91mField= UZ, decompression bandwidth per cpu= 39.945412 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000168362945833, rel_eb= 0.000009999999747, BR= 5.987895899926252, CR= 5.344114282346512, max_err= 0.000168362945635 (100.000000%), MSE= 0.000000008693062, PSNR= 105.133202643153268 dB[0m
+Field= P
+params.method= SZ3-3D-GLL
+Decompression time= 0.726331 seconds
+[91mField= P, decompression bandwidth per cpu= 40.905890 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.006079923552463, rel_eb= 0.000009999999747, BR= 3.255811606965859, CR= 9.828578512201231, max_err= 0.006079923543638 (100.000000%), MSE= 0.000011250577562, PSNR= 105.166214410575819 dB[0m
+Field= T
+params.method= SZ3-3D-GLL
+Decompression time= 0.784810 seconds
+[91mField= T, decompression bandwidth per cpu= 37.857835 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000015842384296, rel_eb= 0.000009999999747, BR= 6.762086630667118, CR= 4.732267086741393, max_err= 0.000015842384281 (100.000000%), MSE= 0.000000000082671, PSNR= 104.822891198319965 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-05, rel_eb=1.000000e-06
+Compression time= 1.474449 seconds
+[91mField= UX, compression bandwidth per cpu= 20.150721 MB/s
+[0m[91mBR= 8.839872 bits/value, CR= 3.619962
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-05, rel_eb=1.000000e-06
+Compression time= 1.042377 seconds
+[91mField= UY, compression bandwidth per cpu= 28.503320 MB/s
+[0m[91mBR= 8.883210 bits/value, CR= 3.602301
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-05, rel_eb=1.000000e-06
+Compression time= 0.997230 seconds
+[91mField= UZ, compression bandwidth per cpu= 29.793726 MB/s
+[0m[91mBR= 9.353454 bits/value, CR= 3.421196
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079923e-04, rel_eb=1.000000e-06
+Compression time= 1.003045 seconds
+[91mField= P, compression bandwidth per cpu= 29.621008 MB/s
+[0m[91mBR= 6.484048 bits/value, CR= 4.935189
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584238e-06, rel_eb=1.000000e-06
+Compression time= 0.982161 seconds
+[91mField= T, compression bandwidth per cpu= 30.250852 MB/s
+[0m[91mBR= 10.303667 bits/value, CR= 3.105690
+[0mField= UX
+params.method= SZ3-3D-GLL
+Decompression time= 0.997712 seconds
+[91mField= UX, decompression bandwidth per cpu= 29.779351 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000016885440784, rel_eb= 0.000000999999997, BR= 8.839872016414727, CR= 3.619961911278728, max_err= 0.000016885440681 (99.999999%), MSE= 0.000000000088521, PSNR= 125.079784886624680 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL
+Decompression time= 1.204488 seconds
+[91mField= UY, decompression bandwidth per cpu= 24.667081 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000016399092633, rel_eb= 0.000000999999997, BR= 8.883209947056063, CR= 3.602301441789626, max_err= 0.000016399092608 (100.000000%), MSE= 0.000000000083504, PSNR= 125.079329002888571 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL
+Decompression time= 0.830607 seconds
+[91mField= UZ, decompression bandwidth per cpu= 35.770500 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000016836294966, rel_eb= 0.000000999999997, BR= 9.353454476058390, CR= 3.421195888846087, max_err= 0.000016836294956 (100.000000%), MSE= 0.000000000088010, PSNR= 125.079628620539722 dB[0m
+Field= P
+params.method= SZ3-3D-GLL
+Decompression time= 0.776698 seconds
+[91mField= P, decompression bandwidth per cpu= 38.253255 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000607992369070, rel_eb= 0.000000999999997, BR= 6.484048112655701, CR= 4.935188549502236, max_err= 0.000607992367350 (100.000000%), MSE= 0.000000121093555, PSNR= 124.846752316049930 dB[0m
+Field= T
+params.method= SZ3-3D-GLL
+Decompression time= 0.980132 seconds
+[91mField= T, decompression bandwidth per cpu= 30.313478 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000001584238466, rel_eb= 0.000000999999997, BR= 10.303666931968401, CR= 3.105690450912776, max_err= 0.000001584238465 (100.000000%), MSE= 0.000000000000831, PSNR= 124.802988289245874 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-01, rel_eb=1.000000e-02
+Compression time= 0.644951 seconds
+[91mField= UX, compression bandwidth per cpu= 46.067378 MB/s
+[0m[91mBR= 0.087800 bits/value, CR= 364.464051
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-01, rel_eb=1.000000e-02
+Compression time= 0.620128 seconds
+[91mField= UY, compression bandwidth per cpu= 47.911417 MB/s
+[0m[91mBR= 0.090286 bits/value, CR= 354.428305
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-01, rel_eb=1.000000e-02
+Compression time= 0.631591 seconds
+[91mField= UZ, compression bandwidth per cpu= 47.041828 MB/s
+[0m[91mBR= 0.123530 bits/value, CR= 259.045372
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079924e+00, rel_eb=1.000000e-02
+Compression time= 0.599307 seconds
+[91mField= P, compression bandwidth per cpu= 49.575922 MB/s
+[0m[91mBR= 0.018027 bits/value, CR= 1775.113596
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584239e-02, rel_eb=1.000000e-02
+Compression time= 0.558764 seconds
+[91mField= T, compression bandwidth per cpu= 53.173085 MB/s
+[0m[91mBR= 0.178780 bits/value, CR= 178.991142
+[0mField= UX
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.509297 seconds
+[91mField= UX, decompression bandwidth per cpu= 58.337646 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.168854400515556, rel_eb= 0.009999999776483, BR= 0.087800154417678, CR= 364.464051484138281, max_err= 0.168854475021362 (100.000044%), MSE= 0.003862727010237, PSNR= 48.681307899800714 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.482770 seconds
+[91mField= UY, decompression bandwidth per cpu= 61.543227 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.163990929722786, rel_eb= 0.009999999776483, BR= 0.090286242767650, CR= 354.428305122315919, max_err= 0.163990974426270 (100.000027%), MSE= 0.003660552380979, PSNR= 48.660930650120797 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.407925 seconds
+[91mField= UZ, decompression bandwidth per cpu= 72.835059 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.168362945318222, rel_eb= 0.009999999776483, BR= 0.123530483464585, CR= 259.045371656577061, max_err= 0.168363094329834 (100.000089%), MSE= 0.003928384633238, PSNR= 48.582790072775460 dB[0m
+Field= P
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.233344 seconds
+[91mField= P, decompression bandwidth per cpu= 127.328033 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 6.079923629760742, rel_eb= 0.009999999776483, BR= 0.018027015325958, CR= 1775.113595977365549, max_err= 6.079925537109375 (100.000031%), MSE= 9.517948239159280, PSNR= 45.892529204483601 dB[0m
+Field= T
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.230699 seconds
+[91mField= T, decompression bandwidth per cpu= 128.787816 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.015842385590076, rel_eb= 0.009999999776483, BR= 0.178779797014001, CR= 178.991141809462704, max_err= 0.015842437744141 (100.000329%), MSE= 0.000051560416740, PSNR= 46.873247236328915 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-02, rel_eb=1.000000e-03
+Compression time= 0.617073 seconds
+[91mField= UX, compression bandwidth per cpu= 48.148631 MB/s
+[0m[91mBR= 0.581263 bits/value, CR= 55.052526
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-02, rel_eb=1.000000e-03
+Compression time= 0.605530 seconds
+[91mField= UY, compression bandwidth per cpu= 49.066497 MB/s
+[0m[91mBR= 0.594616 bits/value, CR= 53.816273
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-02, rel_eb=1.000000e-03
+Compression time= 0.609860 seconds
+[91mField= UZ, compression bandwidth per cpu= 48.718122 MB/s
+[0m[91mBR= 0.759221 bits/value, CR= 42.148439
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079924e-01, rel_eb=1.000000e-03
+Compression time= 0.593042 seconds
+[91mField= P, compression bandwidth per cpu= 50.099670 MB/s
+[0m[91mBR= 0.177609 bits/value, CR= 180.171178
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584239e-03, rel_eb=1.000000e-03
+Compression time= 0.576612 seconds
+[91mField= T, compression bandwidth per cpu= 51.527254 MB/s
+[0m[91mBR= 1.035627 bits/value, CR= 30.899168
+[0mField= UX
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.490882 seconds
+[91mField= UX, decompression bandwidth per cpu= 60.526221 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.016885440796614, rel_eb= 0.001000000047497, BR= 0.581263065543352, CR= 55.052525950684831, max_err= 0.016885519027710 (100.000463%), MSE= 0.000057543947337, PSNR= 66.950251565631845 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.470955 seconds
+[91mField= UY, decompression bandwidth per cpu= 63.087118 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.016399094834924, rel_eb= 0.001000000047497, BR= 0.594615686535323, CR= 53.816272803793680, max_err= 0.016399145126343 (100.000307%), MSE= 0.000054510025769, PSNR= 66.931633034872434 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.250852 seconds
+[91mField= UZ, decompression bandwidth per cpu= 118.440986 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.016836294904351, rel_eb= 0.001000000047497, BR= 0.759221471439855, CR= 42.148439162702218, max_err= 0.016836643218994 (100.002069%), MSE= 0.000059855958918, PSNR= 66.753856180361211 dB[0m
+Field= P
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.248083 seconds
+[91mField= P, decompression bandwidth per cpu= 119.763314 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.607992410659790, rel_eb= 0.001000000047497, BR= 0.177608873322295, CR= 180.171178395640908, max_err= 0.608001708984375 (100.001529%), MSE= 0.076431422370135, PSNR= 66.845243173474060 dB[0m
+Field= T
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.279864 seconds
+[91mField= T, decompression bandwidth per cpu= 106.163008 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.001584238605574, rel_eb= 0.001000000047497, BR= 1.035626579869902, CR= 30.899168312211440, max_err= 0.001584291458130 (100.003336%), MSE= 0.000000687932240, PSNR= 65.620954791090867 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-03, rel_eb=1.000000e-04
+Compression time= 0.997504 seconds
+[91mField= UX, compression bandwidth per cpu= 29.785560 MB/s
+[0m[91mBR= 2.297450 bits/value, CR= 13.928486
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-03, rel_eb=1.000000e-04
+Compression time= 0.946301 seconds
+[91mField= UY, compression bandwidth per cpu= 31.397217 MB/s
+[0m[91mBR= 2.330983 bits/value, CR= 13.728114
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-03, rel_eb=1.000000e-04
+Compression time= 0.951298 seconds
+[91mField= UZ, compression bandwidth per cpu= 31.232296 MB/s
+[0m[91mBR= 2.706194 bits/value, CR= 11.824726
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079924e-02, rel_eb=1.000000e-04
+Compression time= 0.942457 seconds
+[91mField= P, compression bandwidth per cpu= 31.525286 MB/s
+[0m[91mBR= 0.979993 bits/value, CR= 32.653304
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584238e-04, rel_eb=1.000000e-04
+Compression time= 0.922428 seconds
+[91mField= T, compression bandwidth per cpu= 32.209793 MB/s
+[0m[91mBR= 3.314048 bits/value, CR= 9.655864
+[0mField= UX
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.738000 seconds
+[91mField= UX, decompression bandwidth per cpu= 40.259102 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.001688544039985, rel_eb= 0.000099999997474, BR= 2.297449933659587, CR= 13.928486332247289, max_err= 0.001688544039743 (100.000000%), MSE= 0.000000778073519, PSNR= 85.640041717025483 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.733816 seconds
+[91mField= UY, decompression bandwidth per cpu= 40.488629 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.001639909225998, rel_eb= 0.000099999997474, BR= 2.330982993319994, CR= 13.728113886589425, max_err= 0.001639909225816 (100.000000%), MSE= 0.000000735927471, PSNR= 85.628046254693558 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.716636 seconds
+[91mField= UZ, decompression bandwidth per cpu= 41.459302 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.001683629458334, rel_eb= 0.000099999997474, BR= 2.706193693462356, CR= 11.824726396083863, max_err= 0.001683629457716 (100.000000%), MSE= 0.000000792459588, PSNR= 85.535159294075171 dB[0m
+Field= P
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.687790 seconds
+[91mField= P, decompression bandwidth per cpu= 43.198106 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.060799235524629, rel_eb= 0.000099999997474, BR= 0.979992706663161, CR= 32.653304236272156, max_err= 0.060799235095345 (99.999999%), MSE= 0.000934419107568, PSNR= 85.972545485462973 dB[0m
+Field= T
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.726952 seconds
+[91mField= T, decompression bandwidth per cpu= 40.870932 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000158423842958, rel_eb= 0.000099999997474, BR= 3.314048341515361, CR= 9.655863977339536, max_err= 0.000158423842892 (100.000000%), MSE= 0.000000007875025, PSNR= 85.033891909922801 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-04, rel_eb=1.000000e-05
+Compression time= 1.063034 seconds
+[91mField= UX, compression bandwidth per cpu= 27.949453 MB/s
+[0m[91mBR= 5.322962 bits/value, CR= 6.011690
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-04, rel_eb=1.000000e-05
+Compression time= 0.964781 seconds
+[91mField= UY, compression bandwidth per cpu= 30.795812 MB/s
+[0m[91mBR= 5.370869 bits/value, CR= 5.958067
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-04, rel_eb=1.000000e-05
+Compression time= 0.982905 seconds
+[91mField= UZ, compression bandwidth per cpu= 30.227961 MB/s
+[0m[91mBR= 5.861200 bits/value, CR= 5.459633
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079923e-03, rel_eb=1.000000e-05
+Compression time= 0.935189 seconds
+[91mField= P, compression bandwidth per cpu= 31.770259 MB/s
+[0m[91mBR= 3.144806 bits/value, CR= 10.175509
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584238e-05, rel_eb=1.000000e-05
+Compression time= 1.006576 seconds
+[91mField= T, compression bandwidth per cpu= 29.517120 MB/s
+[0m[91mBR= 6.632377 bits/value, CR= 4.824816
+[0mField= UX
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.840103 seconds
+[91mField= UX, decompression bandwidth per cpu= 35.366144 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000168854403999, rel_eb= 0.000009999999747, BR= 5.322962168439168, CR= 6.011690293373481, max_err= 0.000168854403924 (100.000000%), MSE= 0.000000008725256, PSNR= 105.142466342851804 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.762794 seconds
+[91mField= UY, decompression bandwidth per cpu= 38.950489 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000163990922600, rel_eb= 0.000009999999747, BR= 5.370869331919818, CR= 5.958067125152270, max_err= 0.000163990922253 (100.000000%), MSE= 0.000000008233826, PSNR= 105.140379743277094 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.725734 seconds
+[91mField= UZ, decompression bandwidth per cpu= 40.939559 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000168362945833, rel_eb= 0.000009999999747, BR= 5.861200211950364, CR= 5.459632642262484, max_err= 0.000168362945635 (100.000000%), MSE= 0.000000008693062, PSNR= 105.133202643153268 dB[0m
+Field= P
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.739627 seconds
+[91mField= P, decompression bandwidth per cpu= 40.170554 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.006079923552463, rel_eb= 0.000009999999747, BR= 3.144805973872637, CR= 10.175508526077351, max_err= 0.006079923543638 (100.000000%), MSE= 0.000011250577562, PSNR= 105.166214410575819 dB[0m
+Field= T
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.792116 seconds
+[91mField= T, decompression bandwidth per cpu= 37.508653 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000015842384296, rel_eb= 0.000009999999747, BR= 6.632376952464982, CR= 4.824816235468479, max_err= 0.000015842384281 (100.000000%), MSE= 0.000000000082671, PSNR= 104.822891198319965 dB[0m
+Field= UX
+Data range: [-8.402875, 8.482566], abs_eb=1.688544e-05, rel_eb=1.000000e-06
+Compression time= 1.476693 seconds
+[91mField= UX, compression bandwidth per cpu= 20.120100 MB/s
+[0m[91mBR= 8.734717 bits/value, CR= 3.663542
+[0mField= UY
+Data range: [-8.109448, 8.289644], abs_eb=1.639909e-05, rel_eb=1.000000e-06
+Compression time= 0.935818 seconds
+[91mField= UY, compression bandwidth per cpu= 31.748916 MB/s
+[0m[91mBR= 8.781578 bits/value, CR= 3.643992
+[0mField= UZ
+Data range: [-1.538427, 15.297868], abs_eb=1.683629e-05, rel_eb=1.000000e-06
+Compression time= 1.032625 seconds
+[91mField= UZ, compression bandwidth per cpu= 28.772498 MB/s
+[0m[91mBR= 9.279719 bits/value, CR= 3.448380
+[0mField= P
+Data range: [-220.848663, 387.143707], abs_eb=6.079923e-04, rel_eb=1.000000e-06
+Compression time= 0.934266 seconds
+[91mField= P, compression bandwidth per cpu= 31.801675 MB/s
+[0m[91mBR= 6.408383 bits/value, CR= 4.993459
+[0mField= T
+Data range: [0.993475, 2.577713], abs_eb=1.584238e-06, rel_eb=1.000000e-06
+Compression time= 1.043892 seconds
+[91mField= T, compression bandwidth per cpu= 28.461968 MB/s
+[0m[91mBR= 10.189878 bits/value, CR= 3.140371
+[0mField= UX
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.984623 seconds
+[91mField= UX, decompression bandwidth per cpu= 30.175210 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000016885440784, rel_eb= 0.000000999999997, BR= 8.734716869145943, CR= 3.663541758638465, max_err= 0.000016885440681 (99.999999%), MSE= 0.000000000088521, PSNR= 125.079784886624680 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.918499 seconds
+[91mField= UY, decompression bandwidth per cpu= 32.347564 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000016399092633, rel_eb= 0.000000999999997, BR= 8.781578267563839, CR= 3.643991891320619, max_err= 0.000016399092608 (100.000000%), MSE= 0.000000000083504, PSNR= 125.079329002888571 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.855241 seconds
+[91mField= UZ, decompression bandwidth per cpu= 34.740165 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000016836294966, rel_eb= 0.000000999999997, BR= 9.279718718640128, CR= 3.448380384172825, max_err= 0.000016836294956 (100.000000%), MSE= 0.000000000088010, PSNR= 125.079628620539737 dB[0m
+Field= P
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.883099 seconds
+[91mField= P, decompression bandwidth per cpu= 33.644250 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000607992369070, rel_eb= 0.000000999999997, BR= 6.408383345962877, CR= 4.993459078904699, max_err= 0.000607992367350 (100.000000%), MSE= 0.000000121093555, PSNR= 124.846752316049930 dB[0m
+Field= T
+params.method= SZ3-3D-GLL-experimental
+Decompression time= 0.935598 seconds
+[91mField= T, decompression bandwidth per cpu= 31.756375 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= T, abs_eb= 0.000001584238466, rel_eb= 0.000000999999997, BR= 10.189877580625364, CR= 3.140371387860788, max_err= 0.000001584238465 (100.000000%), MSE= 0.000000000000831, PSNR= 124.802988289245874 dB[0m
+Running jicf0 five-tree experiment
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-04, rel_eb=1.000000e-04
+Compression time= 2.370655 seconds
+[91mField= UX, compression bandwidth per cpu= 40.734469 MB/s
+[0m[91mBR= 0.187321 bits/value, CR= 170.829972
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-04, rel_eb=1.000000e-04
+Compression time= 2.346572 seconds
+[91mField= UY, compression bandwidth per cpu= 41.152539 MB/s
+[0m[91mBR= 0.234659 bits/value, CR= 136.368184
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-03, rel_eb=1.000000e-04
+Compression time= 2.297193 seconds
+[91mField= UZ, compression bandwidth per cpu= 42.037118 MB/s
+[0m[91mBR= 0.165601 bits/value, CR= 193.235550
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-03, rel_eb=1.000000e-04
+Compression time= 2.397342 seconds
+[91mField= P, compression bandwidth per cpu= 40.281031 MB/s
+[0m[91mBR= 0.038321 bits/value, CR= 835.048834
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+02, rel_eb=1.000000e-04
+Compression time= 2.351085 seconds
+[91mField= S00, compression bandwidth per cpu= 41.073539 MB/s
+[0m[91mBR= 0.003648 bits/value, CR= 8771.326596
+[0mField= UX
+params.method= SZ3-3D-GLL
+Decompression time= 2.043045 seconds
+[91mField= UX, decompression bandwidth per cpu= 47.266400 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000937565708317, rel_eb= 0.000099999997474, BR= 0.187320759049263, CR= 170.829971875057709, max_err= 0.000937565699211 (99.999999%), MSE= 0.000000177534870, PSNR= 86.947197846379837 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL
+Decompression time= 2.056969 seconds
+[91mField= UY, decompression bandwidth per cpu= 46.946455 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000890888644601, rel_eb= 0.000099999997474, BR= 0.234658840143890, CR= 136.368184468899813, max_err= 0.000890888631887 (99.999999%), MSE= 0.000000158785853, PSNR= 86.988350630232887 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL
+Decompression time= 2.014063 seconds
+[91mField= UZ, decompression bandwidth per cpu= 47.946568 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.001044767639470, rel_eb= 0.000099999997474, BR= 0.165600997943377, CR= 193.235550494336309, max_err= 0.001044767632005 (99.999999%), MSE= 0.000000217325329, PSNR= 87.009291009393593 dB[0m
+Field= P
+params.method= SZ3-3D-GLL
+Decompression time= 2.056358 seconds
+[91mField= P, decompression bandwidth per cpu= 46.960406 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.004037693112416, rel_eb= 0.000099999997474, BR= 0.038321112106915, CR= 835.048834457647445, max_err= 0.004037693091170 (99.999999%), MSE= 0.000004409157338, PSNR= 85.679110393080521 dB[0m
+Field= S00
+params.method= SZ3-3D-GLL
+Decompression time= 1.991784 seconds
+[91mField= S00, decompression bandwidth per cpu= 48.482862 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 100.763610735747022, rel_eb= 0.000099999997474, BR= 0.003648250883261, CR= 8771.326595662607360, max_err= 100.763592224984563 (99.999982%), MSE= 15.643763448733571, PSNR= 108.122662246226753 dB[0m
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-05, rel_eb=1.000000e-05
+Compression time= 2.495743 seconds
+[91mField= UX, compression bandwidth per cpu= 38.692848 MB/s
+[0m[91mBR= 0.558519 bits/value, CR= 57.294396
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-05, rel_eb=1.000000e-05
+Compression time= 2.451491 seconds
+[91mField= UY, compression bandwidth per cpu= 39.391295 MB/s
+[0m[91mBR= 0.659194 bits/value, CR= 48.544125
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-04, rel_eb=1.000000e-05
+Compression time= 2.428918 seconds
+[91mField= UZ, compression bandwidth per cpu= 39.757364 MB/s
+[0m[91mBR= 0.505152 bits/value, CR= 63.347286
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-04, rel_eb=1.000000e-05
+Compression time= 2.457506 seconds
+[91mField= P, compression bandwidth per cpu= 39.294872 MB/s
+[0m[91mBR= 0.149401 bits/value, CR= 214.189210
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+01, rel_eb=1.000000e-05
+Compression time= 2.415149 seconds
+[91mField= S00, compression bandwidth per cpu= 39.984038 MB/s
+[0m[91mBR= 0.015626 bits/value, CR= 2047.847147
+[0mField= UX
+params.method= SZ3-3D-GLL
+Decompression time= 2.200906 seconds
+[91mField= UX, decompression bandwidth per cpu= 43.876204 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000093756570832, rel_eb= 0.000009999999747, BR= 0.558518846612498, CR= 57.294396051422197, max_err= 0.000093756570672 (100.000000%), MSE= 0.000000001660521, PSNR= 107.237590773768687 dB[0m
+Field= UY
+params.method= SZ3-3D-GLL
+Decompression time= 2.106803 seconds
+[91mField= UY, decompression bandwidth per cpu= 45.835979 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000089088864460, rel_eb= 0.000009999999747, BR= 0.659194080482331, CR= 48.544125239391803, max_err= 0.000089088864216 (100.000000%), MSE= 0.000000001504710, PSNR= 107.221941019149213 dB[0m
+Field= UZ
+params.method= SZ3-3D-GLL
+Decompression time= 1.866745 seconds
+[91mField= UZ, decompression bandwidth per cpu= 51.730372 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000104476763947, rel_eb= 0.000009999999747, BR= 0.505151866638027, CR= 63.347286456589508, max_err= 0.000104476763926 (100.000000%), MSE= 0.000000001995267, PSNR= 107.380384464340480 dB[0m
+Field= P
+params.method= SZ3-3D-GLL
+Decompression time= 2.087873 seconds
+[91mField= P, decompression bandwidth per cpu= 46.251558 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000403769311242, rel_eb= 0.000009999999747, BR= 0.149400616739871, CR= 214.189209511209157, max_err= 0.000403769307434 (99.999999%), MSE= 0.000000030660418, PSNR= 107.256885688401468 dB[0m
+Field= S00
+params.method= SZ3-3D-GLL
+Decompression time= 1.284119 seconds
+[91mField= S00, decompression bandwidth per cpu= 75.201290 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 10.076361073574702, rel_eb= 0.000009999999747, BR= 0.015626166262996, CR= 2047.847146985683366, max_err= 10.076360702514648 (99.999996%), MSE= 0.472985553984531, PSNR= 123.317595882972341 dB[0m
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-06, rel_eb=1.000000e-06
+Compression time= 3.091497 seconds
+[91mField= UX, compression bandwidth per cpu= 31.236454 MB/s
+[0m[91mBR= 1.234103 bits/value, CR= 25.929760
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-06, rel_eb=1.000000e-06
+Compression time= 2.944122 seconds
+[91mField= UY, compression bandwidth per cpu= 32.800069 MB/s
+[0m[91mBR= 1.435673 bits/value, CR= 22.289200
+[0mField= UZ

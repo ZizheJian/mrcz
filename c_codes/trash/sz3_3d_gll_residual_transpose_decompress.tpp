@@ -5,7 +5,7 @@
 
 
 #include "mrcz.hpp"
-#include "sz3_hohs_compress.tpp"
+#include "../mrcz_core/sz3_3d_gll_compress.tpp"
 
 template<typename T>
 void sz3_2_decompress(mrcz::param_class<T> &params,string field,bool transpose_residual=false)
@@ -251,4 +251,3 @@ namespace mrcz
             throw runtime_error("Error: sz3_2_decompress only supports 3D or 2D elements.\n");
     }
 }
-
