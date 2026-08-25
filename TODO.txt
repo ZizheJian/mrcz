@@ -20,11 +20,11 @@ MRCZ TODO
 第一阶段：冻结正确且可复现的MRCZ
 =================================
 
-[ ] 1. 清理正式方法与诊断入口的边界。
-       - 保留MRCZ-3D-GLL作为唯一正式MRCZ压缩格式；
-       - MRCZ-3D-GLL-experimental当前实际上执行角点/中心点预测诊断且不写bitstream，名称容易误导；
-         将其改成明确的诊断工具或归档到experiments，不再暴露为可解压方法；
-       - 不在本阶段删除仍用于历史复现实验的SZ3代码。
+[x] 1. 清理正式方法与诊断入口的边界。
+       - MRCZ-3D-GLL是唯一正式MRCZ压缩格式；
+       - 原MRCZ-3D-GLL-experimental已改名为MRCZ-prediction-diagnostics，明确只执行角点/中心点预测诊断且不写bitstream；
+       - 旧诊断名称在压缩端给出迁移提示，新旧诊断名称在解压端均明确拒绝；
+       - 仍用于历史复现实验的SZ3代码保持不变。
 
 [ ] 2. 审计并版本化MRCZ bitstream metadata。
        逐项确认解压所需的word size、element shape、transform、grid assumption、coeff_eb_scale、
@@ -32,30 +32,28 @@ MRCZ TODO
        当前解压依赖但bitstream没有保存的选项必须写入版本化header，不能依赖调用者使用默认值。
        增加未知版本、截断文件、错误method和错误数据类型的失败测试。
 
-[ ] 3. 建立正式小数据回归矩阵。
-       - test0：6*6*6 float；mixlay0：8*8*1 float；tc_channel0：8*8*8 double；
-       - 覆盖REL=1e-2、1e-4、1e-6、1e-8和必要的ABS测试；
-       - 每次检查最大误差、PSNR、重建数量、压缩后文件边界和编解码一致性；
-       - 对float提升为double的路径单独验证；
-       - REL=1e-15时现有标量和AVX2路径都可能达到约1.63倍EB。根据数据尺度和机器epsilon建立
-         可解释的最小可保证EB检查：无法严格保证时应拒绝或明确警告，不能静默宣称error-bounded。
+[ ] 3. 完善t1的小数据自动回归检查。
+       t1已经能够运行test0、mixlay0、tc_channel0及多种REL/ABS误差界限，无需建立另一套回归框架；
+       后续只需让超过EB、重建数量错误或编解码失败自动返回非零状态，并单独处理小于机器精度的EB。
 
-[ ] 4. 实现值域不超过2*abs_eb的常数field编码。
-       复用或版本化constant flag，保证float/double、正负值、零值和恰好位于阈值处均可对称解压。
+[x] 4. 实现值域不超过2*abs_eb的常数field编码。
+       flag=1表示整个field用一个常数重建，保存最大值和最小值的平均值。使用实际舍入后的最大端点误差判断，
+       避免阈值处因浮点舍入超过EB；存在原始文件时重新计算真实值域，用于误差和PSNR报告。
 
 第二阶段：只研究可能增强MRCZ论文贡献的算法
 ==========================================
 
-[ ] 5. 系统确定全局coeff_eb_scale。
-       在五个NekRS数据的多个field和目标PSNR上扫描scale，分别统计coefficient QB、residual QB、
-       Huffman metadata和最终Zstd payload的bits/value，以及变换、量化、Huffman和Zstd时间。
-       先确认0.05是否接近稳定最优，再决定默认值；比较必须基于相同实际PSNR而不是相同输入REL。
+[x] 5. 确定全局coeff_eb_scale。
+       已有实验表明0.05基本是稳定最优值，MRCZ码流空间主要消耗在系数；不再重复扫描scale或增加分阶段统计。
 
-[ ] 6. 研究按变换模式分组的coefficient error bound。
-       - 根据逆变换基函数的误差放大和模式阶数设计少量固定分组，不给每个系数单独保存参数；
-       - 候选分组必须由编解码双方从element shape确定，或只增加极少metadata；
-       - 与最佳全局scale比较同PSNR BR、最大误差、速度和metadata；
-       - 只有在多个数据上稳定改善并能清楚解释时才纳入MRCZ，否则停止。
+[x] 6. 研究按变换模式分配coefficient error bound。
+       - L1和RMS敏感度方案在三个小数据上的同PSNR BR分别变化约-4.4%到+8.4%和-1.3%到+9.0%；
+       - product-0.5 high-coarse/fine分别增加约3.3%到31.3%和6.3%到25.5%；
+       - 总阶数exponential-coarse/fine分别变化约-6.2%到+8.9%和+1.3%到+12.7%，
+         polynomial-coarse/fine分别变化约-7.8%到+6.2%和-11.0%到+9.7%；
+       - 所有方案均满足EB，但没有稳定收益，而且系数码流与残差码流的相反变化使结果难以统一解释；
+       - 正式MRCZ继续使用统一coeff_eb_scale=0.05。实验实现已归档到
+         c_codes/trash/coefficient_error_bound_experiments.tpp，不再参与正式编译和方法路由。
 
 [ ] 7. 分析MRCZ无损阶段，而不是继续泛化SZ3的多tree实验。
        报告coefficient transpose开关前后的BR和时间，并按变换模式统计零比例与符号分布。

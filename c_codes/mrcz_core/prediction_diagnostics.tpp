@@ -1,5 +1,7 @@
 #pragma once
 
+// XXX 只做预测误差诊断，不生成MRCZ bitstream。
+
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -168,7 +170,7 @@ namespace mrcz::detail
     }
 
     template<typename T>
-    void analyze_experimental_prediction(param_class<T> &params)
+    void analyze_prediction_diagnostics(param_class<T> &params)
     {
         validate_common_params(params);
         params.all_fields_to_process=params.fields_to_process.empty();
@@ -205,6 +207,6 @@ namespace mrcz::detail
         all_center.print("center: 6-point, 3-direction interpolation",1,true);
         all_corner_3.print("corner: 3-point nearest-neighbor average",1,true);
         all_corner_6.print("corner: 6-point, 3-direction linear extrapolation",1,true);
-        printf("MRCZ-3D-GLL-experimental prediction diagnostics complete; no bitstream was written.\n");
+        printf("MRCZ prediction diagnostics complete; no bitstream was written.\n");
     }
 }

@@ -11,7 +11,7 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 
 # method可选:
 #   "MRCZ-3D-GLL"
-#   "MRCZ-3D-GLL-experimental"
+#   "MRCZ-prediction-diagnostics"
 #   "SZ3-3D-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
 #   "SZ3-3D-GLL": 无优化baseline；逐element GLL分层线性插值，单Huffman tree，按实际预测访问顺序保存量化值
 #   "SZ3-3D-GLL-optimized": 使用最大有效Huffman tree数，并在每个partition采样选择维度顺序和linear/cubic预测
@@ -33,7 +33,7 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 #   "SZ2-3D-GLL": 项目内实现的逐element 3D线性拟合，使用真实GLL坐标
 #   "ZFP-4D-uniform": 把partition视为[element,n0,n1,n2]四维规则数组
 #   "SPERR-3D-uniform": 把partition重组为SPERR接收的三维规则数组
-# MRCZ-3D-GLL-experimental目前是角点/中心点预测诊断入口，不写bitstream，不加入正式t1。
+# MRCZ-prediction-diagnostics是角点/中心点预测诊断入口，不写bitstream，也不能解压，不加入正式t1。
 method_list=os.environ.get("MRCZ_T1_METHODS","SZ3-3D-GLL,SZ3-3D-GLL-optimized").split(",")
 eb_mode="REL"
 write_to_csv=True

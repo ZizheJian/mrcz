@@ -3,13 +3,15 @@
 #include <algorithm>
 #include <cstdint>
 #include <fstream>
+#include <limits>
+#include <numeric>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
 
 #include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "read_and_write_data.tpp"
-#include "experimental_prediction_analysis.tpp"
+#include "prediction_diagnostics.tpp"
 #include "local_predictability_analysis.tpp"
 #include "qoz_3d_gll_compress.tpp"
 #include "sz3_3d_gll_compress.tpp"
@@ -22,9 +24,14 @@ namespace mrcz
         template<typename T,typename Backend>
         void compress_field_and_write(param_class<T> &params,const string &field,Backend backend)
         {
-            bool is_constant=params.data_range_min[field]==params.data_range_max[field];
-            if (is_constant)
-                printf("Warning: field %s has constant value %f\n",field.c_str(),params.data_range_min[field]);
+            T data_min=params.data_range_min[field],data_max=params.data_range_max[field];
+            T constant_value=midpoint(data_min,data_max);
+            T constant_max_error=max(constant_value-data_min,data_max-constant_value);
+            bool use_constant_encoding=constant_max_error<=params.abs_eb[field];
+            if (data_min==data_max)
+                printf("Field %s is constant: value=%.*e\n",field.c_str(),numeric_limits<T>::max_digits10,static_cast<double>(constant_value));
+            else if (use_constant_encoding)
+                printf("Field %s is encoded as constant: value=%.*e, max possible error=%.*e\n",field.c_str(),numeric_limits<T>::max_digits10,static_cast<double>(constant_value),numeric_limits<T>::max_digits10,static_cast<double>(constant_max_error));
             else
                 backend(params,field);
 
@@ -36,11 +43,11 @@ namespace mrcz
 
             uint8_t word_size_during_compression=sizeof(T);
             compressed_file.write(reinterpret_cast<const char*>(&word_size_during_compression),1);
-            if (is_constant)
+            if (use_constant_encoding)
             {
                 unsigned char constant_flag=1;
                 compressed_file.write(reinterpret_cast<const char*>(&constant_flag),1);
-                compressed_file.write(reinterpret_cast<const char*>(&params.data_range_min[field]),sizeof(T));
+                compressed_file.write(reinterpret_cast<const char*>(&constant_value),sizeof(T));
                 compressed_bytes=2+sizeof(T);
             }
             else
@@ -181,14 +188,14 @@ namespace mrcz
         {
             if (params.method.empty())
                 params.method="MRCZ-3D-GLL";
-            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-experimental" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and params.method!="SZ3-3D-GLL-predictability" and
+            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-prediction-diagnostics" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and params.method!="SZ3-3D-GLL-predictability" and
                 params.method!="SZ3-3D-GLL-experimental" and params.method!="SZ3-3D-GLL-cubic" and params.method!="SZ3-3D-GLL-surface-first" and params.method!="SZ3-3D-GLL-normal-boundary" and params.method!="SZ3-3D-GLL-index-order" and params.method!="SZ3-3D-GLL-index-midpoint" and params.method!="QoZ-3D-GLL" and
                 params.method.rfind("SZ3-3D-GLL-order-",0)!=0 and params.method.rfind("SZ3-3D-GLL-reference-EB-",0)!=0 and params.method.rfind("SZ3-3D-GLL-sampled-",0)!=0 and params.method.rfind("SZ3-3D-GLL-position-bias-",0)!=0)
                 throw runtime_error("mrcz::core::compress不支持方法: "+params.method);
 
-            if (params.method=="MRCZ-3D-GLL-experimental")
+            if (params.method=="MRCZ-prediction-diagnostics")
             {
-                detail::analyze_experimental_prediction(params);
+                detail::analyze_prediction_diagnostics(params);
                 return;
             }
             if (params.method=="SZ3-3D-GLL-predictability")

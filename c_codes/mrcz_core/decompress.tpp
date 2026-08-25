@@ -26,17 +26,18 @@ namespace mrcz
             if (!compressed_file)
                 throw runtime_error("无法打开压缩文件: "+params.data_path+"_"+field+"."+params.method);
             compressed_file.seekg(1,ios::beg);
-            unsigned char is_constant=0;
-            compressed_file.read(reinterpret_cast<char*>(&is_constant),1);
-            if (is_constant)
+            unsigned char constant_flag=0;
+            compressed_file.read(reinterpret_cast<char*>(&constant_flag),1);
+            if (constant_flag==1)
             {
-                compressed_file.read(reinterpret_cast<char*>(&params.data_range_min[field]),sizeof(T));
-                params.data_range_max[field]=params.data_range_min[field];
-                params.decompressed_data.assign(params.element_num_to_process*params.header.element_size,params.data_range_min[field]);
+                T constant_value=0;
+                compressed_file.read(reinterpret_cast<char*>(&constant_value),sizeof(T));
+                params.data_range_min[field]=params.data_range_max[field]=constant_value;
+                params.decompressed_data.assign(params.element_num_to_process*params.header.element_size,constant_value);
                 br=static_cast<double>(compressed_file.tellg())*8/(params.element_num_to_process*params.header.element_size);
                 cr=(params.header.word_size*8)/br;
             }
-            else
+            else if (constant_flag==0)
             {
                 uint64_t partition_num=0;
                 compressed_file.read(reinterpret_cast<char*>(&partition_num),sizeof(partition_num));
@@ -82,6 +83,8 @@ namespace mrcz
                     partition.zstd_bs.shrink_to_fit();
                 }
             }
+            else
+                throw runtime_error("不支持的constant flag: "+to_string(constant_flag));
 
             if (params.fields_to_process.size()!=params.all_fields_in_file.size() or
                 params.header.file_element_num!=params.element_num_to_process)
@@ -120,6 +123,24 @@ namespace mrcz
                 else
                     ::read_data(params,field);
 
+                if (constant_flag==1)
+                {
+                    auto range=minmax_element(params.data.begin(),params.data.end());
+                    params.data_range_min[field]=*range.first;
+                    params.data_range_max[field]=*range.second;
+                    T data_range=*range.second-*range.first;
+                    if (params.eb_mode=="ABS")
+                    {
+                        params.abs_eb[field]=params.input_eb;
+                        params.rel_eb[field]=data_range==0 ? 0 : params.input_eb/data_range;
+                    }
+                    else
+                    {
+                        params.rel_eb[field]=params.input_eb;
+                        params.abs_eb[field]=params.input_eb*data_range;
+                    }
+                }
+
                 #pragma omp parallel for reduction(max:max_err) reduction(+:mse) schedule(static) num_threads(params.max_cpus)
                 for (uint64_t i=0;i<params.data.size();i++)
                 {
@@ -127,7 +148,7 @@ namespace mrcz
                     max_err=max(max_err,static_cast<double>(error));
                     mse+=error*error;
                 }
-                if (!is_constant and max_err>params.abs_eb[field]*1.1)
+                if (max_err>params.abs_eb[field]*1.1)
                 {
                     uint64_t max_err_index=0;
                     for (uint64_t i=0;i<params.data.size();i++)
@@ -147,11 +168,6 @@ namespace mrcz
             else
                 printf("原始数据不存在，无法计算压缩质量\n");
 
-            if (is_constant)
-            {
-                params.abs_eb[field]=0;
-                params.rel_eb[field]=0;
-            }
             printf("\033[91mField= %s, abs_eb= %.15f, rel_eb= %.15f, BR= %.15f, CR= %.15f, max_err= %.15f (%f%%), MSE= %.15f, PSNR= %.15f dB\033[0m\n",
                 field.c_str(),params.abs_eb[field],params.rel_eb[field],br,cr,max_err,
                 params.abs_eb[field]==0 ? 0 : max_err/params.abs_eb[field]*100,mse,psnr);
@@ -213,7 +229,9 @@ namespace mrcz
         {
             if (params.method.empty())
                 params.method="MRCZ-3D-GLL";
-            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-experimental" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and
+            if (params.method=="MRCZ-prediction-diagnostics" or params.method=="MRCZ-3D-GLL-experimental")
+                throw runtime_error("MRCZ prediction diagnostics不生成bitstream，不能解压");
+            if (params.method!="MRCZ-3D-GLL" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and
                 params.method!="SZ3-3D-GLL-experimental" and params.method!="SZ3-3D-GLL-cubic" and params.method!="SZ3-3D-GLL-surface-first" and params.method!="SZ3-3D-GLL-normal-boundary" and params.method!="SZ3-3D-GLL-index-order" and params.method!="SZ3-3D-GLL-index-midpoint" and params.method!="QoZ-3D-GLL" and
                 params.method.rfind("SZ3-3D-GLL-order-",0)!=0 and params.method.rfind("SZ3-3D-GLL-reference-EB-",0)!=0 and params.method.rfind("SZ3-3D-GLL-sampled-",0)!=0 and params.method.rfind("SZ3-3D-GLL-position-bias-",0)!=0)
                 throw runtime_error("mrcz::core::decompress不支持方法: "+params.method);
