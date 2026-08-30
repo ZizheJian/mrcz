@@ -16,7 +16,7 @@
 #include "prediction_diagnostics.tpp"
 #include "local_predictability_analysis.tpp"
 #include "qoz_3d_gll_compress.tpp"
-#include "sz3_3d_gll_compress.tpp"
+#include "fdwz_compress.tpp"
 #include "validate_params.hpp"
 
 namespace mrcz
@@ -228,10 +228,10 @@ namespace mrcz
         void compress(param_class<T> &params)
         {
             if (params.method.empty())
-                params.method="MRCZ-3D-GLL";
-            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-element-batched" and params.method!="MRCZ-3D-GLL-element-batched-original-transpose" and params.method!="MRCZ-prediction-diagnostics" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and params.method!="SZ3-3D-GLL-predictability" and
-                params.method!="SZ3-3D-GLL-experimental" and params.method!="SZ3-3D-GLL-cubic" and params.method!="SZ3-3D-GLL-surface-first" and params.method!="SZ3-3D-GLL-normal-boundary" and params.method!="SZ3-3D-GLL-index-order" and params.method!="SZ3-3D-GLL-index-midpoint" and params.method!="QoZ-3D-GLL" and
-                params.method.rfind("SZ3-3D-GLL-order-",0)!=0 and params.method.rfind("SZ3-3D-GLL-reference-EB-",0)!=0 and params.method.rfind("SZ3-3D-GLL-sampled-",0)!=0 and params.method.rfind("SZ3-3D-GLL-position-bias-",0)!=0)
+                params.method="MRCZ";
+            if (params.method!="MRCZ" and params.method!="MRCZ-element-batched" and params.method!="MRCZ-element-batched-original-transpose" and params.method!="MRCZ-prediction-diagnostics" and params.method!="FDWZ" and params.method!="FDWZ-avx2-even" and params.method!="FDWZ-avx2-away" and params.method!="FDWZ-predictability" and
+                params.method!="FDWZ-five-trees" and params.method!="FDWZ-fixed-cubic" and params.method!="FDWZ-surface-first" and params.method!="FDWZ-normal-boundary" and params.method!="FDWZ-index-order" and params.method!="FDWZ-index-midpoint" and params.method!="QoZ-3D-GLL" and
+                params.method.rfind("FDWZ-order-",0)!=0 and params.method.rfind("FDWZ-reference-EB-",0)!=0 and params.method.rfind("FDWZ-sampled-",0)!=0 and params.method.rfind("FDWZ-position-bias-",0)!=0)
                 throw runtime_error("mrcz::core::compress不支持方法: "+params.method);
 
             if (params.method=="MRCZ-prediction-diagnostics")
@@ -239,7 +239,7 @@ namespace mrcz
                 detail::analyze_prediction_diagnostics(params);
                 return;
             }
-            if (params.method=="SZ3-3D-GLL-predictability")
+            if (params.method=="FDWZ-predictability")
             {
                 detail::analyze_local_predictability(params);
                 return;
@@ -247,33 +247,31 @@ namespace mrcz
 
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
-                if (backend_params.method=="SZ3-3D-GLL")
-                    sz3_3d_gll_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-optimized")
-                    sz3_3d_gll_optimized_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-optimized-avx2-even")
-                    sz3_3d_gll_optimized_avx2_even_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-optimized-avx2-away")
-                    sz3_3d_gll_optimized_avx2_away_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-experimental")
+                if (backend_params.method=="FDWZ")
+                    fdwz_compress(backend_params,field);
+                else if (backend_params.method=="FDWZ-avx2-even")
+                    fdwz_avx2_even_compress(backend_params,field);
+                else if (backend_params.method=="FDWZ-avx2-away")
+                    fdwz_avx2_away_compress(backend_params,field);
+                else if (backend_params.method=="FDWZ-five-trees")
                     sz3_3d_gll_experimental_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-cubic")
+                else if (backend_params.method=="FDWZ-fixed-cubic")
                     sz3_3d_gll_cubic_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-surface-first")
+                else if (backend_params.method=="FDWZ-surface-first")
                     sz3_3d_gll_surface_first_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-normal-boundary")
+                else if (backend_params.method=="FDWZ-normal-boundary")
                     sz3_3d_gll_normal_boundary_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-index-order")
+                else if (backend_params.method=="FDWZ-index-order")
                     sz3_3d_gll_index_order_compress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-index-midpoint")
+                else if (backend_params.method=="FDWZ-index-midpoint")
                     sz3_3d_gll_index_midpoint_compress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-reference-EB-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-reference-EB-",0)==0)
                     sz3_3d_gll_reference_eb_compress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-order-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-order-",0)==0)
                     sz3_3d_gll_order_compress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-sampled-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-sampled-",0)==0)
                     sz3_3d_gll_sampled_configuration_compress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-position-bias-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-position-bias-",0)==0)
                     sz3_3d_gll_position_bias_compress(backend_params,field);
                 else if (backend_params.method=="QoZ-3D-GLL")
                     qoz_3d_gll_compress(backend_params,field);

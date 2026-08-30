@@ -1,7 +1,7 @@
 #pragma once
 
 // XXX 已淘汰的MRCZ分模式系数EB实验，不参与正式版本编译。
-// XXX L1、RMS、product-0.5和总阶数方案在三个小数据上均未获得稳定的同PSNR BR收益，结果见TODO.md的历史记录。
+// XXX L1、RMS、product-0.5和总阶数方案在三个小数据上均未获得稳定的同PSNR BR收益，结果见README.md的历史记录。
 
 namespace mrcz::detail
 {

@@ -11,7 +11,7 @@
 #include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
 #include "read_and_write_data.tpp"
 #include "qoz_3d_gll_decompress.tpp"
-#include "sz3_3d_gll_decompress.tpp"
+#include "fdwz_decompress.tpp"
 #include "validate_params.hpp"
 
 namespace mrcz
@@ -212,7 +212,7 @@ namespace mrcz
         {
             validate_common_params(params);
             if (params.method.empty())
-                params.method="MRCZ-3D-GLL";
+                params.method="MRCZ";
             params.all_fields_to_process=params.fields_to_process.empty();
             params.read_header("decompress");
             params.default_init();
@@ -234,40 +234,36 @@ namespace mrcz
         void decompress(param_class<T> &params)
         {
             if (params.method.empty())
-                params.method="MRCZ-3D-GLL";
-            if (params.method=="MRCZ-prediction-diagnostics" or params.method=="MRCZ-3D-GLL-experimental")
+                params.method="MRCZ";
+            if (params.method=="MRCZ-prediction-diagnostics")
                 throw runtime_error("MRCZ prediction diagnostics不生成bitstream，不能解压");
-            if (params.method!="MRCZ-3D-GLL" and params.method!="MRCZ-3D-GLL-element-batched" and params.method!="MRCZ-3D-GLL-element-batched-original-transpose" and params.method!="SZ3-3D-GLL" and params.method!="SZ3-3D-GLL-optimized" and params.method!="SZ3-3D-GLL-optimized-avx2-even" and params.method!="SZ3-3D-GLL-optimized-avx2-away" and
-                params.method!="SZ3-3D-GLL-experimental" and params.method!="SZ3-3D-GLL-cubic" and params.method!="SZ3-3D-GLL-surface-first" and params.method!="SZ3-3D-GLL-normal-boundary" and params.method!="SZ3-3D-GLL-index-order" and params.method!="SZ3-3D-GLL-index-midpoint" and params.method!="QoZ-3D-GLL" and
-                params.method.rfind("SZ3-3D-GLL-order-",0)!=0 and params.method.rfind("SZ3-3D-GLL-reference-EB-",0)!=0 and params.method.rfind("SZ3-3D-GLL-sampled-",0)!=0 and params.method.rfind("SZ3-3D-GLL-position-bias-",0)!=0)
+            if (params.method!="MRCZ" and params.method!="MRCZ-element-batched" and params.method!="MRCZ-element-batched-original-transpose" and params.method!="FDWZ" and params.method!="FDWZ-avx2-even" and params.method!="FDWZ-avx2-away" and
+                params.method!="FDWZ-five-trees" and params.method!="FDWZ-fixed-cubic" and params.method!="FDWZ-surface-first" and params.method!="FDWZ-normal-boundary" and params.method!="FDWZ-index-order" and params.method!="FDWZ-index-midpoint" and params.method!="QoZ-3D-GLL" and
+                params.method.rfind("FDWZ-order-",0)!=0 and params.method.rfind("FDWZ-reference-EB-",0)!=0 and params.method.rfind("FDWZ-sampled-",0)!=0 and params.method.rfind("FDWZ-position-bias-",0)!=0)
                 throw runtime_error("mrcz::core::decompress不支持方法: "+params.method);
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
-                if (backend_params.method=="SZ3-3D-GLL")
-                    sz3_3d_gll_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-optimized")
-                    sz3_3d_gll_optimized_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-optimized-avx2-even" or backend_params.method=="SZ3-3D-GLL-optimized-avx2-away")
-                    sz3_3d_gll_optimized_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-experimental")
+                if (backend_params.method=="FDWZ" or backend_params.method=="FDWZ-avx2-even" or backend_params.method=="FDWZ-avx2-away")
+                    fdwz_decompress(backend_params,field);
+                else if (backend_params.method=="FDWZ-five-trees")
                     sz3_3d_gll_experimental_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-cubic")
+                else if (backend_params.method=="FDWZ-fixed-cubic")
                     sz3_3d_gll_cubic_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-surface-first")
+                else if (backend_params.method=="FDWZ-surface-first")
                     sz3_3d_gll_surface_first_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-normal-boundary")
+                else if (backend_params.method=="FDWZ-normal-boundary")
                     sz3_3d_gll_normal_boundary_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-index-order")
+                else if (backend_params.method=="FDWZ-index-order")
                     sz3_3d_gll_index_order_decompress(backend_params,field);
-                else if (backend_params.method=="SZ3-3D-GLL-index-midpoint")
+                else if (backend_params.method=="FDWZ-index-midpoint")
                     sz3_3d_gll_index_midpoint_decompress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-reference-EB-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-reference-EB-",0)==0)
                     sz3_3d_gll_reference_eb_decompress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-order-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-order-",0)==0)
                     sz3_3d_gll_order_decompress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-sampled-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-sampled-",0)==0)
                     sz3_3d_gll_sampled_configuration_decompress(backend_params,field);
-                else if (backend_params.method.rfind("SZ3-3D-GLL-position-bias-",0)==0)
+                else if (backend_params.method.rfind("FDWZ-position-bias-",0)==0)
                     sz3_3d_gll_position_bias_decompress(backend_params,field);
                 else if (backend_params.method=="QoZ-3D-GLL")
                     qoz_3d_gll_decompress(backend_params,field);

@@ -20,8 +20,8 @@ namespace mrcz
         T coeff_eb=abs_eb*coeff_eb_scale;
         T neg_2_coeff_eb=1/(2*coeff_eb);
         T neg_2_eb=1/(2*abs_eb);
-        bool element_batched=method=="MRCZ-3D-GLL-element-batched" or method=="MRCZ-3D-GLL-element-batched-original-transpose";
-        bool direct_coefficient_major=method=="MRCZ-3D-GLL-element-batched";
+        bool element_batched=method=="MRCZ-element-batched" or method=="MRCZ-element-batched-original-transpose";
+        bool direct_coefficient_major=method=="MRCZ-element-batched";
         uint32_t batch_width=is_same_v<T,float>?8:4;
         char *profile_env=getenv("MRCZ_PROFILE_PHASES");
         bool profile_phases=profile_env!=nullptr and string(profile_env)!="0";

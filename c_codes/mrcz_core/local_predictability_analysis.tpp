@@ -332,7 +332,7 @@ namespace mrcz::detail
             params.data.clear();
             params.data.shrink_to_fit();
         }
-        printf("SZ3-3D-GLL-predictability diagnostics complete; no bitstream was written.\n");
+        printf("FDWZ-predictability diagnostics complete; no bitstream was written.\n");
     }
 
     template<typename T>

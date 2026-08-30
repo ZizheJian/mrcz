@@ -12,7 +12,7 @@ namespace mrcz
             huffman_encoder_class<int64_t> coeff_encoder;
             coeff_encoder.load(huffman_bs);
             coeff_encoder.decode(huffman_bs,temp_coeff_qb,n000*block_element_num);
-            if (method!="MRCZ-3D-GLL-element-batched-original-transpose")
+            if (method!="MRCZ-element-batched-original-transpose")
             {
                 constexpr uint32_t tile_size=32;
                 for (uint32_t pos_begin=0;pos_begin<n000;pos_begin+=tile_size)

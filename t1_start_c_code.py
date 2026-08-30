@@ -10,23 +10,22 @@ build_max_cpus=get_max_cpus(8)
 build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in ["1","true","yes"] # 多个slurm实验并行时，应该先完成build和install，再把这个设为False，再开始运行
 
 # method可选:
-#   "MRCZ-3D-GLL": 正式MRCZ，element内变换由编译器自动向量化，系数QB使用32x32分块转置
-#   "MRCZ-3D-GLL-element-batched": 每批同时处理8个float或4个double element，沿element编号维度向量化变换并直接生成coefficient-major QB
-#   "MRCZ-3D-GLL-element-batched-original-transpose": 仅测试跨element向量化，仍使用原始全partition转置
+#   "MRCZ": 正式MRCZ，element内变换由编译器自动向量化，系数QB使用32x32分块转置
+#   "MRCZ-element-batched": 每批同时处理8个float或4个double element，沿element编号维度向量化变换并直接生成coefficient-major QB
+#   "MRCZ-element-batched-original-transpose": 仅测试跨element向量化，仍使用原始全partition转置
 #   "MRCZ-prediction-diagnostics"
 #   "SZ3-3D-uniform": 项目内实现的逐element 3D分层插值，假定点等间距
-#   "SZ3-3D-GLL": 无优化baseline；逐element GLL分层线性插值，单Huffman tree，按实际预测访问顺序保存量化值
-#   "SZ3-3D-GLL-optimized": 使用最大有效Huffman tree数，并在每个partition采样选择维度顺序和linear/cubic预测
-#   "SZ3-3D-GLL-optimized-avx2-even": 优化版的跨element AVX2原型，量化使用ties-to-even
-#   "SZ3-3D-GLL-optimized-avx2-away": 优化版的跨element AVX2原型，量化模拟std::round的ties-away-from-zero
-#   "SZ3-3D-GLL-predictability": 只统计element编号和各空间轴的一阶预测误差，不写bitstream
-#   "SZ3-3D-GLL-cubic": 实验性GLL坐标Lagrange插值，中心使用四点三次、边界使用三点二次、reference不足时退化为线性
-#   "SZ3-3D-GLL-surface-first": 角点、边、面、体依次处理，各部分从中心向外扩展，同层按轴向、面对角、体对角处理并平均可用方向
-#   "SZ3-3D-GLL-normal-boundary": 由角点建立中心块，沿法向外插边界锚点，再从中心向外内插内部点
-#   "SZ3-3D-GLL-index-order": 严格使用SZ3的2幂stride访问顺序，但按真实GLL距离计算线性插值和外插权重
-#   "SZ3-3D-GLL-index-midpoint": 保留每个element的角点seed，递归时选择索引中点，但按真实GLL距离计算权重
-#   "SZ3-3D-GLL-reference-EB-0.5": 所有之后还会作为reference的节点使用0.5倍EB，叶子节点使用完整EB
-#   "SZ3-3D-GLL-experimental": 角点和四个预测层分别使用一棵Huffman tree，要求element至少有4个预测层
+#   "FDWZ": 使用最大有效Huffman tree数，并在每个partition采样选择维度顺序和linear/cubic预测
+#   "FDWZ-avx2-even": FDWZ的跨element AVX2原型，量化使用ties-to-even
+#   "FDWZ-avx2-away": FDWZ的跨element AVX2原型，量化模拟std::round的ties-away-from-zero
+#   "FDWZ-predictability": 只统计element编号和各空间轴的一阶预测误差，不写bitstream
+#   "FDWZ-fixed-cubic": 实验性GLL坐标Lagrange插值，中心使用四点三次、边界使用三点二次、reference不足时退化为线性
+#   "FDWZ-surface-first": 角点、边、面、体依次处理，各部分从中心向外扩展，同层按轴向、面对角、体对角处理并平均可用方向
+#   "FDWZ-normal-boundary": 由角点建立中心块，沿法向外插边界锚点，再从中心向外内插内部点
+#   "FDWZ-index-order": 严格使用2幂stride访问顺序，但按真实GLL距离计算线性插值和外插权重
+#   "FDWZ-index-midpoint": 保留每个element的角点seed，递归时选择索引中点，但按真实GLL距离计算权重
+#   "FDWZ-reference-EB-0.5": 所有之后还会作为reference的节点使用0.5倍EB，叶子节点使用完整EB
+#   "FDWZ-five-trees": 角点和四个预测层分别使用一棵Huffman tree，要求element至少有4个预测层
 #   "QoZ-3D-GLL": 项目内实现的逐element QoZ式分阶段多维插值，使用真实GLL坐标
 #   "SZ3-1D-uniform"/"SZ3-2D-uniform"/"SZ3-3D-uniform-fused"/"SZ3-3D-uniform-per-element"/"SZ3-4D-uniform": 官方SZ3 API的五种tensorization
 #   "QoZ-1D-uniform"/"QoZ-2D-uniform"/"QoZ-3D-uniform-fused"/"QoZ-3D-uniform-per-element"/"QoZ-4D-uniform": 官方QoZ 2.0 q4 API的五种tensorization
@@ -35,9 +34,9 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 #   "SZ2-1D-uniform"/"SZ2-2D-uniform"/"SZ2-3D-uniform-fused"/"SZ2-3D-uniform-per-element"/"SZ2-4D-uniform": 官方SZ2 API的五种tensorization
 #   "ZFP-1D-uniform"/"ZFP-2D-uniform"/"ZFP-3D-uniform-fused"/"ZFP-3D-uniform-per-element"/"ZFP-4D-uniform": 官方ZFP API的五种tensorization
 #   "SPERR-2D-uniform"/"SPERR-3D-uniform-fused"/"SPERR-3D-uniform-per-element": 官方SPERR API支持的三种tensorization
-# 正式方法、外部baseline、消融与诊断入口的分类以及统一实验口径见BASELINES.md。
+# 正式方法、外部baseline及其tensorization见README.md第5.1节。
 # MRCZ-prediction-diagnostics是角点/中心点预测诊断入口，不写bitstream，也不能解压，不加入正式t1。
-formal_method_list=["MRCZ-3D-GLL","SZ3-3D-GLL-optimized","SZ3-4D-uniform","SZ2-3D-uniform-fused","QoZ-4D-uniform","ZFP-3D-uniform-fused","SPERR-2D-uniform"]
+formal_method_list=["MRCZ","FDWZ","SZ3-4D-uniform","SZ2-3D-uniform-fused","QoZ-4D-uniform","ZFP-3D-uniform-fused","SPERR-2D-uniform"]
 method_list=os.environ.get("MRCZ_T1_METHODS",",".join(formal_method_list)).split(",")
 official_uniform_methods={
     "SZ3-1D-uniform","SZ3-2D-uniform","SZ3-3D-uniform-fused","SZ3-3D-uniform-per-element","SZ3-4D-uniform",
@@ -69,7 +68,6 @@ project_root=os.path.dirname(os.path.abspath(__file__))
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
 # eb_list=[1e-3]
 # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
-# SZ3-3D-GLL的相对误差为7.9e-4时，T的CR=26.052934653717053
 # SZ3-3D-uniform的相对误差为2e-3时，T的CR=26.078980036305357
 # SZ2-3D-GLL的相对误差为4.2e-3时，T的CR=26.051779
 # SPERR-3D-uniform的相对误差为4.52e-2时，T的CR=26.084365
@@ -158,10 +156,6 @@ def parse_field_throughput(output,task):
     return throughput
 
 def result_method_name(method):
-    if method=="MRCZ-3D-GLL":
-        return "MRCZ"
-    if method=="SZ3-3D-GLL-optimized":
-        return "FDWZ"
     if method in official_uniform_methods:
         return method.replace("-uniform","")
     return method

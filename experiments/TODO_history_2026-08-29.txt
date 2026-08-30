@@ -2,7 +2,7 @@ MRCZ TODO
 =========
 
 # XXX 2026-08-24以前的完整开发记录见experiments/TODO_history_2026-08-24.txt。
-# XXX SZ3-3D-GLL的阶段性实验文件后来已清理，核心结论归档在项目根目录TODO.md。
+# XXX SZ3-3D-GLL的阶段性实验文件后来已清理，核心结论归档在项目根目录README.md。
 # XXX 本文件从2026-08-25起只保留MRCZ正式算法、投稿决策和必要工程工作的计划。
 
 论文定位
@@ -93,7 +93,7 @@ MRCZ TODO
        BR、PSNR和最大误差完全一致。4核jicf/S00任务20141452完成了9组测试，证明该实现与partition级OpenMP兼容；
        由于新任务开启了逐element阶段计时，而旧scalar日志没有，不直接比较两者的多核端到端时间。小EB时coefficient Huffman
        已占测量工作的52%--78%。正式决定是保留指针重构和编译器生成的AVX2，不手写transform intrinsics；若论文需要严格的
-       多核加速比，再在同一allocation内交错运行scalar和指针版，并关闭阶段计时。完整记录见experiments/mrcz_simd/。
+       多核加速比，再在同一allocation内交错运行scalar和指针版，并关闭阶段计时。完整记录已归档于Git历史。
        另保留独立实验方法MRCZ-3D-GLL-element-batched：float同时处理8个element，double同时处理4个，六个lane循环均被GCC
        编译为32-byte vector，并直接生成coefficient-major QB以避免全partition转置。test0/T、509-element尾部测试和
        double tc_channel0/UX均与正式方法生成逐字节相同的bitstream和误差结果。pb0/T的10000-element、关闭阶段计时的5次
@@ -164,7 +164,7 @@ MRCZ TODO
           UZ: MRCZ REL=2.35990976578629e-7 ABS=2.46555740381169e-6; FDWZ REL=6.91081024368415e-8 ABS=7.22019104699792e-7
           P:  MRCZ REL=2.81007467480041e-7 ABS=1.13462193778331e-5; FDWZ REL=7.24307797910966e-8 ABS=2.924532663089e-6
           S00:MRCZ REL=5.18502936519852e-7 ABS=5.22462290631529e-1; FDWZ REL=2.04507139533609e-7 ABS=2.06068781959811e-1
-        正式脚本为experiments/mrcz_scaling/run_weak_scaling.py，pb0与jicf分别写独立raw、summary和quality CSV。
+        正式脚本为t5_start_weak_scaling.py，pb0与jicf分别写独立raw、summary和quality CSV。
         区间实验设置MRCZ_DISABLE_CONSTANT_ENCODING=1，避免局部区间偶然触发仅针对整个field的常数快捷路径。计算精度由完整RD
         在目标PSNR处对应的REL EB决定，并通过-compute-precision固定，避免局部动态范围使不同CPU点切换float/double。PB0在100 dB
         时除ZFP使用float外，其余6种方法均使用double；jicf在150 dB时7种方法均使用double。

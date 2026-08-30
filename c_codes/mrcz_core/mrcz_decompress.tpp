@@ -15,8 +15,8 @@ namespace mrcz
         vector<T> neg_L2=neg_L[2];
         T abs_eb=this->abs_eb[field];
         T coeff_eb=abs_eb*coeff_eb_scale;
-        bool element_batched=method=="MRCZ-3D-GLL-element-batched" or method=="MRCZ-3D-GLL-element-batched-original-transpose";
-        bool direct_coefficient_major=method=="MRCZ-3D-GLL-element-batched";
+        bool element_batched=method=="MRCZ-element-batched" or method=="MRCZ-element-batched-original-transpose";
+        bool direct_coefficient_major=method=="MRCZ-element-batched";
         uint32_t batch_width=is_same_v<T,float>?8:4;
         decompressed_data.resize(element_num_to_process*n012);
         char *profile_env=getenv("MRCZ_PROFILE_PHASES");
