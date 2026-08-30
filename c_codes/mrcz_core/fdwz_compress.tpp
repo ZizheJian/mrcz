@@ -1154,9 +1154,9 @@ void sz3_3d_gll_compress(mrcz::param_class<T> &params,string field)
 }
 
 template<typename T>
-void fdwz_compress(mrcz::param_class<T> &params,string field)
+void mrcz::param_class<T>::compress_fdwz(string field)
 {
-    sz3_3d_gll_compress_impl(params,field,0,{0,1,2},false,false,false,false,false,T(1),false,true);
+    sz3_3d_gll_compress_impl(*this,field,0,{0,1,2},false,false,false,false,false,T(1),false,true);
 }
 
 template<typename T>

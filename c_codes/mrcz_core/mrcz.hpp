@@ -60,9 +60,17 @@ namespace mrcz
     class param_class
     {
         public:
-            bool if_coefficient_transpose=true; // MRCZ和experimental变体都使用
-            string grid_assumption="GLL"; //GLL ,chebyshev, uniform
-            string transform="DChT"; //DLT, DChT, DST, DCT
+            string grid_assumption="GLL"; // GLL, chebyshev, uniform
+            bool if_constant_compression=true;
+
+            // MRCZ优化开关
+            string transform="DChT"; // DLT, DChT, DST, DCT
+            T coeff_eb_scale=0.05;
+            bool if_coefficient_transpose=true;
+            bool if_tiled_coefficient_transpose=true;
+
+            // FDWZ优化开关
+            bool if_max_huffman_tree=true;
 
             string format;
             string data_path;
@@ -92,7 +100,7 @@ namespace mrcz
 
             int max_cpus=128;
             uint64_t partition_num=0; //0表示压缩时沿用max_cpus；解压时从bitstream读取
-            T coeff_eb_scale=0.05;
+
             vector<vector<T>> x;
             vector<vector<T>> L,neg_L;
 
@@ -108,56 +116,67 @@ namespace mrcz
             void save_tail_metadata_compress();
             void save_tail_metadata_decompress();
 
+            // 压缩器入口
             void compress_mrcz(string field);
+            void decompress_mrcz(string field);
+            void compress_fdwz(string field);
+            void decompress_fdwz(string field);
+
+            // MRCZ变换
             void forward_transform(vector<T> &temp_element1,vector<T> &temp_element2,T *element,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &L0,vector<T> &L1,vector<T> &L2);
             void inverse_transform(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
-            void forward_transform_element_batched(vector<T> &temp_element1,vector<T> &temp_element2,T *element_batch,uint32_t batch_width,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
-                vector<T> &L0,vector<T> &L1,vector<T> &L2);
-            void inverse_transform_element_batched(vector<T> &temp_element1,vector<T> &temp_element2,uint32_t batch_width,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
-                vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
-            
+
+            // MRCZ coefficient QB无损编解码
             void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
-            void decompress_mrcz(string field);
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
-            
+
+            // 插值预测器的角点与residual QB布局
             void quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
                 T abs_eb,T neg_2_eb);
-            void convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012);
             void reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,T abs_eb);
+            void convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012);
             void convert_no_corner_err_eb_to_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012);
 
+            // 通用量化
             void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);
+            void quantize_and_overwrite_array1(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
             void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
             void quantize_err_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
-            void quantize_and_overwrite_array1(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
 
             void default_init()
             {
                 if ((!is_same<T,float>::value) and (!is_same<T,double>::value))
                     throw runtime_error("仅能以float或double类型处理数据");
                 if (header.c_element_shape.size()!=3)
-                    throw runtime_error("element必须是三维的。如果是二维的，应该补上一个维度为1的维度。");
+                    throw runtime_error("element必须是三维的。如果是二维的，应该补上一个长度为1的维度。");
+                if (grid_assumption!="GLL" and grid_assumption!="chebyshev" and grid_assumption!="uniform")
+                    throw runtime_error("不支持的grid assumption: "+grid_assumption);
+                if (transform!="DLT" and transform!="DChT" and transform!="DST" and transform!="DCT")
+                    throw runtime_error("不支持的transform: "+transform);
+                if (transform=="DST" and grid_assumption!="uniform")
+                    throw runtime_error("DST在"+grid_assumption+"网格上是奇异的");
+
+                x.assign(3,{});
+                L.assign(3,{});
+                neg_L.assign(3,{});
                 for (int dim=0;dim<3;dim++)
                 {
                     uint32_t n=header.c_element_shape[dim];
-                    if (grid_assumption=="GLL")
-                        x.push_back(compute_GLL_nodes<T>(n));
+                    if (n==0)
+                        throw runtime_error("element的每个维度都必须至少包含1个点");
+                    if (n==1)
+                        x[dim]={0};
+                    else if (grid_assumption=="GLL")
+                        x[dim]=compute_GLL_nodes<T>(n);
                     else if (grid_assumption=="chebyshev")
-                    {
-                        x.push_back(vector<T>());
                         for (uint32_t i=0;i<n;i++)
                             x[dim].push_back(-cos(M_PI*i/(n-1)));
-                    }
                     else if (grid_assumption=="uniform")
-                    {
-                        x.push_back(vector<T>());
                         for (uint32_t i=0;i<n;i++)
                             x[dim].push_back(2.0*i/(n-1)-1);
-                    }
 
-                    neg_L.push_back(vector<T>());
                     T pi=acos(T(-1));
                     for (uint32_t i=0;i<n;i++)
                     {
@@ -186,16 +205,12 @@ namespace mrcz
                                     neg_L[dim].push_back(2*x[dim][j]*neg_L[dim][(i-1)*n+j]-neg_L[dim][(i-2)*n+j]);
                         }
                         else if (transform=="DST")
-                            if ((grid_assumption=="GLL") or (grid_assumption=="chebyshev"))
-                                throw runtime_error("DST在"+grid_assumption+"网格上是奇异的");
-                            else if (grid_assumption=="uniform")
-                                for(uint32_t j=0;j<n;j++)
-                                    neg_L[dim].push_back((T(2)/(n+1))*sin(pi*(i+1)*(j+1)/(n+1)));
+                            for(uint32_t j=0;j<n;j++)
+                                neg_L[dim].push_back((T(2)/(n+1))*sin(pi*(i+1)*(j+1)/(n+1)));
                         else if (transform=="DCT")
                             for(uint32_t j=0;j<n;j++)
                                 neg_L[dim].push_back(cos(pi*i*(x[dim][j]+1)/2));
                     }
-                    L.push_back(vector<T>());
                     L[dim]=simple_invert_matrix(neg_L[dim],n);
                 }
             }
@@ -203,9 +218,12 @@ namespace mrcz
             param_class(){}
 
             template<typename T2>
-            param_class(param_class<T2> &other)
+            param_class(param_class<T2> &other,string data_to_copy="")
             {
+                if_constant_compression=other.if_constant_compression;
                 if_coefficient_transpose=other.if_coefficient_transpose;
+                if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
+                if_max_huffman_tree=other.if_max_huffman_tree;
                 grid_assumption=other.grid_assumption;
                 transform=other.transform;
                 
@@ -237,9 +255,13 @@ namespace mrcz
                 partitions=other.partitions;
 
                 element_num_to_process=other.element_num_to_process;
-                data.assign(other.data.begin(),other.data.end());
-                decompressed_data.assign(other.decompressed_data.begin(),other.decompressed_data.end());
-                
+                if (data_to_copy=="data")
+                    data.assign(other.data.begin(),other.data.end());
+                else if (data_to_copy=="decompressed_data")
+                    decompressed_data.assign(other.decompressed_data.begin(),other.decompressed_data.end());
+                else if (!data_to_copy.empty())
+                    throw runtime_error("不支持的data_to_copy: "+data_to_copy);
+
                 max_cpus=other.max_cpus;
                 partition_num=other.partition_num;
                 coeff_eb_scale=other.coeff_eb_scale;
@@ -261,7 +283,6 @@ namespace mrcz
 #include "coefficient_lossless_decompress.tpp"
 #include "mrcz_compress.tpp"
 #include "mrcz_decompress.tpp"
-#include "mrcz_element_batched_transform.tpp"
 #include "gll_nodes.tpp"
 #include "quantize.tpp"
 #include "read_header.tpp"

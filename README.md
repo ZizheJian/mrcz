@@ -106,7 +106,7 @@ python3 generate_mfem_and_nektar_data.py
 
 项目的核心目标是在严格满足逐点误差界限的前提下，同时改善压缩率、压缩与解压吞吐量以及多核扩展性。主要方法MRCZ对每个element进行GLL张量基变换，分别编码变换系数与点值残差，再通过coefficient-major布局、Huffman和Zstd压缩；候选方法FDWZ则直接利用GLL节点距离进行自适应插值预测。两者将与使用官方API和预先固定tensorization方式的通用压缩器进行公平比较，并以rate--distortion、throughput、scaling和端到端传输时间共同决定最终论文定位。
 
-所有进入项目内core backend的方法共用field级外围流程，包括读取数据、计算值域与ABS/REL error bound、选择计算精度以及写入公共bitstream信息。若一个field的最大值和最小值可以由其中点在`abs_eb`内同时重建，公共层会只保存constant flag和该中点，并跳过MRCZ、FDWZ等具体backend；因此constant-field encoding不是任何单个算法的组成部分。官方API baseline使用各压缩器自己的入口，不经过这项公共处理。
+所有方法共用field级外围流程，包括读取数据、计算值域与ABS/REL error bound、选择计算精度以及写入公共bitstream信息。若一个field的最大值和最小值可以由其中点在`abs_eb`内同时重建，公共层会只保存constant flag和该中点，并跳过具体backend；因此constant compression不是任何单个算法的组成部分，可通过`param.if_constant_compression`控制。
 
 项目主入口为`t1_start_c_code.py`，其中定义正式数据集、field、误差界限、方法列表以及结果文件位置。正式CSV保存在对应数据旁边，方法与baseline布局见第5章；本文档后半部分记录投稿IPDPS或DCC之前仍需完成的工作。
 
@@ -203,8 +203,6 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 
 | 优化或候选方案 | 状态 | 结论 |
 |---|---|---|
-| 量化系数反变换作为预测，再量化逐点residual | **采纳** | 系数提供紧凑的element级模型，residual吸收系数量化和数值变换误差，使最终误差保证不依赖变换的正交性。 |
-| 系数和residual使用独立量化步长 | **采纳** | 系数使用较小的`0.05*abs_eb`以维持预测精度，residual使用完整`abs_eb`保证逐点误差界限。 |
 | partition级coefficient zero map，用于标注某个model的系数是否在partition内所有element上全部被量化为0 | **放弃** | jicf0五个field、五个EB上的CR平均仅提高约0.107%、最大约0.486%，不足以补偿扫描、metadata和格式复杂度。 |
 
 ## 3.4. QB布局、Huffman与Zstd阶段
@@ -299,7 +297,7 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 
 实验将pb0和jicf0分别均分为64和128个全局partition，每个CPU固定处理一个partition。N个CPU处理连续的N个partition，因此CPU数和数据量同步增加。pb0每个partition约含30424个element和59.42 MiB原始数据，jicf0约含25315个element和96.56 MiB原始数据；目标PSNR分别为100 dB和150 dB。
 
-CPU数量较少时，实验只处理完整field中的局部区间，而不同区间的data range可能不同。如果直接使用REL EB，程序会根据局部data range得到不同的ABS EB，使各CPU点的实际误差界和重建质量不再一致。因此，每个method/field先根据完整数据的RD曲线插值得到目标PSNR对应的REL EB，再乘以完整field的data range得到ABS EB；所有CPU数量和抽样区间均使用这个固定的ABS EB。同时，实验通过`-compute-precision`固定使用完整数据在该REL EB下选择的float或double，避免局部data range变化导致计算精度切换。汇总PSNR也使用完整field的data range和各区间的加权MSE重新计算。
+CPU数量较少时，实验只处理完整field中的局部区间，而不同区间的data range可能不同。如果直接使用REL EB，程序会根据局部data range得到不同的ABS EB，使各CPU点的实际误差界和重建质量不再一致。因此，每个method/field先根据完整数据的RD曲线插值得到目标PSNR对应的REL EB，再乘以完整field的data range得到ABS EB；所有CPU数量和抽样区间均使用这个固定的ABS EB。同时，实验通过`-compute-precision`固定使用完整数据在该REL EB下选择的float或double，避免局部data range变化导致计算精度切换。局部区间的data range还可能小到触发constant compression，因此weak scaling压缩命令统一设置`-constant-compression false`，确保每个case都实际运行对应backend。汇总PSNR也使用完整field的data range和各区间的加权MSE重新计算。
 
 每个CPU数、每个field测试4次。低CPU数时，在完整数据上等间隔选择4段；高CPU数时若只能划出2段或1段，则每段分别测试2次或4次。汇总吞吐量等于4次测试的原始数据总量除以内部耗时总和。
 
@@ -357,6 +355,7 @@ MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋�
 # 11. 投稿后或artifact阶段
 
 [ ] 7. 审计并版本化bitstream metadata，增加未知版本、截断文件、错误method和错误数据类型测试。
+       将会改变bitstream或重建结果的消融配置写入metadata，包括`transform`、`coeff_eb_scale`、是否使用coefficient-major布局和FDWZ Huffman tree数量；tiled transpose等只改变执行方式的开关无需写入。
 
 [ ] 8. 让t1在超过error bound、重建数量错误或编解码失败时自动返回非零状态，并处理低于机器精度的EB。
 

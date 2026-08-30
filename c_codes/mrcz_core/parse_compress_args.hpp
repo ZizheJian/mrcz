@@ -96,6 +96,18 @@ namespace mrcz
                     throw runtime_error("缺少-method参数后的压缩方法");
                 params.method=argv[++i];
             }
+            else if (string(argv[i])=="-constant-compression")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-constant-compression参数后的布尔值");
+                string value=argv[++i];
+                if (value=="true")
+                    params.if_constant_compression=true;
+                else if (value=="false")
+                    params.if_constant_compression=false;
+                else
+                    throw runtime_error("-constant-compression必须是true或false");
+            }
             else if (string(argv[i])=="-compute-precision")
             {
                 if (i+1>=argc)

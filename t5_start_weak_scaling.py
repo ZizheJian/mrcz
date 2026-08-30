@@ -109,7 +109,7 @@ def run_command(args,log_file):
 def make_args(config,task,method,field,cpus,element_begin,element_end,abs_eb):
     args=[os.path.join(project_root,"install/bin",f"mrcz_{task}"),"-format","nekrs","-i",config["data_path"],"-M","ABS",f"{abs_eb:.17g}","-method",method,"-max-cpus",str(cpus),"-partition-num",str(cpus),"-elements",f"[{element_begin},{element_end})","-fields",f"[{field}]"]
     if task=="compress":
-        args.extend(["-compute-precision",config["precision"][method]])
+        args.extend(["-compute-precision",config["precision"][method],"-constant-compression","false"])
     return args
 
 def run_case(config,dataset,method,field,cpus,group_index,trial,log_file):

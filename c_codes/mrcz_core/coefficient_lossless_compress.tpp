@@ -9,7 +9,7 @@ namespace mrcz
         {
             uint64_t block_element_num=end_index-begin_index;
             int64_t *temp_coeff_qb=new int64_t[n000*block_element_num];
-            if (method!="MRCZ-element-batched-original-transpose")
+            if (if_tiled_coefficient_transpose)
             {
                 constexpr uint32_t tile_size=32;
                 for (uint32_t pos_begin=0;pos_begin<n000;pos_begin+=tile_size)

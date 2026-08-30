@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <cstdlib>
 #include <cstdint>
 #include <fstream>
 #include <limits>
@@ -13,9 +12,6 @@
 
 #include <get_max_cpus.hpp>
 #include "read_and_write_data.tpp"
-#include "prediction_diagnostics.tpp"
-#include "local_predictability_analysis.tpp"
-#include "qoz_3d_gll_compress.tpp"
 #include "fdwz_compress.tpp"
 #include "validate_params.hpp"
 
@@ -23,45 +19,17 @@ namespace mrcz
 {
     namespace detail
     {
-        inline bool environment_flag_enabled(const char *name)
-        {
-            char *value=getenv(name);
-            return value!=nullptr and string(value)!="0" and string(value)!="false" and string(value)!="FALSE";
-        }
-
-        inline void print_memory_profile(const char *stage,const string &field)
-        {
-            char *profile_env=getenv("MRCZ_PROFILE_MEMORY");
-            if (profile_env==nullptr or string(profile_env)=="0")
-                return;
-            ifstream status("/proc/self/status");
-            string line;
-            uint64_t rss_kib=0,hwm_kib=0;
-            while (getline(status,line))
-            {
-                if (line.rfind("VmRSS:",0)==0)
-                    sscanf(line.c_str(),"VmRSS: %lu kB",&rss_kib);
-                else if (line.rfind("VmHWM:",0)==0)
-                    sscanf(line.c_str(),"VmHWM: %lu kB",&hwm_kib);
-            }
-            printf("MRCZ memory: stage=%s,field=%s,RSS=%.3f GiB,HWM=%.3f GiB\n",stage,field.c_str(),rss_kib/(1024.0*1024),hwm_kib/(1024.0*1024));
-            fflush(stdout);
-        }
-
         template<typename T,typename Backend>
         void compress_field_and_write(param_class<T> &params,const string &field,Backend backend)
         {
             T data_min=params.data_range_min[field],data_max=params.data_range_max[field];
             T constant_value=midpoint(data_min,data_max);
             T constant_max_error=max(constant_value-data_min,data_max-constant_value);
-            bool use_constant_encoding=!environment_flag_enabled("MRCZ_DISABLE_CONSTANT_ENCODING") and constant_max_error<=params.abs_eb[field];
-            if (data_min==data_max)
-                printf("Field %s is constant: value=%.*e\n",field.c_str(),numeric_limits<T>::max_digits10,static_cast<double>(constant_value));
-            else if (use_constant_encoding)
-                printf("Field %s is encoded as constant: value=%.*e, max possible error=%.*e\n",field.c_str(),numeric_limits<T>::max_digits10,static_cast<double>(constant_value),numeric_limits<T>::max_digits10,static_cast<double>(constant_max_error));
+            bool use_constant_compression=params.if_constant_compression and constant_max_error<=params.abs_eb[field];
+            if (use_constant_compression)
+                printf("Field %s is compressed as constant: value=%.*e, max possible error=%.*e\n",field.c_str(),numeric_limits<T>::max_digits10,static_cast<double>(constant_value),numeric_limits<T>::max_digits10,static_cast<double>(constant_max_error));
             else
                 backend(params,field);
-            print_memory_profile("after backend",field);
 
             double compressed_bytes=0;
             string compressed_path=params.data_path+"_"+field+"."+params.method;
@@ -71,12 +39,13 @@ namespace mrcz
 
             uint8_t word_size_during_compression=sizeof(T);
             compressed_file.write(reinterpret_cast<const char*>(&word_size_during_compression),1);
-            if (use_constant_encoding)
+            compressed_bytes+=1;
+            if (use_constant_compression)
             {
                 unsigned char constant_flag=1;
                 compressed_file.write(reinterpret_cast<const char*>(&constant_flag),1);
                 compressed_file.write(reinterpret_cast<const char*>(&constant_value),sizeof(T));
-                compressed_bytes=2+sizeof(T);
+                compressed_bytes+=1+sizeof(T);
             }
             else
             {
@@ -86,7 +55,7 @@ namespace mrcz
                 compressed_file.write(reinterpret_cast<const char*>(&partition_num),sizeof(partition_num));
                 compressed_file.write(reinterpret_cast<const char*>(&params.data_range_min[field]),sizeof(T));
                 compressed_file.write(reinterpret_cast<const char*>(&params.data_range_max[field]),sizeof(T));
-                compressed_bytes=2+sizeof(partition_num)+2*sizeof(T);
+                compressed_bytes+=1+sizeof(partition_num)+2*sizeof(T);
                 for (auto &partition:params.partitions)
                 {
                     uint64_t compressed_size=partition.zstd_bs.size();
@@ -102,8 +71,6 @@ namespace mrcz
                 }
             }
             compressed_file.close();
-            print_memory_profile("after output buffers released",field);
-
             double bits_per_value=compressed_bytes*8/(params.element_num_to_process*params.header.element_size);
             double compression_ratio=(8*params.header.word_size)/bits_per_value;
             printf("\033[91mBR= %f bits/value, CR= %f\n\033[0m",bits_per_value,compression_ratio);
@@ -115,10 +82,8 @@ namespace mrcz
             for (auto &field:params.fields_to_process)
             {
                 printf("Field= %s\n",field.c_str());
-                print_memory_profile("before data allocation",field);
                 params.data.resize(params.element_num_to_process*params.header.element_size);
                 ::read_data(params,field);
-                print_memory_profile("after data read",field);
 
                 T global_min=params.data[0];
                 T global_max=params.data[0];
@@ -155,20 +120,17 @@ namespace mrcz
                     printf("Compute precision= %s\n",use_double ? "double":"float");
                     if (use_double)
                     {
-                        param_class<double> double_params(params);
+                        param_class<double> double_params(params,"data");
                         if (double_params.eb_mode=="ABS")
                         {
                             double_params.abs_eb[field]=double_params.input_eb;
-                            double_params.rel_eb[field]=double_params.input_eb/
-                                (double_params.data_range_max[field]-double_params.data_range_min[field]);
+                            double_params.rel_eb[field]=double_params.input_eb/(double_params.data_range_max[field]-double_params.data_range_min[field]);
                         }
                         else
                         {
                             double_params.rel_eb[field]=double_params.input_eb;
-                            double_params.abs_eb[field]=double_params.input_eb*
-                                (double_params.data_range_max[field]-double_params.data_range_min[field]);
+                            double_params.abs_eb[field]=double_params.input_eb*(double_params.data_range_max[field]-double_params.data_range_min[field]);
                         }
-                        double_params.data.assign(params.data.begin(),params.data.end());
                         params.data.clear();
                         params.data.shrink_to_fit();
                         compress_field_and_write(double_params,field,backend);
@@ -184,7 +146,6 @@ namespace mrcz
 
                 params.data.clear();
                 params.data.shrink_to_fit();
-                print_memory_profile("after data released",field);
             }
         }
 
@@ -229,54 +190,14 @@ namespace mrcz
         {
             if (params.method.empty())
                 params.method="MRCZ";
-            if (params.method!="MRCZ" and params.method!="MRCZ-element-batched" and params.method!="MRCZ-element-batched-original-transpose" and params.method!="MRCZ-prediction-diagnostics" and params.method!="FDWZ" and params.method!="FDWZ-avx2-even" and params.method!="FDWZ-avx2-away" and params.method!="FDWZ-predictability" and
-                params.method!="FDWZ-five-trees" and params.method!="FDWZ-fixed-cubic" and params.method!="FDWZ-surface-first" and params.method!="FDWZ-normal-boundary" and params.method!="FDWZ-index-order" and params.method!="FDWZ-index-midpoint" and params.method!="QoZ-3D-GLL" and
-                params.method.rfind("FDWZ-order-",0)!=0 and params.method.rfind("FDWZ-reference-EB-",0)!=0 and params.method.rfind("FDWZ-sampled-",0)!=0 and params.method.rfind("FDWZ-position-bias-",0)!=0)
-                throw runtime_error("mrcz::core::compress不支持方法: "+params.method);
-
-            if (params.method=="MRCZ-prediction-diagnostics")
-            {
-                detail::analyze_prediction_diagnostics(params);
-                return;
-            }
-            if (params.method=="FDWZ-predictability")
-            {
-                detail::analyze_local_predictability(params);
-                return;
-            }
-
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
-                if (backend_params.method=="FDWZ")
-                    fdwz_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-avx2-even")
-                    fdwz_avx2_even_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-avx2-away")
-                    fdwz_avx2_away_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-five-trees")
-                    sz3_3d_gll_experimental_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-fixed-cubic")
-                    sz3_3d_gll_cubic_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-surface-first")
-                    sz3_3d_gll_surface_first_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-normal-boundary")
-                    sz3_3d_gll_normal_boundary_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-index-order")
-                    sz3_3d_gll_index_order_compress(backend_params,field);
-                else if (backend_params.method=="FDWZ-index-midpoint")
-                    sz3_3d_gll_index_midpoint_compress(backend_params,field);
-                else if (backend_params.method.rfind("FDWZ-reference-EB-",0)==0)
-                    sz3_3d_gll_reference_eb_compress(backend_params,field);
-                else if (backend_params.method.rfind("FDWZ-order-",0)==0)
-                    sz3_3d_gll_order_compress(backend_params,field);
-                else if (backend_params.method.rfind("FDWZ-sampled-",0)==0)
-                    sz3_3d_gll_sampled_configuration_compress(backend_params,field);
-                else if (backend_params.method.rfind("FDWZ-position-bias-",0)==0)
-                    sz3_3d_gll_position_bias_compress(backend_params,field);
-                else if (backend_params.method=="QoZ-3D-GLL")
-                    qoz_3d_gll_compress(backend_params,field);
-                else
+                if (backend_params.method=="MRCZ" or backend_params.method=="MRCZ-ablation")
                     backend_params.compress_mrcz(field);
+                else if (backend_params.method=="FDWZ" or backend_params.method=="FDWZ-ablation")
+                    backend_params.compress_fdwz(field);
+                else
+                    throw runtime_error("未知的core压缩方法: "+backend_params.method);
             };
             detail::compress_file_with_backend(params,backend);
         }

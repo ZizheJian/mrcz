@@ -19,7 +19,7 @@ namespace mrcz::baseline
             return api_layout::flattened_1d;
         if (method==compressor+"-2D-uniform")
             return api_layout::elements_2d;
-        if (method==compressor+"-3D-uniform-fused" or method==compressor+"-3D-uniform")
+        if (method==compressor+"-3D-uniform-fused")
             return api_layout::fused_3d;
         if (method==compressor+"-3D-uniform-per-element")
             return api_layout::per_element_3d;
