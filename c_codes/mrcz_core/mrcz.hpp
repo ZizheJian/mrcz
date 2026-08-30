@@ -15,7 +15,7 @@
 #include <bit>
 #include <cstdlib>
 #include "huffman.hpp"
-#include "../third_party/zstd/lib/zstd.h"
+#include <zstd.h>
 #include <mfem.hpp>
 #include <tinyxml2.h>
 

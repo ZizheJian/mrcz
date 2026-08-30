@@ -11,7 +11,7 @@
 #include "sz3_index_order_prediction.tpp"
 #include "sz3_normal_boundary_prediction.tpp"
 #include "sz3_surface_first_prediction.tpp"
-#include "../third_party/zstd/lib/zstd.h"
+#include <zstd.h>
 
 template<typename T>
 void sz3_generate_weight(vector<vector<uint32_t>> &left_indices,vector<vector<uint32_t>> &right_indices,vector<vector<uint32_t>> &mid_indices,

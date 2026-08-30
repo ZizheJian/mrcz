@@ -13,4 +13,4 @@
 
 pb0和jicf0是正式大数据结果，各包含五个field，每个field分别保存rate--distortion和throughput，共十个CSV。test0、mixlay0、tc_channel0、mfem_ex0、mfem_ex1和nektar_cylinder是小数据布局选择与实现验证结果。2026-08-30首次复制到本目录；这次复制只建立结果快照，不表示生成这些CSV时使用的commit已经完成审计。
 
-小数据布局实验的汇总结论保存在`experiments/official_api_layouts/`。
+小数据布局实验的汇总结论与官方API布局定义见主目录`README.md`第5.1节。

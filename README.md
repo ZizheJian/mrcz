@@ -71,6 +71,21 @@ cmake --build build --parallel 8
 cmake --install build
 ```
 
+安装后，外部C++项目可以通过CMake导入header-only MRCZ核心：
+
+```cmake
+find_package(MRCZ CONFIG REQUIRED)
+target_link_libraries(my_program PRIVATE mrcz::mrcz)
+```
+
+程序包含公共header：
+
+```cpp
+#include <mrcz_core/mrcz.hpp>
+```
+
+如果MRCZ未安装到系统默认路径，配置外部项目时通过`CMAKE_PREFIX_PATH`指定MRCZ安装目录；MRCZ会自动传递C++20、OpenMP、Zstd、tinyxml2和MFEM依赖。
+
 submodule中提供了三个可直接测试的NekRS小数据：
 
 - `third_party/pySEMTools/examples/data/mixlay0.f00001`
@@ -213,8 +228,6 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 | partition级OpenMP与独立`partition_num` | **采纳** | partition边界决定bitstream，`max_cpus`只决定并发度；固定partition时不同线程数可产生相同结果，并避免实现partition内并行Huffman。 |
 | 每线程复用partition-local QB缓冲区 | **采纳** | 避免同时为整个field保留两份完整`int64_t`数组；pb0/T样例的峰值RSS由约595 MB降至245 MB，同时略微缩短压缩时间。 |
 
-说明：2026-08-29以前的详细算法与实验记录见experiments/TODO_history_2026-08-24.txt和experiments/TODO_history_2026-08-29.txt。本文件只保留投稿前仍需完成的工作。
-
 # 4. 消融实验
 
 # 5. Rate-distortion结果
@@ -272,6 +285,8 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 | SZ2（MFEM ex1） | `5x5x1` per-element布局在REL `1e-4`会触发官方库allocator断言；失败保留在原始结果中 |
 | QoZ | 删除长度为1的维度；q4自动调优只用于2D/3D，1D通过官方API固定使用插值后端，以避开默认路径的heap corruption |
 
+完整布局矩阵包含25种方法、18个非常数field和5个REL EB，共2250个case；其中2249个成功并满足error bound，唯一失败是上表所列MFEM ex1的per-element SZ2案例。
+
 在各布局共同覆盖的PSNR范围内插值BR并比较regret后，正式大数据baseline固定为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D。per-element 3D通常因大量独立bitstream、长度metadata及无法利用跨element冗余而明显退化；test0/UZ的RD曲线接近PSNR轴且无法有效区分布局，因此保留原始结果但不用于选择。这些布局在pb0和jicf0实验前即已冻结，不使用大数据结果反向挑选baseline。
 
 ## 5.2. 大数据正式结果
@@ -322,6 +337,8 @@ MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋�
 [ ] 3. 整理速度与扩展性结果。
        绘制single-core throughput、fixed-quality strong/weak scaling、speedup和parallel
        efficiency；明确64--128 CPU后的内存带宽与NUMA瓶颈，不声称近线性扩展。
+       Strong scaling的所有CPU点必须固定element范围、error bound和partition网格，在同一
+       Slurm allocation中运行，并核验申请的CPU数与程序实际使用的CPU数一致。
 
 [ ] 4. 完成新版端到端实验。
        重新测量direct、MRCZ和FDWZ的压缩--传输--解压总时间，并使用
@@ -343,7 +360,9 @@ MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋�
 
 [ ] 8. 让t1在超过error bound、重建数量错误或编解码失败时自动返回非零状态，并处理低于机器精度的EB。
 
-[ ] 9. 清理正式路由中剩余的实验方法和历史注释；完成安装后header-only target及CLI复现检查。
+[ ] 9. 清理正式路由中剩余的实验方法和历史注释。
+
+[ ] 10. 为未显式指定`partition_num`时定义与`max_cpus`无关的默认规则，并在jicf0上验证固定partition时不同线程数产生相同bitstream、BR、PSNR和最大误差。
 
 # 12. 不进入当前论文
 

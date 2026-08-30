@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
+#include <get_max_cpus.hpp>
 #include "read_and_write_data.tpp"
 #include "qoz_3d_gll_decompress.tpp"
 #include "fdwz_decompress.tpp"

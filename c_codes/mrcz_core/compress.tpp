@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "../../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
+#include <get_max_cpus.hpp>
 #include "read_and_write_data.tpp"
 #include "prediction_diagnostics.tpp"
 #include "local_predictability_analysis.tpp"

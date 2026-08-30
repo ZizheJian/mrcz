@@ -3,7 +3,7 @@
 #include "huffman.hpp"
 #include "mrcz.hpp"
 #include "qoz_3d_gll_prediction.tpp"
-#include "../third_party/zstd/lib/zstd.h"
+#include <zstd.h>
 
 template<typename T>
 void qoz_3d_gll_decompress(mrcz::param_class<T> &params,string field)
