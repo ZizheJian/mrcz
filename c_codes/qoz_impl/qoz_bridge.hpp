@@ -3,10 +3,8 @@
 #include <cstddef>
 #include <vector>
 
-void qoz_compress_4d(const float *data,size_t n0,size_t n1,size_t n2,size_t element_num,
-    double abs_eb,std::vector<unsigned char> &compressed);
-void qoz_compress_4d(const double *data,size_t n0,size_t n1,size_t n2,size_t element_num,
-    double abs_eb,std::vector<unsigned char> &compressed);
+void qoz_compress_nd(const float *data,const std::vector<size_t> &dims,double abs_eb,std::vector<unsigned char> &compressed);
+void qoz_compress_nd(const double *data,const std::vector<size_t> &dims,double abs_eb,std::vector<unsigned char> &compressed);
 
-void qoz_decompress_4d(const std::vector<unsigned char> &compressed,float *data);
-void qoz_decompress_4d(const std::vector<unsigned char> &compressed,double *data);
+void qoz_decompress_nd(const unsigned char *compressed,size_t compressed_size,float *data);
+void qoz_decompress_nd(const unsigned char *compressed,size_t compressed_size,double *data);

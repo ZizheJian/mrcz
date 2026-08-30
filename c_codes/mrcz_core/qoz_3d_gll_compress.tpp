@@ -11,10 +11,10 @@ void qoz_3d_gll_compress(mrcz::param_class<T> &params,string field)
     auto &header=params.header;
     auto &blocks=params.partitions;
     auto &data=params.data;
-    uint32_t n0=header.element_shape[0],n1=header.element_shape[1],n2=header.element_shape[2];
+    uint32_t n0=header.c_element_shape[0],n1=header.c_element_shape[1],n2=header.c_element_shape[2];
     uint32_t n12=n1*n2,n012=n0*n12,corner_num=1;
     for (uint32_t dim=0;dim<3;dim++)
-        if (header.element_shape[dim]>1)
+        if (header.c_element_shape[dim]>1)
             corner_num*=2;
     T abs_eb=params.abs_eb[field],neg_2_eb=1/(2*abs_eb);
     int64_t *corner_qb=new int64_t[corner_num*params.element_num_to_process];

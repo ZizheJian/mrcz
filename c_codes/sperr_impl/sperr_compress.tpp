@@ -1,36 +1,62 @@
 #pragma once
 
-
-#include "../mrcz_core/mrcz.hpp"
+#include "../baseline_api_layout.hpp"
 #include "../third_party/sperr/include/SPERR_C_API.h"
+
+template<typename T>
+vector<unsigned char> sperr_compress_field(mrcz::param_class<T> &params,mrcz::partition_class &partition,mrcz::baseline::api_layout layout,T *data,T abs_eb)
+{
+    auto &header=params.header;
+    size_t n0=header.c_element_shape[0];
+    size_t n1=header.c_element_shape[1];
+    size_t n2=header.c_element_shape[2];
+    int is_float=is_same<T,float>::value?1:0;
+    void *compressed=nullptr;
+    size_t compressed_size=0;
+    int status;
+    if (layout==mrcz::baseline::api_layout::elements_2d)
+        status=C_API::sperr_comp_2d(data,is_float,header.element_size,partition.element_num,3,abs_eb,0,&compressed,&compressed_size);
+    else
+    {
+        size_t element_num=layout==mrcz::baseline::api_layout::per_element_3d?1:partition.element_num;
+        status=C_API::sperr_comp_3d(data,is_float,n2,n1,element_num*n0,n2,n1,n0,3,abs_eb,0,&compressed,&compressed_size);
+    }
+    if (status!=0)
+        throw runtime_error("SPERR压缩失败，状态码="+to_string(status));
+    vector<unsigned char> output(reinterpret_cast<unsigned char*>(compressed),reinterpret_cast<unsigned char*>(compressed)+compressed_size);
+    free(compressed);
+    return output;
+}
 
 template<typename T>
 void sperr_compress(mrcz::param_class<T> &params,string field)
 {
     auto &header=params.header;
-    auto &blocks=params.partitions;
+    auto &partitions=params.partitions;
     auto &data=params.data;
-
-    uint32_t n0=header.element_shape[0];
-    uint32_t n1=header.element_shape[1];
-    uint32_t n2=header.element_shape[2];
     T abs_eb=params.abs_eb[field];
-    int is_float=is_same<T,float>::value?1:0;
+    auto layout=mrcz::baseline::parse_api_layout(params.method,"SPERR");
+    if (layout==mrcz::baseline::api_layout::flattened_1d or layout==mrcz::baseline::api_layout::elements_4d)
+        throw runtime_error("SPERR官方API只支持2D和3D");
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-    for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+    for (uint64_t partition_id=0;partition_id<partitions.size();partition_id++)
     {
-        auto &block=blocks[block_id];
-        uint64_t begin_index=block.begin_index;
-        uint64_t end_index=block.end_index;
-
-        void *temp_zstd_bs=nullptr;
-        size_t block_zstd_bs_len=0;
-        C_API::sperr_comp_3d((const void*)(data.data()+begin_index*header.element_size),
-            is_float,n2,n1,(end_index-begin_index)*n0,n2,n1,n0,3,abs_eb,0,&temp_zstd_bs,&block_zstd_bs_len);
-        block.zstd_bs.resize(block_zstd_bs_len);
-        memcpy(block.zstd_bs.data(),temp_zstd_bs,block_zstd_bs_len);
-        free(temp_zstd_bs);
+        auto &partition=partitions[partition_id];
+        uint64_t begin=partition.begin_index*header.element_size;
+        if (layout==mrcz::baseline::api_layout::per_element_3d)
+        {
+            partition.zstd_bs.clear();
+            mrcz::baseline::append_uint64(partition.zstd_bs,partition.element_num);
+            for (uint64_t element_id=0;element_id<partition.element_num;element_id++)
+            {
+                vector<unsigned char> compressed=sperr_compress_field(params,partition,layout,data.data()+begin+element_id*header.element_size,abs_eb);
+                mrcz::baseline::append_uint64(partition.zstd_bs,compressed.size());
+                partition.zstd_bs.insert(partition.zstd_bs.end(),compressed.begin(),compressed.end());
+            }
+        }
+        else
+            partition.zstd_bs=sperr_compress_field(params,partition,layout,data.data()+begin,abs_eb);
     }
     double end_time=omp_get_wtime();
     printf("Compression time= %f seconds\n",end_time-start_time);

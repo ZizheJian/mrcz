@@ -15,9 +15,9 @@ void sz2_1_decompress(mrcz::param_class<T> &params,string field)
     auto &x1=params.x[1];
     auto &x2=params.x[2];
 
-    uint32_t n0=header.element_shape[0];
-    uint32_t n1=header.element_shape[1];
-    uint32_t n2=header.element_shape[2];
+    uint32_t n0=header.c_element_shape[0];
+    uint32_t n1=header.c_element_shape[1];
+    uint32_t n2=header.c_element_shape[2];
     uint32_t n12=n1*n2;
     uint32_t n012=header.element_size;
     T abs_eb=params.abs_eb[field];

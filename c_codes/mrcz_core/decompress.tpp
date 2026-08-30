@@ -41,6 +41,11 @@ namespace mrcz
             {
                 uint64_t partition_num=0;
                 compressed_file.read(reinterpret_cast<char*>(&partition_num),sizeof(partition_num));
+                if (partition_num==0 or partition_num>params.element_num_to_process)
+                    throw runtime_error("bitstream中的partition数量无效: "+to_string(partition_num));
+                if (params.partition_num!=0 and params.partition_num!=partition_num)
+                    throw runtime_error("命令行指定的partition数量与bitstream不一致: requested="+to_string(params.partition_num)+", stored="+to_string(partition_num));
+                params.partition_num=partition_num;
                 params.partitions.resize(partition_num);
                 for (uint64_t i=0;i<partition_num;i++)
                 {
@@ -63,6 +68,7 @@ namespace mrcz
                 br=static_cast<double>(compressed_file.tellg())*8/(params.element_num_to_process*params.header.element_size);
                 cr=(params.header.word_size*8)/br;
                 compressed_file.close();
+                printf("Max CPUs= %d, partition num= %lu\n",params.max_cpus,params.partition_num);
 
                 T data_range=params.data_range_max[field]-params.data_range_min[field];
                 if (params.eb_mode=="ABS")

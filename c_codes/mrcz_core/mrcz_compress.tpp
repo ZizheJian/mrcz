@@ -5,9 +5,9 @@ namespace mrcz
     template<typename T>
     void param_class<T>::compress_mrcz(string field)
     {
-        uint32_t n0=header.element_shape[0];
-        uint32_t n1=header.element_shape[1];
-        uint32_t n2=header.element_shape[2];
+        uint32_t n0=header.c_element_shape[0];
+        uint32_t n1=header.c_element_shape[1];
+        uint32_t n2=header.c_element_shape[2];
         uint32_t n12=n1*n2;
         uint32_t n012=n0*n1*n2;
         vector<T> L0=L[0];
@@ -23,27 +23,40 @@ namespace mrcz
         bool element_batched=method=="MRCZ-3D-GLL-element-batched" or method=="MRCZ-3D-GLL-element-batched-original-transpose";
         bool direct_coefficient_major=method=="MRCZ-3D-GLL-element-batched";
         uint32_t batch_width=is_same_v<T,float>?8:4;
-        int64_t *coeff_qb=new int64_t[element_num_to_process*n012];
-        int64_t *err_qb=new int64_t[element_num_to_process*n012];
         char *profile_env=getenv("MRCZ_PROFILE_PHASES");
         bool profile_phases=profile_env!=nullptr and string(profile_env)!="0";
         uint64_t profile_block_num=profile_phases?partitions.size():0;
         vector<double> packing_time_by_block(profile_block_num,0),forward_time_by_block(profile_block_num,0),coeff_quant_time_by_block(profile_block_num,0),inverse_time_by_block(profile_block_num,0),residual_quant_time_by_block(profile_block_num,0);
         vector<double> coeff_huffman_time_by_block(profile_block_num,0),residual_huffman_time_by_block(profile_block_num,0),zstd_time_by_block(profile_block_num,0);
+        vector<int64_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
+        vector<uint64_t> qb_capacity_by_thread(max_cpus,0);
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
         for (uint64_t block_id=0;block_id<partitions.size();block_id++)
         {
+            int thread_id=omp_get_thread_num();
+            int64_t *&coeff_qb=coeff_qb_by_thread[thread_id];
+            int64_t *&err_qb=err_qb_by_thread[thread_id];
+            uint64_t &qb_capacity=qb_capacity_by_thread[thread_id];
             auto &block=partitions[block_id];
             uint64_t begin_index=block.begin_index;
             uint64_t end_index=block.end_index;
             uint64_t block_element_num=end_index-begin_index;
+            uint64_t block_value_num=block_element_num*n012;
+            if (block_value_num>qb_capacity)
+            {
+                delete[] coeff_qb;
+                delete[] err_qb;
+                coeff_qb=new int64_t[block_value_num];
+                err_qb=new int64_t[block_value_num];
+                qb_capacity=block_value_num;
+            }
             double phase_start_time=0;
             // 然后量化剩余的数据
             if (element_batched)
             {
                 vector<T> element_batch(n012*batch_width,0),temp_element1(n012*batch_width,0),temp_element2(n012*batch_width,0);
-                int64_t *block_coeff_qb=coeff_qb+begin_index*n012;
+                int64_t *block_coeff_qb=coeff_qb;
                 uint64_t full_batch_end=begin_index+(block_element_num/batch_width)*batch_width;
                 for (uint64_t batch_begin=begin_index;batch_begin<full_batch_end;batch_begin+=batch_width)
                 {
@@ -68,7 +81,7 @@ namespace mrcz
                             if (direct_coefficient_major)
                                 block_coeff_qb[pos*block_element_num+local_batch_begin+lane]=qb;
                             else
-                                coeff_qb[(batch_begin+lane)*n012+pos]=qb;
+                                coeff_qb[(local_batch_begin+lane)*n012+pos]=qb;
                             temp_element1[batch_pos]=qb*2*coeff_eb;
                         }
                     if (profile_phases) coeff_quant_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
@@ -79,7 +92,7 @@ namespace mrcz
                     for (uint32_t lane=0;lane<batch_width;lane++)
                     {
                         T *element=data.data()+(batch_begin+lane)*n012;
-                        int64_t *element_err_qb=err_qb+(batch_begin+lane)*n012;
+                        int64_t *element_err_qb=err_qb+(local_batch_begin+lane)*n012;
                         for (uint32_t pos=0;pos<n012;pos++)
                             element_err_qb[pos]=static_cast<int64_t>(round((temp_element2[pos*batch_width+lane]-element[pos])*neg_2_eb));
                     }
@@ -89,19 +102,19 @@ namespace mrcz
                 for (uint64_t element_id=full_batch_end;element_id<end_index;element_id++)
                 {
                     T *element=data.data()+element_id*n012;
-                    int64_t *element_err_qb=err_qb+element_id*n012;
+                    uint64_t local_element_id=element_id-begin_index;
+                    int64_t *element_err_qb=err_qb+local_element_id*n012;
                     if (profile_phases) phase_start_time=omp_get_wtime();
                     forward_transform(scalar_temp_element1,scalar_temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
                     if (profile_phases) forward_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
                     if (profile_phases) phase_start_time=omp_get_wtime();
-                    uint64_t local_element_id=element_id-begin_index;
                     for (uint32_t pos=0;pos<n012;pos++)
                     {
                         int64_t qb=static_cast<int64_t>(round(scalar_temp_element1[pos]*neg_2_coeff_eb));
                         if (direct_coefficient_major)
                             block_coeff_qb[pos*block_element_num+local_element_id]=qb;
                         else
-                            coeff_qb[element_id*n012+pos]=qb;
+                            coeff_qb[local_element_id*n012+pos]=qb;
                         scalar_temp_element1[pos]=qb*2*coeff_eb;
                     }
                     if (profile_phases) coeff_quant_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
@@ -119,8 +132,9 @@ namespace mrcz
                 for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
                 {
                     T *element=data.data()+element_id*n012;
-                    int64_t *element_f_qb=coeff_qb+element_id*n012;
-                    int64_t *element_err_qb=err_qb+element_id*n012;
+                    uint64_t local_element_id=element_id-begin_index;
+                    int64_t *element_f_qb=coeff_qb+local_element_id*n012;
+                    int64_t *element_err_qb=err_qb+local_element_id*n012;
                     if (profile_phases) phase_start_time=omp_get_wtime();
                     forward_transform(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
                     if (profile_phases) forward_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
@@ -142,18 +156,18 @@ namespace mrcz
             if (direct_coefficient_major)
             {
                 huffman_encoder_class<int64_t> coeff_encoder;
-                coeff_encoder.preprocess_encode(coeff_qb+begin_index*n012,n012*block_element_num);
+                coeff_encoder.preprocess_encode(coeff_qb,block_value_num);
                 coeff_encoder.save(huffman_bs);
-                coeff_encoder.encode(coeff_qb+begin_index*n012,n012*block_element_num,huffman_bs);
+                coeff_encoder.encode(coeff_qb,block_value_num,huffman_bs);
             }
             else
-                lossless_compress_coeff_qb(begin_index,end_index,coeff_qb,huffman_bs,n012);
+                lossless_compress_coeff_qb(0,block_element_num,coeff_qb,huffman_bs,n012);
             if (profile_phases) coeff_huffman_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
             if (profile_phases) phase_start_time=omp_get_wtime();
             huffman_encoder_class<int64_t> err_encoder;
-            err_encoder.preprocess_encode(err_qb+begin_index*n012,n012*(end_index-begin_index));
+            err_encoder.preprocess_encode(err_qb,block_value_num);
             err_encoder.save(huffman_bs);
-            err_encoder.encode(err_qb+begin_index*n012,n012*(end_index-begin_index),huffman_bs);
+            err_encoder.encode(err_qb,block_value_num,huffman_bs);
             if (profile_phases) residual_huffman_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
             uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
             uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
@@ -162,11 +176,13 @@ namespace mrcz
             uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
             if (profile_phases) zstd_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
             block.zstd_bs.resize(zstd_bs_len);
-
+        }
+        for (int thread_id=0;thread_id<max_cpus;thread_id++)
+        {
+            delete[] coeff_qb_by_thread[thread_id];
+            delete[] err_qb_by_thread[thread_id];
         }
         double end_time=omp_get_wtime();
-        delete[] coeff_qb;
-        delete[] err_qb;
         if (profile_phases)
         {
             double packing_time=0,forward_time=0,coeff_quant_time=0,inverse_time=0,residual_quant_time=0,coeff_huffman_time=0,residual_huffman_time=0,zstd_time=0;

@@ -28,15 +28,23 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 #   "SZ3-3D-GLL-reference-EB-0.5": 所有之后还会作为reference的节点使用0.5倍EB，叶子节点使用完整EB
 #   "SZ3-3D-GLL-experimental": 角点和四个预测层分别使用一棵Huffman tree，要求element至少有4个预测层
 #   "QoZ-3D-GLL": 项目内实现的逐element QoZ式分阶段多维插值，使用真实GLL坐标
-#   "SZ3-1D-uniform": 把每个partition展平为一维数组，调用官方SZ3 API
-#   "SZ3-4D-uniform": 把每个partition视为[element,n0,n1,n2]四维数组，调用官方SZ3 API
-#   "QoZ-4D-uniform": 把每个partition视为[element,n0,n1,n2]四维数组，调用QoZ 2.0 q4 API
+#   "SZ3-1D-uniform"/"SZ3-2D-uniform"/"SZ3-3D-uniform-fused"/"SZ3-3D-uniform-per-element"/"SZ3-4D-uniform": 官方SZ3 API的五种tensorization
+#   "QoZ-1D-uniform"/"QoZ-2D-uniform"/"QoZ-3D-uniform-fused"/"QoZ-3D-uniform-per-element"/"QoZ-4D-uniform": 官方QoZ 2.0 q4 API的五种tensorization
 #   "SZ2-3D-uniform": 项目内实现的逐element 3D线性拟合，假定点等间距
 #   "SZ2-3D-GLL": 项目内实现的逐element 3D线性拟合，使用真实GLL坐标
-#   "ZFP-4D-uniform": 把partition视为[element,n0,n1,n2]四维规则数组
-#   "SPERR-3D-uniform": 把partition重组为SPERR接收的三维规则数组
+#   "SZ2-1D-uniform"/"SZ2-2D-uniform"/"SZ2-3D-uniform-fused"/"SZ2-3D-uniform-per-element"/"SZ2-4D-uniform": 官方SZ2 API的五种tensorization
+#   "ZFP-1D-uniform"/"ZFP-2D-uniform"/"ZFP-3D-uniform-fused"/"ZFP-3D-uniform-per-element"/"ZFP-4D-uniform": 官方ZFP API的五种tensorization
+#   "SPERR-2D-uniform"/"SPERR-3D-uniform-fused"/"SPERR-3D-uniform-per-element": 官方SPERR API支持的三种tensorization
+# 正式方法、外部baseline、消融与诊断入口的分类以及统一实验口径见BASELINES.md。
 # MRCZ-prediction-diagnostics是角点/中心点预测诊断入口，不写bitstream，也不能解压，不加入正式t1。
-method_list=os.environ.get("MRCZ_T1_METHODS","SZ3-3D-GLL,SZ3-3D-GLL-optimized").split(",")
+formal_method_list=["MRCZ-3D-GLL","SZ3-3D-GLL-optimized","SZ3-4D-uniform","SZ2-3D-uniform-fused","QoZ-4D-uniform","ZFP-3D-uniform-fused","SPERR-2D-uniform"]
+method_list=os.environ.get("MRCZ_T1_METHODS",",".join(formal_method_list)).split(",")
+official_uniform_methods={
+    "SZ3-1D-uniform","SZ3-2D-uniform","SZ3-3D-uniform-fused","SZ3-3D-uniform-per-element","SZ3-4D-uniform",
+    "SZ2-1D-uniform","SZ2-2D-uniform","SZ2-3D-uniform-fused","SZ2-3D-uniform-per-element","SZ2-4D-uniform",
+    "QoZ-1D-uniform","QoZ-2D-uniform","QoZ-3D-uniform-fused","QoZ-3D-uniform-per-element","QoZ-4D-uniform",
+    "ZFP-1D-uniform","ZFP-2D-uniform","ZFP-3D-uniform-fused","ZFP-3D-uniform-per-element","ZFP-4D-uniform",
+    "SPERR-2D-uniform","SPERR-3D-uniform","SPERR-3D-uniform-fused","SPERR-3D-uniform-per-element"}
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
@@ -45,7 +53,7 @@ project_root=os.path.dirname(os.path.abspath(__file__))
 # format="nekrs"
 # data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001") #1600*8*8*1
 # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7]
-# fields=["UX","UY","UZ","P","T"]
+# fields=["UX","UY","P","T","S00","S01"]
 
 # format="nekrs"
 # data_path=os.path.join(project_root,"third_party/fld_pyutils/demos/data/test0.f00001") #512*6*6*6
@@ -81,6 +89,10 @@ elif test_case=="jicf0":
 else:
     raise ValueError(f"未知的MRCZ_T1_DATASET: {test_case}")
 max_cpus_list=[128]
+if "MRCZ_T1_FIELDS" in os.environ:
+    fields=[field for field in os.environ["MRCZ_T1_FIELDS"].split(",") if field]
+if "MRCZ_T1_EBS" in os.environ:
+    eb_list=[float(eb) for eb in os.environ["MRCZ_T1_EBS"].split(",") if eb]
 
 # format="mfem"
 # data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex0examples/sol.gf"
@@ -145,6 +157,15 @@ def parse_field_throughput(output,task):
         throughput[field]=float(segments[1].strip()[len(marker):].split()[0])
     return throughput
 
+def result_method_name(method):
+    if method=="MRCZ-3D-GLL":
+        return "MRCZ"
+    if method=="SZ3-3D-GLL-optimized":
+        return "FDWZ"
+    if method in official_uniform_methods:
+        return method.replace("-uniform","")
+    return method
+
 ######## build sperr ######## sperr的CMakeLists写的有问题，需要手动安装并链接
 sperr_source_path="third_party/sperr"
 sperr_build_path="build/sperr_build"
@@ -187,6 +208,8 @@ for method in method_list:
                 command_list=[f"{command} -format {format} -i {data_path} -mesh {mesh_path}" for command in command_list] # type: ignore
             command_list=[f"{command} -M {eb_mode} {eb} -method {method}" for command in command_list]
             command_list=[f"{command} -max-cpus {max_cpus}" for command in command_list]
+            if "partition_num" in locals():
+                command_list=[f"{command} -partition-num {partition_num}" for command in command_list] # type: ignore
             if "elements" in locals():
                 command_list=[f"{command} -elements {elements}" for command in command_list] # type: ignore
             if "fields" in locals():
@@ -197,7 +220,7 @@ for method in method_list:
                 compression_throughput=parse_field_throughput(compression_output,"compression")
                 decompression_throughput=parse_field_throughput(decompression_output,"decompression")
                 rate_distortion=parse_rate_distortion(decompression_output)
-                csv_method_name=method
+                csv_method_name=result_method_name(method)
                 for field,(br,psnr) in rate_distortion.items():
                     rate_distortion_path=f"{data_path}_{field}.csv"
                     write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_BR",br)
@@ -205,6 +228,8 @@ for method in method_list:
 
                     throughput_path=f"{data_path}_{field}_throughput.csv"
                     throughput_row={f"{eb_mode} EB":eb,"Max CPUs":max_cpus}
+                    if "partition_num" in locals():
+                        throughput_row["Partition Num"]=partition_num # type: ignore
                     if field in compression_throughput:
                         write_csv_item(throughput_path,throughput_row,
                             f"{csv_method_name} Compression Throughput",compression_throughput[field])

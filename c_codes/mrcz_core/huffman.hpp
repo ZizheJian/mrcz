@@ -245,6 +245,12 @@ namespace mrcz
                     tree.usemp=1;
                 else
                     tree.usemp=0;
+                bool profile_huffman=getenv("MRCZ_PROFILE_HUFFMAN")!=nullptr;
+                if (profile_huffman)
+                {
+                    printf("Huffman preprofile: num_bin=%lu,min=%lld,max=%lld,range=%llu,mode=%s\n",num_bin,static_cast<long long>(__minval),static_cast<long long>(__maxval),static_cast<unsigned long long>(tree.maxval),tree.usemp?"map":"vector");
+                    fflush(stdout);
+                }
 
                 if (tree.usemp)
                 {
@@ -270,6 +276,8 @@ namespace mrcz
                 }
 
                 tree.constructHuffmanTree();
+                if (profile_huffman)
+                    printf("Huffman profile complete: symbols=%lu\n",tree.n);
             }
 
             uint64_t encode(const T *bins,uint64_t num_bin,unsigned char*& bytes)

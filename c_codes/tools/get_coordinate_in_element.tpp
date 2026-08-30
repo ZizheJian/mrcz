@@ -13,7 +13,7 @@ void get_coordinate_in_element(mrcz::param_class<T> &params)
 
     vector<T> coordinate(coordinate_float.begin(),coordinate_float.end());
 
-    uint32_t n=params.header.element_shape[0];
+    uint32_t n=params.header.c_element_shape[0];
     uint32_t n2=n*n;
     vector<T> segment_length(n-1,0);
     vector<T> segment_length_2(n-1,0);

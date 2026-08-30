@@ -6,7 +6,8 @@ class nekrs_header_c:
     word_size:int=4  # word size in bytes
     realtype:str="" # "f" for float32, "d" for float64
     np_dtype=np.float32
-    element_shape:Tuple[int, ...]=(0,0,0)
+    file_element_shape:Tuple[int,...]=(0,0,0)
+    c_element_shape:Tuple[int,...]=(0,0,0)
     element_size:int=0
     element_num:int=0
     file_element_num:int=0 # number of elements in the file
@@ -41,8 +42,9 @@ def read_nekrs_header(f)->nekrs_header_c:
         ret.np_dtype=np.float64
     else:
         raise ValueError("Unrecognized word size: {}".format(ret.word_size))
-    ret.element_shape=(int(header[2]),int(header[3]),int(header[4]))
-    ret.element_size=int(np.prod(ret.element_shape))
+    ret.file_element_shape=(int(header[2]),int(header[3]),int(header[4]))
+    ret.c_element_shape=ret.file_element_shape[::-1]
+    ret.element_size=int(np.prod(ret.file_element_shape))
     ret.element_num=int(header[5])
     ret.file_element_num=int(header[6])
     ret.time=float(header[7])

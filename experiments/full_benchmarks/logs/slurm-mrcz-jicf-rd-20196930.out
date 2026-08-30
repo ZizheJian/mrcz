@@ -1,0 +1,1220 @@
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-04, rel_eb=1.000000e-04
+Compression time= 54.730245 seconds
+[91mField= UX, compression bandwidth per cpu= 225.846353 MB/s
+[0m[91mBR= 0.406592 bits/value, CR= 78.702959
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-04, rel_eb=1.000000e-04
+Compression time= 60.291823 seconds
+[91mField= UY, compression bandwidth per cpu= 205.013309 MB/s
+[0m[91mBR= 0.477195 bits/value, CR= 67.058478
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-03, rel_eb=1.000000e-04
+Compression time= 47.302949 seconds
+[91mField= UZ, compression bandwidth per cpu= 261.307729 MB/s
+[0m[91mBR= 0.365371 bits/value, CR= 87.582214
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-03, rel_eb=1.000000e-04
+Compression time= 41.507765 seconds
+[91mField= P, compression bandwidth per cpu= 297.790694 MB/s
+[0m[91mBR= 0.119346 bits/value, CR= 268.128560
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+02, rel_eb=1.000000e-04
+Compression time= 10.635376 seconds
+[91mField= S00, compression bandwidth per cpu= 1162.218111 MB/s
+[0m[91mBR= 0.005424 bits/value, CR= 5900.054125
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 23.649421 seconds
+[91mField= UX, decompression bandwidth per cpu= 522.660847 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000937565708317, rel_eb= 0.000099999997474, BR= 0.406592080151494, CR= 78.702959457737066, max_err= 0.000937565708317 (100.000000%), MSE= 0.000000105210221, PSNR= 89.219455162675160 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 38.739880 seconds
+[91mField= UY, decompression bandwidth per cpu= 319.067234 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000890888644601, rel_eb= 0.000099999997474, BR= 0.477195440865312, CR= 67.058478056650088, max_err= 0.000890888644601 (100.000000%), MSE= 0.000000102140717, PSNR= 88.904479662869917 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 37.213122 seconds
+[91mField= UZ, decompression bandwidth per cpu= 332.157733 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.001044767639470, rel_eb= 0.000099999997474, BR= 0.365370987055376, CR= 87.582214061101880, max_err= 0.001044767639470 (100.000000%), MSE= 0.000000104461017, PSNR= 90.190851983119643 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 28.440556 seconds
+[91mField= P, decompression bandwidth per cpu= 434.612675 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.004037693112416, rel_eb= 0.000099999997474, BR= 0.119345734791980, CR= 268.128559900160042, max_err= 0.004037693112415 (100.000000%), MSE= 0.000000753979541, PSNR= 93.349070743117949 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 15.619625 seconds
+[91mField= S00, decompression bandwidth per cpu= 791.352285 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 100.763610735747022, rel_eb= 0.000099999997474, BR= 0.005423679058250, CR= 5900.054124944406794, max_err= 100.763610240191326 (100.000000%), MSE= 11.098410495419170, PSNR= 109.613466809653517 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-05, rel_eb=1.000000e-05
+Compression time= 74.643265 seconds
+[91mField= UX, compression bandwidth per cpu= 165.596001 MB/s
+[0m[91mBR= 1.008608 bits/value, CR= 31.726905
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-05, rel_eb=1.000000e-05
+Compression time= 77.508643 seconds
+[91mField= UY, compression bandwidth per cpu= 159.474167 MB/s
+[0m[91mBR= 1.148185 bits/value, CR= 27.870079
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-04, rel_eb=1.000000e-05
+Compression time= 70.567095 seconds
+[91mField= UZ, compression bandwidth per cpu= 175.161331 MB/s
+[0m[91mBR= 0.948309 bits/value, CR= 33.744271
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-04, rel_eb=1.000000e-05
+Compression time= 48.768108 seconds
+[91mField= P, compression bandwidth per cpu= 253.457161 MB/s
+[0m[91mBR= 0.368996 bits/value, CR= 86.721747
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+01, rel_eb=1.000000e-05
+Compression time= 15.835569 seconds
+[91mField= S00, compression bandwidth per cpu= 780.560897 MB/s
+[0m[91mBR= 0.028901 bits/value, CR= 1107.232828
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 32.041602 seconds
+[91mField= UX, decompression bandwidth per cpu= 385.768048 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000093756570832, rel_eb= 0.000009999999747, BR= 1.008607669004748, CR= 31.726905300627219, max_err= 0.000093756570832 (100.000000%), MSE= 0.000000002276894, PSNR= 105.866606086533238 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 32.729538 seconds
+[91mField= UY, decompression bandwidth per cpu= 377.659662 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000089088864460, rel_eb= 0.000009999999747, BR= 1.148184757785168, CR= 27.870079081808701, max_err= 0.000089088864460 (100.000000%), MSE= 0.000000002062468, PSNR= 105.852596892322055 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 29.978920 seconds
+[91mField= UZ, decompression bandwidth per cpu= 412.310587 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000104476763947, rel_eb= 0.000009999999747, BR= 0.948309113084613, CR= 33.744271312454217, max_err= 0.000104476763947 (100.000000%), MSE= 0.000000002552556, PSNR= 106.310640927900550 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 22.810219 seconds
+[91mField= P, decompression bandwidth per cpu= 541.889846 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000403769311242, rel_eb= 0.000009999999747, BR= 0.368996257095101, CR= 86.721746859759307, max_err= 0.000403769311242 (100.000000%), MSE= 0.000000019575033, PSNR= 109.205641254845943 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 8.443966 seconds
+[91mField= S00, decompression bandwidth per cpu= 1463.841353 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 10.076361073574702, rel_eb= 0.000009999999747, BR= 0.028900877212474, CR= 1107.232827735357887, max_err= 10.076360888376001 (99.999998%), MSE= 0.398503749149100, PSNR= 124.061750533102909 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-06, rel_eb=1.000000e-06
+Compression time= 104.970398 seconds
+[91mField= UX, compression bandwidth per cpu= 117.753447 MB/s
+[0m[91mBR= 2.152951 bits/value, CR= 14.863321
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-06, rel_eb=1.000000e-06
+Compression time= 104.902258 seconds
+[91mField= UY, compression bandwidth per cpu= 117.829935 MB/s
+[0m[91mBR= 2.233467 bits/value, CR= 14.327501
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-05, rel_eb=1.000000e-06
+Compression time= 101.125155 seconds
+[91mField= UZ, compression bandwidth per cpu= 122.230975 MB/s
+[0m[91mBR= 2.025771 bits/value, CR= 15.796453
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-05, rel_eb=1.000000e-06
+Compression time= 75.417995 seconds
+[91mField= P, compression bandwidth per cpu= 163.894921 MB/s
+[0m[91mBR= 0.984406 bits/value, CR= 32.506919
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+00, rel_eb=1.000000e-06
+Compression time= 23.207365 seconds
+[91mField= S00, compression bandwidth per cpu= 532.616533 MB/s
+[0m[91mBR= 0.087453 bits/value, CR= 365.909117
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 58.112898 seconds
+[91mField= UX, decompression bandwidth per cpu= 212.700222 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000009375657296, rel_eb= 0.000000999999997, BR= 2.152950929924228, CR= 14.863320642949450, max_err= 0.000009375657296 (100.000000%), MSE= 0.000000000028874, PSNR= 124.835027271008386 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 58.874142 seconds
+[91mField= UY, decompression bandwidth per cpu= 209.950001 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000008908886649, rel_eb= 0.000000999999997, BR= 2.233467018736745, CR= 14.327500577151701, max_err= 0.000008908886649 (100.000000%), MSE= 0.000000000026136, PSNR= 124.824010944158601 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 56.545619 seconds
+[91mField= UZ, decompression bandwidth per cpu= 218.595647 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000010447676632, rel_eb= 0.000000999999997, BR= 2.025771277895875, CR= 15.796452614945608, max_err= 0.000010447676632 (100.000000%), MSE= 0.000000000034745, PSNR= 124.971508667214252 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 43.581099 seconds
+[91mField= P, decompression bandwidth per cpu= 283.623552 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000040376932042, rel_eb= 0.000000999999997, BR= 0.984405813847267, CR= 32.506918945284575, max_err= 0.000040376932042 (100.000000%), MSE= 0.000000000414442, PSNR= 125.948024881660743 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 10.536067 seconds
+[91mField= S00, decompression bandwidth per cpu= 1173.172685 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 1.007636130268463, rel_eb= 0.000000999999997, BR= 0.087453409969064, CR= 365.909116766512284, max_err= 1.007636130245449 (100.000000%), MSE= 0.011392132333600, PSNR= 139.500024437467090 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-07, rel_eb=1.000000e-07
+Compression time= 107.107970 seconds
+[91mField= UX, compression bandwidth per cpu= 115.403421 MB/s
+[0m[91mBR= 3.115856 bits/value, CR= 10.270052
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-07, rel_eb=1.000000e-07
+Compression time= 112.600399 seconds
+[91mField= UY, compression bandwidth per cpu= 109.774266 MB/s
+[0m[91mBR= 3.285925 bits/value, CR= 9.738505
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-06, rel_eb=1.000000e-07
+Compression time= 112.303824 seconds
+[91mField= UZ, compression bandwidth per cpu= 110.064161 MB/s
+[0m[91mBR= 3.047741 bits/value, CR= 10.499580
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-06, rel_eb=1.000000e-07
+Compression time= 97.198345 seconds
+[91mField= P, compression bandwidth per cpu= 127.169101 MB/s
+[0m[91mBR= 1.998431 bits/value, CR= 16.012560
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-01, rel_eb=1.000000e-07
+Compression time= 28.117059 seconds
+[91mField= S00, compression bandwidth per cpu= 439.613058 MB/s
+[0m[91mBR= 0.227981 bits/value, CR= 140.362271
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 67.716489 seconds
+[91mField= UX, decompression bandwidth per cpu= 182.534955 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000937565743, rel_eb= 0.000000100000001, BR= 3.115855624109640, CR= 10.270052229760820, max_err= 0.000000937565743 (100.000000%), MSE= 0.000000000000290, PSNR= 144.810545250968545 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 69.161625 seconds
+[91mField= UY, decompression bandwidth per cpu= 178.720875 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000890888678, rel_eb= 0.000000100000001, BR= 3.285925186342841, CR= 9.738505347900285, max_err= 0.000000890888678 (100.000000%), MSE= 0.000000000000262, PSNR= 144.807907319189439 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 67.538627 seconds
+[91mField= UZ, decompression bandwidth per cpu= 183.015657 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000001044767678, rel_eb= 0.000000100000001, BR= 3.047741013695180, CR= 10.499579805569555, max_err= 0.000001044767678 (100.000000%), MSE= 0.000000000000362, PSNR= 144.795615438717931 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 56.917370 seconds
+[91mField= P, decompression bandwidth per cpu= 217.167910 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000004037693262, rel_eb= 0.000000100000001, BR= 1.998431204371002, CR= 16.012560217238935, max_err= 0.000004037693262 (100.000000%), MSE= 0.000000000005396, PSNR= 144.802241177122426 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 12.404361 seconds
+[91mField= S00, decompression bandwidth per cpu= 996.474206 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.100763614458783, rel_eb= 0.000000100000001, BR= 0.227981492866013, CR= 140.362270628724531, max_err= 0.100763614458387 (100.000000%), MSE= 0.000256216164430, PSNR= 155.980009394397683 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-08, rel_eb=1.000000e-08
+Compression time= 111.516723 seconds
+[91mField= UX, compression bandwidth per cpu= 110.841010 MB/s
+[0m[91mBR= 4.493112 bits/value, CR= 7.122013
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-08, rel_eb=1.000000e-08
+Compression time= 112.499395 seconds
+[91mField= UY, compression bandwidth per cpu= 109.872824 MB/s
+[0m[91mBR= 4.696107 bits/value, CR= 6.814155
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-07, rel_eb=1.000000e-08
+Compression time= 112.036771 seconds
+[91mField= UZ, compression bandwidth per cpu= 110.326513 MB/s
+[0m[91mBR= 4.289533 bits/value, CR= 7.460020
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-07, rel_eb=1.000000e-08
+Compression time= 112.305372 seconds
+[91mField= P, compression bandwidth per cpu= 110.062644 MB/s
+[0m[91mBR= 2.914574 bits/value, CR= 10.979305
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-02, rel_eb=1.000000e-08
+Compression time= 35.402807 seconds
+[91mField= S00, compression bandwidth per cpu= 349.142544 MB/s
+[0m[91mBR= 0.463643 bits/value, CR= 69.018625
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 72.041236 seconds
+[91mField= UX, decompression bandwidth per cpu= 171.577097 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000093756573, rel_eb= 0.000000010000000, BR= 4.493111951371864, CR= 7.122012615383325, max_err= 0.000000093756573 (100.000000%), MSE= 0.000000000000003, PSNR= 164.821854449163880 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 82.482279 seconds
+[91mField= UY, decompression bandwidth per cpu= 149.857962 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000089088866, rel_eb= 0.000000010000000, BR= 4.696106991282192, CR= 6.814154800860478, max_err= 0.000000089088866 (100.000000%), MSE= 0.000000000000003, PSNR= 164.821043323408219 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 78.799863 seconds
+[91mField= UZ, decompression bandwidth per cpu= 156.861012 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000000104476766, rel_eb= 0.000000010000000, BR= 4.289532702273642, CR= 7.460020058371063, max_err= 0.000000104476766 (100.000000%), MSE= 0.000000000000004, PSNR= 164.816235202908672 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 65.924974 seconds
+[91mField= P, decompression bandwidth per cpu= 187.495351 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000000403769319, rel_eb= 0.000000010000000, BR= 2.914574150748211, CR= 10.979305498810234, max_err= 0.000000403769319 (100.000000%), MSE= 0.000000000000054, PSNR= 164.801085379538279 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SZ2-3D-uniform-fused
+Decompression time= 19.855405 seconds
+[91mField= S00, decompression bandwidth per cpu= 622.532067 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.010076361266886, rel_eb= 0.000000010000000, BR= 0.463642964894219, CR= 69.018625155459631, max_err= 0.010076361266886 (100.000000%), MSE= 0.000004337437743, PSNR= 173.693742106860668 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-04, rel_eb=1.000000e-04
+Compression time= 1.800711 seconds
+[91mField= UX, compression bandwidth per cpu= 53.627382 MB/s
+[0m[91mBR= 0.583914 bits/value, CR= 54.802594
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-04, rel_eb=1.000000e-04
+Compression time= 1.832039 seconds
+[91mField= UY, compression bandwidth per cpu= 52.710333 MB/s
+[0m[91mBR= 0.701559 bits/value, CR= 45.612692
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-03, rel_eb=1.000000e-04
+Compression time= 1.786826 seconds
+[91mField= UZ, compression bandwidth per cpu= 54.044090 MB/s
+[0m[91mBR= 0.518144 bits/value, CR= 61.758850
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-03, rel_eb=1.000000e-04
+Compression time= 1.847920 seconds
+[91mField= P, compression bandwidth per cpu= 52.257341 MB/s
+[0m[91mBR= 0.166352 bits/value, CR= 192.362986
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+02, rel_eb=1.000000e-04
+Compression time= 1.951803 seconds
+[91mField= S00, compression bandwidth per cpu= 49.475998 MB/s
+[0m[91mBR= 0.005933 bits/value, CR= 5393.691144
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.371007 seconds
+[91mField= UX, decompression bandwidth per cpu= 40.728436 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000937565708317, rel_eb= 0.000099999997474, BR= 0.583913962566013, CR= 54.802594305804611, max_err= 0.000936628142609 (99.900000%), MSE= 0.000000178859032, PSNR= 86.914925749535314 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.257709 seconds
+[91mField= UY, decompression bandwidth per cpu= 42.772293 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000890888644601, rel_eb= 0.000099999997474, BR= 0.701559117405248, CR= 45.612692082676659, max_err= 0.000889997755956 (99.900000%), MSE= 0.000000156211765, PSNR= 87.059331289507483 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.263990 seconds
+[91mField= UZ, decompression bandwidth per cpu= 42.653632 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.001044767639470, rel_eb= 0.000099999997474, BR= 0.518144361076752, CR= 61.758850243011523, max_err= 0.001043722871831 (99.900000%), MSE= 0.000000205001286, PSNR= 87.262828610812136 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.352405 seconds
+[91mField= P, decompression bandwidth per cpu= 41.050494 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.004037693112416, rel_eb= 0.000099999997474, BR= 0.166352168835626, CR= 192.362986452070402, max_err= 0.004033655407424 (99.900000%), MSE= 0.000001816380373, PSNR= 89.530598354342388 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.237680 seconds
+[91mField= S00, decompression bandwidth per cpu= 43.155138 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 100.763610735747022, rel_eb= 0.000099999997474, BR= 0.005932857322737, CR= 5393.691143956124506, max_err= 100.662847125011012 (99.900000%), MSE= 27.076379890445455, PSNR= 105.740168661710072 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-05, rel_eb=1.000000e-05
+Compression time= 1.916542 seconds
+[91mField= UX, compression bandwidth per cpu= 50.386274 MB/s
+[0m[91mBR= 1.430559 bits/value, CR= 22.368880
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-05, rel_eb=1.000000e-05
+Compression time= 2.387268 seconds
+[91mField= UY, compression bandwidth per cpu= 40.451010 MB/s
+[0m[91mBR= 1.631115 bits/value, CR= 19.618480
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-04, rel_eb=1.000000e-05
+Compression time= 1.862807 seconds
+[91mField= UZ, compression bandwidth per cpu= 51.839718 MB/s
+[0m[91mBR= 1.297581 bits/value, CR= 24.661273
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-04, rel_eb=1.000000e-05
+Compression time= 1.806296 seconds
+[91mField= P, compression bandwidth per cpu= 53.461546 MB/s
+[0m[91mBR= 0.537710 bits/value, CR= 59.511660
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+01, rel_eb=1.000000e-05
+Compression time= 1.745702 seconds
+[91mField= S00, compression bandwidth per cpu= 55.317226 MB/s
+[0m[91mBR= 0.024675 bits/value, CR= 1296.859205
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.309424 seconds
+[91mField= UX, decompression bandwidth per cpu= 41.814487 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000093756570832, rel_eb= 0.000009999999747, BR= 1.430558905076870, CR= 22.368879664050251, max_err= 0.000093662814261 (99.900000%), MSE= 0.000000002143234, PSNR= 106.129338475481063 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.253349 seconds
+[91mField= UY, decompression bandwidth per cpu= 42.855049 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000089088864460, rel_eb= 0.000009999999747, BR= 1.631115193083033, CR= 19.618479513709627, max_err= 0.000088999775596 (99.900000%), MSE= 0.000000001957472, PSNR= 106.079512651885665 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.240690 seconds
+[91mField= UZ, decompression bandwidth per cpu= 43.097175 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000104476763947, rel_eb= 0.000009999999747, BR= 1.297581011917547, CR= 24.661273327906393, max_err= 0.000104372287183 (99.900000%), MSE= 0.000000002585402, PSNR= 106.255113752132104 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.264605 seconds
+[91mField= P, decompression bandwidth per cpu= 42.642049 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000403769311242, rel_eb= 0.000009999999747, BR= 0.537709756982764, CR= 59.511659560653506, max_err= 0.000403365541489 (99.900000%), MSE= 0.000000032048803, PSNR= 107.064548263212188 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.049735 seconds
+[91mField= S00, decompression bandwidth per cpu= 47.112125 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 10.076361073574702, rel_eb= 0.000009999999747, BR= 0.024674999321043, CR= 1296.859204883958000, max_err= 10.066284712501101 (99.900000%), MSE= 0.716695575180462, PSNR= 121.512727417528708 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-06, rel_eb=1.000000e-06
+Compression time= 2.448629 seconds
+[91mField= UX, compression bandwidth per cpu= 39.437334 MB/s
+[0m[91mBR= 2.787594 bits/value, CR= 11.479432
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-06, rel_eb=1.000000e-06
+Compression time= 3.131639 seconds
+[91mField= UY, compression bandwidth per cpu= 30.836051 MB/s
+[0m[91mBR= 3.108542 bits/value, CR= 10.294213
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-05, rel_eb=1.000000e-06
+Compression time= 2.351222 seconds
+[91mField= UZ, compression bandwidth per cpu= 41.071144 MB/s
+[0m[91mBR= 2.587726 bits/value, CR= 12.366069
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-05, rel_eb=1.000000e-06
+Compression time= 2.080448 seconds
+[91mField= P, compression bandwidth per cpu= 46.416634 MB/s
+[0m[91mBR= 1.321347 bits/value, CR= 24.217706
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+00, rel_eb=1.000000e-06
+Compression time= 1.873174 seconds
+[91mField= S00, compression bandwidth per cpu= 51.552823 MB/s
+[0m[91mBR= 0.080816 bits/value, CR= 395.960638
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.450396 seconds
+[91mField= UX, decompression bandwidth per cpu= 39.408890 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000009375657296, rel_eb= 0.000000999999997, BR= 2.787594462673412, CR= 11.479431613345490, max_err= 0.000009366281639 (99.900000%), MSE= 0.000000000024036, PSNR= 125.631501392081418 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.713760 seconds
+[91mField= UY, decompression bandwidth per cpu= 35.584354 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000008908886649, rel_eb= 0.000000999999997, BR= 3.108542496537319, CR= 10.294213457157358, max_err= 0.000008899977762 (99.900000%), MSE= 0.000000000021955, PSNR= 125.581226682424017 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.288749 seconds
+[91mField= UZ, decompression bandwidth per cpu= 42.192222 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000010447676632, rel_eb= 0.000000999999997, BR= 2.587726084047473, CR= 12.366069267249753, max_err= 0.000010437228956 (99.900000%), MSE= 0.000000000029457, PSNR= 125.688509479248808 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.216143 seconds
+[91mField= P, decompression bandwidth per cpu= 43.574528 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000040376932042, rel_eb= 0.000000999999997, BR= 1.321347302565470, CR= 24.217705623548177, max_err= 0.000040336555106 (99.900000%), MSE= 0.000000000398972, PSNR= 126.113244673595091 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.187236 seconds
+[91mField= S00, decompression bandwidth per cpu= 44.150419 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 1.007636130268463, rel_eb= 0.000000999999997, BR= 0.080816113748756, CR= 395.960638487055007, max_err= 1.006628489492440 (99.900000%), MSE= 0.019824691477188, PSNR= 137.094010276209360 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-07, rel_eb=1.000000e-07
+Compression time= 3.550272 seconds
+[91mField= UX, compression bandwidth per cpu= 27.200000 MB/s
+[0m[91mBR= 4.838507 bits/value, CR= 6.613611
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-07, rel_eb=1.000000e-07
+Compression time= 2.101879 seconds
+[91mField= UY, compression bandwidth per cpu= 45.943374 MB/s
+[0m[91mBR= 5.250288 bits/value, CR= 6.094904
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-06, rel_eb=1.000000e-07
+Compression time= 1.953248 seconds
+[91mField= UZ, compression bandwidth per cpu= 49.439397 MB/s
+[0m[91mBR= 4.582449 bits/value, CR= 6.983166
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-06, rel_eb=1.000000e-07
+Compression time= 1.833946 seconds
+[91mField= P, compression bandwidth per cpu= 52.655517 MB/s
+[0m[91mBR= 2.641630 bits/value, CR= 12.113735
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-01, rel_eb=1.000000e-07
+Compression time= 1.641809 seconds
+[91mField= S00, compression bandwidth per cpu= 58.817668 MB/s
+[0m[91mBR= 0.214412 bits/value, CR= 149.245568
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.524307 seconds
+[91mField= UX, decompression bandwidth per cpu= 38.255010 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000937565743, rel_eb= 0.000000100000001, BR= 4.838506504408283, CR= 6.613611032835304, max_err= 0.000000936628177 (99.900000%), MSE= 0.000000000000269, PSNR= 145.146934244545548 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.542104 seconds
+[91mField= UY, decompression bandwidth per cpu= 37.987191 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000890888678, rel_eb= 0.000000100000001, BR= 5.250287714828175, CR= 6.094904077280127, max_err= 0.000000889997789 (99.900000%), MSE= 0.000000000000243, PSNR= 145.133895875103548 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.431789 seconds
+[91mField= UZ, decompression bandwidth per cpu= 39.710439 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000001044767678, rel_eb= 0.000000100000001, BR= 4.582448923914842, CR= 6.983165667815455, max_err= 0.000001043722910 (99.900000%), MSE= 0.000000000000332, PSNR= 145.167041628424897 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.298551 seconds
+[91mField= P, decompression bandwidth per cpu= 42.012295 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000004037693262, rel_eb= 0.000000100000001, BR= 2.641629585737459, CR= 12.113734708595272, max_err= 0.000004033655568 (99.900000%), MSE= 0.000000000004511, PSNR= 145.580117632377494 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 1.893562 seconds
+[91mField= S00, decompression bandwidth per cpu= 50.997734 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.100763614458783, rel_eb= 0.000000100000001, BR= 0.214411726945706, CR= 149.245568121855541, max_err= 0.100662850836062 (99.900000%), MSE= 0.000385661276631, PSNR= 154.204014303958331 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-08, rel_eb=1.000000e-08
+Compression time= 2.408729 seconds
+[91mField= UX, compression bandwidth per cpu= 40.090605 MB/s
+[0m[91mBR= 8.040189 bits/value, CR= 3.980006
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-08, rel_eb=1.000000e-08
+Compression time= 2.141566 seconds
+[91mField= UY, compression bandwidth per cpu= 45.091955 MB/s
+[0m[91mBR= 8.417961 bits/value, CR= 3.801396
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-07, rel_eb=1.000000e-08
+Compression time= 2.024026 seconds
+[91mField= UZ, compression bandwidth per cpu= 47.710560 MB/s
+[0m[91mBR= 7.501457 bits/value, CR= 4.265838
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-07, rel_eb=1.000000e-08
+Compression time= 1.833392 seconds
+[91mField= P, compression bandwidth per cpu= 52.671449 MB/s
+[0m[91mBR= 4.692008 bits/value, CR= 6.820107
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-02, rel_eb=1.000000e-08
+Compression time= 1.657620 seconds
+[91mField= S00, compression bandwidth per cpu= 58.256651 MB/s
+[0m[91mBR= 0.480359 bits/value, CR= 66.616869
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.164588 seconds
+[91mField= UX, decompression bandwidth per cpu= 44.612370 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000093756573, rel_eb= 0.000000010000000, BR= 8.040189043855685, CR= 3.980005920937196, max_err= 0.000000093662816 (99.900000%), MSE= 0.000000000000003, PSNR= 164.951560482523689 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 3.142381 seconds
+[91mField= UY, decompression bandwidth per cpu= 30.730645 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000089088866, rel_eb= 0.000000010000000, BR= 8.417960771097663, CR= 3.801395714490523, max_err= 0.000000088999777 (99.900000%), MSE= 0.000000000000002, PSNR= 165.017479926003659 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.992034 seconds
+[91mField= UZ, decompression bandwidth per cpu= 32.274834 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000000104476766, rel_eb= 0.000000010000000, BR= 7.501456905980501, CR= 4.265838010012183, max_err= 0.000000104372289 (99.900000%), MSE= 0.000000000000003, PSNR= 164.963713680455299 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.294097 seconds
+[91mField= P, decompression bandwidth per cpu= 42.093862 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000000403769319, rel_eb= 0.000000010000000, BR= 4.692008461038977, CR= 6.820107053454474, max_err= 0.000000403365550 (99.900000%), MSE= 0.000000000000051, PSNR= 165.076513652799093 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= QoZ-4D-uniform
+Decompression time= 2.298165 seconds
+[91mField= S00, decompression bandwidth per cpu= 42.019353 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.010076361266886, rel_eb= 0.000000010000000, BR= 0.480358810269781, CR= 66.616869131697754, max_err= 0.010066284905610 (99.900000%), MSE= 0.000006477651887, PSNR= 171.951898598604942 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-04, rel_eb=1.000000e-04
+Compression time= 1.083849 seconds
+[91mField= UX, compression bandwidth per cpu= 89.096759 MB/s
+[0m[91mBR= 3.244338 bits/value, CR= 9.863336
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-04, rel_eb=1.000000e-04
+Compression time= 1.331752 seconds
+[91mField= UY, compression bandwidth per cpu= 72.511568 MB/s
+[0m[91mBR= 3.119347 bits/value, CR= 10.258557
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-03, rel_eb=1.000000e-04
+Compression time= 1.140772 seconds
+[91mField= UZ, compression bandwidth per cpu= 84.650882 MB/s
+[0m[91mBR= 2.233640 bits/value, CR= 14.326391
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-03, rel_eb=1.000000e-04
+Compression time= 1.048497 seconds
+[91mField= P, compression bandwidth per cpu= 92.100769 MB/s
+[0m[91mBR= 1.477651 bits/value, CR= 21.655997
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+02, rel_eb=1.000000e-04
+Compression time= 0.995474 seconds
+[91mField= S00, compression bandwidth per cpu= 97.006411 MB/s
+[0m[91mBR= 0.088450 bits/value, CR= 361.788328
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.625897 seconds
+[91mField= UX, decompression bandwidth per cpu= 59.393313 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000937565708317, rel_eb= 0.000099999997474, BR= 3.244338416869736, CR= 9.863336029807533, max_err= 0.000142931938171 (15.245005%), MSE= 0.000000000087579, PSNR= 120.016043387583679 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.478480 seconds
+[91mField= UY, decompression bandwidth per cpu= 65.315298 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000890888644601, rel_eb= 0.000099999997474, BR= 3.119347159367261, CR= 10.258556795740230, max_err= 0.000138878822327 (15.588797%), MSE= 0.000000000092224, PSNR= 119.348008831689683 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.482494 seconds
+[91mField= UZ, decompression bandwidth per cpu= 65.138471 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.001044767639470, rel_eb= 0.000099999997474, BR= 2.233639930573558, CR= 14.326391448322191, max_err= 0.000271856784821 (26.020789%), MSE= 0.000000000300489, PSNR= 115.602106144870106 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.359900 seconds
+[91mField= P, decompression bandwidth per cpu= 71.010681 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.004037693112416, rel_eb= 0.000099999997474, BR= 1.477650724755761, CR= 21.655997228498801, max_err= 0.001081918366253 (26.795458%), MSE= 0.000000002852045, PSNR= 117.571102743419672 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.396513 seconds
+[91mField= S00, decompression bandwidth per cpu= 69.148919 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 100.763610735747022, rel_eb= 0.000099999997474, BR= 0.088449509052349, CR= 361.788328085131695, max_err= 20.039001464843750 (19.887141%), MSE= 0.061518696433190, PSNR= 132.176003406400412 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-05, rel_eb=1.000000e-05
+Compression time= 1.183859 seconds
+[91mField= UX, compression bandwidth per cpu= 81.570018 MB/s
+[0m[91mBR= 4.914412 bits/value, CR= 6.511461
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-05, rel_eb=1.000000e-05
+Compression time= 1.190705 seconds
+[91mField= UY, compression bandwidth per cpu= 81.101034 MB/s
+[0m[91mBR= 4.847865 bits/value, CR= 6.600844
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-04, rel_eb=1.000000e-05
+Compression time= 1.150685 seconds
+[91mField= UZ, compression bandwidth per cpu= 83.921633 MB/s
+[0m[91mBR= 4.217889 bits/value, CR= 7.586734
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-04, rel_eb=1.000000e-05
+Compression time= 1.185452 seconds
+[91mField= P, compression bandwidth per cpu= 81.460386 MB/s
+[0m[91mBR= 2.876567 bits/value, CR= 11.124370
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+01, rel_eb=1.000000e-05
+Compression time= 0.972327 seconds
+[91mField= S00, compression bandwidth per cpu= 99.315776 MB/s
+[0m[91mBR= 0.184280 bits/value, CR= 173.648589
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.587456 seconds
+[91mField= UX, decompression bandwidth per cpu= 60.831551 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000093756570832, rel_eb= 0.000009999999747, BR= 4.914411897302196, CR= 6.511460713654598, max_err= 0.000018537044525 (19.771462%), MSE= 0.000000000001905, PSNR= 136.640800137777120 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.583828 seconds
+[91mField= UY, decompression bandwidth per cpu= 60.970898 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000089088864460, rel_eb= 0.000009999999747, BR= 4.847864904834915, CR= 6.600844006210957, max_err= 0.000018164515495 (20.389210%), MSE= 0.000000000001988, PSNR= 136.012809647459932 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.536611 seconds
+[91mField= UZ, decompression bandwidth per cpu= 62.844407 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000104476763947, rel_eb= 0.000009999999747, BR= 4.217888799184264, CR= 7.586733914414427, max_err= 0.000019356608391 (18.527190%), MSE= 0.000000000001895, PSNR= 137.603848487049845 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.542149 seconds
+[91mField= P, decompression bandwidth per cpu= 62.618710 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000403769311242, rel_eb= 0.000009999999747, BR= 2.876567494500448, CR= 11.124369604112903, max_err= 0.000069856643677 (17.301128%), MSE= 0.000000000020391, PSNR= 139.028356304588669 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.455371 seconds
+[91mField= S00, decompression bandwidth per cpu= 66.352444 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 10.076361073574702, rel_eb= 0.000009999999747, BR= 0.184280219142638, CR= 173.648588811537905, max_err= 2.298165798187256 (22.807497%), MSE= 0.002247590573637, PSNR= 146.548902629304195 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-06, rel_eb=1.000000e-06
+Compression time= 1.283875 seconds
+[91mField= UX, compression bandwidth per cpu= 75.215552 MB/s
+[0m[91mBR= 6.981337 bits/value, CR= 4.583649
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-06, rel_eb=1.000000e-06
+Compression time= 1.321628 seconds
+[91mField= UY, compression bandwidth per cpu= 73.067001 MB/s
+[0m[91mBR= 6.994884 bits/value, CR= 4.574772
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-05, rel_eb=1.000000e-06
+Compression time= 1.406950 seconds
+[91mField= UZ, compression bandwidth per cpu= 68.636000 MB/s
+[0m[91mBR= 6.211959 bits/value, CR= 5.151354
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-05, rel_eb=1.000000e-06
+Compression time= 1.467832 seconds
+[91mField= P, compression bandwidth per cpu= 65.789149 MB/s
+[0m[91mBR= 4.454412 bits/value, CR= 7.183888
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+00, rel_eb=1.000000e-06
+Compression time= 1.147585 seconds
+[91mField= S00, compression bandwidth per cpu= 84.148393 MB/s
+[0m[91mBR= 0.376294 bits/value, CR= 85.039892
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.680203 seconds
+[91mField= UX, decompression bandwidth per cpu= 57.473637 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000009375657296, rel_eb= 0.000000999999997, BR= 6.981337268815134, CR= 4.583649058603784, max_err= 0.000002246350050 (23.959387%), MSE= 0.000000000000040, PSNR= 153.473620557622269 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.654943 seconds
+[91mField= UY, decompression bandwidth per cpu= 58.350870 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000008908886649, rel_eb= 0.000000999999997, BR= 6.994883839094593, CR= 4.574772181512314, max_err= 0.000002255663276 (25.319250%), MSE= 0.000000000000042, PSNR= 152.802202850370691 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.642219 seconds
+[91mField= UZ, decompression bandwidth per cpu= 58.803009 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000010447676632, rel_eb= 0.000000999999997, BR= 6.211959010747273, CR= 5.151354016444248, max_err= 0.000002278015018 (21.804035%), MSE= 0.000000000000039, PSNR= 154.423701467102575 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.576976 seconds
+[91mField= P, decompression bandwidth per cpu= 61.235794 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000040376932042, rel_eb= 0.000000999999997, BR= 4.454412460219291, CR= 7.183887950606317, max_err= 0.000008950009942 (22.166147%), MSE= 0.000000000000454, PSNR= 155.548031442840340 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.500858 seconds
+[91mField= S00, decompression bandwidth per cpu= 64.341466 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 1.007636130268463, rel_eb= 0.000000999999997, BR= 0.376293985922135, CR= 85.039892204446900, max_err= 0.312469482421875 (31.010151%), MSE= 0.000071070223607, PSNR= 161.549197830745641 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-07, rel_eb=1.000000e-07
+Compression time= 1.428876 seconds
+[91mField= UX, compression bandwidth per cpu= 67.582768 MB/s
+[0m[91mBR= 11.361755 bits/value, CR= 2.816466
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-07, rel_eb=1.000000e-07
+Compression time= 1.431923 seconds
+[91mField= UY, compression bandwidth per cpu= 67.438952 MB/s
+[0m[91mBR= 10.592275 bits/value, CR= 3.021070
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-06, rel_eb=1.000000e-07
+Compression time= 1.406336 seconds
+[91mField= UZ, compression bandwidth per cpu= 68.665948 MB/s
+[0m[91mBR= 8.635378 bits/value, CR= 3.705686
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-06, rel_eb=1.000000e-07
+Compression time= 1.371765 seconds
+[91mField= P, compression bandwidth per cpu= 70.396462 MB/s
+[0m[91mBR= 6.485942 bits/value, CR= 4.933748
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-01, rel_eb=1.000000e-07
+Compression time= 1.177450 seconds
+[91mField= S00, compression bandwidth per cpu= 82.014037 MB/s
+[0m[91mBR= 0.875806 bits/value, CR= 36.537752
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.738615 seconds
+[91mField= UX, decompression bandwidth per cpu= 55.542701 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000937565743, rel_eb= 0.000000100000001, BR= 11.361754627400730, CR= 2.816466386523325, max_err= 0.000000159605406 (17.023383%), MSE= 0.000000000000000, PSNR= 174.446760118332520 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.621970 seconds
+[91mField= UY, decompression bandwidth per cpu= 59.537118 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000890888678, rel_eb= 0.000000100000001, BR= 10.592275162764516, CR= 3.021069553828340, max_err= 0.000000152620487 (17.131264%), MSE= 0.000000000000000, PSNR= 175.624928066820331 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.579498 seconds
+[91mField= UZ, decompression bandwidth per cpu= 61.138009 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000001044767678, rel_eb= 0.000000100000001, BR= 8.635378475334109, CR= 3.705685870214495, max_err= 0.000000292900950 (28.035032%), MSE= 0.000000000000001, PSNR= 171.445354254299843 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.466419 seconds
+[91mField= P, decompression bandwidth per cpu= 65.852536 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000004037693262, rel_eb= 0.000000100000001, BR= 6.485941762769947, CR= 4.933747660776680, max_err= 0.000001180917025 (29.247319%), MSE= 0.000000000000010, PSNR= 172.238888404123941 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.364077 seconds
+[91mField= S00, decompression bandwidth per cpu= 70.793190 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.100763614458783, rel_eb= 0.000000100000001, BR= 0.875806489841569, CR= 36.537751627975183, max_err= 0.017933547496796 (17.797642%), MSE= 0.000000556055660, PSNR= 182.614891991137824 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-08, rel_eb=1.000000e-08
+Compression time= 1.501531 seconds
+[91mField= UX, compression bandwidth per cpu= 64.312598 MB/s
+[0m[91mBR= 15.399246 bits/value, CR= 2.078024
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-08, rel_eb=1.000000e-08
+Compression time= 1.530562 seconds
+[91mField= UY, compression bandwidth per cpu= 63.092769 MB/s
+[0m[91mBR= 13.845884 bits/value, CR= 2.311156
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-07, rel_eb=1.000000e-08
+Compression time= 1.420904 seconds
+[91mField= UZ, compression bandwidth per cpu= 67.961917 MB/s
+[0m[91mBR= 12.654114 bits/value, CR= 2.528822
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-07, rel_eb=1.000000e-08
+Compression time= 1.446398 seconds
+[91mField= P, compression bandwidth per cpu= 66.764047 MB/s
+[0m[91mBR= 9.966953 bits/value, CR= 3.210610
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-02, rel_eb=1.000000e-08
+Compression time= 1.156876 seconds
+[91mField= S00, compression bandwidth per cpu= 83.472554 MB/s
+[0m[91mBR= 1.502569 bits/value, CR= 21.296856
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.793842 seconds
+[91mField= UX, decompression bandwidth per cpu= 53.832728 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000093756573, rel_eb= 0.000000010000000, BR= 15.399245636775275, CR= 2.078023869142012, max_err= 0.000000019048457 (20.316930%), MSE= 0.000000000000000, PSNR= 193.957465836421335 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.623587 seconds
+[91mField= UY, decompression bandwidth per cpu= 59.477812 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000089088866, rel_eb= 0.000000010000000, BR= 13.845884187214375, CR= 2.311156121726742, max_err= 0.000000018684659 (20.973058%), MSE= 0.000000000000000, PSNR= 193.343219439700988 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.683540 seconds
+[91mField= UZ, decompression bandwidth per cpu= 57.359732 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000000104476766, rel_eb= 0.000000010000000, BR= 12.654114114158599, CR= 2.528821829115278, max_err= 0.000000018524588 (17.730821%), MSE= 0.000000000000000, PSNR= 194.422634257407452 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.340749 seconds
+[91mField= P, decompression bandwidth per cpu= 72.024982 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000000403769319, rel_eb= 0.000000010000000, BR= 9.966953077897356, CR= 3.210610078115344, max_err= 0.000000076193828 (18.870633%), MSE= 0.000000000000000, PSNR= 194.857878304533244 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= ZFP-3D-uniform-fused
+Decompression time= 1.461612 seconds
+[91mField= S00, decompression bandwidth per cpu= 66.069100 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.010076361266886, rel_eb= 0.000000010000000, BR= 1.502569188189604, CR= 21.296856245638669, max_err= 0.002357631921768 (23.397652%), MSE= 0.000000012837657, PSNR= 198.981217054588626 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-04, rel_eb=1.000000e-04
+Compression time= 8.367001 seconds
+[91mField= UX, compression bandwidth per cpu= 11.541459 MB/s
+[0m[91mBR= 1.601037 bits/value, CR= 19.987051
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-04, rel_eb=1.000000e-04
+Compression time= 8.537605 seconds
+[91mField= UY, compression bandwidth per cpu= 11.310830 MB/s
+[0m[91mBR= 1.874775 bits/value, CR= 17.068715
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-03, rel_eb=1.000000e-04
+Compression time= 7.545026 seconds
+[91mField= UZ, compression bandwidth per cpu= 12.798815 MB/s
+[0m[91mBR= 1.413653 bits/value, CR= 22.636390
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-03, rel_eb=1.000000e-04
+Compression time= 5.805161 seconds
+[91mField= P, compression bandwidth per cpu= 16.634750 MB/s
+[0m[91mBR= 0.537071 bits/value, CR= 59.582388
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+02, rel_eb=1.000000e-04
+Compression time= 4.176676 seconds
+[91mField= S00, compression bandwidth per cpu= 23.120631 MB/s
+[0m[91mBR= 0.011875 bits/value, CR= 2694.688590
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 5.179055 seconds
+[91mField= UX, decompression bandwidth per cpu= 18.645756 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000937565708317, rel_eb= 0.000099999997474, BR= 1.601036609362694, CR= 19.987050772522853, max_err= 0.000937565705249 (100.000000%), MSE= 0.000000073900320, PSNR= 90.753571342642573 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 6.318695 seconds
+[91mField= UY, decompression bandwidth per cpu= 15.282807 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000890888644601, rel_eb= 0.000099999997474, BR= 1.874774998580363, CR= 17.068714925381119, max_err= 0.000890888636509 (99.999999%), MSE= 0.000000066914750, PSNR= 90.741250075173596 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 4.288119 seconds
+[91mField= UZ, decompression bandwidth per cpu= 22.519757 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.001044767639470, rel_eb= 0.000099999997474, BR= 1.413652993706686, CR= 22.636389653230257, max_err= 0.001044767631543 (99.999999%), MSE= 0.000000085271400, PSNR= 91.072360550438503 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 3.262053 seconds
+[91mField= P, decompression bandwidth per cpu= 29.603254 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.004037693112416, rel_eb= 0.000099999997474, BR= 0.537071458374997, CR= 59.582387969045278, max_err= 0.004037692712078 (99.999990%), MSE= 0.000000590448983, PSNR= 94.410842570030624 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 3.327472 seconds
+[91mField= S00, decompression bandwidth per cpu= 29.021248 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 100.763610735747022, rel_eb= 0.000099999997474, BR= 0.011875212636995, CR= 2694.688590275004117, max_err= 100.763577419863708 (99.999967%), MSE= 8.311652134512892, PSNR= 110.869201064205612 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-05, rel_eb=1.000000e-05
+Compression time= 9.422413 seconds
+[91mField= UX, compression bandwidth per cpu= 10.248690 MB/s
+[0m[91mBR= 3.410992 bits/value, CR= 9.381434
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-05, rel_eb=1.000000e-05
+Compression time= 12.677686 seconds
+[91mField= UY, compression bandwidth per cpu= 7.617115 MB/s
+[0m[91mBR= 3.727804 bits/value, CR= 8.584141
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-04, rel_eb=1.000000e-05
+Compression time= 9.641168 seconds
+[91mField= UZ, compression bandwidth per cpu= 10.016151 MB/s
+[0m[91mBR= 3.130391 bits/value, CR= 10.222367
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-04, rel_eb=1.000000e-05
+Compression time= 7.449125 seconds
+[91mField= P, compression bandwidth per cpu= 12.963588 MB/s
+[0m[91mBR= 1.584391 bits/value, CR= 20.197039
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+01, rel_eb=1.000000e-05
+Compression time= 4.547224 seconds
+[91mField= S00, compression bandwidth per cpu= 21.236561 MB/s
+[0m[91mBR= 0.046614 bits/value, CR= 686.489156
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 5.548552 seconds
+[91mField= UX, decompression bandwidth per cpu= 17.404071 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000093756570832, rel_eb= 0.000009999999747, BR= 3.410992358647320, CR= 9.381434091716956, max_err= 0.000093756567844 (99.999997%), MSE= 0.000000000976861, PSNR= 109.541707748296460 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 6.220677 seconds
+[91mField= UY, decompression bandwidth per cpu= 15.523614 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000089088864460, rel_eb= 0.000009999999747, BR= 3.727804354213113, CR= 8.584141483668272, max_err= 0.000089088862847 (99.999998%), MSE= 0.000000000898448, PSNR= 109.461537891638613 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 5.874154 seconds
+[91mField= UZ, decompression bandwidth per cpu= 16.439370 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000104476763947, rel_eb= 0.000009999999747, BR= 3.130390590396338, CR= 10.222366530928170, max_err= 0.000104476762091 (99.999998%), MSE= 0.000000001196895, PSNR= 109.599834563233159 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 4.219604 seconds
+[91mField= P, decompression bandwidth per cpu= 22.885416 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000403769311242, rel_eb= 0.000009999999747, BR= 1.584390629899292, CR= 20.197039414474446, max_err= 0.000403769308070 (99.999999%), MSE= 0.000000013634325, PSNR= 110.776330054713384 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 3.149097 seconds
+[91mField= S00, decompression bandwidth per cpu= 30.665105 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 10.076361073574702, rel_eb= 0.000009999999747, BR= 0.046613991946335, CR= 686.489156235326845, max_err= 10.076359353145790 (99.999983%), MSE= 0.265780743124138, PSNR= 125.820839535546440 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-06, rel_eb=1.000000e-06
+Compression time= 13.608646 seconds
+[91mField= UX, compression bandwidth per cpu= 7.096033 MB/s
+[0m[91mBR= 5.686873 bits/value, CR= 5.626994
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-06, rel_eb=1.000000e-06
+Compression time= 12.271115 seconds
+[91mField= UY, compression bandwidth per cpu= 7.869488 MB/s
+[0m[91mBR= 6.030472 bits/value, CR= 5.306384
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-05, rel_eb=1.000000e-06
+Compression time= 10.356646 seconds
+[91mField= UZ, compression bandwidth per cpu= 9.324196 MB/s
+[0m[91mBR= 5.376469 bits/value, CR= 5.951862
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-05, rel_eb=1.000000e-06
+Compression time= 8.235007 seconds
+[91mField= P, compression bandwidth per cpu= 11.726449 MB/s
+[0m[91mBR= 3.410534 bits/value, CR= 9.382696
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e+00, rel_eb=1.000000e-06
+Compression time= 5.194401 seconds
+[91mField= S00, compression bandwidth per cpu= 18.590670 MB/s
+[0m[91mBR= 0.148181 bits/value, CR= 215.952404
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 6.637461 seconds
+[91mField= UX, decompression bandwidth per cpu= 14.548845 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000009375657296, rel_eb= 0.000000999999997, BR= 5.686872637538176, CR= 5.626994314726322, max_err= 0.000009375657286 (100.000000%), MSE= 0.000000000011653, PSNR= 128.775671105019683 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 6.723153 seconds
+[91mField= UY, decompression bandwidth per cpu= 14.363408 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000008908886649, rel_eb= 0.000000999999997, BR= 6.030472247940291, CR= 5.306383759734506, max_err= 0.000008908886627 (100.000000%), MSE= 0.000000000010589, PSNR= 128.747894084720713 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 5.974932 seconds
+[91mField= UZ, decompression bandwidth per cpu= 16.162091 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000010447676632, rel_eb= 0.000000999999997, BR= 5.376468917347475, CR= 5.951861805942972, max_err= 0.000010447676526 (99.999999%), MSE= 0.000000000014330, PSNR= 128.818012848636215 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 5.298360 seconds
+[91mField= P, decompression bandwidth per cpu= 18.225904 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000040376932042, rel_eb= 0.000000999999997, BR= 3.410533721943644, CR= 9.382695674319086, max_err= 0.000040376931994 (100.000000%), MSE= 0.000000000182429, PSNR= 129.511719152782973 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 3.488527 seconds
+[91mField= S00, decompression bandwidth per cpu= 27.681422 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 1.007636130268463, rel_eb= 0.000000999999997, BR= 0.148180800082956, CR= 215.952403969241686, max_err= 1.007636040510986 (99.999991%), MSE= 0.007431362782536, PSNR= 141.355390018224568 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-07, rel_eb=1.000000e-07
+Compression time= 12.337977 seconds
+[91mField= UX, compression bandwidth per cpu= 7.826842 MB/s
+[0m[91mBR= 8.383106 bits/value, CR= 3.817201
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-07, rel_eb=1.000000e-07
+Compression time= 12.146429 seconds
+[91mField= UY, compression bandwidth per cpu= 7.950270 MB/s
+[0m[91mBR= 8.749889 bits/value, CR= 3.657189
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-06, rel_eb=1.000000e-07
+Compression time= 11.575282 seconds
+[91mField= UZ, compression bandwidth per cpu= 8.342552 MB/s
+[0m[91mBR= 8.056182 bits/value, CR= 3.972105
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-06, rel_eb=1.000000e-07
+Compression time= 10.589194 seconds
+[91mField= P, compression bandwidth per cpu= 9.119428 MB/s
+[0m[91mBR= 5.700913 bits/value, CR= 5.613136
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-01, rel_eb=1.000000e-07
+Compression time= 6.226294 seconds
+[91mField= S00, compression bandwidth per cpu= 15.509610 MB/s
+[0m[91mBR= 0.380489 bits/value, CR= 84.102309
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 7.884218 seconds
+[91mField= UX, decompression bandwidth per cpu= 12.248189 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000937565743, rel_eb= 0.000000100000001, BR= 8.383105897544151, CR= 3.817200974327960, max_err= 0.000000937565737 (99.999999%), MSE= 0.000000000000132, PSNR= 148.242109138698510 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 7.166490 seconds
+[91mField= UY, decompression bandwidth per cpu= 13.474852 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000890888678, rel_eb= 0.000000100000001, BR= 8.749888922630996, CR= 3.657189283538693, max_err= 0.000000890888672 (99.999999%), MSE= 0.000000000000119, PSNR= 148.238989123371852 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 7.994482 seconds
+[91mField= UZ, decompression bandwidth per cpu= 12.079255 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000001044767678, rel_eb= 0.000000100000001, BR= 8.056181577797364, CR= 3.972105108478588, max_err= 0.000001044767677 (100.000000%), MSE= 0.000000000000162, PSNR= 148.273236585234230 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 6.384397 seconds
+[91mField= P, decompression bandwidth per cpu= 15.125530 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000004037693262, rel_eb= 0.000000100000001, BR= 5.700912762663783, CR= 5.613136234880364, max_err= 0.000004037693242 (100.000000%), MSE= 0.000000000002172, PSNR= 148.753835602118841 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 3.499573 seconds
+[91mField= S00, decompression bandwidth per cpu= 27.594052 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.100763614458783, rel_eb= 0.000000100000001, BR= 0.380488957689867, CR= 84.102309287206396, max_err= 0.100763608437345 (99.999994%), MSE= 0.000151273992928, PSNR= 158.268431945332622 dB[0m
+Max CPUs= 128, partition num= 128
+Field= UX
+Data range: [-3.325904, 6.049754], abs_eb=9.375657e-08, rel_eb=1.000000e-08
+Compression time= 18.117917 seconds
+[91mField= UX, compression bandwidth per cpu= 5.329939 MB/s
+[0m[91mBR= 11.456281 bits/value, CR= 2.793228
+[0mField= UY
+Data range: [-2.617220, 6.291667], abs_eb=8.908887e-08, rel_eb=1.000000e-08
+Compression time= 13.763504 seconds
+[91mField= UY, compression bandwidth per cpu= 7.016193 MB/s
+[0m[91mBR= 11.787187 bits/value, CR= 2.714812
+[0mField= UZ
+Data range: [-5.021169, 5.426507], abs_eb=1.044768e-07, rel_eb=1.000000e-08
+Compression time= 12.248572 seconds
+[91mField= UZ, compression bandwidth per cpu= 7.883971 MB/s
+[0m[91mBR= 11.070722 bits/value, CR= 2.890507
+[0mField= P
+Data range: [-18.723253, 21.653679], abs_eb=4.037693e-07, rel_eb=1.000000e-08
+Compression time= 11.383673 seconds
+[91mField= P, compression bandwidth per cpu= 8.482973 MB/s
+[0m[91mBR= 8.425543 bits/value, CR= 3.797975
+[0mField= S00
+Data range: [-69438.570312, 938197.562500], abs_eb=1.007636e-02, rel_eb=1.000000e-08
+Compression time= 7.045144 seconds
+[91mField= S00, compression bandwidth per cpu= 13.706944 MB/s
+[0m[91mBR= 0.788567 bits/value, CR= 40.579962
+[0mField= UX
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 9.368596 seconds
+[91mField= UX, decompression bandwidth per cpu= 10.307563 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UX, abs_eb= 0.000000093756573, rel_eb= 0.000000010000000, BR= 11.456280774652930, CR= 2.793227630279465, max_err= 0.000000093756573 (100.000000%), MSE= 0.000000000000001, PSNR= 167.846139935558057 dB[0m
+Field= UY
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 9.705107 seconds
+[91mField= UY, decompression bandwidth per cpu= 9.950163 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UY, abs_eb= 0.000000089088866, rel_eb= 0.000000010000000, BR= 11.787186503321951, CR= 2.714812393184881, max_err= 0.000000089088866 (100.000000%), MSE= 0.000000000000001, PSNR= 167.942336990979641 dB[0m
+Field= UZ
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 8.424291 seconds
+[91mField= UZ, decompression bandwidth per cpu= 11.462969 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= UZ, abs_eb= 0.000000104476766, rel_eb= 0.000000010000000, BR= 11.070721578241773, CR= 2.890507161059159, max_err= 0.000000104476765 (99.999999%), MSE= 0.000000000000002, PSNR= 167.943327243615954 dB[0m
+Field= P
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 7.635877 seconds
+[91mField= P, decompression bandwidth per cpu= 12.646537 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= P, abs_eb= 0.000000403769319, rel_eb= 0.000000010000000, BR= 8.425542708865697, CR= 3.797974932383680, max_err= 0.000000403769311 (99.999998%), MSE= 0.000000000000025, PSNR= 168.185070079862044 dB[0m
+Field= S00
+Max CPUs= 128, partition num= 128
+params.method= SPERR-2D-uniform
+Decompression time= 4.135379 seconds
+[91mField= S00, decompression bandwidth per cpu= 23.351523 MB/s
+[0m没有选择全部的field，或者没有选择全部的element进行解压，不生成解压文件
+[91mField= S00, abs_eb= 0.010076361266886, rel_eb= 0.000000010000000, BR= 0.788566529147008, CR= 40.579962269783877, max_err= 0.010076360779107 (99.999995%), MSE= 0.000002497795475, PSNR= 176.090505904002498 dB[0m

@@ -101,8 +101,8 @@ os.makedirs("fig",exist_ok=True)
 with open(data_path,"rb") as f:
     header=read_nekrs_header(f)
     print(f"总共有{header.file_element_num}个element")
-    if len(header.element_shape)!=3 or len(set(header.element_shape))!=1 or min(header.element_shape)<4:
-        raise ValueError(f"绘图要求每个element的三个维度相同且至少为4，实际为{header.element_shape}")
+    if len(header.c_element_shape)!=3 or len(set(header.c_element_shape))!=1 or min(header.c_element_shape)<4:
+        raise ValueError(f"绘图要求每个element的三个维度相同且至少为4，实际为{header.c_element_shape}")
     f.seek(header.file_element_num*4,1)
     coordinate_offset=f.tell()
     coordinate_count=header.file_element_num*header.element_size*3
@@ -114,7 +114,7 @@ x=np.memmap(data_path,dtype=file_dtype,mode="r",offset=coordinate_offset,
             shape=(header.file_element_num,3,header.element_size))
 x=x.transpose((0,2,1))  # (element_num,element_size,3)，按需读取所选element
 
-n=header.element_shape[0]
+n=header.c_element_shape[0]
 n2=n*n
 corner_pos=np.array([0,n-1,(n-1)*n,n2-1,(n-1)*n2,(n-1)*n2+n-1,(n-1)*n2+(n-1)*n,n**3-1],dtype=np.int64)
 if selected_element_ids is None:

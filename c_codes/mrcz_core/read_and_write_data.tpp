@@ -36,20 +36,25 @@ void read_data_nekrs(mrcz::param_class<T> &params,string field)
     data_file.seekg(params.field_begin_address[field],ios::beg);
     if (field=="X" or field=="Y" or field=="Z" or field=="UX" or field=="UY" or field=="UZ")
     {
-        vector<T> temp_data(params.element_num_to_process*header.element_size*3);
-        data_file.read(reinterpret_cast<char*>(temp_data.data()),params.element_num_to_process*header.element_size*3*header.word_size);
+        uint64_t component_num=header.space_dimension;
+        vector<T> temp_data(params.element_num_to_process*header.element_size*component_num);
+        data_file.read(reinterpret_cast<char*>(temp_data.data()),params.element_num_to_process*header.element_size*component_num*header.word_size);
         if (field=="X" or field=="UX")
             for (uint64_t element_id=0;element_id<params.element_num_to_process;element_id++)
-                memcpy(&params.data[element_id*header.element_size],&temp_data[3*element_id*header.element_size],
+                memcpy(&params.data[element_id*header.element_size],&temp_data[component_num*element_id*header.element_size],
                     header.element_size*header.word_size);
         if (field=="Y" or field=="UY")
             for (uint64_t element_id=0;element_id<params.element_num_to_process;element_id++)
-                memcpy(&params.data[element_id*header.element_size],&temp_data[(3*element_id+1)*header.element_size],
+                memcpy(&params.data[element_id*header.element_size],&temp_data[(component_num*element_id+1)*header.element_size],
                     header.element_size*header.word_size);
         if (field=="Z" or field=="UZ")
+        {
+            if (component_num!=3)
+                throw runtime_error("二维NekRS数据不包含Z分量");
             for (uint64_t element_id=0;element_id<params.element_num_to_process;element_id++)
-                memcpy(&params.data[element_id*header.element_size],&temp_data[(3*element_id+2)*header.element_size],
+                memcpy(&params.data[element_id*header.element_size],&temp_data[(component_num*element_id+2)*header.element_size],
                     header.element_size*header.word_size);
+        }
     }
     else
         data_file.read(reinterpret_cast<char*>(params.data.data()),params.element_num_to_process*header.element_size*header.word_size);

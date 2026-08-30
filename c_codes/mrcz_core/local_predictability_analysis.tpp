@@ -91,7 +91,7 @@ namespace mrcz::detail
     template<typename T>
     vector<local_position_info<T>> build_local_position_info(param_class<T> &params)
     {
-        uint32_t n0=params.header.element_shape[0],n1=params.header.element_shape[1],n2=params.header.element_shape[2];
+        uint32_t n0=params.header.c_element_shape[0],n1=params.header.c_element_shape[1],n2=params.header.c_element_shape[2];
         uint32_t shape[3]={n0,n1,n2};
         uint64_t strides[3]={static_cast<uint64_t>(n1)*n2,n2,1};
         vector<local_position_info<T>> positions(params.header.element_size);
@@ -172,7 +172,7 @@ namespace mrcz::detail
         auto positions=build_local_position_info(params);
         vector<string> predictor_names={"element"};
         for (int dim=0;dim<3;dim++)
-            if (params.header.element_shape[dim]>1)
+            if (params.header.c_element_shape[dim]>1)
                 predictor_names.push_back(string(1,"XYZ"[dim]));
         predictor_names.push_back("direction_mean");
         predictor_names.push_back("spatial_oracle_best");

@@ -95,9 +95,9 @@ namespace mrcz::detail
     void analyze_prediction_field(param_class<T> &params,string field,prediction_error_stats &all_center,
         prediction_error_stats &all_corner_3,prediction_error_stats &all_corner_6)
     {
-        uint32_t n0=params.header.element_shape[0];
-        uint32_t n1=params.header.element_shape[1];
-        uint32_t n2=params.header.element_shape[2];
+        uint32_t n0=params.header.c_element_shape[0];
+        uint32_t n1=params.header.c_element_shape[1];
+        uint32_t n2=params.header.c_element_shape[2];
         uint64_t element_size=params.header.element_size;
         double data_range=params.data_range_max[field]-params.data_range_min[field];
         double abs_eb=params.abs_eb[field];
@@ -175,7 +175,7 @@ namespace mrcz::detail
         validate_common_params(params);
         params.all_fields_to_process=params.fields_to_process.empty();
         params.read_header("compress");
-        for (auto n:params.header.element_shape)
+        for (auto n:params.header.c_element_shape)
             if (n<4)
                 throw runtime_error("预测诊断要求element的三个维度都至少包含4个点");
         params.default_init();

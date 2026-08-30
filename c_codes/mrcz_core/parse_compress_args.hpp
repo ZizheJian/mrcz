@@ -96,6 +96,14 @@ namespace mrcz
                     throw runtime_error("缺少-method参数后的压缩方法");
                 params.method=argv[++i];
             }
+            else if (string(argv[i])=="-compute-precision")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-compute-precision参数后的计算精度");
+                params.compute_precision=argv[++i];
+                if (params.compute_precision!="auto" and params.compute_precision!="float" and params.compute_precision!="double")
+                    throw runtime_error("-compute-precision必须是auto、float或double");
+            }
             else if (string(argv[i])=="-max-cpus")
             {
                 if (i+1>=argc)
@@ -104,6 +112,14 @@ namespace mrcz
                 if (max_cpus>numeric_limits<int>::max())
                     throw runtime_error("-max-cpus超出int范围");
                 params.max_cpus=max_cpus;
+            }
+            else if (string(argv[i])=="-partition-num")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-partition-num参数后的partition数量");
+                params.partition_num=parse_uint64(argv[++i],"-partition-num");
+                if (params.partition_num==0)
+                    throw runtime_error("-partition-num必须是正整数");
             }
             else
                 throw runtime_error("未知的命令行参数: "+string(argv[i]));

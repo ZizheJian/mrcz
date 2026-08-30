@@ -589,14 +589,14 @@ void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t
     auto &x1=params.x[1];
     auto &x2=params.x[2];
 
-    uint32_t n0=header.element_shape[0];
-    uint32_t n1=header.element_shape[1];
-    uint32_t n2=header.element_shape[2];
+    uint32_t n0=header.c_element_shape[0];
+    uint32_t n1=header.c_element_shape[1];
+    uint32_t n2=header.c_element_shape[2];
     uint32_t n12=n1*n2;
     uint32_t n012=n0*n1*n2;
     uint32_t corner_num=1;
     for (uint32_t dim=0;dim<3;dim++)
-        if (header.element_shape[dim]>1)
+        if (header.c_element_shape[dim]>1)
             corner_num*=2;
     uint32_t seed_num=use_index_order?1:corner_num;
     uint32_t residual_num=n012-seed_num;
@@ -646,19 +646,19 @@ void sz3_3d_gll_compress_impl(mrcz::param_class<T> &params,string field,uint32_t
     vector<sz3_normal_boundary_stencil<T>> normal_boundary_stencils;
     if (use_index_order)
     {
-        index_order_stencils=sz3_generate_index_order_stencils(header.element_shape,params.x);
+        index_order_stencils=sz3_generate_index_order_stencils(header.c_element_shape,params.x);
         for (auto &stencil:index_order_stencils)
             prediction_positions.push_back(stencil.target);
     }
     else if (use_normal_boundary)
     {
-        normal_boundary_stencils=sz3_generate_normal_boundary_stencils(header.element_shape,params.x);
+        normal_boundary_stencils=sz3_generate_normal_boundary_stencils(header.c_element_shape,params.x);
         for (auto &stencil:normal_boundary_stencils)
             prediction_positions.push_back(stencil.target);
     }
     else if (use_surface_first)
     {
-        surface_first_stencils=sz3_generate_surface_first_stencils(header.element_shape,params.x);
+        surface_first_stencils=sz3_generate_surface_first_stencils(header.c_element_shape,params.x);
         for (auto &stencil:surface_first_stencils)
             prediction_positions.push_back(stencil.target);
     }

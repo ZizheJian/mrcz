@@ -1,39 +1,56 @@
 #pragma once
 
+#include "zfp_compress.tpp"
 
-#include "../mrcz_core/mrcz.hpp"
-#include "../third_party/zfp/include/zfp.h"
+template<typename T>
+void zfp_decompress_field(mrcz::param_class<T> &params,mrcz::partition_class &partition,mrcz::baseline::api_layout layout,T *output,T abs_eb,const unsigned char *compressed,size_t compressed_size)
+{
+    zfp_stream *zfp=zfp_stream_open(nullptr);
+    zfp_stream_set_accuracy(zfp,abs_eb);
+    bitstream *input_bs=stream_open(const_cast<unsigned char*>(compressed),compressed_size);
+    zfp_stream_set_bit_stream(zfp,input_bs);
+    zfp_field *zfp_data=make_zfp_api_field(params,partition,layout,output);
+    if (!zfp_decompress(zfp,zfp_data))
+        throw runtime_error("ZFP解压失败");
+    stream_close(input_bs);
+    zfp_field_free(zfp_data);
+    zfp_stream_close(zfp);
+}
 
 template<typename T>
 void zfp_decompress(mrcz::param_class<T> &params,string field)
 {
-	auto &header=params.header;
-    auto &blocks=params.partitions;
+    auto &header=params.header;
+    auto &partitions=params.partitions;
     auto &decompressed_data=params.decompressed_data;
-
-    uint32_t n0=header.element_shape[0];
-    uint32_t n1=header.element_shape[1];
-    uint32_t n2=header.element_shape[2];
     T abs_eb=params.abs_eb[field];
-    zfp_type type=is_same<T,float>::value ? zfp_type_float : zfp_type_double;
+    auto layout=mrcz::baseline::parse_api_layout(params.method,"ZFP");
     decompressed_data.resize(params.element_num_to_process*header.element_size);
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-    for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+    for (uint64_t partition_id=0;partition_id<partitions.size();partition_id++)
     {
-        auto &block=blocks[block_id];
-        uint64_t begin_index=block.begin_index;
-        uint64_t end_index=block.end_index;
-        
-        zfp_stream *zfp=zfp_stream_open(NULL);
-        zfp_stream_set_accuracy(zfp,abs_eb);
-        bitstream *input_bs=stream_open(block.zstd_bs.data(),block.zstd_bs.size());
-        zfp_stream_set_bit_stream(zfp,input_bs);
-        zfp_field *field=zfp_field_4d(decompressed_data.data()+begin_index*header.element_size,type,n2,n1,n0,end_index-begin_index);
-        zfp_decompress(zfp,field);
-        stream_close(input_bs);
-        zfp_field_free(field);
-        zfp_stream_close(zfp);
+        auto &partition=partitions[partition_id];
+        uint64_t begin=partition.begin_index*header.element_size;
+        if (layout==mrcz::baseline::api_layout::per_element_3d)
+        {
+            size_t offset=0;
+            uint64_t element_num=mrcz::baseline::read_uint64(partition.zstd_bs,offset);
+            if (element_num!=partition.element_num)
+                throw runtime_error(params.method+"逐element bitstream中的element数量不匹配");
+            for (uint64_t element_id=0;element_id<element_num;element_id++)
+            {
+                uint64_t compressed_size=mrcz::baseline::read_uint64(partition.zstd_bs,offset);
+                if (compressed_size>partition.zstd_bs.size()-offset)
+                    throw runtime_error(params.method+"逐element bitstream不完整");
+                zfp_decompress_field(params,partition,layout,decompressed_data.data()+begin+element_id*header.element_size,abs_eb,partition.zstd_bs.data()+offset,compressed_size);
+                offset+=compressed_size;
+            }
+            if (offset!=partition.zstd_bs.size())
+                throw runtime_error(params.method+"逐element bitstream包含多余数据");
+        }
+        else
+            zfp_decompress_field(params,partition,layout,decompressed_data.data()+begin,abs_eb,partition.zstd_bs.data(),partition.zstd_bs.size());
     }
     double end_time=omp_get_wtime();
     printf("Decompression time= %f seconds\n",end_time-start_time);

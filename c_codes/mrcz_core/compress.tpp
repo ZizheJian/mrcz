@@ -1,6 +1,8 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdio>
+#include <cstdlib>
 #include <cstdint>
 #include <fstream>
 #include <limits>
@@ -21,19 +23,45 @@ namespace mrcz
 {
     namespace detail
     {
+        inline bool environment_flag_enabled(const char *name)
+        {
+            char *value=getenv(name);
+            return value!=nullptr and string(value)!="0" and string(value)!="false" and string(value)!="FALSE";
+        }
+
+        inline void print_memory_profile(const char *stage,const string &field)
+        {
+            char *profile_env=getenv("MRCZ_PROFILE_MEMORY");
+            if (profile_env==nullptr or string(profile_env)=="0")
+                return;
+            ifstream status("/proc/self/status");
+            string line;
+            uint64_t rss_kib=0,hwm_kib=0;
+            while (getline(status,line))
+            {
+                if (line.rfind("VmRSS:",0)==0)
+                    sscanf(line.c_str(),"VmRSS: %lu kB",&rss_kib);
+                else if (line.rfind("VmHWM:",0)==0)
+                    sscanf(line.c_str(),"VmHWM: %lu kB",&hwm_kib);
+            }
+            printf("MRCZ memory: stage=%s,field=%s,RSS=%.3f GiB,HWM=%.3f GiB\n",stage,field.c_str(),rss_kib/(1024.0*1024),hwm_kib/(1024.0*1024));
+            fflush(stdout);
+        }
+
         template<typename T,typename Backend>
         void compress_field_and_write(param_class<T> &params,const string &field,Backend backend)
         {
             T data_min=params.data_range_min[field],data_max=params.data_range_max[field];
             T constant_value=midpoint(data_min,data_max);
             T constant_max_error=max(constant_value-data_min,data_max-constant_value);
-            bool use_constant_encoding=constant_max_error<=params.abs_eb[field];
+            bool use_constant_encoding=!environment_flag_enabled("MRCZ_DISABLE_CONSTANT_ENCODING") and constant_max_error<=params.abs_eb[field];
             if (data_min==data_max)
                 printf("Field %s is constant: value=%.*e\n",field.c_str(),numeric_limits<T>::max_digits10,static_cast<double>(constant_value));
             else if (use_constant_encoding)
                 printf("Field %s is encoded as constant: value=%.*e, max possible error=%.*e\n",field.c_str(),numeric_limits<T>::max_digits10,static_cast<double>(constant_value),numeric_limits<T>::max_digits10,static_cast<double>(constant_max_error));
             else
                 backend(params,field);
+            print_memory_profile("after backend",field);
 
             double compressed_bytes=0;
             string compressed_path=params.data_path+"_"+field+"."+params.method;
@@ -74,6 +102,7 @@ namespace mrcz
                 }
             }
             compressed_file.close();
+            print_memory_profile("after output buffers released",field);
 
             double bits_per_value=compressed_bytes*8/(params.element_num_to_process*params.header.element_size);
             double compression_ratio=(8*params.header.word_size)/bits_per_value;
@@ -86,8 +115,10 @@ namespace mrcz
             for (auto &field:params.fields_to_process)
             {
                 printf("Field= %s\n",field.c_str());
+                print_memory_profile("before data allocation",field);
                 params.data.resize(params.element_num_to_process*params.header.element_size);
                 ::read_data(params,field);
+                print_memory_profile("after data read",field);
 
                 T global_min=params.data[0];
                 T global_max=params.data[0];
@@ -120,7 +151,9 @@ namespace mrcz
 
                 if constexpr (is_same_v<T,float>)
                 {
-                    if (params.rel_eb[field]<1e-4)
+                    bool use_double=params.compute_precision=="double" or (params.compute_precision=="auto" and params.rel_eb[field]<1e-4);
+                    printf("Compute precision= %s\n",use_double ? "double":"float");
+                    if (use_double)
                     {
                         param_class<double> double_params(params);
                         if (double_params.eb_mode=="ABS")
@@ -144,10 +177,14 @@ namespace mrcz
                         compress_field_and_write(params,field,backend);
                 }
                 else
+                {
+                    printf("Compute precision= double\n");
                     compress_field_and_write(params,field,backend);
+                }
 
                 params.data.clear();
                 params.data.shrink_to_fit();
+                print_memory_profile("after data released",field);
             }
         }
 
@@ -160,16 +197,20 @@ namespace mrcz
             params.default_init();
             params.save_header_and_element_map("compress");
             params.max_cpus=get_max_cpus(static_cast<int>(min<uint64_t>(params.max_cpus,params.element_num_to_process)));
+            if (params.partition_num==0)
+                params.partition_num=params.max_cpus;
+            params.partition_num=min(params.partition_num,params.element_num_to_process);
 
-            params.partitions.resize(params.max_cpus);
-            for (int i=0;i<params.max_cpus;i++)
+            params.partitions.resize(params.partition_num);
+            for (uint64_t i=0;i<params.partition_num;i++)
             {
                 auto &partition=params.partitions[i];
                 partition.partition_id=i;
-                partition.begin_index=(i*params.element_num_to_process)/params.max_cpus;
-                partition.end_index=((i+1)*params.element_num_to_process)/params.max_cpus;
+                partition.begin_index=(i*params.element_num_to_process)/params.partition_num;
+                partition.end_index=((i+1)*params.element_num_to_process)/params.partition_num;
                 partition.element_num=partition.end_index-partition.begin_index;
             }
+            printf("Max CPUs= %d, partition num= %lu\n",params.max_cpus,params.partition_num);
 
             if (params.header.word_size==8 and is_same_v<T,float>)
             {

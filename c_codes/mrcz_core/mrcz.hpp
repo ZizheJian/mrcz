@@ -12,6 +12,7 @@
 #include <charconv>
 #include <limits>
 #include <algorithm>
+#include <bit>
 #include <cstdlib>
 #include "huffman.hpp"
 #include "../third_party/zstd/lib/zstd.h"
@@ -28,7 +29,9 @@ namespace mrcz
             string original_header;
 
             uint8_t word_size;
-            vector<uint32_t> element_shape;
+            uint8_t space_dimension=3;
+            vector<uint32_t> file_element_shape;//文件或原库使用的维度顺序；NekRS为[lx,ly,lz]
+            vector<uint32_t> c_element_shape;//当前线性数据按C row-major解释的shape；NekRS为[lz,ly,lx]
             uint32_t element_size;
             uint64_t file_element_num;
             string variables;
@@ -67,6 +70,7 @@ namespace mrcz
             string eb_mode;
             T input_eb;
             unordered_map<string,T> abs_eb,rel_eb; //每个field的绝对误差和相对误差
+            string compute_precision="auto"; //auto、float或double；double输入不会降为float
             string method;
             bool all_fields_to_process=false;
             vector<string> all_fields_in_file;
@@ -87,6 +91,7 @@ namespace mrcz
             vector<T> decompressed_data;
 
             int max_cpus=128;
+            uint64_t partition_num=0; //0表示压缩时沿用max_cpus；解压时从bitstream读取
             T coeff_eb_scale=0.05;
             vector<vector<T>> x;
             vector<vector<T>> L,neg_L;
@@ -114,7 +119,6 @@ namespace mrcz
                 vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
             
             void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
-
             void decompress_mrcz(string field);
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
             
@@ -133,11 +137,11 @@ namespace mrcz
             {
                 if ((!is_same<T,float>::value) and (!is_same<T,double>::value))
                     throw runtime_error("仅能以float或double类型处理数据");
-                if (header.element_shape.size()!=3)
+                if (header.c_element_shape.size()!=3)
                     throw runtime_error("element必须是三维的。如果是二维的，应该补上一个维度为1的维度。");
                 for (int dim=0;dim<3;dim++)
                 {
-                    uint32_t n=header.element_shape[dim];
+                    uint32_t n=header.c_element_shape[dim];
                     if (grid_assumption=="GLL")
                         x.push_back(compute_GLL_nodes<T>(n));
                     else if (grid_assumption=="chebyshev")
@@ -210,6 +214,7 @@ namespace mrcz
                 mesh_path=other.mesh_path;
                 eb_mode=other.eb_mode;
                 input_eb=other.input_eb;
+                compute_precision=other.compute_precision;
                 for (auto pair:other.abs_eb)
                     abs_eb[pair.first]=pair.second;
                 for (auto pair:other.rel_eb)
@@ -236,6 +241,7 @@ namespace mrcz
                 decompressed_data.assign(other.decompressed_data.begin(),other.decompressed_data.end());
                 
                 max_cpus=other.max_cpus;
+                partition_num=other.partition_num;
                 coeff_eb_scale=other.coeff_eb_scale;
                 default_init();
             }

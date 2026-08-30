@@ -50,18 +50,20 @@ namespace mrcz
             if (term_index==1)
                 header.word_size=stoi(term);
             else if (term_index==2)
-                header.element_shape.push_back(stoi(term));
+                header.file_element_shape.push_back(stoi(term));
             else if (term_index==3)
-                header.element_shape.push_back(stoi(term));
+                header.file_element_shape.push_back(stoi(term));
             else if (term_index==4)
-                header.element_shape.push_back(stoi(term));
+                header.file_element_shape.push_back(stoi(term));
             else if (term_index==6)
                 header.file_element_num=stoull(term);
             else if (term_index==11)
                 header.variables=term;
             term_index++;
         }
-        header.element_size=header.element_shape[0]*header.element_shape[1]*header.element_shape[2];
+        header.space_dimension=header.file_element_shape[2]>1?3:(header.file_element_shape[1]>1?2:1);
+        header.c_element_shape={header.file_element_shape[2],header.file_element_shape[1],header.file_element_shape[0]};
+        header.element_size=header.file_element_shape[0]*header.file_element_shape[1]*header.file_element_shape[2];
         size_t s_pos=header.variables.find('S');
         if (s_pos!=string::npos)
             header.passive_scalar_num=stoi(header.variables.substr(s_pos+1,2));
@@ -77,25 +79,37 @@ namespace mrcz
             {
                 all_fields_in_file.push_back("X");
                 field_begin_address["X"]=last_field_end_address;
-                field_begin_address["Y"]=last_field_end_address;
-                field_begin_address["Z"]=last_field_end_address;
-                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*3;
+                if (header.space_dimension>=2)
+                    field_begin_address["Y"]=last_field_end_address;
+                if (header.space_dimension==3)
+                    field_begin_address["Z"]=last_field_end_address;
+                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*header.space_dimension;
                 field_end_address["X"]=last_field_end_address;
-                field_end_address["Y"]=last_field_end_address;
-                field_end_address["Z"]=last_field_end_address;
+                if (header.space_dimension>=2)
+                    field_end_address["Y"]=last_field_end_address;
+                if (header.space_dimension==3)
+                    field_end_address["Z"]=last_field_end_address;
             }
             else if (c=='U')
             {
                 all_fields_in_file.push_back("UX");
-                all_fields_in_file.push_back("UY");
-                all_fields_in_file.push_back("UZ");
                 field_begin_address["UX"]=last_field_end_address;
-                field_begin_address["UY"]=last_field_end_address;
-                field_begin_address["UZ"]=last_field_end_address;
-                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*3;
+                if (header.space_dimension>=2)
+                {
+                    all_fields_in_file.push_back("UY");
+                    field_begin_address["UY"]=last_field_end_address;
+                }
+                if (header.space_dimension==3)
+                {
+                    all_fields_in_file.push_back("UZ");
+                    field_begin_address["UZ"]=last_field_end_address;
+                }
+                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*header.space_dimension;
                 field_end_address["UX"]=last_field_end_address;
-                field_end_address["UY"]=last_field_end_address;
-                field_end_address["UZ"]=last_field_end_address;
+                if (header.space_dimension>=2)
+                    field_end_address["UY"]=last_field_end_address;
+                if (header.space_dimension==3)
+                    field_end_address["UZ"]=last_field_end_address;
             }
             else if (c=='P')
             {
@@ -143,8 +157,8 @@ namespace mrcz
             for (auto field:fields_to_process)
                 if ((field=="X") || (field=="Y") || (field=="Z") || (field=="UX") || (field=="UY") || (field=="UZ"))
                 {
-                    field_begin_address[field]+=header.element_size*header.word_size*3*element_begin_index;
-                    field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*3*element_num_to_process;
+                    field_begin_address[field]+=header.element_size*header.word_size*header.space_dimension*element_begin_index;
+                    field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*header.space_dimension*element_num_to_process;
                 }
                 else
                 {
@@ -210,18 +224,19 @@ namespace mrcz
         uint32_t order=fe->GetOrder();
         int geomerty=mesh.GetElementBaseGeometry(0);
         if (geomerty==mfem::Geometry::SEGMENT)
-            header.element_shape={order+1,1,1};
+            header.c_element_shape={order+1,1,1};
         else if (geomerty==mfem::Geometry::SQUARE)
-            header.element_shape={order+1,order+1,1};
+            header.c_element_shape={order+1,order+1,1};
         else if (geomerty==mfem::Geometry::CUBE)
-            header.element_shape={order+1,order+1,order+1};
+            header.c_element_shape={order+1,order+1,order+1};
         else
             throw runtime_error("不支持的element形状");
-        printf("header.element_shape: %d %d %d\n",header.element_shape[0],header.element_shape[1],header.element_shape[2]);
+        header.file_element_shape=header.c_element_shape;
+        printf("header.c_element_shape: %d %d %d\n",header.c_element_shape[0],header.c_element_shape[1],header.c_element_shape[2]);
         header.element_size=fe->GetDof();
         printf("header.element_size=fe->GetDof()=%d\n",header.element_size);
-        if (header.element_size!=header.element_shape[0]*header.element_shape[1]*header.element_shape[2])
-            throw runtime_error("element_size与element_shape不匹配");
+        if (header.element_size!=header.c_element_shape[0]*header.c_element_shape[1]*header.c_element_shape[2])
+            throw runtime_error("element_size与c_element_shape不匹配");
         header.file_element_num=mesh.GetNE();
         printf("header.file_element_num=mesh.GetNE()=%ld\n",header.file_element_num);
         header.variables="";
@@ -266,9 +281,10 @@ namespace mrcz
         double ratio_dim2=abs(log((a_dim2-1)*(a_dim2-1)/num_cells));
         double ratio_dim3=abs(log((a_dim3-1)*(a_dim3-1)*(a_dim3-1)/num_cells));
         if (ratio_dim2<ratio_dim3)
-            header.element_shape={1,static_cast<uint32_t>(round(a_dim2)),static_cast<uint32_t>(round(a_dim2))};
+            header.file_element_shape={static_cast<uint32_t>(round(a_dim2)),static_cast<uint32_t>(round(a_dim2)),1};
         else
-            header.element_shape={static_cast<uint32_t>(round(a_dim3)),static_cast<uint32_t>(round(a_dim3)),static_cast<uint32_t>(round(a_dim3))};
+            header.file_element_shape={static_cast<uint32_t>(round(a_dim3)),static_cast<uint32_t>(round(a_dim3)),static_cast<uint32_t>(round(a_dim3))};
+        header.c_element_shape={header.file_element_shape[2],header.file_element_shape[1],header.file_element_shape[0]};
         auto *PointData_node=Piece_node->FirstChildElement("PointData");
         for (auto *DataArray_node=PointData_node->FirstChildElement("DataArray");DataArray_node;DataArray_node=DataArray_node->NextSiblingElement("DataArray"))
         {

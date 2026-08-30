@@ -25,8 +25,8 @@ void sz3_4d_decompress(mrcz::param_class<T> &params,string field)
         SZ_decompress<T>(config,reinterpret_cast<const char*>(partition.zstd_bs.data()),
             partition.zstd_bs.size(),output);
         if (config.N!=4 or config.dims[0]!=partition.element_num or
-            config.dims[1]!=header.element_shape[2] or config.dims[2]!=header.element_shape[1] or
-            config.dims[3]!=header.element_shape[0])
+            config.dims[1]!=header.c_element_shape[2] or config.dims[2]!=header.c_element_shape[1] or
+            config.dims[3]!=header.c_element_shape[0])
             throw runtime_error("SZ3-4D-uniform partition尺寸与bitstream不一致");
     }
     double end_time=omp_get_wtime();

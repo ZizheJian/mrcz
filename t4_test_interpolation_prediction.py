@@ -332,15 +332,15 @@ def write_relative_error_distribution(method_errors,field_dynamic_ranges):
     print(f"相对误差分布图已写入{output_path}")
 
 header,coordinates,fields=open_nekrs_fields(data_path)
-if len(header.element_shape)!=3 or len(set(header.element_shape))!=1:
-    raise ValueError(f"只支持三个方向尺寸相同的3D element：{header.element_shape}")
-n=header.element_shape[0]
+if len(header.c_element_shape)!=3 or len(set(header.c_element_shape))!=1:
+    raise ValueError(f"只支持三个方向尺寸相同的3D element：{header.c_element_shape}")
+n=header.c_element_shape[0]
 corner_pos=get_corner_positions(n)
 rng=np.random.default_rng(random_seed)
 sample_element_ids=np.sort(rng.choice(header.file_element_num,
                                       size=min(sample_element_num,header.file_element_num),
                                       replace=False))
-print(f"element尺寸：{header.element_shape}")
+print(f"element尺寸：{header.c_element_shape}")
 field_dynamic_ranges=get_global_field_ranges(fields)
 print(f"随机抽取的element：{tuple(map(int,sample_element_ids))}")
 neighbors=find_sample_neighbors(coordinates,corner_pos,sample_element_ids)
