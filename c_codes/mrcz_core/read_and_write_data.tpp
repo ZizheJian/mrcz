@@ -36,7 +36,7 @@ void read_data_nekrs(mrcz::param_class<T> &params,string field)
     data_file.seekg(params.field_begin_address[field],ios::beg);
     if (field=="X" or field=="Y" or field=="Z" or field=="UX" or field=="UY" or field=="UZ")
     {
-        uint64_t component_num=header.space_dimension;
+        uint64_t component_num=header.nekrs_space_dimension;
         vector<T> temp_data(params.element_num_to_process*header.element_size*component_num);
         data_file.read(reinterpret_cast<char*>(temp_data.data()),params.element_num_to_process*header.element_size*component_num*header.word_size);
         if (field=="X" or field=="UX")

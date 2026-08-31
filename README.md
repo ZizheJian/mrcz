@@ -189,6 +189,8 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 4. 每个partition内的coefficient QB由element-major转为coefficient-major，使相同基模式在不同element间连续排列；residual QB保持element-major。两类QB分别建立一棵Huffman tree，Huffman metadata和payload拼接后共同压缩为一个Zstd frame。
 5. partition之间独立并通过OpenMP并行。每个线程复用一组partition-local coefficient/residual缓冲区；解压端按Zstd、Huffman、系数反量化、反变换和residual叠加的逆向流程恢复数据。
 
+MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_measure_phase_time=false`时使用不含分段计时代码的正式版本；`MRCZ`且该开关为`true`时使用带分段计时的版本；`MRCZ-ablation`使用消融版本并读取`param`中的MRCZ优化开关。命令行程序可通过`-measure-phase-time true`选择计时版本。
+
 ## 3.2. 变换与coefficient error bound阶段
 
 | 优化或候选方案 | 状态 | 结论 |
@@ -227,6 +229,8 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 | 每线程复用partition-local QB缓冲区 | **采纳** | 避免同时为整个field保留两份完整`int64_t`数组；pb0/T样例的峰值RSS由约595 MB降至245 MB，同时略微缩短压缩时间。 |
 
 # 4. 消融实验
+
+- 调优coefficient transpose的tile size：比较`8x8`、`16x16`、`32x32`、`64x64`和`128x128`，分别记录压缩与解压transpose阶段时间；当前`32x32`只验证过优于未分块transpose，尚未证明是最优值。同步检查各版本是否由编译器生成SIMD/AVX2指令，区分cache blocking与自动向量化的收益。
 
 # 5. Rate-distortion结果
 

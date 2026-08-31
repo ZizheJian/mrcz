@@ -114,7 +114,7 @@ void sz2_1_compress(mrcz::param_class<T> &params,string field)
                 for (uint32_t i1=0;i1<n1;i1++)
                     for (uint32_t i2=0;i2<n2;i2++)
                         new_element[i0*n12+i1*n2+i2]=a*x0[i0]+b*x1[i1]+c*x2[i2]+d;
-            params.quantize_err_array(new_element.data(),element,block_err_qb+(element_id-begin_index)*n012,n012,abs_eb,neg_2_eb);
+            params.quantize_array(new_element.data(),element,block_err_qb+(element_id-begin_index)*n012,n012,abs_eb,neg_2_eb);
         }
         // // 把两种qb无损压缩到一起
         vector<unsigned char> huffman_bs_vec((n012+4)*(end_index-begin_index)*sizeof(int64_t));

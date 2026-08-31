@@ -239,10 +239,24 @@ namespace mrcz
         {
             if (params.method.empty())
                 params.method="MRCZ";
+            if (params.method=="MRCZ")
+            {
+                params.transform="DChT";
+                params.coeff_eb_scale=0.05;
+                params.if_coefficient_transpose=true;
+                params.if_tiled_coefficient_transpose=true;
+            }
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
-                if (backend_params.method=="MRCZ" or backend_params.method=="MRCZ-ablation")
-                    backend_params.decompress_mrcz(field);
+                if (backend_params.method=="MRCZ")
+                {
+                    if (backend_params.if_measure_phase_time)
+                        backend_params.template decompress_mrcz<true,false>(field);
+                    else
+                        backend_params.template decompress_mrcz<false,false>(field);
+                }
+                else if (backend_params.method=="MRCZ-ablation")
+                    backend_params.template decompress_mrcz<false,true>(field);
                 else if (backend_params.method=="FDWZ" or backend_params.method=="FDWZ-ablation")
                     backend_params.decompress_fdwz(field);
                 else

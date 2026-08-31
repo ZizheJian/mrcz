@@ -3,6 +3,7 @@
 namespace mrcz
 {
     template<typename T>
+    template<bool measure_phase_time,bool ablation>
     void param_class<T>::compress_mrcz(string field)
     {
         uint32_t n0=header.c_element_shape[0];
@@ -20,11 +21,7 @@ namespace mrcz
         T coeff_eb=abs_eb*coeff_eb_scale;
         T neg_2_coeff_eb=1/(2*coeff_eb);
         T neg_2_eb=1/(2*abs_eb);
-        char *profile_env=getenv("MRCZ_PROFILE_PHASES");
-        bool profile_phases=profile_env!=nullptr and string(profile_env)!="0";
-        uint64_t profile_block_num=profile_phases?partitions.size():0;
-        vector<double> forward_time_by_block(profile_block_num,0),coeff_quant_time_by_block(profile_block_num,0),inverse_time_by_block(profile_block_num,0),residual_quant_time_by_block(profile_block_num,0);
-        vector<double> coeff_huffman_time_by_block(profile_block_num,0),residual_huffman_time_by_block(profile_block_num,0),zstd_time_by_block(profile_block_num,0);
+        vector<double> forward_time(measure_phase_time?partitions.size():0,0),coeff_quant_time(measure_phase_time?partitions.size():0,0),inverse_time(measure_phase_time?partitions.size():0,0),residual_quant_time(measure_phase_time?partitions.size():0,0),coeff_huffman_time(measure_phase_time?partitions.size():0,0),residual_huffman_time(measure_phase_time?partitions.size():0,0),zstd_time(measure_phase_time?partitions.size():0,0);
         vector<int64_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
         vector<uint64_t> qb_capacity_by_thread(max_cpus,0);
         double start_time=omp_get_wtime();
@@ -49,45 +46,44 @@ namespace mrcz
                 qb_capacity=block_value_num;
             }
             double phase_start_time=0;
-            // 然后量化剩余的数据
             vector<T> temp_element1(n012,0),temp_element2(n012,0);
             for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
             {
                 T *element=data.data()+element_id*n012;
                 uint64_t local_element_id=element_id-begin_index;
-                int64_t *element_f_qb=coeff_qb+local_element_id*n012;
+                int64_t *element_coeff_qb=coeff_qb+local_element_id*n012;
                 int64_t *element_err_qb=err_qb+local_element_id*n012;
-                if (profile_phases) phase_start_time=omp_get_wtime();
+                if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
                 forward_transform(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
-                if (profile_phases) forward_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
-                if (profile_phases) phase_start_time=omp_get_wtime();
-                quantize_and_overwrite_array1(temp_element1.data(),element_f_qb,n012,coeff_eb,neg_2_coeff_eb);
-                if (profile_phases) coeff_quant_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
-                if (profile_phases) phase_start_time=omp_get_wtime();
+                if constexpr(measure_phase_time) forward_time[block_id]+=omp_get_wtime()-phase_start_time;
+                if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
+                quantize_and_overwrite_array(temp_element1.data(),element_coeff_qb,n012,coeff_eb,neg_2_coeff_eb);
+                if constexpr(measure_phase_time) coeff_quant_time[block_id]+=omp_get_wtime()-phase_start_time;
+                if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
                 inverse_transform(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
-                if (profile_phases) inverse_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
-                if (profile_phases) phase_start_time=omp_get_wtime();
-                quantize_err_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,neg_2_eb);
-                if (profile_phases) residual_quant_time_by_block[block_id]+=omp_get_wtime()-phase_start_time;
+                if constexpr(measure_phase_time) inverse_time[block_id]+=omp_get_wtime()-phase_start_time;
+                if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
+                quantize_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,neg_2_eb);
+                if constexpr(measure_phase_time) residual_quant_time[block_id]+=omp_get_wtime()-phase_start_time;
             }
             // 无损压缩
             vector<unsigned char> huffman_bs_vec(2*n012*(end_index-begin_index)*sizeof(int64_t),0);
             unsigned char *huffman_bs=huffman_bs_vec.data();
-            if (profile_phases) phase_start_time=omp_get_wtime();
-            lossless_compress_coeff_qb(0,block_element_num,coeff_qb,huffman_bs,n012);
-            if (profile_phases) coeff_huffman_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
-            if (profile_phases) phase_start_time=omp_get_wtime();
+            if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
+            lossless_compress_coeff_qb<ablation>(0,block_element_num,coeff_qb,huffman_bs,n012);
+            if constexpr(measure_phase_time) coeff_huffman_time[block_id]=omp_get_wtime()-phase_start_time;
+            if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
             huffman_encoder_class<int64_t> err_encoder;
             err_encoder.preprocess_encode(err_qb,block_value_num);
             err_encoder.save(huffman_bs);
             err_encoder.encode(err_qb,block_value_num,huffman_bs);
-            if (profile_phases) residual_huffman_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
+            if constexpr(measure_phase_time) residual_huffman_time[block_id]=omp_get_wtime()-phase_start_time;
             uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
             uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
             block.zstd_bs.resize(max_zstd_bs_len);
-            if (profile_phases) phase_start_time=omp_get_wtime();
+            if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
             uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
-            if (profile_phases) zstd_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
+            if constexpr(measure_phase_time) zstd_time[block_id]=omp_get_wtime()-phase_start_time;
             block.zstd_bs.resize(zstd_bs_len);
         }
         for (int thread_id=0;thread_id<max_cpus;thread_id++)
@@ -96,23 +92,23 @@ namespace mrcz
             delete[] err_qb_by_thread[thread_id];
         }
         double end_time=omp_get_wtime();
-        if (profile_phases)
+        if constexpr(measure_phase_time)
         {
-            double forward_time=0,coeff_quant_time=0,inverse_time=0,residual_quant_time=0,coeff_huffman_time=0,residual_huffman_time=0,zstd_time=0;
-            for (uint64_t block_id=0;block_id<profile_block_num;block_id++)
+            double total_forward_time=0,total_coeff_quant_time=0,total_inverse_time=0,total_residual_quant_time=0,total_coeff_huffman_time=0,total_residual_huffman_time=0,total_zstd_time=0;
+            for (uint64_t block_id=0;block_id<partitions.size();block_id++)
             {
-                forward_time+=forward_time_by_block[block_id];
-                coeff_quant_time+=coeff_quant_time_by_block[block_id];
-                inverse_time+=inverse_time_by_block[block_id];
-                residual_quant_time+=residual_quant_time_by_block[block_id];
-                coeff_huffman_time+=coeff_huffman_time_by_block[block_id];
-                residual_huffman_time+=residual_huffman_time_by_block[block_id];
-                zstd_time+=zstd_time_by_block[block_id];
+                total_forward_time+=forward_time[block_id];
+                total_coeff_quant_time+=coeff_quant_time[block_id];
+                total_inverse_time+=inverse_time[block_id];
+                total_residual_quant_time+=residual_quant_time[block_id];
+                total_coeff_huffman_time+=coeff_huffman_time[block_id];
+                total_residual_huffman_time+=residual_huffman_time[block_id];
+                total_zstd_time+=zstd_time[block_id];
             }
-            double measured_time=forward_time+coeff_quant_time+inverse_time+residual_quant_time+coeff_huffman_time+residual_huffman_time+zstd_time;
-            printf("MRCZ compression accumulated partition CPU times: forward= %f, coefficient quantization= %f, inverse= %f, residual quantization= %f, coefficient Huffman= %f, residual Huffman= %f, Zstd= %f seconds\n",forward_time,coeff_quant_time,inverse_time,residual_quant_time,coeff_huffman_time,residual_huffman_time,zstd_time);
+            double measured_time=total_forward_time+total_coeff_quant_time+total_inverse_time+total_residual_quant_time+total_coeff_huffman_time+total_residual_huffman_time+total_zstd_time;
+            printf("MRCZ compression accumulated partition CPU times: forward= %f, coefficient quantization= %f, inverse= %f, residual quantization= %f, coefficient Huffman= %f, residual Huffman= %f, Zstd= %f seconds\n",total_forward_time,total_coeff_quant_time,total_inverse_time,total_residual_quant_time,total_coeff_huffman_time,total_residual_huffman_time,total_zstd_time);
             if (measured_time>0)
-                printf("MRCZ compression stage shares: forward= %.2f%%, coefficient quantization= %.2f%%, inverse= %.2f%%, residual quantization= %.2f%%, coefficient Huffman= %.2f%%, residual Huffman= %.2f%%, Zstd= %.2f%%\n",100*forward_time/measured_time,100*coeff_quant_time/measured_time,100*inverse_time/measured_time,100*residual_quant_time/measured_time,100*coeff_huffman_time/measured_time,100*residual_huffman_time/measured_time,100*zstd_time/measured_time);
+                printf("MRCZ compression stage shares: forward= %.2f%%, coefficient quantization= %.2f%%, inverse= %.2f%%, residual quantization= %.2f%%, coefficient Huffman= %.2f%%, residual Huffman= %.2f%%, Zstd= %.2f%%\n",100*total_forward_time/measured_time,100*total_coeff_quant_time/measured_time,100*total_inverse_time/measured_time,100*total_residual_quant_time/measured_time,100*total_coeff_huffman_time/measured_time,100*total_residual_huffman_time/measured_time,100*total_zstd_time/measured_time);
         }
         printf("Compression time= %f seconds\n",end_time-start_time);
         printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*max_cpus));

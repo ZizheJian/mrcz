@@ -3,16 +3,23 @@
 namespace mrcz
 {
     template<typename T>
+    template<bool ablation>
     inline void param_class<T>::lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n000)
     {
-        if (if_coefficient_transpose)
+        bool coefficient_transpose=true,tiled_coefficient_transpose=true;
+        if constexpr(ablation)
+        {
+            coefficient_transpose=if_coefficient_transpose;
+            tiled_coefficient_transpose=if_tiled_coefficient_transpose;
+        }
+        if (coefficient_transpose)
         {
             uint64_t block_element_num=end_index-begin_index;
             int64_t *temp_coeff_qb=new int64_t[n000*block_element_num];
             huffman_encoder_class<int64_t> coeff_encoder;
             coeff_encoder.load(huffman_bs);
             coeff_encoder.decode(huffman_bs,temp_coeff_qb,n000*block_element_num);
-            if (if_tiled_coefficient_transpose)
+            if (tiled_coefficient_transpose)
             {
                 constexpr uint32_t tile_size=32;
                 for (uint32_t pos_begin=0;pos_begin<n000;pos_begin+=tile_size)

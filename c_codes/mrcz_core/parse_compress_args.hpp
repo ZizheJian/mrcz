@@ -108,6 +108,18 @@ namespace mrcz
                 else
                     throw runtime_error("-constant-compression必须是true或false");
             }
+            else if (string(argv[i])=="-measure-phase-time")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-measure-phase-time参数后的布尔值");
+                string value=argv[++i];
+                if (value=="true")
+                    params.if_measure_phase_time=true;
+                else if (value=="false")
+                    params.if_measure_phase_time=false;
+                else
+                    throw runtime_error("-measure-phase-time必须是true或false");
+            }
             else if (string(argv[i])=="-compute-precision")
             {
                 if (i+1>=argc)

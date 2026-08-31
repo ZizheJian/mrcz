@@ -61,7 +61,7 @@ namespace mrcz
                 header.variables=term;
             term_index++;
         }
-        header.space_dimension=header.file_element_shape[2]>1?3:(header.file_element_shape[1]>1?2:1);
+        header.nekrs_space_dimension=header.file_element_shape[2]>1?3:(header.file_element_shape[1]>1?2:1);
         header.c_element_shape={header.file_element_shape[2],header.file_element_shape[1],header.file_element_shape[0]};
         header.element_size=header.file_element_shape[0]*header.file_element_shape[1]*header.file_element_shape[2];
         size_t s_pos=header.variables.find('S');
@@ -79,36 +79,36 @@ namespace mrcz
             {
                 all_fields_in_file.push_back("X");
                 field_begin_address["X"]=last_field_end_address;
-                if (header.space_dimension>=2)
+                if (header.nekrs_space_dimension>=2)
                     field_begin_address["Y"]=last_field_end_address;
-                if (header.space_dimension==3)
+                if (header.nekrs_space_dimension==3)
                     field_begin_address["Z"]=last_field_end_address;
-                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*header.space_dimension;
+                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*header.nekrs_space_dimension;
                 field_end_address["X"]=last_field_end_address;
-                if (header.space_dimension>=2)
+                if (header.nekrs_space_dimension>=2)
                     field_end_address["Y"]=last_field_end_address;
-                if (header.space_dimension==3)
+                if (header.nekrs_space_dimension==3)
                     field_end_address["Z"]=last_field_end_address;
             }
             else if (c=='U')
             {
                 all_fields_in_file.push_back("UX");
                 field_begin_address["UX"]=last_field_end_address;
-                if (header.space_dimension>=2)
+                if (header.nekrs_space_dimension>=2)
                 {
                     all_fields_in_file.push_back("UY");
                     field_begin_address["UY"]=last_field_end_address;
                 }
-                if (header.space_dimension==3)
+                if (header.nekrs_space_dimension==3)
                 {
                     all_fields_in_file.push_back("UZ");
                     field_begin_address["UZ"]=last_field_end_address;
                 }
-                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*header.space_dimension;
+                last_field_end_address+=header.file_element_num*header.element_size*header.word_size*header.nekrs_space_dimension;
                 field_end_address["UX"]=last_field_end_address;
-                if (header.space_dimension>=2)
+                if (header.nekrs_space_dimension>=2)
                     field_end_address["UY"]=last_field_end_address;
-                if (header.space_dimension==3)
+                if (header.nekrs_space_dimension==3)
                     field_end_address["UZ"]=last_field_end_address;
             }
             else if (c=='P')
@@ -157,8 +157,8 @@ namespace mrcz
             for (auto field:fields_to_process)
                 if ((field=="X") || (field=="Y") || (field=="Z") || (field=="UX") || (field=="UY") || (field=="UZ"))
                 {
-                    field_begin_address[field]+=header.element_size*header.word_size*header.space_dimension*element_begin_index;
-                    field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*header.space_dimension*element_num_to_process;
+                    field_begin_address[field]+=header.element_size*header.word_size*header.nekrs_space_dimension*element_begin_index;
+                    field_end_address[field]=field_begin_address[field]+header.element_size*header.word_size*header.nekrs_space_dimension*element_num_to_process;
                 }
                 else
                 {

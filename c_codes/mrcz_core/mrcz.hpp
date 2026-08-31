@@ -13,7 +13,6 @@
 #include <limits>
 #include <algorithm>
 #include <bit>
-#include <cstdlib>
 #include "huffman.hpp"
 #include <zstd.h>
 #include <mfem.hpp>
@@ -29,7 +28,7 @@ namespace mrcz
             string original_header;
 
             uint8_t word_size;
-            uint8_t space_dimension=3;
+            uint8_t nekrs_space_dimension=3;
             vector<uint32_t> file_element_shape;//文件或原库使用的维度顺序；NekRS为[lx,ly,lz]
             vector<uint32_t> c_element_shape;//当前线性数据按C row-major解释的shape；NekRS为[lz,ly,lx]
             uint32_t element_size;
@@ -62,6 +61,7 @@ namespace mrcz
         public:
             string grid_assumption="GLL"; // GLL, chebyshev, uniform
             bool if_constant_compression=true;
+            bool if_measure_phase_time=false;
 
             // MRCZ优化开关
             string transform="DChT"; // DLT, DChT, DST, DCT
@@ -117,7 +117,9 @@ namespace mrcz
             void save_tail_metadata_decompress();
 
             // 压缩器入口
+            template<bool measure_phase_time,bool ablation>
             void compress_mrcz(string field);
+            template<bool measure_phase_time,bool ablation>
             void decompress_mrcz(string field);
             void compress_fdwz(string field);
             void decompress_fdwz(string field);
@@ -129,7 +131,9 @@ namespace mrcz
                 vector<T> &neg_L0,vector<T> &neg_L1,vector<T> &neg_L2);
 
             // MRCZ coefficient QB无损编解码
+            template<bool ablation>
             void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
+            template<bool ablation>
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
 
             // 插值预测器的角点与residual QB布局
@@ -141,9 +145,9 @@ namespace mrcz
 
             // 通用量化
             void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);
-            void quantize_and_overwrite_array1(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
+            void quantize_and_overwrite_array(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
             void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
-            void quantize_err_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
+            void quantize_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
 
             void default_init()
             {
@@ -221,6 +225,7 @@ namespace mrcz
             param_class(param_class<T2> &other,string data_to_copy="")
             {
                 if_constant_compression=other.if_constant_compression;
+                if_measure_phase_time=other.if_measure_phase_time;
                 if_coefficient_transpose=other.if_coefficient_transpose;
                 if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
                 if_max_huffman_tree=other.if_max_huffman_tree;

@@ -46,18 +46,18 @@ namespace mrcz
                 for (uint32_t pos=0;pos<n000;pos++)
                     for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
                         temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[element_id*n000+pos];
-                huffman_encoder_class<int64_t> f_encoder;
-                f_encoder.preprocess_encode(temp_coeff_qb,n000*(end_index-begin_index));
-                f_encoder.save(huffman_bs);
-                f_encoder.encode(temp_coeff_qb,n000*(end_index-begin_index),huffman_bs);
+                huffman_encoder_class<int64_t> coeff_encoder;
+                coeff_encoder.preprocess_encode(temp_coeff_qb,n000*(end_index-begin_index));
+                coeff_encoder.save(huffman_bs);
+                coeff_encoder.encode(temp_coeff_qb,n000*(end_index-begin_index),huffman_bs);
                 delete[] temp_coeff_qb;
             }
             else
             {
-                huffman_encoder_class<int64_t> f_encoder;
-                f_encoder.preprocess_encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index));
-                f_encoder.save(huffman_bs);
-                f_encoder.encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index),huffman_bs);
+                huffman_encoder_class<int64_t> coeff_encoder;
+                coeff_encoder.preprocess_encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index));
+                coeff_encoder.save(huffman_bs);
+                coeff_encoder.encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index),huffman_bs);
             }
         }
         else // 存在全0柱子也存在非全0柱子
@@ -87,25 +87,25 @@ namespace mrcz
                     for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
                         temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[element_id*n000+loose_pos];
                 }
-                huffman_encoder_class<int64_t> f_encoder;
-                f_encoder.preprocess_encode(temp_coeff_qb,(n000-all_zero_num)*(end_index-begin_index));
-                f_encoder.save(huffman_bs);
-                f_encoder.encode(temp_coeff_qb,(n000-all_zero_num)*(end_index-begin_index),huffman_bs);
+                huffman_encoder_class<int64_t> coeff_encoder;
+                coeff_encoder.preprocess_encode(temp_coeff_qb,(n000-all_zero_num)*(end_index-begin_index));
+                coeff_encoder.save(huffman_bs);
+                coeff_encoder.encode(temp_coeff_qb,(n000-all_zero_num)*(end_index-begin_index),huffman_bs);
                 delete[] temp_coeff_qb;
             }
             else
             {
                 for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
                 {
-                    auto original_element_f_qb=coeff_qb+element_id*n000;
-                    auto compact_element_f_qb=coeff_qb+begin_index*n000+(element_id-begin_index)*(n000-all_zero_num);
+                    auto original_element_coeff_qb=coeff_qb+element_id*n000;
+                    auto compact_element_coeff_qb=coeff_qb+begin_index*n000+(element_id-begin_index)*(n000-all_zero_num);
                     for (uint32_t pos=0;pos<(n000-all_zero_num);pos++)
-                        compact_element_f_qb[pos]=original_element_f_qb[coeff_qb_loose_pos[pos]];
+                        compact_element_coeff_qb[pos]=original_element_coeff_qb[coeff_qb_loose_pos[pos]];
                 }
-                huffman_encoder_class<int64_t> f_encoder;
-                f_encoder.preprocess_encode(coeff_qb+begin_index*n000,(n000-all_zero_num)*(end_index-begin_index));
-                f_encoder.save(huffman_bs);
-                f_encoder.encode(coeff_qb+begin_index*n000,(n000-all_zero_num)*(end_index-begin_index),huffman_bs);
+                huffman_encoder_class<int64_t> coeff_encoder;
+                coeff_encoder.preprocess_encode(coeff_qb+begin_index*n000,(n000-all_zero_num)*(end_index-begin_index));
+                coeff_encoder.save(huffman_bs);
+                coeff_encoder.encode(coeff_qb+begin_index*n000,(n000-all_zero_num)*(end_index-begin_index),huffman_bs);
             }
         }   
     }
@@ -119,18 +119,18 @@ namespace mrcz
             for (uint32_t pos=0;pos<n000;pos++)
                 for (uint64_t element_id=begin_index;element_id<end_index;element_id++)
                     temp_coeff_qb[pos*(end_index-begin_index)+(element_id-begin_index)]=coeff_qb[element_id*n000+pos];
-            huffman_encoder_class<int64_t> f_encoder;
-            f_encoder.preprocess_encode(temp_coeff_qb,n000*(end_index-begin_index));
-            f_encoder.save(huffman_bs);
-            f_encoder.encode(temp_coeff_qb,n000*(end_index-begin_index),huffman_bs);
+            huffman_encoder_class<int64_t> coeff_encoder;
+            coeff_encoder.preprocess_encode(temp_coeff_qb,n000*(end_index-begin_index));
+            coeff_encoder.save(huffman_bs);
+            coeff_encoder.encode(temp_coeff_qb,n000*(end_index-begin_index),huffman_bs);
             delete[] temp_coeff_qb;
         }
         else
         {
-            huffman_encoder_class<int64_t> f_encoder;
-            f_encoder.preprocess_encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index));
-            f_encoder.save(huffman_bs);
-            f_encoder.encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index),huffman_bs);
+            huffman_encoder_class<int64_t> coeff_encoder;
+            coeff_encoder.preprocess_encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index));
+            coeff_encoder.save(huffman_bs);
+            coeff_encoder.encode(coeff_qb+begin_index*n000,n000*(end_index-begin_index),huffman_bs);
         }
     }
 }
