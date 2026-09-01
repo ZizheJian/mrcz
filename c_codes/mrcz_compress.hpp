@@ -12,11 +12,11 @@ namespace mrcz
 
     inline bool is_baseline_method(const string &method)
     {
-        return method=="SZ2-1D-uniform" or method=="SZ2-2D-uniform" or method=="SZ2-3D-uniform-fused" or method=="SZ2-3D-uniform-per-element" or method=="SZ2-4D-uniform" or
-            method=="SZ3-1D-uniform" or method=="SZ3-2D-uniform" or method=="SZ3-3D-uniform-fused" or method=="SZ3-3D-uniform-per-element" or method=="SZ3-4D-uniform" or
-            method=="QoZ-1D-uniform" or method=="QoZ-2D-uniform" or method=="QoZ-3D-uniform-fused" or method=="QoZ-3D-uniform-per-element" or method=="QoZ-4D-uniform" or
-            method=="ZFP-1D-uniform" or method=="ZFP-2D-uniform" or method=="ZFP-3D-uniform-fused" or method=="ZFP-3D-uniform-per-element" or method=="ZFP-4D-uniform" or
-            method=="SPERR-2D-uniform" or method=="SPERR-3D-uniform-fused" or method=="SPERR-3D-uniform-per-element";
+        return method=="SZ2-1D" or method=="SZ2-2D" or method=="SZ2-3D-fused" or method=="SZ2-3D-per-element" or method=="SZ2-4D" or
+            method=="SZ3-1D" or method=="SZ3-2D" or method=="SZ3-3D-fused" or method=="SZ3-3D-per-element" or method=="SZ3-4D" or
+            method=="QoZ-1D" or method=="QoZ-2D" or method=="QoZ-3D-fused" or method=="QoZ-3D-per-element" or method=="QoZ-4D" or
+            method=="ZFP-1D" or method=="ZFP-2D" or method=="ZFP-3D-fused" or method=="ZFP-3D-per-element" or method=="ZFP-4D" or
+            method=="SPERR-2D" or method=="SPERR-3D-fused" or method=="SPERR-3D-per-element";
     }
 
     template<typename T>

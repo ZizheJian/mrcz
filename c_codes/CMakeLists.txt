@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 project(mrcz LANGUAGES CXX)
 
 find_package(OpenMP REQUIRED COMPONENTS CXX)
@@ -8,6 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(BUILD_TESTING OFF CACHE BOOL "Build third-party tests" FORCE)
+set(BUILD_UTILITIES OFF CACHE BOOL "Build third-party utilities" FORCE)
+set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "Build Zstd command-line programs" FORCE)
+set(ZSTD_BUILD_SHARED OFF CACHE BOOL "Build shared Zstd library" FORCE)
+set(ZSTD_BUILD_STATIC ON CACHE BOOL "Build static Zstd library" FORCE)
 set(tinyxml2_BUILD_TESTING OFF CACHE BOOL "Build tinyxml2 tests" FORCE)
 set(BUILD_SZ3_BINARY OFF CACHE BOOL "Build SZ3 command-line and C API tools" FORCE)
 set(SZ3_USE_BUNDLED_ZSTD OFF CACHE BOOL "Use SZ3 bundled Zstd" FORCE)
@@ -22,6 +27,7 @@ find_package(MFEM CONFIG REQUIRED PATHS "${MFEM_INSTALL_PATH}/lib/cmake/mfem" NO
 
 add_subdirectory(../third_party/parsers/c_codes ${CMAKE_BINARY_DIR}/parsers_build)
 add_subdirectory(../third_party/zstd ${CMAKE_BINARY_DIR}/zstd_build)
+add_library(PkgConfig::ZSTD ALIAS libzstd_static)
 add_subdirectory(../third_party/tinyxml2 ${CMAKE_BINARY_DIR}/tinyxml2_build)
 add_subdirectory(mrcz_core)
 add_subdirectory(../third_party/zfp ${CMAKE_BINARY_DIR}/zfp_build)

@@ -192,11 +192,14 @@ namespace mrcz
                 params.method="MRCZ";
             if (params.method=="MRCZ")
             {
+                params.grid_assumption="GLL";
                 params.transform="DChT";
                 params.coeff_eb_scale=0.05;
                 params.if_coefficient_transpose=true;
                 params.if_tiled_coefficient_transpose=true;
             }
+            else if (params.method=="FDWZ" or params.method=="FDWZ-ablation")
+                params.grid_assumption="GLL";
             auto backend=[]<typename U>(param_class<U> &backend_params,string field)
             {
                 if (backend_params.method=="MRCZ")
@@ -208,8 +211,15 @@ namespace mrcz
                 }
                 else if (backend_params.method=="MRCZ-ablation")
                     backend_params.template compress_mrcz<false,true>(field);
-                else if (backend_params.method=="FDWZ" or backend_params.method=="FDWZ-ablation")
-                    backend_params.compress_fdwz(field);
+                else if (backend_params.method=="FDWZ")
+                {
+                    if(backend_params.if_measure_phase_time)
+                        backend_params.template compress_fdwz<true,false>(field);
+                    else
+                        backend_params.template compress_fdwz<false,false>(field);
+                }
+                else if (backend_params.method=="FDWZ-ablation")
+                    backend_params.template compress_fdwz<false,true>(field);
                 else
                     throw runtime_error("未知的core压缩方法: "+backend_params.method);
             };

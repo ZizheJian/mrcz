@@ -7,7 +7,7 @@
 namespace mrcz
 {
     template<typename T>
-    void validate_common_params(const param_class<T> &params)
+    void validate_common_params(param_class<T> &params)
     {
         if (params.format!="nekrs" and params.format!="mfem" and params.format!="nektar++")
             throw runtime_error("必须指定数据格式，目前支持: nekrs, mfem, nektar++");

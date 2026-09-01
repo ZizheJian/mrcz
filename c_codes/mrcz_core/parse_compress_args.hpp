@@ -12,15 +12,13 @@ namespace mrcz
 {
     inline void parse_element_range(string elements,uint64_t &begin,uint64_t &end)
     {
-        if (elements.size()<5 or elements.front()!='[' or
-            (elements.back()!=']' and elements.back()!=')'))
+        if (elements.size()<5 or elements.front()!='[' or (elements.back()!=']' and elements.back()!=')'))
             throw runtime_error("-elements必须使用[begin,end]或[begin,end)格式");
 
         char right_bracket=elements.back();
         string range_body=elements.substr(1,elements.size()-2);
         size_t comma=range_body.find(',');
-        if (comma==string::npos or comma==0 or comma==range_body.size()-1 or
-            range_body.find(',',comma+1)!=string::npos)
+        if (comma==string::npos or comma==0 or comma==range_body.size()-1 or range_body.find(',',comma+1)!=string::npos)
             throw runtime_error("-elements必须使用[begin,end]或[begin,end)格式");
 
         string begin_string=range_body.substr(0,comma);
@@ -100,25 +98,53 @@ namespace mrcz
             {
                 if (i+1>=argc)
                     throw runtime_error("缺少-constant-compression参数后的布尔值");
-                string value=argv[++i];
-                if (value=="true")
-                    params.if_constant_compression=true;
-                else if (value=="false")
-                    params.if_constant_compression=false;
-                else
-                    throw runtime_error("-constant-compression必须是true或false");
+                params.if_constant_compression=parse_bool(argv[++i],"-constant-compression");
             }
             else if (string(argv[i])=="-measure-phase-time")
             {
                 if (i+1>=argc)
                     throw runtime_error("缺少-measure-phase-time参数后的布尔值");
-                string value=argv[++i];
-                if (value=="true")
-                    params.if_measure_phase_time=true;
-                else if (value=="false")
-                    params.if_measure_phase_time=false;
-                else
-                    throw runtime_error("-measure-phase-time必须是true或false");
+                params.if_measure_phase_time=parse_bool(argv[++i],"-measure-phase-time");
+            }
+            else if (string(argv[i])=="-grid-assumption")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-grid-assumption参数后的网格假设");
+                params.grid_assumption=argv[++i];
+                if (params.grid_assumption!="GLL" and params.grid_assumption!="chebyshev" and params.grid_assumption!="uniform")
+                    throw runtime_error("-grid-assumption必须是GLL、chebyshev或uniform");
+            }
+            else if (string(argv[i])=="-transform")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-transform参数后的变换名称");
+                params.transform=argv[++i];
+                if (params.transform!="DLT" and params.transform!="DChT" and params.transform!="DST" and params.transform!="DCT")
+                    throw runtime_error("-transform必须是DLT、DChT、DST或DCT");
+            }
+            else if (string(argv[i])=="-coeff-eb-scale")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-coeff-eb-scale参数后的正数");
+                params.coeff_eb_scale=parse_positive_float(argv[++i],"-coeff-eb-scale");
+            }
+            else if (string(argv[i])=="-coefficient-transpose")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-coefficient-transpose参数后的布尔值");
+                params.if_coefficient_transpose=parse_bool(argv[++i],"-coefficient-transpose");
+            }
+            else if (string(argv[i])=="-tiled-coefficient-transpose")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-tiled-coefficient-transpose参数后的布尔值");
+                params.if_tiled_coefficient_transpose=parse_bool(argv[++i],"-tiled-coefficient-transpose");
+            }
+            else if (string(argv[i])=="-max-huffman-tree")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-max-huffman-tree参数后的布尔值");
+                params.if_max_huffman_tree=parse_bool(argv[++i],"-max-huffman-tree");
             }
             else if (string(argv[i])=="-compute-precision")
             {

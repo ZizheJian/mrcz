@@ -70,7 +70,7 @@ namespace mrcz
             bool if_tiled_coefficient_transpose=true;
 
             // FDWZ优化开关
-            bool if_max_huffman_tree=true;
+            bool if_max_huffman_tree=true; //仅FDWZ-ablation读取；不写入metadata，解压时必须与压缩一致
 
             string format;
             string data_path;
@@ -121,7 +121,9 @@ namespace mrcz
             void compress_mrcz(string field);
             template<bool measure_phase_time,bool ablation>
             void decompress_mrcz(string field);
+            template<bool measure_phase_time,bool ablation>
             void compress_fdwz(string field);
+            template<bool measure_phase_time,bool ablation>
             void decompress_fdwz(string field);
 
             // MRCZ变换
@@ -135,13 +137,6 @@ namespace mrcz
             void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
             template<bool ablation>
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
-
-            // 插值预测器的角点与residual QB布局
-            void quantize_and_overwrite_corner_numbers(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,
-                T abs_eb,T neg_2_eb);
-            void reconstruct_corner_number(int64_t *corner_qb,uint64_t begin_index,uint64_t end_index,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012,T abs_eb);
-            void convert_err_eb_to_no_corner_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012);
-            void convert_no_corner_err_eb_to_err_eb(int64_t *element_no_corner_err_qb,int64_t *element_err_qb,uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t n012);
 
             // 通用量化
             void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);

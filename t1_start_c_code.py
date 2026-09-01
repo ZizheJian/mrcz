@@ -14,20 +14,14 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 #   "MRCZ-ablation": 使用param中的MRCZ消融开关
 #   "FDWZ": 使用最大有效Huffman tree数，并在每个partition采样选择维度顺序和linear/cubic预测
 #   "FDWZ-ablation": 使用param中的FDWZ消融开关
-#   "SZ3-1D-uniform"/"SZ3-2D-uniform"/"SZ3-3D-uniform-fused"/"SZ3-3D-uniform-per-element"/"SZ3-4D-uniform": 官方SZ3 API的五种tensorization
-#   "QoZ-1D-uniform"/"QoZ-2D-uniform"/"QoZ-3D-uniform-fused"/"QoZ-3D-uniform-per-element"/"QoZ-4D-uniform": 官方QoZ 2.0 q4 API的五种tensorization
-#   "SZ2-1D-uniform"/"SZ2-2D-uniform"/"SZ2-3D-uniform-fused"/"SZ2-3D-uniform-per-element"/"SZ2-4D-uniform": 官方SZ2 API的五种tensorization
-#   "ZFP-1D-uniform"/"ZFP-2D-uniform"/"ZFP-3D-uniform-fused"/"ZFP-3D-uniform-per-element"/"ZFP-4D-uniform": 官方ZFP API的五种tensorization
-#   "SPERR-2D-uniform"/"SPERR-3D-uniform-fused"/"SPERR-3D-uniform-per-element": 官方SPERR API支持的三种tensorization
+#   "SZ3-1D"/"SZ3-2D"/"SZ3-3D-fused"/"SZ3-3D-per-element"/"SZ3-4D": 官方SZ3 API的五种tensorization
+#   "QoZ-1D"/"QoZ-2D"/"QoZ-3D-fused"/"QoZ-3D-per-element"/"QoZ-4D": 官方QoZ 2.0 q4 API的五种tensorization
+#   "SZ2-1D"/"SZ2-2D"/"SZ2-3D-fused"/"SZ2-3D-per-element"/"SZ2-4D": 官方SZ2 API的五种tensorization
+#   "ZFP-1D"/"ZFP-2D"/"ZFP-3D-fused"/"ZFP-3D-per-element"/"ZFP-4D": 官方ZFP API的五种tensorization
+#   "SPERR-2D"/"SPERR-3D-fused"/"SPERR-3D-per-element": 官方SPERR API支持的三种tensorization
 # 正式方法、外部baseline及其tensorization见README.md第5.1节。
-formal_method_list=["MRCZ","FDWZ","SZ3-4D-uniform","SZ2-3D-uniform-fused","QoZ-4D-uniform","ZFP-3D-uniform-fused","SPERR-2D-uniform"]
+formal_method_list=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
 method_list=os.environ.get("MRCZ_T1_METHODS",",".join(formal_method_list)).split(",")
-official_uniform_methods={
-    "SZ3-1D-uniform","SZ3-2D-uniform","SZ3-3D-uniform-fused","SZ3-3D-uniform-per-element","SZ3-4D-uniform",
-    "SZ2-1D-uniform","SZ2-2D-uniform","SZ2-3D-uniform-fused","SZ2-3D-uniform-per-element","SZ2-4D-uniform",
-    "QoZ-1D-uniform","QoZ-2D-uniform","QoZ-3D-uniform-fused","QoZ-3D-uniform-per-element","QoZ-4D-uniform",
-    "ZFP-1D-uniform","ZFP-2D-uniform","ZFP-3D-uniform-fused","ZFP-3D-uniform-per-element","ZFP-4D-uniform",
-    "SPERR-2D-uniform","SPERR-3D-uniform-fused","SPERR-3D-uniform-per-element"}
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
@@ -52,8 +46,8 @@ project_root=os.path.dirname(os.path.abspath(__file__))
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
 # eb_list=[1e-3]
 # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
-# SZ3-3D-uniform的相对误差为2e-3时，T的CR=26.078980036305357
-# ZFP-4D-uniform的相对误差为3.16e-1时，T的CR=27.974553
+# SZ3-3D的相对误差为2e-3时，T的CR=26.078980036305357
+# ZFP-4D的相对误差为3.16e-1时，T的CR=27.974553
 # eb_list=[1e-1,1e-2,1e-3,1e-4]
 
 test_case=os.environ.get("MRCZ_T1_DATASET","jicf0")
@@ -137,11 +131,6 @@ def parse_field_throughput(output,task):
         throughput[field]=float(segments[1].strip()[len(marker):].split()[0])
     return throughput
 
-def result_method_name(method):
-    if method in official_uniform_methods:
-        return method.replace("-uniform","")
-    return method
-
 ######## build sperr ######## sperr的CMakeLists写的有问题，需要手动安装并链接
 sperr_source_path="third_party/sperr"
 sperr_build_path="build/sperr_build"
@@ -196,7 +185,7 @@ for method in method_list:
                 compression_throughput=parse_field_throughput(compression_output,"compression")
                 decompression_throughput=parse_field_throughput(decompression_output,"decompression")
                 rate_distortion=parse_rate_distortion(decompression_output)
-                csv_method_name=result_method_name(method)
+                csv_method_name=method
                 for field,(br,psnr) in rate_distortion.items():
                     rate_distortion_path=f"{data_path}_{field}.csv"
                     write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_BR",br)

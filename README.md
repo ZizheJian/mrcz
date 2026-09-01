@@ -123,6 +123,8 @@ FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3�
 5. 量化整数按照角点及预测层分组。正式FDWZ固定使用当前element shape允许的最大Huffman tree数，最多五棵；每个partition独立建立Huffman tree，将全部Huffman metadata和payload拼接后再压缩为一个Zstd frame。
 6. partition之间彼此独立，通过OpenMP并行执行采样、预测、量化、Huffman和Zstd；解压端按相反顺序恢复Huffman符号，并在每个element内依次重建节点。
 
+FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。正式版本不包含各阶段的计时调用和计时数组；命令行使用`-measure-phase-time true`时，计时版本额外报告sampling以及预测/量化、Huffman和Zstd等阶段的累计partition CPU时间；`FDWZ-ablation`仍使用不计时版本并读取消融开关。
+
 ## 2.2. 角点与初始seed阶段
 
 | 优化或候选方案 | 状态 | 结论 |
@@ -146,7 +148,7 @@ FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3�
 | 不预测物理中点，而是预测索引中点 | **放弃** | pb0和jicf0的BR分别增加约8.4%和4.7%，说明物理距离比索引邻近更重要。 |
 | element编号方向预测 | **放弃** | 在五个数据上严格优于所有element内方向的点不足约1.1%，加入空间oracle后的总体改善很小。 |
 | 真实共享面邻居与坐标匹配预测 | **放弃当前实现方向** | 早期跨公共面实验没有优于element内预测，同时会引入邻居搜索和拓扑metadata成本。 |
-| QoZ式GLL预测路径 | **仅保留独立对照** | test0/UZ上的BR明显差于FDWZ，不作为正式优化继续。 |
+| QoZ式GLL预测路径 | **放弃并删除旧实现** | test0/UZ上的BR明显差于FDWZ，不作为正式优化继续；QoZ对照使用官方API。 |
 
 ## 2.4. 量化与residual建模阶段
 
@@ -191,6 +193,8 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 
 MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_measure_phase_time=false`时使用不含分段计时代码的正式版本；`MRCZ`且该开关为`true`时使用带分段计时的版本；`MRCZ-ablation`使用消融版本并读取`param`中的MRCZ优化开关。命令行程序可通过`-measure-phase-time true`选择计时版本。
 
+命令行消融使用`-method MRCZ-ablation`并通过`-grid-assumption`、`-transform`、`-coeff-eb-scale`、`-coefficient-transpose`和`-tiled-coefficient-transpose`设置MRCZ开关。FDWZ消融使用`-method FDWZ-ablation -max-huffman-tree false`切换到单棵Huffman tree；正式`MRCZ`和`FDWZ`使用论文采用的固定配置，不受消融开关影响。消融开关不写入metadata，因此解压消融结果时必须提供与压缩相同的参数。FDWZ为每个partition采样选出的维度顺序和linear/cubic predictor属于解码必需的算法状态，仍会随该partition的bitstream保存。
+
 ## 3.2. 变换与coefficient error bound阶段
 
 | 优化或候选方案 | 状态 | 结论 |
@@ -231,6 +235,7 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 # 4. 消融实验
 
 - 调优coefficient transpose的tile size：比较`8x8`、`16x16`、`32x32`、`64x64`和`128x128`，分别记录压缩与解压transpose阶段时间；当前`32x32`只验证过优于未分块transpose，尚未证明是最优值。同步检查各版本是否由编译器生成SIMD/AVX2指令，区分cache blocking与自动向量化的收益。
+- 测试SZ2的`SZ_compress_customize_threadsafe`：在进入OpenMP并行区前完成一次`SZ_Init()`，为各partition使用相同数据类型和ABS EB并恢复partition级并行，解压端暂时保持串行。使用不同局部值域的partition反复检查bitstream可解码性、逐点误差界限和结果稳定性，通过后再用于正式throughput实验。
 
 # 5. Rate-distortion结果
 
@@ -358,8 +363,7 @@ MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋�
 
 # 11. 投稿后或artifact阶段
 
-[ ] 7. 审计并版本化bitstream metadata，增加未知版本、截断文件、错误method和错误数据类型测试。
-       将会改变bitstream或重建结果的消融配置写入metadata，包括`transform`、`coeff_eb_scale`、是否使用coefficient-major布局和FDWZ Huffman tree数量；tiled transpose等只改变执行方式的开关无需写入。
+[ ] 7. 审计并版本化bitstream metadata，增加未知版本、截断文件、错误method和错误数据类型测试。消融配置不写入metadata，由用户保证编解码参数一致。
 
 [ ] 8. 让t1在超过error bound、重建数量错误或编解码失败时自动返回非零状态，并处理低于机器精度的EB。
 

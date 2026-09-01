@@ -3,7 +3,7 @@
 #include "sperr_compress.tpp"
 
 template<typename T>
-void sperr_decompress_field(mrcz::param_class<T> &params,mrcz::partition_class &partition,mrcz::baseline::api_layout layout,T *output,const unsigned char *compressed,size_t compressed_size)
+void sperr_decompress_field(mrcz::param_class<T> &params,mrcz::partition_class &partition,string method,T *output,const unsigned char *compressed,size_t compressed_size)
 {
     auto &header=params.header;
     size_t n0=header.c_element_shape[0];
@@ -12,19 +12,21 @@ void sperr_decompress_field(mrcz::param_class<T> &params,mrcz::partition_class &
     int is_float=is_same<T,float>::value?1:0;
     void *decompressed=nullptr;
     int status;
-    if (layout==mrcz::baseline::api_layout::elements_2d)
+    if (method=="SPERR-2D")
         status=C_API::sperr_decomp_2d(compressed,compressed_size,is_float,header.element_size,partition.element_num,&decompressed);
-    else
+    else if (method=="SPERR-3D-fused" or method=="SPERR-3D-per-element")
     {
         size_t dimx=0,dimy=0,dimz=0;
-        status=C_API::sperr_decomp_3d(compressed,compressed_size,is_float,0,&dimx,&dimy,&dimz,&decompressed);
-        size_t expected_element_num=layout==mrcz::baseline::api_layout::per_element_3d?1:partition.element_num;
+        status=C_API::sperr_decomp_3d(compressed,compressed_size,is_float,1,&dimx,&dimy,&dimz,&decompressed);
+        size_t expected_element_num=method=="SPERR-3D-per-element"?1:partition.element_num;
         if (status==0 and (dimx!=n2 or dimy!=n1 or dimz!=expected_element_num*n0))
             throw runtime_error(params.method+" bitstream尺寸不匹配");
     }
+    else
+        throw runtime_error("未知的SPERR布局: "+method);
     if (status!=0)
         throw runtime_error("SPERR解压失败，状态码="+to_string(status));
-    size_t value_num=layout==mrcz::baseline::api_layout::per_element_3d?header.element_size:partition.element_num*header.element_size;
+    size_t value_num=method=="SPERR-3D-per-element"?header.element_size:partition.element_num*header.element_size;
     memcpy(output,decompressed,value_num*sizeof(T));
     free(decompressed);
 }
@@ -35,7 +37,6 @@ void sperr_decompress(mrcz::param_class<T> &params,string field)
     auto &header=params.header;
     auto &partitions=params.partitions;
     auto &decompressed_data=params.decompressed_data;
-    auto layout=mrcz::baseline::parse_api_layout(params.method,"SPERR");
     decompressed_data.resize(params.element_num_to_process*header.element_size);
     double start_time=omp_get_wtime();
     #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
@@ -43,25 +44,22 @@ void sperr_decompress(mrcz::param_class<T> &params,string field)
     {
         auto &partition=partitions[partition_id];
         uint64_t begin=partition.begin_index*header.element_size;
-        if (layout==mrcz::baseline::api_layout::per_element_3d)
+        if (params.method=="SPERR-3D-per-element")
         {
             size_t offset=0;
-            uint64_t element_num=mrcz::baseline::read_uint64(partition.zstd_bs,offset);
-            if (element_num!=partition.element_num)
-                throw runtime_error(params.method+"逐element bitstream中的element数量不匹配");
-            for (uint64_t element_id=0;element_id<element_num;element_id++)
+            for (uint64_t element_id=0;element_id<partition.element_num;element_id++)
             {
                 uint64_t element_size=mrcz::baseline::read_uint64(partition.zstd_bs,offset);
                 if (element_size>partition.zstd_bs.size()-offset)
                     throw runtime_error(params.method+"逐element bitstream不完整");
-                sperr_decompress_field(params,partition,layout,decompressed_data.data()+begin+element_id*header.element_size,partition.zstd_bs.data()+offset,element_size);
+                sperr_decompress_field(params,partition,params.method,decompressed_data.data()+begin+element_id*header.element_size,partition.zstd_bs.data()+offset,element_size);
                 offset+=element_size;
             }
             if (offset!=partition.zstd_bs.size())
                 throw runtime_error(params.method+"逐element bitstream包含多余数据");
         }
         else
-            sperr_decompress_field(params,partition,layout,decompressed_data.data()+begin,partition.zstd_bs.data(),partition.zstd_bs.size());
+            sperr_decompress_field(params,partition,params.method,decompressed_data.data()+begin,partition.zstd_bs.data(),partition.zstd_bs.size());
     }
     double end_time=omp_get_wtime();
     printf("Decompression time= %f seconds\n",end_time-start_time);
