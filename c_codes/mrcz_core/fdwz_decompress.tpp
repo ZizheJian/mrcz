@@ -6,6 +6,7 @@
 
 namespace mrcz::detail
 {
+    // 执行单个field的完整FDWZ解压，并使用与压缩端相同的shape和配置重建全部预测plan。
     template<bool measure_phase_time,typename T>
     void fdwz_decompress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num)
     {
@@ -27,7 +28,11 @@ namespace mrcz::detail
                 corner_num*=2;
         uint32_t residual_num=n012-corner_num;
         T abs_eb=params.abs_eb[field];
+        // 总解压时间包含hierarchy、plan生成、无损解压和预测重构，与压缩端使用相同的计时边界。
+        double start_time=omp_get_wtime();
         decompressed_data.resize(params.element_num_to_process*n012);
+
+        // 解压端根据坐标和shape确定性地重建全部候选plan，bitstream只需保存每个partition选择的plan id。
         vector<vector<uint32_t>> left_indices0,right_indices0,mid_indices0,compressed_indices0;
         vector<vector<uint32_t>> left_indices1,right_indices1,mid_indices1,compressed_indices1;
         vector<vector<uint32_t>> left_indices2,right_indices2,mid_indices2,compressed_indices2;
@@ -80,7 +85,7 @@ namespace mrcz::detail
         if (huffman_tree_num<1 or huffman_tree_num>5)
             throw runtime_error("FDWZ Huffman tree数量必须为1、2、3、4或5");
         vector<uint32_t> residual_group_offsets;
-        if (huffman_tree_num>=3)
+        if (huffman_tree_num>=2)
         {
             if (prediction_level_offsets.size()<huffman_tree_num)
                 throw runtime_error("FDWZ Huffman tree数量超过当前element的角点和预测层总数");
@@ -90,7 +95,6 @@ namespace mrcz::detail
             residual_group_offsets.push_back(residual_num);
         }
         int64_t *corner_qb=huffman_tree_num==1?nullptr:new int64_t[corner_num*params.element_num_to_process];
-        int64_t *no_corner_err_qb=huffman_tree_num==2?new int64_t[params.element_num_to_process*residual_num]:nullptr;
         vector<int64_t*> residual_group_qb;
         for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
             residual_group_qb.push_back(new int64_t[params.element_num_to_process*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])]);
@@ -99,15 +103,15 @@ namespace mrcz::detail
             for (uint32_t residual_id=residual_group_offsets[group_id];residual_id<residual_group_offsets[group_id+1];residual_id++)
                 residual_group_ids[residual_id]=group_id,residual_group_local_ids[residual_id]=residual_id-residual_group_offsets[group_id];
 
-        double start_time=omp_get_wtime();
         vector<double> zstd_time(measure_phase_time?blocks.size():0,0),huffman_time(measure_phase_time?blocks.size():0,0),prediction_reconstruction_time(measure_phase_time?blocks.size():0,0);
+        // 每个partition拥有独立bitstream和不重叠的输出范围，可以并行完成解码与重构。
         #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
         for (uint64_t block_id=0;block_id<blocks.size();block_id++)
         {
             auto &block=blocks[block_id];
             uint64_t begin_index=block.begin_index;
             uint64_t end_index=block.end_index;
-            // 先无损解压
+            // 先用Zstd恢复Huffman payload，再读取首字节中的plan id。
             double phase_start_time=0;
             if constexpr(measure_phase_time)
                 phase_start_time=omp_get_wtime();
@@ -126,7 +130,6 @@ namespace mrcz::detail
             auto &block_prediction_stencils=sampled_plans[selected_plan_id].stencils;
             uint64_t element_num=end_index-begin_index;
             int64_t *block_corner_qb=huffman_tree_num==1?nullptr:corner_qb+corner_num*begin_index;
-            int64_t *block_no_corner_err_qb=huffman_tree_num==2?no_corner_err_qb+residual_num*begin_index:nullptr;
             vector<int64_t*> block_residual_group_qb;
             for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
                 block_residual_group_qb.push_back(residual_group_qb[group_id]+begin_index*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id]));
@@ -145,25 +148,17 @@ namespace mrcz::detail
                 mrcz::huffman_encoder_class<int64_t> corner_encoder;
                 corner_encoder.load(huffman_bs);
                 corner_encoder.decode(huffman_bs,block_corner_qb,corner_num*element_num);
-                if (huffman_tree_num==2)
+                for (uint32_t group_id=0;group_id<block_residual_group_qb.size();group_id++)
                 {
-                    mrcz::huffman_encoder_class<int64_t> err_encoder;
-                    err_encoder.load(huffman_bs);
-                    err_encoder.decode(huffman_bs,block_no_corner_err_qb,residual_num*element_num);
-                }
-                else
-                {
-                    for (uint32_t group_id=0;group_id<block_residual_group_qb.size();group_id++)
-                    {
-                        uint64_t group_value_num=(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])*element_num;
-                        mrcz::huffman_encoder_class<int64_t> encoder;
-                        encoder.load(huffman_bs);
-                        encoder.decode(huffman_bs,block_residual_group_qb[group_id],group_value_num);
-                    }
+                    uint64_t group_value_num=(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])*element_num;
+                    mrcz::huffman_encoder_class<int64_t> encoder;
+                    encoder.load(huffman_bs);
+                    encoder.decode(huffman_bs,block_residual_group_qb[group_id],group_value_num);
                 }
             }
             if constexpr(measure_phase_time)
                 huffman_time[block_id]=omp_get_wtime()-phase_start_time;
+            // 两个访问器隐藏一棵tree的element连续布局和多棵tree的分组布局差异。
             auto corner_qb_at=[&](uint64_t element_id,uint32_t corner_id)->int64_t
             {
                 if (huffman_tree_num==1)
@@ -174,14 +169,13 @@ namespace mrcz::detail
             {
                 if (huffman_tree_num==1)
                     return block_qb[(element_id-begin_index)*n012+corner_num+residual_id];
-                if (huffman_tree_num==2)
-                    return no_corner_err_qb[element_id*residual_num+residual_id];
                 uint32_t group_id=residual_group_ids[residual_id];
                 uint32_t group_size=residual_group_offsets[group_id+1]-residual_group_offsets[group_id];
                 return residual_group_qb[group_id][element_id*group_size+residual_group_local_ids[residual_id]];
             };
             if constexpr(measure_phase_time)
                 phase_start_time=omp_get_wtime();
+            // 先恢复角点，再按plan顺序恢复非角点，保证每个stencil引用的值都已经重构。
             for (uint64_t i=begin_index;i<end_index;i++)
                 for (uint32_t corner_id=0;corner_id<corner_num;corner_id++)
                     decompressed_data[i*n012+corner_positions[corner_id]]=corner_qb_at(i,corner_id)*2*abs_eb;
@@ -202,7 +196,6 @@ namespace mrcz::detail
         }
         double end_time=omp_get_wtime();
         delete[] corner_qb;
-        delete[] no_corner_err_qb;
         for (auto group_qb:residual_group_qb)
             delete[] group_qb;
         if constexpr(measure_phase_time)
@@ -226,6 +219,7 @@ namespace mrcz::detail
 
 namespace mrcz
 {
+    // 根据正式版或消融版配置选择Huffman tree数量，并进入FDWZ解压实现。
     template<typename T>
     template<bool measure_phase_time,bool ablation>
     void param_class<T>::decompress_fdwz(string field)

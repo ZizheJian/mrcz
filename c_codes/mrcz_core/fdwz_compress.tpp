@@ -8,6 +8,8 @@
 
 namespace mrcz::detail
 {
+    // 一维hierarchy记录每一层尚待细分的区间、最接近物理中点的预测目标，以及该层开始时已经重构的参考点。
+    // 三个坐标方向分别生成hierarchy，之后再按照不同的维度顺序组合成三维预测plan。
     template<typename T>
     void fdwz_generate_hierarchy(vector<vector<uint32_t>> &left_indices,vector<vector<uint32_t>> &right_indices,vector<vector<uint32_t>> &mid_indices,
         vector<vector<uint32_t>> &compressed_indices,vector<T> &x)
@@ -23,6 +25,7 @@ namespace mrcz::detail
                     continue;
                 uint32_t mid_index=left_index+1;
                 T ideal_mid_pos=(x[left_index]+x[right_index])/2;
+                // GLL点不均匀，因此使用物理坐标选择中点，而不是直接使用索引中点。
                 for (uint32_t j=left_index+2;j<right_index;j++)
                     if (fabs(x[j]-ideal_mid_pos)<fabs(x[mid_index]-ideal_mid_pos))
                         mid_index=j;
@@ -40,6 +43,7 @@ namespace mrcz::detail
             set<uint32_t> temp_set;
             temp_set.insert(compressed_indices.back().begin(),compressed_indices.back().end());
             temp_set.insert(mid_indices.back().begin(),mid_indices.back().end());
+            // 下一层只能引用角点和之前层级已经重构的点。
             compressed_indices.push_back(vector<uint32_t>(temp_set.begin(),temp_set.end()));
             if (new_left_indices.size()==0)
                 break;
@@ -48,6 +52,7 @@ namespace mrcz::detail
         }
     }
 
+    // 保存一个一维插值目标使用的最多四个参考点及其Lagrange权重。
     template<typename T>
     struct fdwz_interpolation_stencil
     {
@@ -56,10 +61,12 @@ namespace mrcz::detail
         T weights[4]={0,0,0,0};
     };
 
+    // 为一维hierarchy的每个目标生成linear或边界自适应的cubic插值stencil。
     template<typename T>
     vector<vector<fdwz_interpolation_stencil<T>>> fdwz_generate_interpolation_stencils(vector<vector<uint32_t>> &left_indices,vector<vector<uint32_t>> &right_indices,
         vector<vector<uint32_t>> &mid_indices,vector<vector<uint32_t>> &compressed_indices,vector<T> &x,bool use_cubic)
     {
+        // linear固定使用区间两端；cubic优先使用两侧各一个外点，边界处自动降为三点或两点插值。
         vector<vector<fdwz_interpolation_stencil<T>>> stencils(mid_indices.size());
         for (uint32_t level=0;level<mid_indices.size();level++)
         {
@@ -104,6 +111,7 @@ namespace mrcz::detail
                         stencil.indices[2]=outer_right;
                     }
                 }
+                // 在真实GLL坐标上预计算Lagrange插值权重，压缩和解压必须使用同一组确定性权重。
                 for (uint32_t i=0;i<stencil.point_num;i++)
                 {
                     stencil.weights[i]=1;
@@ -116,8 +124,10 @@ namespace mrcz::detail
         return stencils;
     }
 
+    // 返回一个element中所有不重复角点的C-order线性位置。
     inline vector<uint32_t> fdwz_generate_corner_positions(uint32_t n0,uint32_t n1,uint32_t n2)
     {
+        // 长度为1的维度只有一个端点，因此1D/2D退化element不会生成重复角点。
         vector<uint32_t> indices0=n0==1?vector<uint32_t>{0}:vector<uint32_t>{0,n0-1};
         vector<uint32_t> indices1=n1==1?vector<uint32_t>{0}:vector<uint32_t>{0,n1-1};
         vector<uint32_t> indices2=n2==1?vector<uint32_t>{0}:vector<uint32_t>{0,n2-1};
@@ -129,15 +139,18 @@ namespace mrcz::detail
         return positions;
     }
 
+    // 保存三维element内一个预测目标、参考点位置及对应权重。
     template<typename T>
     struct fdwz_prediction_stencil
     {
+        // target和indices都是单个element内的C-order线性位置。
         uint32_t target=0;
         uint32_t point_num=0;
         uint32_t indices[4]={0,0,0,0};
         T weights[4]={0,0,0,0};
     };
 
+    // 使用已经重构的element值和预计算stencil计算一个目标的预测值。
     template<typename T>
     inline T fdwz_predict_from_stencil(T *element,fdwz_prediction_stencil<T> &stencil)
     {
@@ -147,6 +160,7 @@ namespace mrcz::detail
         return prediction;
     }
 
+    // 按指定维度顺序把三个一维hierarchy展开为覆盖所有非角点的三维预测序列。
     template<typename T>
     vector<fdwz_prediction_stencil<T>> fdwz_generate_prediction_stencils(uint32_t n0,uint32_t n1,uint32_t n2,uint32_t n12,uint32_t max_level,
         vector<vector<uint32_t>> &mid_indices0,vector<vector<uint32_t>> &compressed_indices0,vector<vector<fdwz_interpolation_stencil<T>>> &interpolation_stencils0,
@@ -154,6 +168,7 @@ namespace mrcz::detail
         vector<vector<uint32_t>> &mid_indices2,vector<vector<uint32_t>> &compressed_indices2,vector<vector<fdwz_interpolation_stencil<T>>> &interpolation_stencils2,
         vector<uint32_t> &level_offsets,vector<uint32_t> dimension_order)
     {
+        // 每个全局level依次推进三个维度。dimension_order决定同一level内哪个方向先产生可供后续方向引用的新点。
         vector<fdwz_prediction_stencil<T>> stencils;
         level_offsets={0};
         uint32_t level0=0,level1=0,level2=0;
@@ -215,6 +230,7 @@ namespace mrcz::detail
             }
             level_offsets.push_back(stencils.size());
         }
+        // plan必须恰好覆盖所有非角点，并且每个target只能出现一次；后面的residual_id依赖这个顺序。
         uint32_t n012=n0*n1*n2;
         vector<uint32_t> corner_positions=fdwz_generate_corner_positions(n0,n1,n2);
         if (stencils.size()!=n012-corner_positions.size())
@@ -231,18 +247,22 @@ namespace mrcz::detail
         return stencils;
     }
 
+    // 保存一个partition候选方案的完整预测序列和Huffman分层边界。
     template<typename T>
     struct fdwz_prediction_plan
     {
+        // level_offsets既描述预测层边界，也用于把不同层的residual QB分配给多棵Huffman tree。
         vector<uint32_t> level_offsets;
         vector<fdwz_prediction_stencil<T>> stencils;
     };
 
+    // 返回三维坐标方向的全部六种执行顺序。
     inline vector<vector<uint32_t>> fdwz_all_dimension_orders()
     {
         return {{0,1,2},{0,2,1},{1,0,2},{1,2,0},{2,0,1},{2,1,0}};
     }
 
+    // 在抽样element上执行预测、量化、Huffman和Zstd，以最终字节数评价一个候选plan。
     template<typename T>
     uint64_t fdwz_sample_compressed_size(vector<T> &original_sample,uint32_t n012,vector<uint32_t> &corner_positions,fdwz_prediction_plan<T> &plan,
         vector<uint32_t> &residual_group_offsets,uint32_t huffman_tree_num,T abs_eb,unsigned char configuration)
@@ -251,6 +271,7 @@ namespace mrcz::detail
         uint32_t corner_num=corner_positions.size();
         uint32_t residual_num=n012-corner_num;
         T neg_2_eb=1/(2*abs_eb);
+        // 预测会原地写入重构值；每个候选plan必须从完全相同的原始sample开始。
         vector<T> sample=original_sample;
         vector<int64_t> corner_qb(sample_num*corner_num),residual_qb(sample_num*residual_num);
         for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
@@ -272,6 +293,7 @@ namespace mrcz::detail
                 element[stencil.target]=prediction-qb*2*abs_eb;
             }
         }
+        // 一棵tree时按element存放全部QB；两棵tree时分离角点和residual；更多tree再按预测层拆分residual。
         vector<vector<int64_t>> tree_qb(huffman_tree_num);
         if (huffman_tree_num==1)
         {
@@ -285,17 +307,15 @@ namespace mrcz::detail
         else
         {
             tree_qb[0]=move(corner_qb);
-            if (huffman_tree_num==2)
-                tree_qb[1]=move(residual_qb);
-            else
-                for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
-                {
-                    uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
-                    tree_qb[group_id+1].resize(sample_num*group_size);
-                    for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
-                        copy(residual_qb.begin()+sample_id*residual_num+group_begin,residual_qb.begin()+sample_id*residual_num+group_begin+group_size,tree_qb[group_id+1].begin()+sample_id*group_size);
-                }
+            for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
+            {
+                uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
+                tree_qb[group_id+1].resize(sample_num*group_size);
+                for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
+                    copy(residual_qb.begin()+sample_id*residual_num+group_begin,residual_qb.begin()+sample_id*residual_num+group_begin+group_size,tree_qb[group_id+1].begin()+sample_id*group_size);
+            }
         }
+        // sample评分使用保守的临时空间；首字节保存当前候选plan id，供Zstd评分包含相同的metadata开销。
         vector<unsigned char> huffman_bs_vec(sample_num*n012*20+4096*huffman_tree_num+1);
         unsigned char *huffman_bs=huffman_bs_vec.data();
         *huffman_bs++=configuration;
@@ -314,6 +334,7 @@ namespace mrcz::detail
         return zstd_bs_len;
     }
 
+    // 执行单个field的完整FDWZ压缩；模板参数决定是否编译分段计时代码。
     template<bool measure_phase_time,typename T>
     void fdwz_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num)
     {
@@ -336,6 +357,10 @@ namespace mrcz::detail
         uint32_t residual_num=n012-corner_num;
         T abs_eb=params.abs_eb[field];
         T neg_2_eb=1/(2*abs_eb);
+        // 总压缩时间包含hierarchy、plan生成、采样、预测量化和无损压缩。
+        double start_time=omp_get_wtime();
+
+        // 分别建立三个坐标方向的物理中点hierarchy。长度为1的方向只有一个始终可用的坐标点。
         vector<vector<uint32_t>> left_indices0,right_indices0,mid_indices0,compressed_indices0;
         vector<vector<uint32_t>> left_indices1,right_indices1,mid_indices1,compressed_indices1;
         vector<vector<uint32_t>> left_indices2,right_indices2,mid_indices2,compressed_indices2;
@@ -364,7 +389,8 @@ namespace mrcz::detail
         }
         uint32_t max_level=max(max(mid_indices0.size(),mid_indices1.size()),mid_indices2.size());
         vector<uint32_t> corner_positions=fdwz_generate_corner_positions(n0,n1,n2);
-        double start_time=omp_get_wtime();
+
+        // 预先构造6种维度顺序乘以linear/cubic两种插值方式，共12个确定性的候选plan。
         vector<fdwz_prediction_plan<T>> sampled_plans;
         auto all_orders=fdwz_all_dimension_orders();
         for (uint32_t cubic_id=0;cubic_id<2;cubic_id++)
@@ -384,12 +410,13 @@ namespace mrcz::detail
             }
         }
         auto &prediction_level_offsets=sampled_plans[0].level_offsets;
+        // 0表示正式版自动选择最多5棵tree；消融版可以强制只使用一棵tree。
         if (huffman_tree_num==0)
             huffman_tree_num=min<uint32_t>(5,prediction_level_offsets.size());
         if (huffman_tree_num<1 or huffman_tree_num>5)
             throw runtime_error("FDWZ Huffman tree数量必须为1、2、3、4或5");
         vector<uint32_t> residual_group_offsets;
-        if (huffman_tree_num>=3)
+        if (huffman_tree_num>=2)
         {
             if (prediction_level_offsets.size()<huffman_tree_num)
                 throw runtime_error("FDWZ Huffman tree数量超过当前element的角点和预测层总数");
@@ -402,6 +429,7 @@ namespace mrcz::detail
         double sampling_start_time=0;
         if constexpr(measure_phase_time)
             sampling_start_time=omp_get_wtime();
+        // 每个partition独立采样，因此既可以并行，也可以为不同空间区域选择不同plan。
         #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
         for (uint64_t block_id=0;block_id<blocks.size();block_id++)
         {
@@ -422,6 +450,7 @@ namespace mrcz::detail
                 if (candidate_size<best_size)
                     best_size=candidate_size,best_plan_id=plan_id;
             }
+            // 当前策略只测试最佳linear维度顺序对应的cubic版本，而不是再次测试全部6个cubic顺序。
             uint32_t cubic_plan_id=best_plan_id+6;
             uint64_t cubic_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[cubic_plan_id],residual_group_offsets,huffman_tree_num,abs_eb,cubic_plan_id);
             if (cubic_size<best_size)
@@ -439,8 +468,8 @@ namespace mrcz::detail
             if (configuration_counts[plan_id]>0)
                 printf(" %c%c%c-%s=%lu","XYZ"[all_orders[plan_id%6][0]],"XYZ"[all_orders[plan_id%6][1]],"XYZ"[all_orders[plan_id%6][2]],plan_id<6?"linear":"cubic",configuration_counts[plan_id]);
         printf("\n");
+        // 多棵tree需要按类型或预测层聚集QB；一棵tree时则直接使用每个partition自己的block_qb。
         int64_t *corner_qb=huffman_tree_num==1?nullptr:new int64_t[corner_num*params.element_num_to_process];
-        int64_t *no_corner_err_qb=huffman_tree_num==2?new int64_t[params.element_num_to_process*residual_num]:nullptr;
         vector<int64_t*> residual_group_qb;
         for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
             residual_group_qb.push_back(new int64_t[params.element_num_to_process*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])]);
@@ -449,6 +478,7 @@ namespace mrcz::detail
             for (uint32_t residual_id=residual_group_offsets[group_id];residual_id<residual_group_offsets[group_id+1];residual_id++)
                 residual_group_ids[residual_id]=group_id,residual_group_local_ids[residual_id]=residual_id-residual_group_offsets[group_id];
         vector<double> prediction_quantization_time(measure_phase_time?blocks.size():0,0),huffman_time(measure_phase_time?blocks.size():0,0),zstd_time(measure_phase_time?blocks.size():0,0);
+        // partition覆盖互不重叠的element范围，因此各线程可以安全地原地覆盖data并写入各自的bitstream。
         #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
         for (uint64_t block_id=0;block_id<blocks.size();block_id++) //这个block_id是假的，指的是在需要处理的blocks中的编号，而不是header文件中的编号
         {
@@ -459,7 +489,6 @@ namespace mrcz::detail
             auto &block_prediction_stencils=sampled_plans[selected_plan_ids[block_id]].stencils;
             vector<int64_t> block_qb(huffman_tree_num==1?n012*element_num:0);
             int64_t *block_corner_qb=huffman_tree_num==1?nullptr:corner_qb+corner_num*begin_index;
-            int64_t *block_no_corner_err_qb=huffman_tree_num==2?no_corner_err_qb+begin_index*residual_num:nullptr;
             vector<int64_t*> block_residual_group_qb;
             for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
                 block_residual_group_qb.push_back(residual_group_qb[group_id]+begin_index*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id]));
@@ -476,12 +505,11 @@ namespace mrcz::detail
             {
                 if (huffman_tree_num==1)
                     return block_qb[(element_id-begin_index)*n012+corner_num+residual_id];
-                if (huffman_tree_num==2)
-                    return no_corner_err_qb[element_id*residual_num+residual_id];
                 uint32_t group_id=residual_group_ids[residual_id];
                 uint32_t group_size=residual_group_offsets[group_id+1]-residual_group_offsets[group_id];
                 return residual_group_qb[group_id][element_id*group_size+residual_group_local_ids[residual_id]];
             };
+            // 角点不依赖预测，先绝对量化；随后严格按照plan顺序预测非角点并立即写回重构值。
             for (uint64_t i=begin_index;i<end_index;i++)
                 for (uint32_t corner_id=0;corner_id<corner_num;corner_id++)
                 {
@@ -503,7 +531,7 @@ namespace mrcz::detail
             }
             if constexpr(measure_phase_time)
                 prediction_quantization_time[block_id]=omp_get_wtime()-phase_start_time;
-            // 把两种qb无损压缩到一起
+            // payload首字节记录该partition选择的plan；后续依次保存各棵Huffman tree及其编码数据。
             vector<unsigned char> huffman_bs_vec(n012*element_num*sizeof(int64_t)+1);
             unsigned char *huffman_bs=huffman_bs_vec.data();
             *huffman_bs++=selected_plan_ids[block_id];
@@ -522,23 +550,13 @@ namespace mrcz::detail
                 corner_encoder.preprocess_encode(block_corner_qb,corner_num*element_num);
                 corner_encoder.save(huffman_bs);
                 corner_encoder.encode(block_corner_qb,corner_num*element_num,huffman_bs);
-                if (huffman_tree_num==2)
+                for (uint32_t group_id=0;group_id<block_residual_group_qb.size();group_id++)
                 {
-                    mrcz::huffman_encoder_class<int64_t> err_encoder;
-                    err_encoder.preprocess_encode(block_no_corner_err_qb,residual_num*element_num);
-                    err_encoder.save(huffman_bs);
-                    err_encoder.encode(block_no_corner_err_qb,residual_num*element_num,huffman_bs);
-                }
-                else
-                {
-                    for (uint32_t group_id=0;group_id<block_residual_group_qb.size();group_id++)
-                    {
-                        uint64_t group_value_num=(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])*element_num;
-                        mrcz::huffman_encoder_class<int64_t> encoder;
-                        encoder.preprocess_encode(block_residual_group_qb[group_id],group_value_num);
-                        encoder.save(huffman_bs);
-                        encoder.encode(block_residual_group_qb[group_id],group_value_num,huffman_bs);
-                    }
+                    uint64_t group_value_num=(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])*element_num;
+                    mrcz::huffman_encoder_class<int64_t> encoder;
+                    encoder.preprocess_encode(block_residual_group_qb[group_id],group_value_num);
+                    encoder.save(huffman_bs);
+                    encoder.encode(block_residual_group_qb[group_id],group_value_num,huffman_bs);
                 }
             }
             if constexpr(measure_phase_time)
@@ -556,6 +574,7 @@ namespace mrcz::detail
         double end_time=omp_get_wtime();
         if constexpr(measure_phase_time)
         {
+            // 分段时间是所有partition的CPU时间之和；Compression time则是包含并行加速后的wall time。
             double total_prediction_quantization_time=0,total_huffman_time=0,total_zstd_time=0;
             for(uint64_t block_id=0;block_id<blocks.size();block_id++)
             {
@@ -572,7 +591,6 @@ namespace mrcz::detail
         printf("Compression time= %f seconds\n",end_time-start_time);
         printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
         delete[] corner_qb;
-        delete[] no_corner_err_qb;
         for (auto group_qb:residual_group_qb)
             delete[] group_qb;
     }
@@ -580,10 +598,12 @@ namespace mrcz::detail
 
 namespace mrcz
 {
+    // 根据正式版或消融版配置选择Huffman tree数量，并进入FDWZ压缩实现。
     template<typename T>
     template<bool measure_phase_time,bool ablation>
     void param_class<T>::compress_fdwz(string field)
     {
+        // 正式FDWZ忽略消融开关并使用自动tree数量；FDWZ-ablation才读取if_max_huffman_tree。
         uint32_t huffman_tree_num=0;
         if constexpr(ablation)
             huffman_tree_num=if_max_huffman_tree?0:1;
