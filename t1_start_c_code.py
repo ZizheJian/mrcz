@@ -62,7 +62,7 @@ elif test_case=="jicf0":
     eb_list=[1e-4,1e-5,1e-6,1e-7,1e-8]
 else:
     raise ValueError(f"未知的MRCZ_T1_DATASET: {test_case}")
-max_cpus_list=[128]
+max_cpus_list=[int(max_cpus) for max_cpus in os.environ.get("MRCZ_T1_MAX_CPUS","128").split(",") if max_cpus]
 if "MRCZ_T1_FIELDS" in os.environ:
     fields=[field for field in os.environ["MRCZ_T1_FIELDS"].split(",") if field]
 if "MRCZ_T1_EBS" in os.environ:
