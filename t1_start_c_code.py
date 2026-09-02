@@ -21,7 +21,8 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 #   "SPERR-2D"/"SPERR-3D-fused"/"SPERR-3D-per-element": 官方SPERR API支持的三种tensorization
 # 正式方法、外部baseline及其tensorization见README.md第5.1节。
 formal_method_list=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
-method_list=os.environ.get("MRCZ_T1_METHODS",",".join(formal_method_list)).split(",")
+layout_list=["1D","2D","3D-fused","3D-per-element","4D"]
+small_method_list=["MRCZ","FDWZ"]+[f"{compressor}-{layout}" for compressor in ["SZ3","SZ2","QoZ","ZFP"] for layout in layout_list]+["SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"]
 eb_mode="REL"
 write_to_csv=True
 cleanup_after_each_test=True
@@ -51,17 +52,51 @@ project_root=os.path.dirname(os.path.abspath(__file__))
 # eb_list=[1e-1,1e-2,1e-3,1e-4]
 
 test_case=os.environ.get("MRCZ_T1_DATASET","jicf0")
-format="nekrs"
 if test_case=="pb0":
+    format="nekrs"
     data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8
     fields=["UX","UY","UZ","P","T"]
     eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
 elif test_case=="jicf0":
+    format="nekrs"
     data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
     fields=["UX","UY","UZ","P","S00"]
     eb_list=[1e-4,1e-5,1e-6,1e-7,1e-8]
+elif test_case=="mixlay0":
+    format="nekrs"
+    data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001")
+    fields=["UX","UY","P","T","S00","S01"]
+    eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
+elif test_case=="test0":
+    format="nekrs"
+    data_path=os.path.join(project_root,"third_party/fld_pyutils/demos/data/test0.f00001")
+    fields=["UZ","T","S00","S01"]
+    eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
+elif test_case=="tc_channel0":
+    format="nekrs"
+    data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/tc_channel0.f00001")
+    fields=["UX","UY","UZ"]
+    eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
+elif test_case=="mfem_ex0":
+    format="mfem"
+    data_path=os.path.join(project_root,"build/mfem_build/examples/ex0examples/sol.gf")
+    mesh_path=os.path.join(project_root,"build/mfem_build/examples/ex0examples/mesh.mesh")
+    eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
+elif test_case=="mfem_ex1":
+    format="mfem"
+    data_path=os.path.join(project_root,"build/mfem_build/examples/ex1examples/sol.gf")
+    mesh_path=os.path.join(project_root,"build/mfem_build/examples/ex1examples/refined.mesh")
+    eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
+elif test_case=="nektar_cylinder":
+    format="nektar++"
+    data_path=os.path.join(project_root,"third_party/flow-stability-cylinder/tutorial/base/Cylinder-Base.vtu")
+    fields=["p","u","v"]
+    eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
 else:
     raise ValueError(f"未知的MRCZ_T1_DATASET: {test_case}")
+small_test_cases={"mixlay0","test0","tc_channel0","mfem_ex0","mfem_ex1","nektar_cylinder"}
+default_method_list=small_method_list if test_case in small_test_cases else formal_method_list
+method_list=os.environ.get("MRCZ_T1_METHODS",",".join(default_method_list)).split(",")
 max_cpus_list=[int(max_cpus) for max_cpus in os.environ.get("MRCZ_T1_MAX_CPUS","128").split(",") if max_cpus]
 if "MRCZ_T1_FIELDS" in os.environ:
     fields=[field for field in os.environ["MRCZ_T1_FIELDS"].split(",") if field]

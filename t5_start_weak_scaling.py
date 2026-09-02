@@ -1,7 +1,7 @@
 # 功能：在固定目标PSNR和完整RD确定的计算精度下测试正式方法的单节点weak scaling。
 # 最大CPU处理完整数据；较少CPU处理固定全局partition网格中的多个区间，并按总原始字节数/总内部时间汇总。
 
-import argparse,csv,glob,math,os,re,subprocess
+import argparse,csv,glob,math,os,re,statistics,subprocess
 
 project_root=os.path.dirname(os.path.abspath(__file__))
 result_dir=os.path.join(project_root,"results","weak_scaling")
@@ -105,18 +105,20 @@ def run_command(args,log_file):
         raise subprocess.CalledProcessError(result.returncode,args,output=result.stdout)
     return ansi_pattern.sub("",result.stdout)
 
-def make_args(config,task,method,field,cpus,element_begin,element_end,abs_eb):
+def make_args(config,task,method,field,cpus,element_begin,element_end,abs_eb,measure_phase_time):
     args=[os.path.join(project_root,"install/bin",f"mrcz_{task}"),"-format","nekrs","-i",config["data_path"],"-M","ABS",f"{abs_eb:.17g}","-method",method,"-max-cpus",str(cpus),"-partition-num",str(cpus),"-elements",f"[{element_begin},{element_end})","-fields",f"[{field}]"]
+    if measure_phase_time:
+        args.extend(["-measure-phase-time","true"])
     if task=="compress":
         args.extend(["-compute-precision",config["precision"][method],"-constant-compression","false"])
     return args
 
-def run_case(config,dataset,method,field,cpus,group_index,trial,log_file):
+def run_case(config,dataset,method,field,cpus,group_index,trial,measure_phase_time,log_file):
     global_begin,global_end,element_begin,element_end=group_element_range(config,cpus,group_index)
     abs_eb=config["abs_eb"][method][field]
     cleanup(config,method,field)
-    compression_output=run_command(make_args(config,"compress",method,field,cpus,element_begin,element_end,abs_eb),log_file)
-    decompression_output=run_command(make_args(config,"decompress",method,field,cpus,element_begin,element_end,abs_eb),log_file)
+    compression_output=run_command(make_args(config,"compress",method,field,cpus,element_begin,element_end,abs_eb,measure_phase_time),log_file)
+    decompression_output=run_command(make_args(config,"decompress",method,field,cpus,element_begin,element_end,abs_eb,measure_phase_time),log_file)
     compression_cpus=int(extract(compression_output,r"Max CPUs= ([0-9]+)","compression actual CPUs"))
     decompression_cpus=int(extract(decompression_output,r"Max CPUs= ([0-9]+)","decompression actual CPUs"))
     if compression_cpus!=cpus or decompression_cpus!=cpus:
@@ -155,7 +157,7 @@ def write_raw_rows(path,rows):
         writer.writeheader()
         writer.writerows(rows)
 
-def write_summaries(rows,config,dataset):
+def write_summaries(rows,config,dataset,result_tag):
     summary=[]
     quality=[]
     cpu_counts=[1,2,4,8,16,32,64]+([128] if config["max_cpus"]==128 else [])
@@ -172,8 +174,15 @@ def write_summaries(rows,config,dataset):
                 continue
             compression=sum(row["Raw Bytes"] for row in group)/sum(row["Compression Time"] for row in group)/1024/1024
             decompression=sum(row["Raw Bytes"] for row in group)/sum(row["Decompression Time"] for row in group)/1024/1024
+            trial_compression=[]
+            trial_decompression=[]
+            for trial in sorted({row["Trial"] for row in group}):
+                trial_group=[row for row in group if row["Trial"]==trial]
+                trial_raw_bytes=sum(row["Raw Bytes"] for row in trial_group)
+                trial_compression.append(trial_raw_bytes/sum(row["Compression Time"] for row in trial_group)/1024/1024/cpus/baseline_compression)
+                trial_decompression.append(trial_raw_bytes/sum(row["Decompression Time"] for row in trial_group)/1024/1024/cpus/baseline_decompression)
             value_num=sum(row["Value Num"] for row in group)
-            summary.append({"Dataset":dataset,"Target PSNR":config["target_psnr"],"Method":method,"CPUs":cpus,"Samples":len(group),"Sampled Element Num":sum(row["Element Num"] for row in group),"Compression Throughput MB/s":compression,"Decompression Throughput MB/s":decompression,"Compression Throughput Per CPU MB/s":compression/cpus,"Decompression Throughput Per CPU MB/s":decompression/cpus,"Compression Efficiency":compression/cpus/baseline_compression,"Decompression Efficiency":decompression/cpus/baseline_decompression,"Aggregate BR":sum(row["BR"]*row["Value Num"] for row in group)/value_num})
+            summary.append({"Dataset":dataset,"Target PSNR":config["target_psnr"],"Method":method,"CPUs":cpus,"Samples":len(group),"Sampled Element Num":sum(row["Element Num"] for row in group),"Compression Throughput MB/s":compression,"Decompression Throughput MB/s":decompression,"Compression Throughput Per CPU MB/s":compression/cpus,"Decompression Throughput Per CPU MB/s":decompression/cpus,"Compression Efficiency":compression/cpus/baseline_compression,"Compression Efficiency Std Dev":statistics.stdev(trial_compression) if len(trial_compression)>1 else 0,"Decompression Efficiency":decompression/cpus/baseline_decompression,"Decompression Efficiency Std Dev":statistics.stdev(trial_decompression) if len(trial_decompression)>1 else 0,"Aggregate BR":sum(row["BR"]*row["Value Num"] for row in group)/value_num})
             for field in config["fields"]:
                 field_group=[row for row in group if row["Field"]==field]
                 if not field_group:
@@ -181,8 +190,9 @@ def write_summaries(rows,config,dataset):
                 field_values=sum(row["Value Num"] for row in field_group)
                 mse=sum(row["MSE"]*row["Value Num"] for row in field_group)/field_values
                 quality.append({"Dataset":dataset,"Target PSNR":config["target_psnr"],"Method":method,"Field":field,"CPUs":cpus,"REL EB from full RD":field_group[0]["REL EB from full RD"],"ABS EB":field_group[0]["ABS EB"],"Aggregate BR":sum(row["BR"]*row["Value Num"] for row in field_group)/field_values,"Aggregate MSE":mse,"PSNR using full range":20*math.log10(config["ranges"][field])-10*math.log10(mse),"Max Error":max(row["Max Error"] for row in field_group)})
-    summary_path=os.path.join(result_dir,f"weak_{dataset}_summary.csv")
-    quality_path=os.path.join(result_dir,f"weak_{dataset}_quality.csv")
+    tag=f"_{result_tag}" if result_tag else ""
+    summary_path=os.path.join(result_dir,f"weak_{dataset}{tag}_summary.csv")
+    quality_path=os.path.join(result_dir,f"weak_{dataset}{tag}_quality.csv")
     if summary:
         with open(summary_path,"w",newline="") as f:
             writer=csv.DictWriter(f,fieldnames=list(summary[0]))
@@ -199,20 +209,32 @@ def main():
     parser.add_argument("dataset",choices=sorted(datasets))
     parser.add_argument("--dry-run",action="store_true")
     parser.add_argument("--methods",default=",".join(methods))
+    parser.add_argument("--cpu-counts")
     parser.add_argument("--append-existing",action="store_true")
+    parser.add_argument("--result-tag",default="")
+    parser.add_argument("--measure-phase-time",action="store_true")
     args=parser.parse_args()
+    if args.result_tag and re.fullmatch(r"[A-Za-z0-9_-]+",args.result_tag) is None:
+        raise ValueError("--result-tag只能包含字母、数字、下划线和连字符")
     config=datasets[args.dataset]
     selected_methods=[method for method in args.methods.split(",") if method]
     unknown_methods=[method for method in selected_methods if method not in methods]
     if unknown_methods:
         raise ValueError(f"未知方法: {unknown_methods}")
-    cpu_counts=[1,2,4,8,16,32,64]+([128] if config["max_cpus"]==128 else [])
+    available_cpu_counts=[1,2,4,8,16,32,64]+([128] if config["max_cpus"]==128 else [])
+    cpu_counts=available_cpu_counts if args.cpu_counts is None else [int(value) for value in args.cpu_counts.split(",") if value]
+    if not cpu_counts:
+        raise ValueError("--cpu-counts不能为空")
+    unknown_cpu_counts=[cpus for cpus in cpu_counts if cpus not in available_cpu_counts]
+    if unknown_cpu_counts:
+        raise ValueError(f"不支持的CPU数量: {unknown_cpu_counts}")
     if args.dry_run:
         for cpus in cpu_counts:
             print(cpus,selected_groups(config["max_cpus"],cpus),[group_element_range(config,cpus,index) for index in selected_groups(config["max_cpus"],cpus)])
         return
-    raw_path=os.path.join(result_dir,f"weak_{args.dataset}_raw.csv")
-    log_path=os.path.join(result_dir,f"weak_{args.dataset}_raw.log")
+    tag=f"_{args.result_tag}" if args.result_tag else ""
+    raw_path=os.path.join(result_dir,f"weak_{args.dataset}{tag}_raw.csv")
+    log_path=os.path.join(result_dir,f"weak_{args.dataset}{tag}_raw.log")
     rows=[]
     if args.append_existing and os.path.isfile(raw_path):
         with open(raw_path,newline="") as f:
@@ -232,11 +254,11 @@ def main():
                         key=method,field,cpus,trial,element_begin,element_end
                         if key in existing_keys:
                             continue
-                        row=run_case(config,args.dataset,method,field,cpus,group_index,trial,log_file)
+                        row=run_case(config,args.dataset,method,field,cpus,group_index,trial,args.measure_phase_time,log_file)
                         rows.append(row)
                         existing_keys.add(key)
                         write_raw_rows(raw_path,rows)
-                        write_summaries(rows,config,args.dataset)
+                        write_summaries(rows,config,args.dataset,args.result_tag)
 
 if __name__=="__main__":
     main()

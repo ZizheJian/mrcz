@@ -21,9 +21,12 @@ def draw_panel(parts,rows,title,metric,x,y,w,h):
     cpu_values=sorted({int(row["CPUs"]) for row in rows})
     x_index={cpus:index for index,cpus in enumerate(cpu_values)}
     x_scale=lambda cpus:left+(right-left)*x_index[cpus]/(len(cpu_values)-1)
-    y_scale=lambda value:bottom-(bottom-top)*value/1.05
+    error_metric=metric+" Std Dev"
+    y_max=max(1.05,max(float(row[metric])+float(row.get(error_metric,0) or 0) for row in rows)*1.05)
+    y_scale=lambda value:bottom-(bottom-top)*value/y_max
     parts.append(svg_text((left+right)/2,y+20,title,18,weight="bold"))
-    for value in [0,0.25,0.5,0.75,1.0]:
+    for index in range(5):
+        value=y_max*index/4
         py=y_scale(value)
         parts.append(f'<line x1="{left}" y1="{py}" x2="{right}" y2="{py}" stroke="#d1d5db" stroke-width="1"/>')
         parts.append(svg_text(left-10,py+5,f"{value:.2f}",13,anchor="end"))
@@ -44,7 +47,15 @@ def draw_panel(parts,rows,title,metric,x,y,w,h):
         parts.append(f'<polyline points="{points}" fill="none" stroke="{colors[method]}" stroke-width="{stroke_width}" stroke-linejoin="round" stroke-linecap="round"/>')
         for row in method_rows:
             px=x_scale(int(row["CPUs"]))
-            py=y_scale(float(row[metric]))
+            value=float(row[metric])
+            error=float(row.get(error_metric,0) or 0)
+            py=y_scale(value)
+            if error>0:
+                error_top=y_scale(min(value+error,y_max))
+                error_bottom=y_scale(max(value-error,0))
+                parts.append(f'<line x1="{px}" y1="{error_top}" x2="{px}" y2="{error_bottom}" stroke="{colors[method]}" stroke-width="1.4"/>')
+                parts.append(f'<line x1="{px-4}" y1="{error_top}" x2="{px+4}" y2="{error_top}" stroke="{colors[method]}" stroke-width="1.4"/>')
+                parts.append(f'<line x1="{px-4}" y1="{error_bottom}" x2="{px+4}" y2="{error_bottom}" stroke="{colors[method]}" stroke-width="1.4"/>')
             radius=4.5 if method=="MRCZ" else 3.2
             parts.append(f'<circle cx="{px}" cy="{py}" r="{radius}" fill="{colors[method]}"/>')
 
@@ -67,7 +78,8 @@ def main():
     draw_panel(parts,datasets["pb0"],"pb0 decompression","Decompression Efficiency",35,470,panel_width,panel_height)
     draw_panel(parts,datasets["jicf0"],"jicf0 decompression","Decompression Efficiency",620,470,panel_width,panel_height)
     parts.extend(["</g>","</svg>"])
-    output_path=os.path.join(result_dir,"weak_scaling_efficiency.svg")
+    output_name=os.environ.get("MRCZ_WEAK_SCALING_OUTPUT","weak_scaling_efficiency.svg")
+    output_path=os.path.join(result_dir,output_name)
     with open(output_path,"w") as f:
         f.write("\n".join(parts)+"\n")
     print(output_path)

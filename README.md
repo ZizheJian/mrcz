@@ -19,7 +19,11 @@
 |---|---|
 | `read_nekrs_header.py` | 解析NekRS field文件头，返回字节序、数据精度、element shape、element数量和field信息。 |
 | `interpolate_br_at_psnr.py` | 整理BR--PSNR曲线，并线性插值得到指定PSNR下的BR。 |
+| `plot_small_rd_throughput.py` | 根据18个小数据field的正式CSV生成RD、压缩吞吐和解压吞吐汇总图。 |
+| `plot_large_throughput.py` | 根据pb0和jicf0的正式CSV生成压缩与解压throughput汇总图。 |
 | `plot_weak_scaling.py` | 根据weak scaling summary CSV生成`results/weak_scaling/weak_scaling_efficiency.svg`。 |
+| `plot_weak_scaling_dataset.py` | 为pb0或jicf0单独生成带误差棒的weak scaling efficiency图。 |
+| `plot_weak_scaling_throughput.py` | 根据weak scaling summary CSV生成pb0和jicf0的总throughput汇总图。 |
 
 ## 安装
 
@@ -263,7 +267,7 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 | MFEM ex1 | no_name_field |
 | Nektar++ cylinder | p、u、v |
 
-实验比较MRCZ、FDWZ以及官方SZ3、SZ2、QoZ、ZFP和SPERR API。每个case使用完整field、1 CPU和1个partition，REL EB为`1e-2`、`1e-3`、`1e-4`、`1e-5`和`1e-6`。各官方API可用的布局如下：
+实验比较MRCZ、FDWZ以及官方SZ3、SZ2、QoZ、ZFP和SPERR API。每个case使用完整field、1 CPU和1个partition，REL EB为`1e-2`、`1e-3`、`1e-4`、`1e-5`和`1e-6`；正式结果重测同样固定使用1 CPU。各官方API可用的布局如下：
 
 | 官方API | 1D | 2D | fused 3D | per-element 3D | 4D |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -296,42 +300,65 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 在各布局共同覆盖的PSNR范围内插值BR并比较regret后，正式大数据baseline固定为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D。per-element 3D通常因大量独立bitstream、长度metadata及无法利用跨element冗余而明显退化；test0/UZ的RD曲线接近PSNR轴且无法有效区分布局，因此保留原始结果但不用于选择。这些布局在pb0和jicf0实验前即已冻结，不使用大数据结果反向挑选baseline。
 
-## 5.2. 大数据正式结果
+## 5.2. 小数据正式方法结果
 
-大数据实验使用pb0的UX、UY、UZ、P和T五个field，以及jicf0的UX、UY、UZ、P和S00五个field。正式方法为MRCZ、FDWZ、SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D；pb0使用REL EB `1e-2`、`1e-3`、`1e-4`、`1e-5`和`1e-6`，jicf0使用REL EB `1e-4`、`1e-5`、`1e-6`、`1e-7`和`1e-8`。
+下图展示全部18个非常数field上25种方法的BR--PSNR曲线；同一种官方压缩器的不同API布局使用相同颜色和不同线型，BR横轴使用线性尺度并固定从0开始。各子图聚焦主要曲线的有效比较范围，允许高BR方法和明显偏高的PSNR端点在坐标边界处截断。
+
+![Small-data rate-distortion](results/RD/small_rd.svg)
+
+## 5.3. 大数据正式结果
+
+大数据实验使用pb0的UX、UY、UZ、P和T五个field，以及jicf0的UX、UY、UZ、P和S00五个field。正式方法为MRCZ、FDWZ、SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D；pb0使用64 CPU和64个partition，REL EB为`1e-2`、`1e-3`、`1e-4`、`1e-5`和`1e-6`；jicf0使用128 CPU和128个partition，REL EB为`1e-4`、`1e-5`、`1e-6`、`1e-7`和`1e-8`。
 
 根据正式RD曲线在fixed-quality目标pb0 100 dB和jicf0 150 dB处的插值结果，MRCZ在全部10个field上均取得最低BR，FDWZ在全部10个field上均排名第二；jicf0/S00上两者接近，其余field上MRCZ的优势更明显。
 
-# 6. Weak scaling
+# 6. Throughput
 
-实验将pb0和jicf0分别均分为64和128个全局partition，每个CPU固定处理一个partition。N个CPU处理连续的N个partition，因此CPU数和数据量同步增加。pb0每个partition约含30424个element和59.42 MiB原始数据，jicf0约含25315个element和96.56 MiB原始数据；目标PSNR分别为100 dB和150 dB。
+pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。下面两图按field展示七种正式方法在不同实际PSNR下的压缩与解压吞吐量；吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度。
+
+![Large-data compression throughput](results/RD/large_compression_throughput.svg)
+
+![Large-data decompression throughput](results/RD/large_decompression_throughput.svg)
+
+# 7. Weak scaling
+
+实验将pb0和jicf0分别均分为64和128个全局partition，每个CPU固定处理一个partition。pb0测试`1、2、4、8、16、32、64` CPU，jicf0测试`1、2、4、8、16、32、64、128` CPU。N个CPU处理连续的N个partition，因此CPU数和数据量同步增加。pb0每个partition约含30424个element和59.42 MiB原始数据，jicf0约含25315个element和96.56 MiB原始数据；目标PSNR分别为100 dB和150 dB。
 
 CPU数量较少时，实验只处理完整field中的局部区间，而不同区间的data range可能不同。如果直接使用REL EB，程序会根据局部data range得到不同的ABS EB，使各CPU点的实际误差界和重建质量不再一致。因此，每个method/field先根据完整数据的RD曲线插值得到目标PSNR对应的REL EB，再乘以完整field的data range得到ABS EB；所有CPU数量和抽样区间均使用这个固定的ABS EB。同时，实验通过`-compute-precision`固定使用完整数据在该REL EB下选择的float或double，避免局部data range变化导致计算精度切换。局部区间的data range还可能小到触发constant compression，因此weak scaling压缩命令统一设置`-constant-compression false`，确保每个case都实际运行对应backend。汇总PSNR也使用完整field的data range和各区间的加权MSE重新计算。
 
-每个CPU数、每个field测试4次。低CPU数时，在完整数据上等间隔选择4段；高CPU数时若只能划出2段或1段，则每段分别测试2次或4次。汇总吞吐量等于4次测试的原始数据总量除以内部耗时总和。
+每个CPU数、每个field测试4次。先将完整数据固定划分为最大CPU数个全局partition；使用N个CPU时，一个测试段由N个相邻partition组成，再从所有可选测试段中等间隔选择4段。例如jicf0使用2 CPU时选择全局partition `[0,2)`、`[42,44)`、`[84,86)`和`[126,128)`。当N较大、完整数据只能提供2段或1段时，每段分别重复2次或4次。因此每个CPU点仍覆盖jicf0中多个位置，而不是复制某个代表性partition。汇总吞吐量等于4次测试的原始数据总量除以内部耗时总和；图中的误差棒为4次测试分别汇总全部field后所得efficiency的样本标准差。Slurm脚本使用`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`将OpenMP线程固定到物理核。
 
 ![Weak scaling efficiency](results/weak_scaling/weak_scaling_efficiency.svg)
 
-图中各方法的efficiency均以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且未画入趋势图。
+下图由本轮重测后的summary CSV重新生成，并使用独立文件名保留，便于与上面的旧图逐项比较。
+
+![Current weak scaling efficiency](results/weak_scaling/weak_scaling_efficiency_current.svg)
+
+两图中各方法的efficiency均以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且未画入趋势图。
+
+以上两图生成时尚未固定OpenMP线程，且不同CPU数来自多个Slurm节点，因此只作为历史结果保留；统一线程绑定后的pb0和jicf0结果需要全部重测。正式结果继续采用上述全域分段抽样，并通过4段结果及其误差棒同时报告不同位置的数据差异和运行波动。
+
+jicf0的统一线程绑定重测已完成，下图使用全部`980`个case绘制，误差棒表示4次测试的样本标准差。其中FDWZ数据来自本轮内存访问优化之前，待FDWZ代码确定后单独重测替换。
+
+![jicf0 weak scaling efficiency](results/weak_scaling/weak_jicf_efficiency.svg)
 
 MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋势：CPU数增加时总吞吐量先提高，较高CPU数下scaling efficiency逐渐下降，没有出现明显不同的扩展性退化。
 
-# 7. Strong scaling
+# 8. Strong scaling
 
-# 8. End-to-end test
+# 9. End-to-end test
 
-# 9. 当前状态
+# 10. 当前状态
 
 - 正式MRCZ算法已冻结：逐element DChT、系数与残差量化、32x32分块coefficient-major
   转置、Huffman和Zstd，partition之间OpenMP并行。
 - FDWZ已冻结：最大有效Huffman tree数，并在每个partition采样选择维度顺序和
   linear/cubic预测。
 - 官方API baseline及tensorization已经冻结，定义见第5.1节。
-- pb0和jicf0的完整rate-distortion与128 CPU throughput CSV已经生成，保存在数据旁边。
-- pb0 100 dB与jicf0 150 dB的fixed-quality weak scaling实验已经完成，结果见
-  results/weak_scaling/。
+- pb0和jicf0的旧rate-distortion CSV保存在数据旁边；由于正式性能口径改为全局统一线程绑定，旧结果仅作历史参考，正式RD与throughput均待重测。
+- pb0 100 dB与jicf0 150 dB的旧fixed-quality weak scaling结果保存在`results/weak_scaling/`；其线程绑定和数据工作口径尚未统一，正式结果待重测。
 
-# 10. 投稿前主线
+# 11. 投稿前主线
 
 [ ] 1. 冻结实验版本与结果。
        提交当前正式代码、实验脚本和结果说明；记录生成正式CSV所用的commit、Slurm job、
@@ -344,6 +371,10 @@ MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋�
 [ ] 3. 整理速度与扩展性结果。
        绘制single-core throughput、fixed-quality strong/weak scaling、speedup和parallel
        efficiency；明确64--128 CPU后的内存带宽与NUMA瓶颈，不声称近线性扩展。
+       所有正式性能实验全局统一使用物理核与OpenMP线程绑定：Slurm申请
+       `--hint=nomultithread`，`srun`使用`--cpu-bind=cores`，并设置
+       `OMP_DYNAMIC=false`、`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`；记录这些设置，
+       禁止混用未绑定线程的旧throughput或scaling结果。
        Strong scaling的所有CPU点必须固定element范围、error bound和partition网格，在同一
        Slurm allocation中运行，并核验申请的CPU数与程序实际使用的CPU数一致。
 
@@ -361,7 +392,7 @@ MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋�
        实验数字、方法名称和贡献列表。准备数据布局与流程图、BR--PSNR图、scaling图、
        消融或bitstream组成图，以及数据集汇总表。
 
-# 11. 投稿后或artifact阶段
+# 12. 投稿后或artifact阶段
 
 [ ] 7. 审计并版本化bitstream metadata，增加未知版本、截断文件、错误method和错误数据类型测试。消融配置不写入metadata，由用户保证编解码参数一致。
 
@@ -371,7 +402,7 @@ MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋�
 
 [ ] 10. 为未显式指定`partition_num`时定义与`max_cpus`无关的默认规则，并在jicf0上验证固定partition时不同线程数产生相同bitstream、BR、PSNR和最大误差。
 
-# 12. 不进入当前论文
+# 13. 不进入当前论文
 
 - 坐标X/Y/Z专用有损压缩及几何/拓扑安全定义。
 - NekRS尾metadata的语义解析；当前继续作为opaque blob无损保存。

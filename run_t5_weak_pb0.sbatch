@@ -16,5 +16,7 @@ cd "${SLURM_SUBMIT_DIR}"
 source /home/x-zjian1/miniconda3/etc/profile.d/conda.sh
 conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
 export OMP_DYNAMIC=false
-unset OMP_PLACES OMP_PROC_BIND MRCZ_PROFILE_HUFFMAN || true
-srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores python3 -u t5_start_weak_scaling.py pb0
+export OMP_PLACES=cores
+export OMP_PROC_BIND=spread
+unset MRCZ_PROFILE_HUFFMAN || true
+srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores python3 -u t5_start_weak_scaling.py pb0 "$@"

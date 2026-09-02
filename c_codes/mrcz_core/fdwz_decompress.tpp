@@ -28,9 +28,9 @@ namespace mrcz::detail
                 corner_num*=2;
         uint32_t residual_num=n012-corner_num;
         T abs_eb=params.abs_eb[field];
-        // 总解压时间包含hierarchy、plan生成、无损解压和预测重构，与压缩端使用相同的计时边界。
-        double start_time=omp_get_wtime();
         decompressed_data.resize(params.element_num_to_process*n012);
+        // 与其他backend一致，输出数组分配不计时；总解压时间包含hierarchy、plan生成、无损解压和预测重构。
+        double start_time=omp_get_wtime();
 
         // 解压端根据坐标和shape确定性地重建全部候选plan，bitstream只需保存每个partition选择的plan id。
         vector<vector<uint32_t>> left_indices0,right_indices0,mid_indices0,compressed_indices0;

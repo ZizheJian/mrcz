@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+#include <memory>
 #include <set>
 #include "mrcz.hpp"
 #include "huffman.hpp"
@@ -256,6 +258,15 @@ namespace mrcz::detail
         vector<fdwz_prediction_stencil<T>> stencils;
     };
 
+    // 复用候选方案评估所需的临时数组，避免每个partition连续评估7个方案时反复申请大块内存。
+    template<typename T>
+    struct fdwz_sampling_workspace
+    {
+        vector<T> original_sample,sample;
+        vector<vector<int64_t>> tree_qb;
+        vector<unsigned char> huffman_bs,zstd_bs;
+    };
+
     // 返回三维坐标方向的全部六种执行顺序。
     inline vector<vector<uint32_t>> fdwz_all_dimension_orders()
     {
@@ -265,58 +276,69 @@ namespace mrcz::detail
     // 在抽样element上执行预测、量化、Huffman和Zstd，以最终字节数评价一个候选plan。
     template<typename T>
     uint64_t fdwz_sample_compressed_size(vector<T> &original_sample,uint32_t n012,vector<uint32_t> &corner_positions,fdwz_prediction_plan<T> &plan,
-        vector<uint32_t> &residual_group_offsets,uint32_t huffman_tree_num,T abs_eb,unsigned char configuration)
+        vector<uint32_t> &residual_group_offsets,uint32_t huffman_tree_num,T abs_eb,unsigned char configuration,fdwz_sampling_workspace<T> &workspace)
     {
         uint64_t sample_num=original_sample.size()/n012;
         uint32_t corner_num=corner_positions.size();
         uint32_t residual_num=n012-corner_num;
         T neg_2_eb=1/(2*abs_eb);
         // 预测会原地写入重构值；每个候选plan必须从完全相同的原始sample开始。
-        vector<T> sample=original_sample;
-        vector<int64_t> corner_qb(sample_num*corner_num),residual_qb(sample_num*residual_num);
+        auto &sample=workspace.sample;
+        sample=original_sample;
+        // 直接量化到Huffman tree需要的最终布局，避免每个候选方案再完整重排一遍QB。
+        auto &tree_qb=workspace.tree_qb;
+        tree_qb.resize(huffman_tree_num);
+        if (huffman_tree_num==1)
+            tree_qb[0].resize(sample_num*n012);
+        else
+        {
+            tree_qb[0].resize(sample_num*corner_num);
+            for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
+                tree_qb[group_id+1].resize(sample_num*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id]));
+        }
         for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
         {
             T *element=sample.data()+sample_id*n012;
+            int64_t *element_corner_qb=tree_qb[0].data()+sample_id*(huffman_tree_num==1?n012:corner_num);
             for (uint32_t corner_id=0;corner_id<corner_num;corner_id++)
             {
                 uint32_t target=corner_positions[corner_id];
                 int64_t qb=static_cast<int64_t>(round(element[target]*neg_2_eb));
-                corner_qb[sample_id*corner_num+corner_id]=qb;
+                element_corner_qb[corner_id]=qb;
                 element[target]=qb*2*abs_eb;
             }
-            for (uint32_t residual_id=0;residual_id<residual_num;residual_id++)
+            if (huffman_tree_num==1)
             {
-                auto &stencil=plan.stencils[residual_id];
-                T prediction=fdwz_predict_from_stencil(element,stencil);
-                int64_t qb=static_cast<int64_t>(round((prediction-element[stencil.target])*neg_2_eb));
-                residual_qb[sample_id*residual_num+residual_id]=qb;
-                element[stencil.target]=prediction-qb*2*abs_eb;
+                int64_t *element_residual_qb=element_corner_qb+corner_num;
+                for (uint32_t residual_id=0;residual_id<residual_num;residual_id++)
+                {
+                    auto &stencil=plan.stencils[residual_id];
+                    T prediction=fdwz_predict_from_stencil(element,stencil);
+                    int64_t qb=static_cast<int64_t>(round((prediction-element[stencil.target])*neg_2_eb));
+                    element_residual_qb[residual_id]=qb;
+                    element[stencil.target]=prediction-qb*2*abs_eb;
+                }
             }
-        }
-        // 一棵tree时按element存放全部QB；两棵tree时分离角点和residual；更多tree再按预测层拆分residual。
-        vector<vector<int64_t>> tree_qb(huffman_tree_num);
-        if (huffman_tree_num==1)
-        {
-            tree_qb[0].resize(sample_num*n012);
-            for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
+            else
             {
-                copy(corner_qb.begin()+sample_id*corner_num,corner_qb.begin()+(sample_id+1)*corner_num,tree_qb[0].begin()+sample_id*n012);
-                copy(residual_qb.begin()+sample_id*residual_num,residual_qb.begin()+(sample_id+1)*residual_num,tree_qb[0].begin()+sample_id*n012+corner_num);
-            }
-        }
-        else
-        {
-            tree_qb[0]=move(corner_qb);
-            for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
-            {
-                uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
-                tree_qb[group_id+1].resize(sample_num*group_size);
-                for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
-                    copy(residual_qb.begin()+sample_id*residual_num+group_begin,residual_qb.begin()+sample_id*residual_num+group_begin+group_size,tree_qb[group_id+1].begin()+sample_id*group_size);
+                for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
+                {
+                    uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
+                    int64_t *element_group_qb=tree_qb[group_id+1].data()+sample_id*group_size;
+                    for (uint32_t local_id=0;local_id<group_size;local_id++)
+                    {
+                        auto &stencil=plan.stencils[group_begin+local_id];
+                        T prediction=fdwz_predict_from_stencil(element,stencil);
+                        int64_t qb=static_cast<int64_t>(round((prediction-element[stencil.target])*neg_2_eb));
+                        element_group_qb[local_id]=qb;
+                        element[stencil.target]=prediction-qb*2*abs_eb;
+                    }
+                }
             }
         }
         // sample评分使用保守的临时空间；首字节保存当前候选plan id，供Zstd评分包含相同的metadata开销。
-        vector<unsigned char> huffman_bs_vec(sample_num*n012*20+4096*huffman_tree_num+1);
+        auto &huffman_bs_vec=workspace.huffman_bs;
+        huffman_bs_vec.resize(sample_num*n012*20+4096*huffman_tree_num+1);
         unsigned char *huffman_bs=huffman_bs_vec.data();
         *huffman_bs++=configuration;
         for (auto &values:tree_qb)
@@ -327,7 +349,8 @@ namespace mrcz::detail
             encoder.encode(values.data(),values.size(),huffman_bs);
         }
         uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
-        vector<unsigned char> zstd_bs(ZSTD_compressBound(huffman_bs_len));
+        auto &zstd_bs=workspace.zstd_bs;
+        zstd_bs.resize(ZSTD_compressBound(huffman_bs_len));
         uint64_t zstd_bs_len=ZSTD_compress(zstd_bs.data(),zstd_bs.size(),huffman_bs_vec.data(),huffman_bs_len,3);
         if (ZSTD_isError(zstd_bs_len))
             throw runtime_error("ZSTD_compress error while sampling FDWZ configuration");
@@ -357,7 +380,11 @@ namespace mrcz::detail
         uint32_t residual_num=n012-corner_num;
         T abs_eb=params.abs_eb[field];
         T neg_2_eb=1/(2*abs_eb);
-        // 总压缩时间包含hierarchy、plan生成、采样、预测量化和无损压缩。
+        // 每个partition提前获得一段未初始化的连续QB工作区；分配不计入正式压缩时间，页面在对应线程首次写入时才实际落到NUMA节点。
+        vector<unique_ptr<int64_t[]>> partition_qb(blocks.size());
+        for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+            partition_qb[block_id]=unique_ptr<int64_t[]>(new int64_t[n012*blocks[block_id].element_num]);
+        // 总压缩时间包含hierarchy、plan生成、决策、预测量化和无损压缩，但不包含上述QB工作区分配。
         double start_time=omp_get_wtime();
 
         // 分别建立三个坐标方向的物理中点hierarchy。长度为1的方向只有一个始终可用的坐标点。
@@ -390,7 +417,7 @@ namespace mrcz::detail
         uint32_t max_level=max(max(mid_indices0.size(),mid_indices1.size()),mid_indices2.size());
         vector<uint32_t> corner_positions=fdwz_generate_corner_positions(n0,n1,n2);
 
-        // 预先构造6种维度顺序乘以linear/cubic两种插值方式，共12个确定性的候选plan。
+        // 预先构造6种维度顺序乘以linear/cubic两种插值方式，共12套可复用预测结构；每个partition实际只评估6个linear和最佳linear顺序对应的1个cubic。
         vector<fdwz_prediction_plan<T>> sampled_plans;
         auto all_orders=fdwz_all_dimension_orders();
         for (uint32_t cubic_id=0;cubic_id<2;cubic_id++)
@@ -425,41 +452,154 @@ namespace mrcz::detail
                 residual_group_offsets.push_back(prediction_level_offsets[level]);
             residual_group_offsets.push_back(residual_num);
         }
+        double structure_generation_time=0;
+        if constexpr(measure_phase_time)
+            structure_generation_time=omp_get_wtime()-start_time;
         vector<unsigned char> selected_plan_ids(blocks.size(),0);
-        double sampling_start_time=0;
-        if constexpr(measure_phase_time)
-            sampling_start_time=omp_get_wtime();
-        // 每个partition独立采样，因此既可以并行，也可以为不同空间区域选择不同plan。
-        #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-        for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+        array<uint32_t,5> tree_value_num{};
+        if (huffman_tree_num==1)
+            tree_value_num[0]=n012;
+        else
         {
-            auto &block=blocks[block_id];
-            uint64_t element_num=block.end_index-block.begin_index;
-            uint64_t sample_num=min<uint64_t>(element_num,min<uint64_t>(1024,max<uint64_t>(128,element_num/4)));
-            vector<T> original_sample(sample_num*n012);
-            for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
-            {
-                uint64_t relative_element_id=((2*sample_id+1)*element_num)/(2*sample_num);
-                memcpy(original_sample.data()+sample_id*n012,data.data()+(block.begin_index+relative_element_id)*n012,n012*sizeof(T));
-            }
-            uint32_t best_plan_id=0;
-            uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[0],residual_group_offsets,huffman_tree_num,abs_eb,0);
-            for (uint32_t plan_id=1;plan_id<6;plan_id++)
-            {
-                uint64_t candidate_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[plan_id],residual_group_offsets,huffman_tree_num,abs_eb,plan_id);
-                if (candidate_size<best_size)
-                    best_size=candidate_size,best_plan_id=plan_id;
-            }
-            // 当前策略只测试最佳linear维度顺序对应的cubic版本，而不是再次测试全部6个cubic顺序。
-            uint32_t cubic_plan_id=best_plan_id+6;
-            uint64_t cubic_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[cubic_plan_id],residual_group_offsets,huffman_tree_num,abs_eb,cubic_plan_id);
-            if (cubic_size<best_size)
-                best_plan_id=cubic_plan_id;
-            selected_plan_ids[block_id]=best_plan_id;
+            tree_value_num[0]=corner_num;
+            for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
+                tree_value_num[group_id+1]=residual_group_offsets[group_id+1]-residual_group_offsets[group_id];
         }
-        double sampling_time=0;
+        vector<double> decision_time(measure_phase_time?blocks.size():0,0),prediction_quantization_time(measure_phase_time?blocks.size():0,0),huffman_time(measure_phase_time?blocks.size():0,0),zstd_time(measure_phase_time?blocks.size():0,0);
+        double decision_start_time=0,decision_wall_time=0;
         if constexpr(measure_phase_time)
-            sampling_time=omp_get_wtime()-sampling_start_time;
+            decision_start_time=omp_get_wtime();
+        // decision和正式压缩共用同一个OpenMP线程团队；两个omp for之间的barrier保证全部plan选择完成后才开始写正式bitstream。
+        #pragma omp parallel num_threads(params.max_cpus)
+        {
+            fdwz_sampling_workspace<T> sampling_workspace;
+            // 每个partition独立采样，因此可以并行为不同空间区域选择不同plan；同一线程复用全部候选评估工作区。
+            #pragma omp for schedule(static)
+            for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+            {
+                double block_decision_start_time=0;
+                if constexpr(measure_phase_time)
+                    block_decision_start_time=omp_get_wtime();
+                auto &block=blocks[block_id];
+                uint64_t element_num=block.end_index-block.begin_index;
+                uint64_t sample_num=min<uint64_t>(element_num,min<uint64_t>(1024,max<uint64_t>(128,element_num/4)));
+                auto &original_sample=sampling_workspace.original_sample;
+                original_sample.resize(sample_num*n012);
+                for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
+                {
+                    uint64_t relative_element_id=((2*sample_id+1)*element_num)/(2*sample_num);
+                    memcpy(original_sample.data()+sample_id*n012,data.data()+(block.begin_index+relative_element_id)*n012,n012*sizeof(T));
+                }
+                uint32_t best_plan_id=0;
+                uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[0],residual_group_offsets,huffman_tree_num,abs_eb,0,sampling_workspace);
+                for (uint32_t plan_id=1;plan_id<6;plan_id++)
+                {
+                    uint64_t candidate_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[plan_id],residual_group_offsets,huffman_tree_num,abs_eb,plan_id,sampling_workspace);
+                    if (candidate_size<best_size)
+                        best_size=candidate_size,best_plan_id=plan_id;
+                }
+                // 当前策略只测试最佳linear维度顺序对应的cubic版本，而不是再次测试全部6个cubic顺序。
+                uint32_t cubic_plan_id=best_plan_id+6;
+                uint64_t cubic_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[cubic_plan_id],residual_group_offsets,huffman_tree_num,abs_eb,cubic_plan_id,sampling_workspace);
+                if (cubic_size<best_size)
+                    best_plan_id=cubic_plan_id;
+                selected_plan_ids[block_id]=best_plan_id;
+                if constexpr(measure_phase_time)
+                    decision_time[block_id]=omp_get_wtime()-block_decision_start_time;
+            }
+            #pragma omp master
+            {
+                if constexpr(measure_phase_time)
+                    decision_wall_time=omp_get_wtime()-decision_start_time;
+            }
+            #pragma omp barrier
+            // partition覆盖互不重叠的element和QB范围，因此各线程可以安全地原地覆盖data并写入各自的bitstream。
+            #pragma omp for schedule(static)
+            for (uint64_t block_id=0;block_id<blocks.size();block_id++)
+            {
+                auto &block=blocks[block_id];
+                uint64_t begin_index=block.begin_index;
+                uint64_t end_index=block.end_index;
+                uint64_t element_num=end_index-begin_index;
+                auto &block_prediction_stencils=sampled_plans[selected_plan_ids[block_id]].stencils;
+                int64_t *block_qb=partition_qb[block_id].get();
+                array<uint64_t,6> tree_offsets{};
+                for (uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+                    tree_offsets[tree_id+1]=tree_offsets[tree_id]+tree_value_num[tree_id]*element_num;
+                double phase_start_time=0;
+                if constexpr(measure_phase_time)
+                    phase_start_time=omp_get_wtime();
+                // 角点不依赖预测，先绝对量化；随后严格按照plan顺序预测非角点并立即写回重构值。
+                for (uint64_t i=begin_index;i<end_index;i++)
+                {
+                    uint64_t relative_element_id=i-begin_index;
+                    int64_t *element_corner_qb=block_qb+relative_element_id*(huffman_tree_num==1?n012:corner_num);
+                    for (uint32_t corner_id=0;corner_id<corner_num;corner_id++)
+                    {
+                        uint32_t target=corner_positions[corner_id];
+                        params.quantize_and_overwrite(data[i*n012+target],element_corner_qb[corner_id],abs_eb,neg_2_eb);
+                    }
+                }
+                for (uint64_t i=begin_index;i<end_index;i++)
+                {
+                    T *element=data.data()+i*n012;
+                    uint64_t relative_element_id=i-begin_index;
+                    if (huffman_tree_num==1)
+                    {
+                        int64_t *element_residual_qb=block_qb+relative_element_id*n012+corner_num;
+                        for (uint32_t residual_id=0;residual_id<residual_num;residual_id++)
+                        {
+                            auto &stencil=block_prediction_stencils[residual_id];
+                            T prediction=fdwz_predict_from_stencil(element,stencil);
+                            params.quantize_and_overwrite_err(prediction,element[stencil.target],element_residual_qb[residual_id],abs_eb,neg_2_eb);
+                        }
+                    }
+                    else
+                    {
+                        for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
+                        {
+                            uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
+                            int64_t *element_group_qb=block_qb+tree_offsets[group_id+1]+relative_element_id*group_size;
+                            for (uint32_t local_id=0;local_id<group_size;local_id++)
+                            {
+                                auto &stencil=block_prediction_stencils[group_begin+local_id];
+                                T prediction=fdwz_predict_from_stencil(element,stencil);
+                                params.quantize_and_overwrite_err(prediction,element[stencil.target],element_group_qb[local_id],abs_eb,neg_2_eb);
+                            }
+                        }
+                    }
+                }
+                if constexpr(measure_phase_time)
+                    prediction_quantization_time[block_id]=omp_get_wtime()-phase_start_time;
+                // payload首字节记录该partition选择的plan；后续按tree_offsets依次保存各棵Huffman tree及其编码数据。
+                vector<unsigned char> huffman_bs_vec(n012*element_num*sizeof(int64_t)+1);
+                unsigned char *huffman_bs=huffman_bs_vec.data();
+                *huffman_bs++=selected_plan_ids[block_id];
+                if constexpr(measure_phase_time)
+                    phase_start_time=omp_get_wtime();
+                for (uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+                {
+                    int64_t *tree_qb=block_qb+tree_offsets[tree_id];
+                    uint64_t tree_qb_num=tree_offsets[tree_id+1]-tree_offsets[tree_id];
+                    mrcz::huffman_encoder_class<int64_t> encoder;
+                    encoder.preprocess_encode(tree_qb,tree_qb_num);
+                    encoder.save(huffman_bs);
+                    encoder.encode(tree_qb,tree_qb_num,huffman_bs);
+                }
+                if constexpr(measure_phase_time)
+                    huffman_time[block_id]=omp_get_wtime()-phase_start_time;
+                uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
+                if constexpr(measure_phase_time)
+                    phase_start_time=omp_get_wtime();
+                uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
+                block.zstd_bs.resize(max_zstd_bs_len);
+                uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
+                block.zstd_bs.resize(zstd_bs_len);
+                if constexpr(measure_phase_time)
+                    zstd_time[block_id]=omp_get_wtime()-phase_start_time;
+            }
+        }
+        double end_time=omp_get_wtime();
         vector<uint64_t> configuration_counts(sampled_plans.size(),0);
         for (auto plan_id:selected_plan_ids)
             configuration_counts[plan_id]++;
@@ -468,131 +608,26 @@ namespace mrcz::detail
             if (configuration_counts[plan_id]>0)
                 printf(" %c%c%c-%s=%lu","XYZ"[all_orders[plan_id%6][0]],"XYZ"[all_orders[plan_id%6][1]],"XYZ"[all_orders[plan_id%6][2]],plan_id<6?"linear":"cubic",configuration_counts[plan_id]);
         printf("\n");
-        // 多棵tree需要按类型或预测层聚集QB；一棵tree时则直接使用每个partition自己的block_qb。
-        int64_t *corner_qb=huffman_tree_num==1?nullptr:new int64_t[corner_num*params.element_num_to_process];
-        vector<int64_t*> residual_group_qb;
-        for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
-            residual_group_qb.push_back(new int64_t[params.element_num_to_process*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])]);
-        vector<uint32_t> residual_group_ids(residual_num),residual_group_local_ids(residual_num);
-        for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
-            for (uint32_t residual_id=residual_group_offsets[group_id];residual_id<residual_group_offsets[group_id+1];residual_id++)
-                residual_group_ids[residual_id]=group_id,residual_group_local_ids[residual_id]=residual_id-residual_group_offsets[group_id];
-        vector<double> prediction_quantization_time(measure_phase_time?blocks.size():0,0),huffman_time(measure_phase_time?blocks.size():0,0),zstd_time(measure_phase_time?blocks.size():0,0);
-        // partition覆盖互不重叠的element范围，因此各线程可以安全地原地覆盖data并写入各自的bitstream。
-        #pragma omp parallel for schedule(static) num_threads(params.max_cpus)
-        for (uint64_t block_id=0;block_id<blocks.size();block_id++) //这个block_id是假的，指的是在需要处理的blocks中的编号，而不是header文件中的编号
-        {
-            auto &block=blocks[block_id];
-            uint64_t begin_index=block.begin_index;
-            uint64_t end_index=block.end_index;
-            uint64_t element_num=end_index-begin_index;
-            auto &block_prediction_stencils=sampled_plans[selected_plan_ids[block_id]].stencils;
-            vector<int64_t> block_qb(huffman_tree_num==1?n012*element_num:0);
-            int64_t *block_corner_qb=huffman_tree_num==1?nullptr:corner_qb+corner_num*begin_index;
-            vector<int64_t*> block_residual_group_qb;
-            for (uint32_t group_id=0;group_id<residual_group_qb.size();group_id++)
-                block_residual_group_qb.push_back(residual_group_qb[group_id]+begin_index*(residual_group_offsets[group_id+1]-residual_group_offsets[group_id]));
-            double phase_start_time=0;
-            if constexpr(measure_phase_time)
-                phase_start_time=omp_get_wtime();
-            auto corner_qb_at=[&](uint64_t element_id,uint32_t corner_id)->int64_t&
-            {
-                if (huffman_tree_num==1)
-                    return block_qb[(element_id-begin_index)*n012+corner_id];
-                return corner_qb[element_id*corner_num+corner_id];
-            };
-            auto residual_qb_at=[&](uint64_t element_id,uint32_t residual_id)->int64_t&
-            {
-                if (huffman_tree_num==1)
-                    return block_qb[(element_id-begin_index)*n012+corner_num+residual_id];
-                uint32_t group_id=residual_group_ids[residual_id];
-                uint32_t group_size=residual_group_offsets[group_id+1]-residual_group_offsets[group_id];
-                return residual_group_qb[group_id][element_id*group_size+residual_group_local_ids[residual_id]];
-            };
-            // 角点不依赖预测，先绝对量化；随后严格按照plan顺序预测非角点并立即写回重构值。
-            for (uint64_t i=begin_index;i<end_index;i++)
-                for (uint32_t corner_id=0;corner_id<corner_num;corner_id++)
-                {
-                    uint32_t target=corner_positions[corner_id];
-                    params.quantize_and_overwrite(data[i*n012+target],corner_qb_at(i,corner_id),abs_eb,neg_2_eb);
-                }
-            for (uint64_t i=begin_index;i<end_index;i++)
-            {
-                T *element=data.data()+i*n012;
-                uint32_t residual_id=0;
-                for (auto &stencil:block_prediction_stencils)
-                {
-                    int64_t &qb=residual_qb_at(i,residual_id++);
-                    T prediction=fdwz_predict_from_stencil(element,stencil);
-                    params.quantize_and_overwrite_err(prediction,element[stencil.target],qb,abs_eb,neg_2_eb);
-                }
-                if (residual_id!=residual_num)
-                    throw runtime_error("FDWZ预测产生的QB数量错误");
-            }
-            if constexpr(measure_phase_time)
-                prediction_quantization_time[block_id]=omp_get_wtime()-phase_start_time;
-            // payload首字节记录该partition选择的plan；后续依次保存各棵Huffman tree及其编码数据。
-            vector<unsigned char> huffman_bs_vec(n012*element_num*sizeof(int64_t)+1);
-            unsigned char *huffman_bs=huffman_bs_vec.data();
-            *huffman_bs++=selected_plan_ids[block_id];
-            if constexpr(measure_phase_time)
-                phase_start_time=omp_get_wtime();
-            if (huffman_tree_num==1)
-            {
-                mrcz::huffman_encoder_class<int64_t> encoder;
-                encoder.preprocess_encode(block_qb.data(),block_qb.size());
-                encoder.save(huffman_bs);
-                encoder.encode(block_qb.data(),block_qb.size(),huffman_bs);
-            }
-            else
-            {
-                mrcz::huffman_encoder_class<int64_t> corner_encoder;
-                corner_encoder.preprocess_encode(block_corner_qb,corner_num*element_num);
-                corner_encoder.save(huffman_bs);
-                corner_encoder.encode(block_corner_qb,corner_num*element_num,huffman_bs);
-                for (uint32_t group_id=0;group_id<block_residual_group_qb.size();group_id++)
-                {
-                    uint64_t group_value_num=(residual_group_offsets[group_id+1]-residual_group_offsets[group_id])*element_num;
-                    mrcz::huffman_encoder_class<int64_t> encoder;
-                    encoder.preprocess_encode(block_residual_group_qb[group_id],group_value_num);
-                    encoder.save(huffman_bs);
-                    encoder.encode(block_residual_group_qb[group_id],group_value_num,huffman_bs);
-                }
-            }
-            if constexpr(measure_phase_time)
-                huffman_time[block_id]=omp_get_wtime()-phase_start_time;
-            uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
-            if constexpr(measure_phase_time)
-                phase_start_time=omp_get_wtime();
-            uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
-            block.zstd_bs.resize(max_zstd_bs_len);
-            uint64_t zstd_bs_len=ZSTD_compress(block.zstd_bs.data(),max_zstd_bs_len,huffman_bs_vec.data(),huffman_bs_len,3);
-            block.zstd_bs.resize(zstd_bs_len);
-            if constexpr(measure_phase_time)
-                zstd_time[block_id]=omp_get_wtime()-phase_start_time;
-        }
-        double end_time=omp_get_wtime();
         if constexpr(measure_phase_time)
         {
             // 分段时间是所有partition的CPU时间之和；Compression time则是包含并行加速后的wall time。
-            double total_prediction_quantization_time=0,total_huffman_time=0,total_zstd_time=0;
+            double total_decision_time=0,total_prediction_quantization_time=0,total_huffman_time=0,total_zstd_time=0;
             for(uint64_t block_id=0;block_id<blocks.size();block_id++)
             {
+                total_decision_time+=decision_time[block_id];
                 total_prediction_quantization_time+=prediction_quantization_time[block_id];
                 total_huffman_time+=huffman_time[block_id];
                 total_zstd_time+=zstd_time[block_id];
             }
-            printf("FDWZ sampling time= %f seconds\n",sampling_time);
-            double measured_stage_time=total_prediction_quantization_time+total_huffman_time+total_zstd_time;
+            printf("FDWZ prediction structure generation time= %f seconds\n",structure_generation_time);
+            printf("FDWZ decision wall time= %f seconds, accumulated partition CPU time= %f seconds\n",decision_wall_time,total_decision_time);
+            double measured_stage_time=total_decision_time+total_prediction_quantization_time+total_huffman_time+total_zstd_time;
             printf("FDWZ compression accumulated partition CPU times: prediction+quantization+QB placement= %f, Huffman= %f, Zstd= %f seconds\n",total_prediction_quantization_time,total_huffman_time,total_zstd_time);
             if(measured_stage_time>0)
-                printf("FDWZ compression stage shares: prediction+quantization+QB placement= %.2f%%, Huffman= %.2f%%, Zstd= %.2f%%\n",100*total_prediction_quantization_time/measured_stage_time,100*total_huffman_time/measured_stage_time,100*total_zstd_time/measured_stage_time);
+                printf("FDWZ accumulated CPU-time shares: decision= %.2f%%, prediction+quantization+QB placement= %.2f%%, Huffman= %.2f%%, Zstd= %.2f%%\n",100*total_decision_time/measured_stage_time,100*total_prediction_quantization_time/measured_stage_time,100*total_huffman_time/measured_stage_time,100*total_zstd_time/measured_stage_time);
         }
         printf("Compression time= %f seconds\n",end_time-start_time);
         printf("\033[91mField= %s, compression bandwidth per cpu= %f MB/s\n\033[0m",field.c_str(),params.element_num_to_process*n012*header.word_size/((end_time-start_time)*1024*1024*params.max_cpus));
-        delete[] corner_qb;
-        for (auto group_qb:residual_group_qb)
-            delete[] group_qb;
     }
 }
 

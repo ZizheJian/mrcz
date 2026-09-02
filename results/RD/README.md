@@ -11,6 +11,6 @@
 - `mfem_ex1/`：源自`build/mfem_build/examples/ex1examples/`中的`sol.gf_no_name_field.csv`和对应throughput CSV。
 - `nektar_cylinder/`：源自`third_party/flow-stability-cylinder/tutorial/base/`中的`Cylinder-Base.vtu_<field>.csv`和对应throughput CSV。
 
-pb0和jicf0是正式大数据结果，各包含五个field，每个field分别保存rate--distortion和throughput，共十个CSV。test0、mixlay0、tc_channel0、mfem_ex0、mfem_ex1和nektar_cylinder是小数据布局选择与实现验证结果。2026-08-30首次复制到本目录；这次复制只建立结果快照，不表示生成这些CSV时使用的commit已经完成审计。
+pb0和jicf0是正式大数据结果，各包含五个field，每个field分别保存rate--distortion和throughput，共十个CSV。正式RD重测中，pb0使用64 CPU和64个partition，jicf0使用128 CPU和128个partition。test0、mixlay0、tc_channel0、mfem_ex0、mfem_ex1和nektar_cylinder是小数据布局选择与实现验证结果，25种方法的重测使用1 CPU和1个partition。2026-08-30首次复制到本目录；这次复制只建立结果快照，不表示生成这些CSV时使用的commit已经完成审计。
 
 小数据布局实验的汇总结论与官方API布局定义见主目录`README.md`第5.1节。
