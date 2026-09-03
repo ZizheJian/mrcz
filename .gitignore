@@ -5,3 +5,6 @@ install/
 /third_party/flow-stability-cylinder/
 __pycache__/
 *.py[cod]
+slurm-*.out
+slurm-*.err
+*_raw.log

@@ -19,11 +19,10 @@
 |---|---|
 | `read_nekrs_header.py` | 解析NekRS field文件头，返回字节序、数据精度、element shape、element数量和field信息。 |
 | `interpolate_br_at_psnr.py` | 整理BR--PSNR曲线，并线性插值得到指定PSNR下的BR。 |
-| `plot_small_rd_throughput.py` | 根据18个小数据field的正式CSV生成RD、压缩吞吐和解压吞吐汇总图。 |
+| `plot_small_rd.py` | 根据18个小数据field的正式CSV生成RD汇总图。 |
 | `plot_large_throughput.py` | 根据pb0和jicf0的正式CSV生成压缩与解压throughput汇总图。 |
 | `plot_weak_scaling.py` | 根据weak scaling summary CSV生成`results/weak_scaling/weak_scaling_efficiency.svg`。 |
 | `plot_weak_scaling_dataset.py` | 为pb0或jicf0单独生成带误差棒的weak scaling efficiency图。 |
-| `plot_weak_scaling_throughput.py` | 根据weak scaling summary CSV生成pb0和jicf0的总throughput汇总图。 |
 
 ## 安装
 
@@ -182,6 +181,9 @@ FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。
 | 预计算prediction stencil和GLL权重 | **采纳** | 避免在每个element重复构造预测关系，并保证编解码路径一致。 |
 | partition级OpenMP并行 | **采纳** | partition天然独立，无需在element预测树内部增加同步。 |
 | 跨element AVX2并行预测与量化 | **放弃正式合并** | 约256 KB tile解决了整partition position-major访问的缓存退化，但float没有收益，double端到端仅约快9%，不足以承担独立舍入语义和复杂实现。 |
+| 为固定`8x8x8` shape展开直接索引kernel | **放弃** | pb0上保持bitstream和误差结果不变，但总压缩时间只减少约2%--6%，同时生成约3.9万行代码并增大binary，不足以抵消维护成本。 |
+| 在同一预测轮内改为逐线遍历 | **放弃** | 相比当前按目标地址递增的memory顺序，总时间变化为约`+0.5%`、`+0.9%`和`-0.3%`，没有稳定收益；保留当前memory顺序。 |
+| 用紧凑模板表替代展开的stencil/plan表示 | **放弃** | 总压缩时间慢约0.6%--1.4%，decision阶段慢约1.8%--7.1%，binary也更大。 |
 
 # 3. MRCZ核心与优化记录
 
@@ -328,21 +330,7 @@ CPU数量较少时，实验只处理完整field中的局部区间，而不同区
 
 每个CPU数、每个field测试4次。先将完整数据固定划分为最大CPU数个全局partition；使用N个CPU时，一个测试段由N个相邻partition组成，再从所有可选测试段中等间隔选择4段。例如jicf0使用2 CPU时选择全局partition `[0,2)`、`[42,44)`、`[84,86)`和`[126,128)`。当N较大、完整数据只能提供2段或1段时，每段分别重复2次或4次。因此每个CPU点仍覆盖jicf0中多个位置，而不是复制某个代表性partition。汇总吞吐量等于4次测试的原始数据总量除以内部耗时总和；图中的误差棒为4次测试分别汇总全部field后所得efficiency的样本标准差。Slurm脚本使用`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`将OpenMP线程固定到物理核。
 
-![Weak scaling efficiency](results/weak_scaling/weak_scaling_efficiency.svg)
-
-下图由本轮重测后的summary CSV重新生成，并使用独立文件名保留，便于与上面的旧图逐项比较。
-
-![Current weak scaling efficiency](results/weak_scaling/weak_scaling_efficiency_current.svg)
-
-两图中各方法的efficiency均以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且未画入趋势图。
-
-以上两图生成时尚未固定OpenMP线程，且不同CPU数来自多个Slurm节点，因此只作为历史结果保留；统一线程绑定后的pb0和jicf0结果需要全部重测。正式结果继续采用上述全域分段抽样，并通过4段结果及其误差棒同时报告不同位置的数据差异和运行波动。
-
-jicf0的统一线程绑定重测已完成，下图使用全部`980`个case绘制，误差棒表示4次测试的样本标准差。其中FDWZ数据来自本轮内存访问优化之前，待FDWZ代码确定后单独重测替换。
-
-![jicf0 weak scaling efficiency](results/weak_scaling/weak_jicf_efficiency.svg)
-
-MRCZ与其他参与多CPU测试的压缩器具有基本一致的weak scaling趋势：CPU数增加时总吞吐量先提高，较高CPU数下scaling efficiency逐渐下降，没有出现明显不同的扩展性退化。
+图中各方法的efficiency以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且不画入趋势图。旧结果没有统一OpenMP线程绑定，并且早于当前FDWZ实现，已经移除。pb0和jicf0均需使用当前代码完整重测，正式图由4段结果绘制误差棒；当前结论暂留空，避免引用过期数值。
 
 # 8. Strong scaling
 

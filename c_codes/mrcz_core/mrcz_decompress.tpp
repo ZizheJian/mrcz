@@ -11,9 +11,9 @@ namespace mrcz
         uint32_t n2=header.c_element_shape[2];
         uint32_t n12=n1*n2;
         uint32_t n012=n0*n1*n2;
-        vector<T> neg_L0=neg_L[0];
-        vector<T> neg_L1=neg_L[1];
-        vector<T> neg_L2=neg_L[2];
+        auto &neg_L0=neg_L[0];
+        auto &neg_L1=neg_L[1];
+        auto &neg_L2=neg_L[2];
         T abs_eb=this->abs_eb[field];
         T coeff_eb=abs_eb*coeff_eb_scale;
         decompressed_data.resize(element_num_to_process*n012);

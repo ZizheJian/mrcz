@@ -168,7 +168,7 @@ namespace mrcz::detail
         vector<vector<uint32_t>> &mid_indices0,vector<vector<uint32_t>> &compressed_indices0,vector<vector<fdwz_interpolation_stencil<T>>> &interpolation_stencils0,
         vector<vector<uint32_t>> &mid_indices1,vector<vector<uint32_t>> &compressed_indices1,vector<vector<fdwz_interpolation_stencil<T>>> &interpolation_stencils1,
         vector<vector<uint32_t>> &mid_indices2,vector<vector<uint32_t>> &compressed_indices2,vector<vector<fdwz_interpolation_stencil<T>>> &interpolation_stencils2,
-        vector<uint32_t> &level_offsets,vector<uint32_t> dimension_order)
+        vector<uint32_t> &level_offsets,vector<uint32_t> &dimension_order)
     {
         // 每个全局level依次推进三个维度。dimension_order决定同一level内哪个方向先产生可供后续方向引用的新点。
         vector<fdwz_prediction_stencil<T>> stencils;

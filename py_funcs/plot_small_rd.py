@@ -79,29 +79,10 @@ def plot_rd(result_dir):
         axis.tick_params(labelsize=7)
     finish_figure(figure,"Bit rate (bits/value)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"))
 
-def plot_throughput(result_dir,task):
-    figure,axes=prepare_axes()
-    metric="Compression Throughput" if task=="compression" else "Decompression Throughput"
-    for axis,(title,relative_path) in zip(axes,fields):
-        rd_rows=read_rows(os.path.join(result_dir,relative_path))
-        throughput_path=os.path.join(result_dir,relative_path.removesuffix(".csv")+"_throughput.csv")
-        throughput_rows={float(row["REL EB"]):row for row in read_rows(throughput_path) if int(row["Max CPUs"])==1}
-        for method in methods:
-            points=sorted(point for row in rd_rows if (point:=finite_pair(row.get(f"{method}_PSNR"),throughput_rows[float(row["REL EB"])].get(f"{method} {metric}"))) is not None)
-            color,linestyle,marker,linewidth=method_style(method)
-            axis.plot([point[0] for point in points],[point[1] for point in points],color=color,linestyle=linestyle,marker=marker,markersize=2.5,linewidth=linewidth)
-        axis.set_title(title,fontsize=9)
-        axis.set_yscale("log")
-        axis.grid(True,which="both",alpha=0.25,linewidth=0.5)
-        axis.tick_params(labelsize=7)
-    finish_figure(figure,"PSNR (dB)",f"{task.capitalize()} throughput (MB/s per CPU, log scale)",os.path.join(result_dir,f"small_{task}_throughput.svg"))
-
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     result_dir=os.path.join(project_root,"results","RD")
     plot_rd(result_dir)
-    plot_throughput(result_dir,"compression")
-    plot_throughput(result_dir,"decompression")
 
 if __name__=="__main__":
     main()
