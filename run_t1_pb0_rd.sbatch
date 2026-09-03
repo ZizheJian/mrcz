@@ -7,6 +7,7 @@
 #SBATCH --cpus-per-task=64
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
+#SBATCH --mem=240G
 #SBATCH --time=06:00:00
 #SBATCH --output=results/RD/slurm-%x-%j.out
 #SBATCH --error=results/RD/slurm-%x-%j.err
