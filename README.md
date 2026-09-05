@@ -252,14 +252,16 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 # 5. Rate-distortion结果
 
-以下CR增长均由RD曲线在相同PSNR下插值得到，不比较相同REL EB的点。对每个field先求MRCZ、FDWZ和五个正式官方baseline共同覆盖的PSNR区间，再选择最接近区间中点的整数PSNR；不同field使用各自的目标PSNR。CR增长由BR之比计算，例如MRCZ相对FDWZ为`BR_FDWZ/BR_MRCZ-1`。pb0和小数据的FDWZ数字已于2026-09-05使用当前linear-proxy、`fdwz_sample_interval=128`和32位QB/unpredictable版本重跑；jicf0仍来自旧FDWZ selector，因此合并的大数据数字暂时混合两个版本。
+以下CR增长均由RD曲线在相同PSNR下插值得到，不比较相同REL EB的点。对每个field先求MRCZ、FDWZ和五个正式官方baseline共同覆盖的PSNR区间，再选择最接近区间中点的整数PSNR；不同field使用各自的目标PSNR。CR增长由BR之比计算，例如MRCZ相对FDWZ为`BR_FDWZ/BR_MRCZ-1`。pb0、jicf0和小数据的FDWZ数字均已于2026-09-05使用当前linear-proxy、`fdwz_sample_interval=128`和32位QB/unpredictable版本重跑。
 
 | 数据 | 比较 | CR平均增长 | CR最大增长 | 最大值对应field |
 |---|---|---:|---:|---|
 | pb0（当前FDWZ） | MRCZ相对FDWZ | 125.30% | 130.00% | P |
 | pb0（当前FDWZ） | FDWZ相对最优官方baseline | 37.84% | 49.05% | UX |
-| 大数据（pb0当前、jicf0旧FDWZ） | MRCZ相对FDWZ | 111.01% | 130.00% | pb0/P |
-| 大数据（pb0当前、jicf0旧FDWZ） | FDWZ相对最优官方baseline | 81.26% | 208.77% | jicf0/P |
+| jicf0（当前FDWZ） | MRCZ相对FDWZ | 97.49% | 131.83% | P |
+| jicf0（当前FDWZ） | FDWZ相对最优官方baseline | 123.72% | 205.87% | P |
+| 大数据（当前FDWZ） | MRCZ相对FDWZ | 111.39% | 131.83% | jicf0/P |
+| 大数据（当前FDWZ） | FDWZ相对最优官方baseline | 80.78% | 205.87% | jicf0/P |
 | 小数据（当前FDWZ） | MRCZ相对FDWZ | 136.66% | 669.47% | tc_channel0/UY |
 | 小数据（当前FDWZ） | FDWZ相对最优官方baseline | 58.83% | 359.95% | MFEM ex0/no_name_field |
 
@@ -321,15 +323,19 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 大数据实验使用pb0的UX、UY、UZ、P和T五个field，以及jicf0的UX、UY、UZ、P和S00五个field。正式方法为MRCZ、FDWZ、SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D；pb0使用64 CPU和64个partition，REL EB为`1e-2`、`1e-3`、`1e-4`、`1e-5`和`1e-6`；jicf0使用128 CPU和128个partition，REL EB为`1e-4`、`1e-5`、`1e-6`、`1e-7`和`1e-8`。
 
-pb0的FDWZ于2026-09-05在64 CPU、64个partition的独占节点上完成当前版本重测（Slurm job `20422881`）；五个field、五个REL EB共25个case均通过项目的`100.01%`浮点数值容差检查（最大为`100.003336%`）且没有触发unpredictable。按照本章开头的逐field共同区间近中点口径，MRCZ在pb0五个field上均取得最低BR，FDWZ均排名第二；MRCZ相对FDWZ的CR平均增长为125.30%，FDWZ相对最优官方baseline的CR平均增长为37.84%。jicf0仍是旧FDWZ selector结果，因此全部10个大数据field的合并数字不是同一FDWZ版本。
+pb0的FDWZ于2026-09-05在64 CPU、64个partition的独占节点上完成当前版本重测（Slurm job `20422881`）；五个field、五个REL EB共25个case均通过项目的`100.01%`浮点数值容差检查（最大为`100.003336%`）且没有触发unpredictable。jicf0于同日在128 CPU、128个partition的独占节点上重测；主任务`20423381`在完成前四个REL EB后达到45分钟时限，续跑任务`20424117`补齐`1e-8`。jicf0的25个case同样全部通过容差检查（最大`100.000000%`）且没有触发unpredictable。按照本章开头的口径，MRCZ相对FDWZ的CR平均增长在pb0和jicf0上分别为125.30%和97.49%；FDWZ相对最优官方baseline的CR平均增长分别为37.84%和123.72%。
 
 pb0的当前64 CPU结果如下；BR横轴使用线性尺度并从0开始，允许明显偏高的曲线端点在坐标边界处截断。MRCZ和五个官方baseline沿用冻结结果，仅FDWZ使用当前版本重跑。
 
 ![pb0 rate-distortion](results/RD/pb0_rd.svg)
 
+jicf0的当前128 CPU结果如下；其他六种方法同样沿用已冻结结果。
+
+![jicf0 rate-distortion](results/RD/jicf0_rd.svg)
+
 # 6. Throughput
 
-pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度；backend为压缩或解压API调用本身，其内部QB、Huffman和Zstd工作区allocation仍计入对应时间。pb0的FDWZ使用job `20422881`当前版本结果，其他六种方法沿用冻结结果。在当前CSV的25个同REL EB点上，FDWZ压缩和解压吞吐均全部高于SZ3-4D，几何平均吞吐比分别为1.333和1.396，最小比分别为1.083和1.278。另在独占节点上对pb0/P的`1e-4`与`1e-5`各重复三次，FDWZ压缩分别比SZ3-4D快19.8%和20.1%，解压分别快30.7%和37.6%。
+pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度；backend为压缩或解压API调用本身，其内部QB、Huffman和Zstd工作区allocation仍计入对应时间。两个数据的FDWZ使用上述当前版本结果，其他六种方法沿用冻结结果。pb0的25个同REL EB点上，FDWZ压缩和解压吞吐均全部高于SZ3-4D，几何平均吞吐比分别为1.333和1.396，最小比分别为1.083和1.278。jicf0上，FDWZ压缩在25点中的18点快于SZ3-4D，几何平均吞吐比为1.059；解压在25点中的24点更快，几何平均吞吐比为1.482。因此FDWZ的解压优势在两个大数据上都很稳定，压缩端则只能说总体达到SZ3-4D速度，jicf0的严格误差界限下仍会明显落后。另在独占节点上对pb0/P的`1e-4`与`1e-5`各重复三次，FDWZ压缩分别比SZ3-4D快19.8%和20.1%，解压分别快30.7%和37.6%。
 
 pb0结果首先以实验直接指定的REL EB为横坐标；同一横坐标位置上的所有方法具有相同的error bound和计算精度。
 
@@ -342,6 +348,16 @@ pb0结果首先以实验直接指定的REL EB为横坐标；同一横坐标位�
 ![pb0 compression throughput](results/RD/pb0_compression_throughput.svg)
 
 ![pb0 decompression throughput](results/RD/pb0_decompression_throughput.svg)
+
+jicf0以REL EB和实际PSNR为横坐标的对应结果如下。
+
+![jicf0 compression throughput by REL EB](results/RD/jicf0_compression_throughput_eb.svg)
+
+![jicf0 decompression throughput by REL EB](results/RD/jicf0_decompression_throughput_eb.svg)
+
+![jicf0 compression throughput](results/RD/jicf0_compression_throughput.svg)
+
+![jicf0 decompression throughput](results/RD/jicf0_decompression_throughput.svg)
 
 # 7. Weak scaling
 
@@ -366,7 +382,7 @@ CPU数量较少时，实验只处理完整field中的局部区间，而不同区
 - FDWZ使用最大有效Huffman tree数和cubic正式预测，并在每个partition以128个element为默认采样间隔、至少32个均匀样本比较六种linear顺序，再映射到同方向cubic；QB固定为32位，超界或重构不安全的值通过unpredictable原值流逃逸。
 - 官方API baseline及tensorization已经冻结，定义见第5.1节。
 - README中的18个小数据field FDWZ曲线已使用当前linear-proxy与32位QB/unpredictable实现重跑，90个case全部满足误差界；其余24种方法沿用冻结结果。
-- pb0的rate--distortion与throughput已使用当前FDWZ版本重跑，25个case均通过`100.01%`浮点数值容差检查；jicf0仍是旧FDWZ selector结果，待用当前版本重测。
+- pb0与jicf0的rate--distortion与throughput均已使用当前FDWZ版本重跑，各25个case都通过`100.01%`浮点数值容差检查且没有触发unpredictable；其他六种方法沿用冻结结果。
 - 现有pb0 weak scaling使用统一线程绑定，但早于当前FDWZ selector；jicf0也没有当前版本的正式结果，两者均待重测。
 
 # 11. 投稿前主线

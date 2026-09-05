@@ -8,7 +8,7 @@
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
 #SBATCH --mem=235G
-#SBATCH --time=00:45:00
+#SBATCH --time=01:10:00
 #SBATCH --output=results/RD/slurm-%x-%j.out
 #SBATCH --error=results/RD/slurm-%x-%j.err
 
