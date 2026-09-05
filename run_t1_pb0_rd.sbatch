@@ -1,14 +1,14 @@
 #!/bin/bash
 #SBATCH --job-name=mrcz-pb0-rd
 #SBATCH --account=cis240669
-#SBATCH --partition=shared
+#SBATCH --partition=wholenode
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=64
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
 #SBATCH --mem=235G
-#SBATCH --time=00:20:00
+#SBATCH --time=00:30:00
 #SBATCH --output=results/RD/slurm-%x-%j.out
 #SBATCH --error=results/RD/slurm-%x-%j.err
 

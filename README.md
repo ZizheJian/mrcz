@@ -58,7 +58,7 @@ python -m pip install numpy scipy matplotlib plotly
 python3 t1_start_c_code.py
 ```
 
-FDWZ自动选择固定比较六种cubic维度顺序，默认每128个element采一个区间中点。使用命令行时可通过`-fdwz-sample-interval N`修改间隔；使用`t1_start_c_code.py`时设置`MRCZ_T1_FDWZ_SAMPLE_INTERVAL=N`。设为0可恢复旧的自动128--1024个样本策略。
+FDWZ默认在每个partition均匀采样六种linear维度顺序，再以最佳linear的维度顺序执行正式cubic压缩。默认采样间隔为128个element且每个partition至少取32个均匀样本；命令行可通过`-fdwz-sample-interval N`和`-fdwz-min-sample-num N`修改，`t1_start_c_code.py`对应使用`MRCZ_T1_FDWZ_SAMPLE_INTERVAL`和`MRCZ_T1_FDWZ_MIN_SAMPLE_NUM`。`-fdwz-selector`还可切换`linear-only`或`cubic-exhaustive`。
 
 安装后的可执行文件位于`install/bin/mrcz_compress`和`install/bin/mrcz_decompress`。已有安装或多个实验并行时，可设置`MRCZ_T1_BUILD_BEFORE_TEST=false`跳过重复构建。
 
@@ -126,8 +126,8 @@ FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3�
 1. 根据element shape和各维GLL坐标预先构造可由编解码两端确定性复现的预测层、访问顺序、reference位置及插值权重。每个有效维度的两个端点构成初始边界，递归选择最接近物理中点的未编码GLL节点。
 2. 每个二维/三维element的4/8个角点直接进行误差有界量化；其余节点按照预测层和维度顺序逐步处理。linear模式使用两个已重建reference按真实GLL距离进行一次插值；cubic模式则根据当前可用的已重建reference数量，自适应使用三次、二次或一次Lagrange插值。
 3. 每次预测后立即量化prediction residual，并用量化结果覆盖目标值。后续预测只引用该重建值，因此压缩端与解压端具有完全相同的误差传播路径，并保证逐点误差界限。
-4. FDWZ在每个partition内进行确定性的等间隔采样，默认每128个element采一个区间中点；可用`-fdwz-sample-interval N`修改间隔，设为0则恢复旧的自动128--1024个样本策略。自动选择只比较六种cubic维度顺序的sample真实压缩大小。选中的方案编号写入该partition的bitstream。
-5. 量化整数按照角点及预测层分组。正式FDWZ固定使用当前element shape允许的最大Huffman tree数，最多五棵；每个partition独立建立Huffman tree，将全部Huffman metadata和payload拼接后再压缩为一个Zstd frame。
+4. FDWZ在每个partition内进行确定性的均匀采样，默认采样间隔为128且至少取32个样本。sample真实压缩六种linear维度顺序，再以最佳linear的方向执行正式cubic压缩；选中的完整方案编号写入该partition的bitstream。
+5. 量化整数按照角点及预测层分组。正式FDWZ固定使用当前element shape允许的最大Huffman tree数，最多五棵；每个partition独立建立Huffman tree，将全部Huffman metadata和payload拼接后再压缩为一个Zstd frame。QB固定使用32位存储并保留`INT32_MIN`作为unpredictable标记；超出范围或无法严格满足误差界的点写入标记，并在全部Huffman流后按出现顺序追加原始浮点值。残差QB优先由relative EB、field range和全部stencil权重在field级证明安全，只有无法证明时才逐点检查；角点因相对零量化而始终逐点检查。plan字节记录新格式和QB宽度，因此新解压器仍兼容旧32/64位bitstream。
 6. partition之间彼此独立，通过OpenMP并行执行采样、预测、量化、Huffman和Zstd；解压端按相反顺序恢复Huffman符号，并在每个element内依次重建节点。
 
 FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。正式版本不包含各阶段的计时调用和计时数组；命令行使用`-measure-phase-time true`时，计时版本额外报告sampling以及预测/量化、Huffman和Zstd等阶段的累计partition CPU时间；`FDWZ-ablation`仍使用不计时版本并读取消融开关。
@@ -148,7 +148,7 @@ FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。
 |---|---|---|
 | 按GLL物理中点递归并使用真实GLL距离计算权重 | **采纳** | 比索引中点更符合非均匀GLL节点分布，是正式预测树的基础。 |
 | 三维数据中的六种维度顺序 | **采纳为partition级选择** | 不存在跨数据和partition普遍最优的固定顺序，因此由确定性的等间隔sample选择。官方SZ3调优只比较正序与逆序，但FDWZ限制为`XYZ/ZYX`后，即使使用完整数据oracle选择，小数据65个field/EB case的平均BR regret约2.97%、最大约21.80%，暂不照搬。 |
-| cubic插值 | **采纳** | 自动选择固定使用cubic并只在六种维度顺序间采样；linear保留为固定方案消融。（SZ3中已有） |
+| cubic插值 | **采纳** | 正式预测固定使用cubic；采样阶段比较六种linear顺序并将最佳方向映射到对应cubic，避免为选择方向重复运行昂贵的cubic sample。（SZ3中已有） |
 | surface-first：按边、面、体及中心向外顺序预测 | **放弃** | 在代表性数据上没有形成rate--distortion优势。 |
 | normal-boundary：先建立中心块，再沿法向外插边界 | **放弃** | 五个数据上均被正式物理中点预测树Pareto支配。 |
 | 官方SZ3式2幂stride、单原点seed的index-order | **放弃** | 对小element反复支付粗层级远距离预测成本，三个小数据均无优势。 |
@@ -172,6 +172,7 @@ FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。
 | 非角点QB按实际预测访问顺序保存 | **采纳** | 大数据随机段上稳定降低约5%--7% BR，压缩吞吐代价约1%，解压局部性也更好。（SZ3中已有） |
 | 非角点QB转置一下，使得element编号维度最快 | **放弃** | pb0和jicf0平均BR分别增加约4.2%和3.5%，跨步访问还显著破坏缓存局部性。 |
 | 1--5棵Huffman tree分离角点和不同预测层 | **采纳最大有效tree数** | 大partition上多tree可利用各预测层不同的符号分布；正式FDWZ按shape固定最多五棵，避免额外tree选择逻辑。 |
+| 32位QB与unpredictable原值逃逸 | **采纳** | `INT32_MIN`作为标记，超出32位范围或浮点重构不安全的点在Huffman流后顺序保存无损原值，不再整块回退64位；正常残差通过relative-EB上界走无逐点判断的快速路径。pb0/P、64核同节点测试中，32位QB在`1e-4`和`1e-5`下比64位实现分别快约11.0%和14.8%；18个小数据field的90个常规case全部通过误差界，极端double逃逸测试也通过。 |
 | 从sample直接选择tree数 | **放弃** | 小sample无法正确摊销tree metadata，tree数与完整partition的最优选择经常不一致。 |
 | 按符号数阈值或half/full sample外推tree成本 | **放弃** | regret仍不够稳定；最终固定最大有效tree比自适应规则更简单稳健。 |
 | 每个partition的多个Huffman流合并到一个Zstd frame | **采纳** | 保留不同符号分布的Huffman收益，同时让Zstd继续利用整个partition的字节级冗余。 |
@@ -180,10 +181,12 @@ FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。
 
 | 优化或候选方案 | 状态 | 结论 |
 |---|---|---|
-| partition内确定性的等间隔采样 | **暂定interval=128** | 自动选择只比较六种cubic顺序，默认每128个element采一个区间中点。一个正式partition大小的pb0/T和jicf0/UX探针中，样本数分别由1024降至238和198，总压缩时间分别改善约1.21x和1.25x，所选方案及BR不变。扩展到13个小field与5个EB后，`interval=128`平均BR regret约3.05%、最大约59.15%；`interval=256`平均约1.88%、最大约24.99%，正式partition探针相对128没有稳定总时间改善。极端值来自小样本完整Huffman/Zstd评分的不稳定性，不能通过继续增大interval可靠解决。 |
+| partition内确定性的均匀采样 | **采纳interval=128、min=32** | sample比较六种linear顺序，正式压缩映射到同方向cubic。相对完整比较六种固定cubic的oracle，18个小数据field在各自共同PSNR近中点处平均CR regret约0.34%、最大4.34%，均低于5%。 |
 | 只采样partition连续前缀 | **放弃** | 对非平稳partition代表性不足，曾出现超过100%的holdout regret。 |
 | 预计算prediction stencil和GLL权重 | **采纳** | 避免在每个element重复构造预测关系，并保证编解码路径一致。 |
 | partition级OpenMP并行 | **采纳** | partition天然独立，无需在element预测树内部增加同步。 |
+| 四个element分批执行正式预测 | **采纳** | 保持每个element内部预测顺序不变，同时复用stencil读取并增加独立指令；两个本地数据上的端到端压缩时间减少约2%--5%，bitstream逐字节不变。八个element一批没有进一步收益。 |
+| 未初始化的Huffman/Zstd输出工作区 | **采纳** | 避免`vector(size)`对最坏情况缓冲做无意义清零，仍将实际allocation计入codec wall time；两个本地数据上的端到端压缩时间减少约9%--14%，bitstream逐字节不变。 |
 | 跨element AVX2并行预测与量化 | **放弃正式合并** | 约256 KB tile解决了整partition position-major访问的缓存退化，但float没有收益，double端到端仅约快9%，不足以承担独立舍入语义和复杂实现。 |
 | 为固定`8x8x8` shape展开直接索引kernel | **放弃** | pb0上保持bitstream和误差结果不变，但总压缩时间只减少约2%--6%，同时生成约3.9万行代码并增大binary，不足以抵消维护成本。 |
 | 在同一预测轮内改为逐线遍历 | **放弃** | 相比当前按目标地址递增的memory顺序，总时间变化为约`+0.5%`、`+0.9%`和`-0.3%`，没有稳定收益；保留当前memory顺序。 |
@@ -249,14 +252,16 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 # 5. Rate-distortion结果
 
-以下CR增长均由RD曲线在相同PSNR下插值得到，不比较相同REL EB的点。对每个field先求MRCZ、FDWZ和五个正式官方baseline共同覆盖的PSNR区间，再选择最接近区间中点的整数PSNR；不同field使用各自的目标PSNR。CR增长由BR之比计算，例如MRCZ相对FDWZ为`BR_FDWZ/BR_MRCZ-1`。大数据数字来自旧FDWZ selector，当前cubic-only、`fdwz_sample_interval=128`版本尚待正式重跑；小数据数字已随本次FDWZ重测更新。
+以下CR增长均由RD曲线在相同PSNR下插值得到，不比较相同REL EB的点。对每个field先求MRCZ、FDWZ和五个正式官方baseline共同覆盖的PSNR区间，再选择最接近区间中点的整数PSNR；不同field使用各自的目标PSNR。CR增长由BR之比计算，例如MRCZ相对FDWZ为`BR_FDWZ/BR_MRCZ-1`。pb0和小数据的FDWZ数字已于2026-09-05使用当前linear-proxy、`fdwz_sample_interval=128`和32位QB/unpredictable版本重跑；jicf0仍来自旧FDWZ selector，因此合并的大数据数字暂时混合两个版本。
 
 | 数据 | 比较 | CR平均增长 | CR最大增长 | 最大值对应field |
 |---|---|---:|---:|---|
-| 大数据（旧FDWZ） | MRCZ相对FDWZ | 110.33% | 129.90% | pb0/P |
-| 大数据（旧FDWZ） | FDWZ相对最优官方baseline | 81.71% | 208.77% | jicf0/P |
-| 小数据 | MRCZ相对FDWZ | 139.57% | 675.11% | tc_channel0/UY |
-| 小数据 | FDWZ相对最优官方baseline | 56.80% | 359.84% | MFEM ex0/no_name_field |
+| pb0（当前FDWZ） | MRCZ相对FDWZ | 125.30% | 130.00% | P |
+| pb0（当前FDWZ） | FDWZ相对最优官方baseline | 37.84% | 49.05% | UX |
+| 大数据（pb0当前、jicf0旧FDWZ） | MRCZ相对FDWZ | 111.01% | 130.00% | pb0/P |
+| 大数据（pb0当前、jicf0旧FDWZ） | FDWZ相对最优官方baseline | 81.26% | 208.77% | jicf0/P |
+| 小数据（当前FDWZ） | MRCZ相对FDWZ | 136.66% | 669.47% | tc_channel0/UY |
+| 小数据（当前FDWZ） | FDWZ相对最优官方baseline | 58.83% | 359.95% | MFEM ex0/no_name_field |
 
 五个baseline为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D；每个field在目标PSNR处取其中最低BR。大数据汇总10个field；小数据不计入RD曲线接近PSNR轴的test0/UZ，汇总其余17个field。各field等权，逐field共同区间、目标PSNR和最优baseline保存在`results/RD/midpoint_cr_summary.csv`，统计可由`python3 py_funcs/summarize_rd.py`复现。
 
@@ -308,7 +313,7 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 ## 5.2. 小数据正式方法结果
 
-下图展示全部18个非常数field上25种方法的BR--PSNR曲线；同一种官方压缩器的不同API布局使用相同颜色和不同线型，BR横轴使用线性尺度并固定从0开始。各子图聚焦主要曲线的有效比较范围，允许高BR方法和明显偏高的PSNR端点在坐标边界处截断。FDWZ曲线于2026-09-05使用cubic-only、`fdwz_sample_interval=128`和1 CPU/1 partition重跑，其余方法沿用已冻结的正式结果。
+下图展示全部18个非常数field上25种方法的BR--PSNR曲线；同一种官方压缩器的不同API布局使用相同颜色和不同线型，BR横轴使用线性尺度并固定从0开始。各子图聚焦主要曲线的有效比较范围，允许高BR方法和明显偏高的PSNR端点在坐标边界处截断。FDWZ曲线于2026-09-05使用当前cubic-only、linear-proxy、`fdwz_sample_interval=128`、32位QB/unpredictable和1 CPU/1 partition重跑；90个case全部满足误差界且没有触发unpredictable，其余24种方法沿用已冻结的正式结果。
 
 ![Small-data rate-distortion](results/RD/small_rd.svg)
 
@@ -316,17 +321,17 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 大数据实验使用pb0的UX、UY、UZ、P和T五个field，以及jicf0的UX、UY、UZ、P和S00五个field。正式方法为MRCZ、FDWZ、SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D；pb0使用64 CPU和64个partition，REL EB为`1e-2`、`1e-3`、`1e-4`、`1e-5`和`1e-6`；jicf0使用128 CPU和128个partition，REL EB为`1e-4`、`1e-5`、`1e-6`、`1e-7`和`1e-8`。
 
-现有大数据快照由旧FDWZ selector生成。按照本章开头统一的逐field共同区间近中点口径，MRCZ在全部10个field上取得最低BR，FDWZ在全部10个field上排名第二；具体目标PSNR见`results/RD/midpoint_cr_summary.csv`。这一结论尚未用当前cubic-only、`fdwz_sample_interval=128`版本复核，不能作为当前实现的正式结论。
+pb0的FDWZ于2026-09-05在64 CPU、64个partition的独占节点上完成当前版本重测（Slurm job `20422881`）；五个field、五个REL EB共25个case均通过项目的`100.01%`浮点数值容差检查（最大为`100.003336%`）且没有触发unpredictable。按照本章开头的逐field共同区间近中点口径，MRCZ在pb0五个field上均取得最低BR，FDWZ均排名第二；MRCZ相对FDWZ的CR平均增长为125.30%，FDWZ相对最优官方baseline的CR平均增长为37.84%。jicf0仍是旧FDWZ selector结果，因此全部10个大数据field的合并数字不是同一FDWZ版本。
 
-pb0的旧selector 64 CPU重测结果如下，仅保留作历史参照；BR横轴使用线性尺度并从0开始，允许明显偏高的曲线端点在坐标边界处截断。
+pb0的当前64 CPU结果如下；BR横轴使用线性尺度并从0开始，允许明显偏高的曲线端点在坐标边界处截断。MRCZ和五个官方baseline沿用冻结结果，仅FDWZ使用当前版本重跑。
 
 ![pb0 rate-distortion](results/RD/pb0_rd.svg)
 
 # 6. Throughput
 
-pb0和jicf0的正式throughput计划分别使用64 CPU和128 CPU测量。吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度。以下pb0图仍来自旧FDWZ selector，只作历史参照；当前版本需要重新测量全部正式方法后再比较。
+pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度；backend为压缩或解压API调用本身，其内部QB、Huffman和Zstd工作区allocation仍计入对应时间。pb0的FDWZ使用job `20422881`当前版本结果，其他六种方法沿用冻结结果。在当前CSV的25个同REL EB点上，FDWZ压缩和解压吞吐均全部高于SZ3-4D，几何平均吞吐比分别为1.333和1.396，最小比分别为1.083和1.278。另在独占节点上对pb0/P的`1e-4`与`1e-5`各重复三次，FDWZ压缩分别比SZ3-4D快19.8%和20.1%，解压分别快30.7%和37.6%。
 
-现有pb0旧selector结果首先以实验直接指定的REL EB为横坐标；同一横坐标位置上的所有方法具有相同的error bound和计算精度。
+pb0结果首先以实验直接指定的REL EB为横坐标；同一横坐标位置上的所有方法具有相同的error bound和计算精度。
 
 ![pb0 compression throughput by REL EB](results/RD/pb0_compression_throughput_eb.svg)
 
@@ -358,11 +363,10 @@ CPU数量较少时，实验只处理完整field中的局部区间，而不同区
 
 - 正式MRCZ算法已冻结：逐element DChT、系数与残差量化、32x32分块coefficient-major
   转置、Huffman和Zstd，partition之间OpenMP并行。
-- FDWZ使用最大有效Huffman tree数和cubic预测，并在每个partition以128个element为默认
-  采样间隔选择维度顺序。
+- FDWZ使用最大有效Huffman tree数和cubic正式预测，并在每个partition以128个element为默认采样间隔、至少32个均匀样本比较六种linear顺序，再映射到同方向cubic；QB固定为32位，超界或重构不安全的值通过unpredictable原值流逃逸。
 - 官方API baseline及tensorization已经冻结，定义见第5.1节。
-- 18个小数据field的当前FDWZ已经以1 CPU、1 partition和5个REL EB重跑，RD图与逐field共同区间近中点CR汇总已经更新；其余24种方法沿用冻结结果。
-- pb0和jicf0的现有rate--distortion与throughput结果早于当前FDWZ selector，仅作历史参考，当前版本均待重测。
+- README中的18个小数据field FDWZ曲线已使用当前linear-proxy与32位QB/unpredictable实现重跑，90个case全部满足误差界；其余24种方法沿用冻结结果。
+- pb0的rate--distortion与throughput已使用当前FDWZ版本重跑，25个case均通过`100.01%`浮点数值容差检查；jicf0仍是旧FDWZ selector结果，待用当前版本重测。
 - 现有pb0 weak scaling使用统一线程绑定，但早于当前FDWZ selector；jicf0也没有当前版本的正式结果，两者均待重测。
 
 # 11. 投稿前主线

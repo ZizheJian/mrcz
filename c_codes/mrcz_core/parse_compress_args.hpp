@@ -160,6 +160,20 @@ namespace mrcz
                     throw runtime_error("缺少-fdwz-sample-interval参数后的非负整数");
                 params.fdwz_sample_interval=parse_uint64(argv[++i],"-fdwz-sample-interval");
             }
+            else if(string(argv[i])=="-fdwz-selector")
+            {
+                if(i+1>=argc)
+                    throw runtime_error("缺少-fdwz-selector参数后的选择器名称");
+                params.fdwz_selector=argv[++i];
+                if(params.fdwz_selector!="linear-only" and params.fdwz_selector!="linear-proxy" and params.fdwz_selector!="cubic-exhaustive")
+                    throw runtime_error("-fdwz-selector必须是linear-only、linear-proxy或cubic-exhaustive");
+            }
+            else if(string(argv[i])=="-fdwz-min-sample-num")
+            {
+                if(i+1>=argc)
+                    throw runtime_error("缺少-fdwz-min-sample-num参数后的非负整数");
+                params.fdwz_min_sample_num=parse_uint64(argv[++i],"-fdwz-min-sample-num");
+            }
             else if (string(argv[i])=="-compute-precision")
             {
                 if (i+1>=argc)

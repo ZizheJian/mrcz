@@ -63,6 +63,9 @@ def finish_figure(figure,xlabel,ylabel,output_path):
     figure.supylabel(ylabel,fontsize=13)
     figure.tight_layout(rect=(0.025,0.035,1,0.9))
     figure.savefig(output_path,format="svg",bbox_inches="tight",metadata={"Date":None})
+    preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
+    if preview_dir:
+        figure.savefig(os.path.join(preview_dir,"small_rd.png"),format="png",dpi=160,bbox_inches="tight")
     plt.close(figure)
 
 def plot_rd(result_dir):

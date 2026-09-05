@@ -129,7 +129,7 @@ namespace mrcz
 
                     uint64_t root;
                     uint64_t n;//node数量
-                    T maxval;
+                    uint64_t maxval;
                     vector<Node> ht;
                     vector<uint64_t> vecfreq;//以vector形式存储的freq
                     unordered_map<uint64_t,uint64_t> mpfreq;//以map形式存储的freq
@@ -238,7 +238,7 @@ namespace mrcz
                     __maxval=max(__maxval,*(bins+i));
                 }
                 tree.offset=__minval;
-                tree.maxval=__maxval-__minval+1;
+                tree.maxval=static_cast<uint64_t>(static_cast<__int128>(__maxval)-static_cast<__int128>(__minval))+1;
 
                 // bin的值密集时使用vector存储频次，稀疏时使用map存储频次
                 if ((tree.maxval>=(1<<12) and num_bin<2*static_cast<uint64_t>(__maxval)) || tree.maxval>=(1<<28))
@@ -256,7 +256,7 @@ namespace mrcz
                 {
                     map<uint64_t,uint64_t> freq;
                     for (uint64_t i=0;i<num_bin;i++)
-                        ++freq[static_cast<uint64_t>(bins[i]-tree.offset)];
+                        ++freq[static_cast<uint64_t>(static_cast<__int128>(bins[i])-static_cast<__int128>(tree.offset))];
                     tree.ht.reserve(freq.size()<<1);
                     for (auto it:freq)
                         tree.addElementInMap(it.first,it.second);
@@ -268,7 +268,7 @@ namespace mrcz
                     tree.veccode.resize(tree.maxval);
                     vector<uint64_t> freq(tree.maxval);
                     for (uint64_t i=0;i<num_bin;i++)
-                        ++freq[static_cast<uint64_t>(bins[i]-tree.offset)];
+                        ++freq[static_cast<uint64_t>(static_cast<__int128>(bins[i])-static_cast<__int128>(tree.offset))];
                     tree.ht.reserve(freq.size()<<1);
                     for (uint64_t i=0;i<static_cast<uint64_t>(tree.maxval);i++)
                         if (freq[i]) 
@@ -302,8 +302,9 @@ namespace mrcz
                     for (uint64_t i=0;i<num_bin;i++)
                     {
                         T it=bins[i];
-                        unsigned char len_i=tree.mplen[it-tree.offset];
-                        int code_i=tree.mpcode[it-tree.offset];
+                        uint64_t symbol=static_cast<uint64_t>(static_cast<__int128>(it)-static_cast<__int128>(tree.offset));
+                        unsigned char len_i=tree.mplen[symbol];
+                        int code_i=tree.mpcode[symbol];
                         len+=len_i;
                         writeBytes(bytes,code_i,len_i,mask,index);
                     }
@@ -311,8 +312,9 @@ namespace mrcz
                     for (uint64_t i=0;i<num_bin;i++) 
                     {
                         T it=bins[i];
-                        unsigned char len_i=tree.veclen[it-tree.offset];
-                        int code_i=tree.veccode[it-tree.offset];
+                        uint64_t symbol=static_cast<uint64_t>(static_cast<__int128>(it)-static_cast<__int128>(tree.offset));
+                        unsigned char len_i=tree.veclen[symbol];
+                        int code_i=tree.veccode[symbol];
                         len+=len_i;
                         writeBytes(bytes,code_i,len_i,mask,index);
                     }
@@ -354,49 +356,49 @@ namespace mrcz
                     u=u->p[b&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                     u=u->p[(b>>1)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                     u=u->p[(b>>2)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                     u=u->p[(b>>3)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                     u=u->p[(b>>4)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                     u=u->p[(b>>5)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                     u=u->p[(b>>6)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                     u=u->p[(b>>7)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(offset));
                         u=&tree.ht[tree.root];
                     }
                 }
@@ -408,7 +410,7 @@ namespace mrcz
                     u=u->p[(b>>j)&1];
                     if (u->isLeaf())
                     {
-                        out[outLen++]=u->c+tree.offset;
+                        out[outLen++]=static_cast<T>(static_cast<__int128>(u->c)+static_cast<__int128>(tree.offset));
                         u=&tree.ht[tree.root];
                     }
                 }
@@ -490,9 +492,9 @@ namespace mrcz
                 }
             }
 
-            static void writeBytes(unsigned char*& c,T val,unsigned char len,unsigned char& mask,unsigned char& index)
+            static void writeBytes(unsigned char*& c,uint64_t val,unsigned char len,unsigned char& mask,unsigned char& index)
             {
-                assert(len>=1 and len<=sizeof(T)*8);
+                assert(len>=1 and len<=64);
 
                 if (len+index>=8)
                 {
@@ -579,11 +581,13 @@ namespace mrcz
                 tree.mbft=(*bytes)&0x3f;
                 ++bytes;
 
+                uint64_t offset_bits=0;
                 for (uint64_t i=0;i<sizeof(T);i++)
                 {
-                    tree.offset|=static_cast<T>(*bytes)<<(i<<3);
+                    offset_bits|=static_cast<uint64_t>(*bytes)<<(i<<3);
                     ++bytes;
                 }
+                tree.offset=static_cast<T>(offset_bits);
 
                 tree.n=bytesToInt64_bigEndian(bytes);
                 bytes+=sizeof(uint64_t);
@@ -645,9 +649,9 @@ namespace mrcz
                     }
                     else
                     {
-                        T c=0;
+                        uint64_t c=0;
                         for (int j=0;j<tree.mbft;j++)
-                            c|=static_cast<T>(readBit(bytes,i++))<<j;
+                            c|=static_cast<uint64_t>(readBit(bytes,i++))<<j;
                         tree.ht.push_back(Node(c));
                         if (u->p[0]==nullptr)
                             u->p[0]=&tree.ht[tree.ht.size()-1];
