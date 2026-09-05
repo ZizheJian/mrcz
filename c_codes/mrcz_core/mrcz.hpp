@@ -72,6 +72,7 @@ namespace mrcz
             // FDWZ优化开关
             bool if_max_huffman_tree=true; //仅FDWZ-ablation读取；不写入metadata，解压时必须与压缩一致
             string fdwz_plan="sample"; //仅FDWZ-ablation读取；sample或XYZ/XZY/YXZ/YZX/ZXY/ZYX-linear/cubic
+            uint64_t fdwz_sample_interval=128; //0使用旧自动样本数；正整数表示每隔多少个element采一个区间中点
 
             string format;
             string data_path;
@@ -226,6 +227,7 @@ namespace mrcz
                 if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
                 if_max_huffman_tree=other.if_max_huffman_tree;
                 fdwz_plan=other.fdwz_plan;
+                fdwz_sample_interval=other.fdwz_sample_interval;
                 grid_assumption=other.grid_assumption;
                 transform=other.transform;
                 

@@ -8,7 +8,7 @@
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
 #SBATCH --mem=235G
-#SBATCH --time=06:00:00
+#SBATCH --time=00:20:00
 #SBATCH --output=results/RD/slurm-%x-%j.out
 #SBATCH --error=results/RD/slurm-%x-%j.err
 
@@ -24,6 +24,14 @@ unset MRCZ_PROFILE_HUFFMAN
 export MRCZ_T1_DATASET=pb0
 export MRCZ_T1_MAX_CPUS=64
 export MRCZ_T1_BUILD_BEFORE_TEST=false
+export MRCZ_T1_METHODS=FDWZ
+export MRCZ_T1_FIELDS=UX,UY,UZ,P,T
+export MRCZ_T1_EBS=1e-2,1e-3,1e-4,1e-5,1e-6
+export MRCZ_T1_FDWZ_SAMPLE_INTERVAL=128
 TIMEFORMAT=$'\nTotal wall time: %R seconds\nTotal CPU time: %U user + %S system seconds'
 time srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores python3 -u t1_start_c_code.py
 cp /anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001_*.csv results/RD/pb0/
+python3 py_funcs/plot_large_rd.py pb0
+python3 py_funcs/plot_large_throughput.py pb0 --x-axis eb
+python3 py_funcs/plot_large_throughput.py pb0
+python3 py_funcs/summarize_rd.py

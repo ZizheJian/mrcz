@@ -12,7 +12,7 @@ build_before_test=os.environ.get("MRCZ_T1_BUILD_BEFORE_TEST","true").lower() in 
 # method可选:
 #   "MRCZ": 正式MRCZ，element内变换由编译器自动向量化，系数QB使用32x32分块转置
 #   "MRCZ-ablation": 使用param中的MRCZ消融开关
-#   "FDWZ": 使用最大有效Huffman tree数，并在每个partition采样选择维度顺序和linear/cubic预测
+#   "FDWZ": 使用最大有效Huffman tree数和cubic预测，并在每个partition采样选择维度顺序
 #   "FDWZ-ablation": 使用param中的FDWZ消融开关
 #   "SZ3-1D"/"SZ3-2D"/"SZ3-3D-fused"/"SZ3-3D-per-element"/"SZ3-4D": 官方SZ3 API的五种tensorization
 #   "QoZ-1D"/"QoZ-2D"/"QoZ-3D-fused"/"QoZ-3D-per-element"/"QoZ-4D": 官方QoZ 2.0 q4 API的五种tensorization
@@ -208,6 +208,8 @@ for method in method_list:
                 command_list=[f"{command} -format {format} -i {data_path} -mesh {mesh_path}" for command in command_list] # type: ignore
             command_list=[f"{command} -M {eb_mode} {eb} -method {method}" for command in command_list]
             command_list=[f"{command} -max-cpus {max_cpus}" for command in command_list]
+            if "MRCZ_T1_FDWZ_SAMPLE_INTERVAL" in os.environ and method in ["FDWZ","FDWZ-ablation"]:
+                command_list[0]+=f" -fdwz-sample-interval {os.environ['MRCZ_T1_FDWZ_SAMPLE_INTERVAL']}"
             if "partition_num" in locals():
                 command_list=[f"{command} -partition-num {partition_num}" for command in command_list] # type: ignore
             if "elements" in locals():

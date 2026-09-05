@@ -1,6 +1,8 @@
 import csv,math,os
 import matplotlib.pyplot as plt
 
+plt.rcParams["svg.hashsalt"]="mrcz-small-rd"
+
 layouts=["1D","2D","3D-fused","3D-per-element","4D"]
 methods=["MRCZ","FDWZ"]+[f"{compressor}-{layout}" for compressor in ["SZ3","SZ2","QoZ","ZFP"] for layout in layouts]+["SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"]
 family_colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3":"#4e79a7","SZ2":"#76b7b2","QoZ":"#59a14f","ZFP":"#f28e2b","SPERR":"#b07aa1"}
@@ -60,7 +62,7 @@ def finish_figure(figure,xlabel,ylabel,output_path):
     figure.supxlabel(xlabel,fontsize=13)
     figure.supylabel(ylabel,fontsize=13)
     figure.tight_layout(rect=(0.025,0.035,1,0.9))
-    figure.savefig(output_path,format="svg",bbox_inches="tight")
+    figure.savefig(output_path,format="svg",bbox_inches="tight",metadata={"Date":None})
     plt.close(figure)
 
 def plot_rd(result_dir):

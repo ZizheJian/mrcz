@@ -154,6 +154,12 @@ namespace mrcz
                 if (params.fdwz_plan!="sample" and params.fdwz_plan!="XYZ-linear" and params.fdwz_plan!="XZY-linear" and params.fdwz_plan!="YXZ-linear" and params.fdwz_plan!="YZX-linear" and params.fdwz_plan!="ZXY-linear" and params.fdwz_plan!="ZYX-linear" and params.fdwz_plan!="XYZ-cubic" and params.fdwz_plan!="XZY-cubic" and params.fdwz_plan!="YXZ-cubic" and params.fdwz_plan!="YZX-cubic" and params.fdwz_plan!="ZXY-cubic" and params.fdwz_plan!="ZYX-cubic")
                     throw runtime_error("-fdwz-plan必须是sample或一种维度顺序与linear/cubic的组合");
             }
+            else if(string(argv[i])=="-fdwz-sample-interval")
+            {
+                if(i+1>=argc)
+                    throw runtime_error("缺少-fdwz-sample-interval参数后的非负整数");
+                params.fdwz_sample_interval=parse_uint64(argv[++i],"-fdwz-sample-interval");
+            }
             else if (string(argv[i])=="-compute-precision")
             {
                 if (i+1>=argc)

@@ -1,6 +1,8 @@
 import argparse,csv,math,os
 import matplotlib.pyplot as plt
 
+plt.rcParams["svg.hashsalt"]="mrcz-large-throughput"
+
 methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
 colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","SZ2-3D-fused":"#76b7b2","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1"}
 markers={"MRCZ":"*","FDWZ":"o","SZ3-4D":"^","SZ2-3D-fused":"s","QoZ-4D":"D","ZFP-3D-fused":"v","SPERR-2D":"P"}
@@ -59,7 +61,7 @@ def plot_throughput(result_dir,task,dataset=None,x_axis="psnr"):
     prefix="large" if dataset is None else dataset
     suffix="_eb" if x_axis=="eb" else ""
     output_path=os.path.join(result_dir,f"{prefix}_{task}_throughput{suffix}.svg")
-    figure.savefig(output_path,format="svg",bbox_inches="tight")
+    figure.savefig(output_path,format="svg",bbox_inches="tight",metadata={"Date":None})
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:
         figure.savefig(os.path.join(preview_dir,f"{prefix}_{task}_throughput{suffix}.png"),format="png",dpi=150,bbox_inches="tight")

@@ -417,7 +417,7 @@ namespace mrcz::detail
         uint32_t max_level=max(max(mid_indices0.size(),mid_indices1.size()),mid_indices2.size());
         vector<uint32_t> corner_positions=fdwz_generate_corner_positions(n0,n1,n2);
 
-        // 预先构造6种维度顺序乘以linear/cubic两种插值方式，共12套可复用预测结构；每个partition实际只评估6个linear和最佳linear顺序对应的1个cubic。
+        // 预先构造6种维度顺序乘以linear/cubic两种插值方式，共12套可复用预测结构；自动选择只评估6个cubic，固定方案仍可用于linear消融。
         vector<fdwz_prediction_plan<T>> sampled_plans;
         auto all_orders=fdwz_all_dimension_orders();
         for (uint32_t cubic_id=0;cubic_id<2;cubic_id++)
@@ -469,6 +469,7 @@ namespace mrcz::detail
         if constexpr(measure_phase_time)
             structure_generation_time=omp_get_wtime()-start_time;
         vector<unsigned char> selected_plan_ids(blocks.size(),0);
+        vector<uint64_t> sample_element_counts(blocks.size(),0);
         array<uint32_t,5> tree_value_num{};
         if (huffman_tree_num==1)
             tree_value_num[0]=n012;
@@ -499,27 +500,35 @@ namespace mrcz::detail
                 {
                     auto &block=blocks[block_id];
                     uint64_t element_num=block.end_index-block.begin_index;
-                    uint64_t sample_num=min<uint64_t>(element_num,min<uint64_t>(1024,max<uint64_t>(128,element_num/4)));
+                    uint64_t sample_num;
+                    if(params.fdwz_sample_interval==0)
+                        sample_num=min<uint64_t>(element_num,min<uint64_t>(1024,max<uint64_t>(128,element_num/4)));
+                    else
+                        sample_num=1+(element_num-1)/params.fdwz_sample_interval;
+                    sample_element_counts[block_id]=sample_num;
                     auto &original_sample=sampling_workspace.original_sample;
                     original_sample.resize(sample_num*n012);
                     for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
                     {
-                        uint64_t relative_element_id=((2*sample_id+1)*element_num)/(2*sample_num);
+                        uint64_t relative_element_id;
+                        if(params.fdwz_sample_interval==0)
+                            relative_element_id=((2*sample_id+1)*element_num)/(2*sample_num);
+                        else
+                        {
+                            uint64_t interval_begin=sample_id*params.fdwz_sample_interval;
+                            uint64_t interval_size=min<uint64_t>(params.fdwz_sample_interval,element_num-interval_begin);
+                            relative_element_id=interval_begin+interval_size/2;
+                        }
                         memcpy(original_sample.data()+sample_id*n012,data.data()+(block.begin_index+relative_element_id)*n012,n012*sizeof(T));
                     }
-                    uint32_t best_plan_id=0;
-                    uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[0],residual_group_offsets,huffman_tree_num,abs_eb,0,sampling_workspace);
-                    for (uint32_t plan_id=1;plan_id<6;plan_id++)
+                    uint32_t best_plan_id=6;
+                    uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[6],residual_group_offsets,huffman_tree_num,abs_eb,6,sampling_workspace);
+                    for(uint32_t plan_id=7;plan_id<12;plan_id++)
                     {
                         uint64_t candidate_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[plan_id],residual_group_offsets,huffman_tree_num,abs_eb,plan_id,sampling_workspace);
-                        if (candidate_size<best_size)
+                        if(candidate_size<best_size)
                             best_size=candidate_size,best_plan_id=plan_id;
                     }
-                    // 当前策略只测试最佳linear维度顺序对应的cubic版本，而不是再次测试全部6个cubic顺序。
-                    uint32_t cubic_plan_id=best_plan_id+6;
-                    uint64_t cubic_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[cubic_plan_id],residual_group_offsets,huffman_tree_num,abs_eb,cubic_plan_id,sampling_workspace);
-                    if (cubic_size<best_size)
-                        best_plan_id=cubic_plan_id;
                     selected_plan_ids[block_id]=best_plan_id;
                 }
                 if constexpr(measure_phase_time)
@@ -626,6 +635,11 @@ namespace mrcz::detail
             if (configuration_counts[plan_id]>0)
                 printf(" %c%c%c-%s=%lu","XYZ"[all_orders[plan_id%6][0]],"XYZ"[all_orders[plan_id%6][1]],"XYZ"[all_orders[plan_id%6][2]],plan_id<6?"linear":"cubic",configuration_counts[plan_id]);
         printf("\n");
+        if(fixed_plan_id<0)
+        {
+            uint64_t total_sample_element_num=accumulate(sample_element_counts.begin(),sample_element_counts.end(),uint64_t(0));
+            printf("FDWZ sampling interval= %lu, sampled element num= %lu\n",params.fdwz_sample_interval,total_sample_element_num);
+        }
         if constexpr(measure_phase_time)
         {
             // 分段时间是所有partition的CPU时间之和；Compression time则是包含并行加速后的wall time。
