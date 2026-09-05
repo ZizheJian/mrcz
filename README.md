@@ -20,9 +20,10 @@
 | `read_nekrs_header.py` | 解析NekRS field文件头，返回字节序、数据精度、element shape、element数量和field信息。 |
 | `interpolate_br_at_psnr.py` | 整理BR--PSNR曲线，并线性插值得到指定PSNR下的BR。 |
 | `plot_small_rd.py` | 根据18个小数据field的正式CSV生成RD汇总图。 |
-| `plot_large_throughput.py` | 根据pb0和jicf0的正式CSV生成压缩与解压throughput汇总图。 |
+| `plot_large_rd.py` | 为pb0或jicf0单独生成五个field的正式RD图。 |
+| `plot_large_throughput.py` | 根据pb0和jicf0的正式CSV生成以REL EB或PSNR为横坐标的压缩与解压throughput图。 |
 | `plot_weak_scaling.py` | 根据weak scaling summary CSV生成`results/weak_scaling/weak_scaling_efficiency.svg`。 |
-| `plot_weak_scaling_dataset.py` | 为pb0或jicf0单独生成带误差棒的weak scaling efficiency图。 |
+| `plot_weak_scaling_dataset.py` | 为pb0或jicf0单独生成weak scaling efficiency图。 |
 
 ## 安装
 
@@ -176,7 +177,7 @@ FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。
 
 | 优化或候选方案 | 状态 | 结论 |
 |---|---|---|
-| partition内确定性的等间隔采样 | **采纳** | 对维度顺序和linear/cubic的holdout选择较稳定，最多采样1024个element，不依赖随机数或随机种子。 |
+| partition内确定性的等间隔采样 | **暂时保留** | pb0和jicf0的1核四区间探针中，改用各数据集事后最优的固定cubic顺序可加速约1.35x且BR分别改善0.32%和0.90%；但两个数据集分别需要`ZYX`和`XYZ`，互换后BR恶化约9.7%--10.9%。直接删除采样会依赖dataset tuning；下一步优先测试减少sample数量。 |
 | 只采样partition连续前缀 | **放弃** | 对非平稳partition代表性不足，曾出现超过100%的holdout regret。 |
 | 预计算prediction stencil和GLL权重 | **采纳** | 避免在每个element重复构造预测关系，并保证编解码路径一致。 |
 | partition级OpenMP并行 | **采纳** | partition天然独立，无需在element预测树内部增加同步。 |
@@ -199,7 +200,7 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 
 MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_measure_phase_time=false`时使用不含分段计时代码的正式版本；`MRCZ`且该开关为`true`时使用带分段计时的版本；`MRCZ-ablation`使用消融版本并读取`param`中的MRCZ优化开关。命令行程序可通过`-measure-phase-time true`选择计时版本。
 
-命令行消融使用`-method MRCZ-ablation`并通过`-grid-assumption`、`-transform`、`-coeff-eb-scale`、`-coefficient-transpose`和`-tiled-coefficient-transpose`设置MRCZ开关。FDWZ消融使用`-method FDWZ-ablation -max-huffman-tree false`切换到单棵Huffman tree；正式`MRCZ`和`FDWZ`使用论文采用的固定配置，不受消融开关影响。消融开关不写入metadata，因此解压消融结果时必须提供与压缩相同的参数。FDWZ为每个partition采样选出的维度顺序和linear/cubic predictor属于解码必需的算法状态，仍会随该partition的bitstream保存。
+命令行消融使用`-method MRCZ-ablation`并通过`-grid-assumption`、`-transform`、`-coeff-eb-scale`、`-coefficient-transpose`和`-tiled-coefficient-transpose`设置MRCZ开关。FDWZ消融使用`-method FDWZ-ablation -max-huffman-tree false`切换到单棵Huffman tree，也可用`-fdwz-plan <order>-<linear|cubic>`跳过采样并固定预测方案；正式`MRCZ`和`FDWZ`使用论文采用的固定配置，不受消融开关影响。消融开关不写入metadata，因此解压消融结果时必须提供与压缩相同的参数。FDWZ选中的维度顺序和linear/cubic predictor属于解码必需的算法状态，仍会随该partition的bitstream保存。
 
 ## 3.2. 变换与coefficient error bound阶段
 
@@ -314,13 +315,25 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 根据正式RD曲线在fixed-quality目标pb0 100 dB和jicf0 150 dB处的插值结果，MRCZ在全部10个field上均取得最低BR，FDWZ在全部10个field上均排名第二；jicf0/S00上两者接近，其余field上MRCZ的优势更明显。
 
+pb0的最新64 CPU重测结果如下；BR横轴使用线性尺度并从0开始，允许明显偏高的曲线端点在坐标边界处截断。
+
+![pb0 rate-distortion](results/RD/pb0_rd.svg)
+
 # 6. Throughput
 
-pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。下面两图按field展示七种正式方法在不同实际PSNR下的压缩与解压吞吐量；吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度。
+pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度。
 
-![Large-data compression throughput](results/RD/large_compression_throughput.svg)
+pb0最新重测结果首先以实验直接指定的REL EB为横坐标；同一横坐标位置上的所有方法具有相同的error bound和计算精度。
 
-![Large-data decompression throughput](results/RD/large_decompression_throughput.svg)
+![pb0 compression throughput by REL EB](results/RD/pb0_compression_throughput_eb.svg)
+
+![pb0 decompression throughput by REL EB](results/RD/pb0_decompression_throughput_eb.svg)
+
+随后以各方法实际达到的PSNR为横坐标，从fixed-quality角度展示压缩与解压throughput。
+
+![pb0 compression throughput](results/RD/pb0_compression_throughput.svg)
+
+![pb0 decompression throughput](results/RD/pb0_decompression_throughput.svg)
 
 # 7. Weak scaling
 
@@ -328,9 +341,11 @@ pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。下面两图�
 
 CPU数量较少时，实验只处理完整field中的局部区间，而不同区间的data range可能不同。如果直接使用REL EB，程序会根据局部data range得到不同的ABS EB，使各CPU点的实际误差界和重建质量不再一致。因此，每个method/field先根据完整数据的RD曲线插值得到目标PSNR对应的REL EB，再乘以完整field的data range得到ABS EB；所有CPU数量和抽样区间均使用这个固定的ABS EB。同时，实验通过`-compute-precision`固定使用完整数据在该REL EB下选择的float或double，避免局部data range变化导致计算精度切换。局部区间的data range还可能小到触发constant compression，因此weak scaling压缩命令统一设置`-constant-compression false`，确保每个case都实际运行对应backend。汇总PSNR也使用完整field的data range和各区间的加权MSE重新计算。
 
-每个CPU数、每个field测试4次。先将完整数据固定划分为最大CPU数个全局partition；使用N个CPU时，一个测试段由N个相邻partition组成，再从所有可选测试段中等间隔选择4段。例如jicf0使用2 CPU时选择全局partition `[0,2)`、`[42,44)`、`[84,86)`和`[126,128)`。当N较大、完整数据只能提供2段或1段时，每段分别重复2次或4次。因此每个CPU点仍覆盖jicf0中多个位置，而不是复制某个代表性partition。汇总吞吐量等于4次测试的原始数据总量除以内部耗时总和；图中的误差棒为4次测试分别汇总全部field后所得efficiency的样本标准差。Slurm脚本使用`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`将OpenMP线程固定到物理核，并使用`--exclusive --mem=235G`独占节点及235 GiB内存，避免并发Huffman工作区触发cgroup OOM或受到同节点任务干扰；pb0程序仍只使用64个线程，jicf0使用128个线程。
+每个CPU数、每个field测试4次。先将完整数据固定划分为最大CPU数个全局partition；使用N个CPU时，一个测试段由N个相邻partition组成，再从所有可选测试段中等间隔选择4段。例如jicf0使用2 CPU时选择全局partition `[0,2)`、`[42,44)`、`[84,86)`和`[126,128)`。当N较大、完整数据只能提供2段或1段时，每段分别重复2次或4次。因此每个CPU点仍覆盖jicf0中多个位置，而不是复制某个代表性partition。每次测试先汇总全部五个field的原始数据量和内部时间，再计算综合throughput与efficiency。图中展示四次测试合并后的综合efficiency，不绘制误差棒；四次测试的样本标准差仍保存在summary CSV中。Slurm脚本使用`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`将OpenMP线程固定到物理核，并使用`--exclusive --mem=235G`独占节点及235 GiB内存，避免并发Huffman工作区触发cgroup OOM或受到同节点任务干扰；pb0程序仍只使用64个线程，jicf0使用128个线程。
 
-图中各方法的efficiency以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且不画入趋势图。旧结果没有统一OpenMP线程绑定，并且早于当前FDWZ实现，已经移除。pb0和jicf0均需使用当前代码完整重测，正式图由4段结果绘制误差棒；当前结论暂留空，避免引用过期数值。
+图中各方法的efficiency以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且不画入趋势图。旧结果没有统一OpenMP线程绑定，并且早于当前FDWZ实现，已经移除。pb0已经使用当前代码完整重测；jicf0仍在重测，因此当前结论暂留空，避免引用过期数值。
+
+![pb0 weak-scaling efficiency](results/weak_scaling/weak_pb0_efficiency.svg)
 
 # 8. Strong scaling
 

@@ -21,8 +21,7 @@ def draw_panel(parts,rows,title,metric,x,y,w,h):
     cpu_values=sorted({int(row["CPUs"]) for row in rows})
     x_index={cpus:index for index,cpus in enumerate(cpu_values)}
     x_scale=lambda cpus:left+(right-left)*x_index[cpus]/(len(cpu_values)-1)
-    error_metric=metric+" Std Dev"
-    y_max=max(1.05,max(float(row[metric])+float(row.get(error_metric,0) or 0) for row in rows)*1.05)
+    y_max=max(1.05,max(float(row[metric]) for row in rows)*1.05)
     y_scale=lambda value:bottom-(bottom-top)*value/y_max
     parts.append(svg_text((left+right)/2,y+20,title,18,weight="bold"))
     for index in range(5):
@@ -48,14 +47,7 @@ def draw_panel(parts,rows,title,metric,x,y,w,h):
         for row in method_rows:
             px=x_scale(int(row["CPUs"]))
             value=float(row[metric])
-            error=float(row.get(error_metric,0) or 0)
             py=y_scale(value)
-            if error>0:
-                error_top=y_scale(min(value+error,y_max))
-                error_bottom=y_scale(max(value-error,0))
-                parts.append(f'<line x1="{px}" y1="{error_top}" x2="{px}" y2="{error_bottom}" stroke="{colors[method]}" stroke-width="1.4"/>')
-                parts.append(f'<line x1="{px-4}" y1="{error_top}" x2="{px+4}" y2="{error_top}" stroke="{colors[method]}" stroke-width="1.4"/>')
-                parts.append(f'<line x1="{px-4}" y1="{error_bottom}" x2="{px+4}" y2="{error_bottom}" stroke="{colors[method]}" stroke-width="1.4"/>')
             radius=4.5 if method=="MRCZ" else 3.2
             parts.append(f'<circle cx="{px}" cy="{py}" r="{radius}" fill="{colors[method]}"/>')
 

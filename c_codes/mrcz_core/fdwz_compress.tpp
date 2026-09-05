@@ -359,7 +359,7 @@ namespace mrcz::detail
 
     // 执行单个field的完整FDWZ压缩；模板参数决定是否编译分段计时代码。
     template<bool measure_phase_time,typename T>
-    void fdwz_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num)
+    void fdwz_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num,string fixed_plan)
     {
         auto &header=params.header;
         auto &blocks=params.partitions;
@@ -436,6 +436,19 @@ namespace mrcz::detail
                 sampled_plans.push_back(move(plan));
             }
         }
+        int32_t fixed_plan_id=-1;
+        if (fixed_plan!="sample")
+            for (uint32_t plan_id=0;plan_id<sampled_plans.size();plan_id++)
+            {
+                string plan_name;
+                for (auto dimension:all_orders[plan_id%6])
+                    plan_name.push_back("XYZ"[dimension]);
+                plan_name+=plan_id<6?"-linear":"-cubic";
+                if (plan_name==fixed_plan)
+                    fixed_plan_id=plan_id;
+            }
+        if (fixed_plan_id<0 and fixed_plan!="sample")
+            throw runtime_error("未知的FDWZ固定预测方案: "+fixed_plan);
         auto &prediction_level_offsets=sampled_plans[0].level_offsets;
         // 0表示正式版自动选择最多5棵tree；消融版可以强制只使用一棵tree。
         if (huffman_tree_num==0)
@@ -480,30 +493,35 @@ namespace mrcz::detail
                 double block_decision_start_time=0;
                 if constexpr(measure_phase_time)
                     block_decision_start_time=omp_get_wtime();
-                auto &block=blocks[block_id];
-                uint64_t element_num=block.end_index-block.begin_index;
-                uint64_t sample_num=min<uint64_t>(element_num,min<uint64_t>(1024,max<uint64_t>(128,element_num/4)));
-                auto &original_sample=sampling_workspace.original_sample;
-                original_sample.resize(sample_num*n012);
-                for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
+                if (fixed_plan_id>=0)
+                    selected_plan_ids[block_id]=fixed_plan_id;
+                else
                 {
-                    uint64_t relative_element_id=((2*sample_id+1)*element_num)/(2*sample_num);
-                    memcpy(original_sample.data()+sample_id*n012,data.data()+(block.begin_index+relative_element_id)*n012,n012*sizeof(T));
+                    auto &block=blocks[block_id];
+                    uint64_t element_num=block.end_index-block.begin_index;
+                    uint64_t sample_num=min<uint64_t>(element_num,min<uint64_t>(1024,max<uint64_t>(128,element_num/4)));
+                    auto &original_sample=sampling_workspace.original_sample;
+                    original_sample.resize(sample_num*n012);
+                    for (uint64_t sample_id=0;sample_id<sample_num;sample_id++)
+                    {
+                        uint64_t relative_element_id=((2*sample_id+1)*element_num)/(2*sample_num);
+                        memcpy(original_sample.data()+sample_id*n012,data.data()+(block.begin_index+relative_element_id)*n012,n012*sizeof(T));
+                    }
+                    uint32_t best_plan_id=0;
+                    uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[0],residual_group_offsets,huffman_tree_num,abs_eb,0,sampling_workspace);
+                    for (uint32_t plan_id=1;plan_id<6;plan_id++)
+                    {
+                        uint64_t candidate_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[plan_id],residual_group_offsets,huffman_tree_num,abs_eb,plan_id,sampling_workspace);
+                        if (candidate_size<best_size)
+                            best_size=candidate_size,best_plan_id=plan_id;
+                    }
+                    // 当前策略只测试最佳linear维度顺序对应的cubic版本，而不是再次测试全部6个cubic顺序。
+                    uint32_t cubic_plan_id=best_plan_id+6;
+                    uint64_t cubic_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[cubic_plan_id],residual_group_offsets,huffman_tree_num,abs_eb,cubic_plan_id,sampling_workspace);
+                    if (cubic_size<best_size)
+                        best_plan_id=cubic_plan_id;
+                    selected_plan_ids[block_id]=best_plan_id;
                 }
-                uint32_t best_plan_id=0;
-                uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[0],residual_group_offsets,huffman_tree_num,abs_eb,0,sampling_workspace);
-                for (uint32_t plan_id=1;plan_id<6;plan_id++)
-                {
-                    uint64_t candidate_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[plan_id],residual_group_offsets,huffman_tree_num,abs_eb,plan_id,sampling_workspace);
-                    if (candidate_size<best_size)
-                        best_size=candidate_size,best_plan_id=plan_id;
-                }
-                // 当前策略只测试最佳linear维度顺序对应的cubic版本，而不是再次测试全部6个cubic顺序。
-                uint32_t cubic_plan_id=best_plan_id+6;
-                uint64_t cubic_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,sampled_plans[cubic_plan_id],residual_group_offsets,huffman_tree_num,abs_eb,cubic_plan_id,sampling_workspace);
-                if (cubic_size<best_size)
-                    best_plan_id=cubic_plan_id;
-                selected_plan_ids[block_id]=best_plan_id;
                 if constexpr(measure_phase_time)
                     decision_time[block_id]=omp_get_wtime()-block_decision_start_time;
             }
@@ -642,6 +660,9 @@ namespace mrcz
         uint32_t huffman_tree_num=0;
         if constexpr(ablation)
             huffman_tree_num=if_max_huffman_tree?0:1;
-        detail::fdwz_compress_impl<measure_phase_time>(*this,field,huffman_tree_num);
+        string selected_plan="sample";
+        if constexpr(ablation)
+            selected_plan=fdwz_plan;
+        detail::fdwz_compress_impl<measure_phase_time>(*this,field,huffman_tree_num,selected_plan);
     }
 }

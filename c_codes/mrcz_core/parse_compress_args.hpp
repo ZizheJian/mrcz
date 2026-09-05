@@ -146,6 +146,14 @@ namespace mrcz
                     throw runtime_error("缺少-max-huffman-tree参数后的布尔值");
                 params.if_max_huffman_tree=parse_bool(argv[++i],"-max-huffman-tree");
             }
+            else if (string(argv[i])=="-fdwz-plan")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-fdwz-plan参数后的预测方案");
+                params.fdwz_plan=argv[++i];
+                if (params.fdwz_plan!="sample" and params.fdwz_plan!="XYZ-linear" and params.fdwz_plan!="XZY-linear" and params.fdwz_plan!="YXZ-linear" and params.fdwz_plan!="YZX-linear" and params.fdwz_plan!="ZXY-linear" and params.fdwz_plan!="ZYX-linear" and params.fdwz_plan!="XYZ-cubic" and params.fdwz_plan!="XZY-cubic" and params.fdwz_plan!="YXZ-cubic" and params.fdwz_plan!="YZX-cubic" and params.fdwz_plan!="ZXY-cubic" and params.fdwz_plan!="ZYX-cubic")
+                    throw runtime_error("-fdwz-plan必须是sample或一种维度顺序与linear/cubic的组合");
+            }
             else if (string(argv[i])=="-compute-precision")
             {
                 if (i+1>=argc)

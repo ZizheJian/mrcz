@@ -11,10 +11,9 @@ def read_rows(path):
     with open(path,newline="") as f:
         return list(csv.DictReader(f))
 
-# 绘制压缩或解压的parallel efficiency及四次测试误差棒。
+# 绘制压缩或解压的综合parallel efficiency。
 def draw_panel(axis,rows,task):
     metric=f"{task} Efficiency"
-    error_metric=f"{metric} Std Dev"
     cpu_values=sorted({int(row["CPUs"]) for row in rows})
     positions={cpus:index for index,cpus in enumerate(cpu_values)}
     for method in methods:
@@ -23,8 +22,7 @@ def draw_panel(axis,rows,task):
             continue
         x=[positions[int(row["CPUs"])] for row in method_rows]
         y=[float(row[metric]) for row in method_rows]
-        yerr=[float(row.get(error_metric,0) or 0) for row in method_rows]
-        axis.errorbar(x,y,yerr=yerr,color=colors[method],marker=markers[method],markersize=7 if method=="MRCZ" else 4.5,linewidth=2.8 if method=="MRCZ" else 1.6,capsize=2.5,label=method)
+        axis.plot(x,y,color=colors[method],marker=markers[method],markersize=7 if method=="MRCZ" else 4.5,linewidth=2.8 if method=="MRCZ" else 1.6,label=method)
     axis.axhline(1,color="#9ca3af",linestyle="--",linewidth=1)
     axis.set_xticks(range(len(cpu_values)),cpu_values)
     axis.set_ylim(bottom=0)
