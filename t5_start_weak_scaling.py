@@ -75,15 +75,17 @@ def cleanup(config,method,field):
     remove_if_exists(f"{data_path}_header.mrcz")
     remove_if_exists(f"{data_path}_element_map.mrcz")
 
-def selected_groups(max_partitions,cpus):
+def selected_groups(max_partitions,cpus,sample_count=4):
     group_num=max_partitions//cpus
-    if group_num<=4:
+    if group_num<=sample_count:
+        if sample_count%group_num:
+            raise ValueError(f"样本数{sample_count}不能被可用分组数{group_num}整除")
         group_indices=[]
-        repeat=4//group_num
+        repeat=sample_count//group_num
         for group_index in range(group_num):
             group_indices.extend([group_index]*repeat)
         return group_indices
-    return sorted({round(index*(group_num-1)/3) for index in range(4)})
+    return [round(index*(group_num-1)/(sample_count-1)) for index in range(sample_count)]
 
 def group_element_range(config,cpus,group_index):
     max_partitions=config["max_cpus"]
@@ -210,6 +212,7 @@ def main():
     parser.add_argument("--dry-run",action="store_true")
     parser.add_argument("--methods",default=",".join(methods))
     parser.add_argument("--cpu-counts")
+    parser.add_argument("--sample-count",type=int,default=4)
     parser.add_argument("--append-existing",action="store_true")
     parser.add_argument("--result-tag",default="")
     parser.add_argument("--measure-phase-time",action="store_true")
@@ -228,9 +231,11 @@ def main():
     unknown_cpu_counts=[cpus for cpus in cpu_counts if cpus not in available_cpu_counts]
     if unknown_cpu_counts:
         raise ValueError(f"不支持的CPU数量: {unknown_cpu_counts}")
+    if args.sample_count<2:
+        raise ValueError("--sample-count必须至少为2")
     if args.dry_run:
         for cpus in cpu_counts:
-            print(cpus,selected_groups(config["max_cpus"],cpus),[group_element_range(config,cpus,index) for index in selected_groups(config["max_cpus"],cpus)])
+            print(cpus,selected_groups(config["max_cpus"],cpus,args.sample_count),[group_element_range(config,cpus,index) for index in selected_groups(config["max_cpus"],cpus,args.sample_count)])
         return
     tag=f"_{args.result_tag}" if args.result_tag else ""
     raw_path=os.path.join(result_dir,f"weak_{args.dataset}{tag}_raw.csv")
@@ -243,7 +248,7 @@ def main():
     with open(log_path,"a" if args.append_existing else "w") as log_file:
         existing_keys={row_key(row) for row in rows}
         for cpus in cpu_counts:
-            groups=selected_groups(config["max_cpus"],cpus)
+            groups=selected_groups(config["max_cpus"],cpus,args.sample_count)
             for trial,group_index in enumerate(groups,1):
                 for field_index,field in enumerate(config["fields"]):
                     ordered_methods=selected_methods if (trial+field_index+cpus)%2 else list(reversed(selected_methods))
