@@ -367,7 +367,7 @@ CPU数量较少时，实验只处理完整field中的局部区间，而不同区
 
 每个CPU数、每个field测试4次。先将完整数据固定划分为最大CPU数个全局partition；使用N个CPU时，一个测试段由N个相邻partition组成，再从所有可选测试段中等间隔选择4段。例如jicf0使用2 CPU时选择全局partition `[0,2)`、`[42,44)`、`[84,86)`和`[126,128)`。当N较大、完整数据只能提供2段或1段时，每段分别重复2次或4次。因此每个CPU点仍覆盖jicf0中多个位置，而不是复制某个代表性partition。每次测试先汇总全部五个field的原始数据量和内部时间，再计算综合throughput与efficiency。图中展示四次测试合并后的综合efficiency，不绘制误差棒；四次测试的样本标准差仍保存在summary CSV中。Slurm脚本使用`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`将OpenMP线程固定到物理核，并使用`--exclusive --mem=235G`独占节点及235 GiB内存，避免并发Huffman工作区触发cgroup OOM或受到同节点任务干扰；pb0程序仍只使用64个线程，jicf0使用128个线程。
 
-图中各方法的efficiency以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且不画入趋势图。现有pb0图完成了统一OpenMP线程绑定，但早于当前FDWZ cubic-only与采样间隔实现，仅作历史参照；pb0和jicf0均需用当前版本重跑，因此暂不写正式扩展性结论。
+图中各方法的efficiency以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且不画入趋势图。pb0的FDWZ于2026-09-05在节点a173上使用当前版本重跑（Slurm job `20424829`），140个raw case均通过`100.01%`误差容差，各field/CPU汇总PSNR为99.942--100.015 dB。其他方法沿用节点a214上统一线程绑定的冻结结果；efficiency均由同一方法在同一节点上的结果自归一化，因此节点间绝对速度差异不会直接进入efficiency。FDWZ的压缩/解压efficiency在8 CPU时为0.880/0.841，64 CPU时为0.241/0.227；由于其单核速度更高，它比其他方法更早撞上内存带宽瓶颈。即便如此，64 CPU绝对压缩与解压吞吐仍为4422和5523 MB/s，分别比冻结的SZ3-4D结果高18.7%和38.1%；该幅度大于已观察到的约2%--5%跨节点差异。jicf0的当前FDWZ结果尚待重测。
 
 ![pb0 weak-scaling efficiency](results/weak_scaling/weak_pb0_efficiency.svg)
 
@@ -383,7 +383,7 @@ CPU数量较少时，实验只处理完整field中的局部区间，而不同区
 - 官方API baseline及tensorization已经冻结，定义见第5.1节。
 - README中的18个小数据field FDWZ曲线已使用当前linear-proxy与32位QB/unpredictable实现重跑，90个case全部满足误差界；其余24种方法沿用冻结结果。
 - pb0与jicf0的rate--distortion与throughput均已使用当前FDWZ版本重跑，各25个case都通过`100.01%`浮点数值容差检查且没有触发unpredictable；其他六种方法沿用冻结结果。
-- 现有pb0 weak scaling使用统一线程绑定，但早于当前FDWZ selector；jicf0也没有当前版本的正式结果，两者均待重测。
+- pb0 weak scaling已使用当前FDWZ版本重跑，140个case均通过误差容差；jicf0的当前FDWZ结果待重测。
 
 # 11. 投稿前主线
 
