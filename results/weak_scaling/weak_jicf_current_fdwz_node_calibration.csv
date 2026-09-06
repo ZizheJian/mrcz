@@ -1,0 +1,4 @@
+Source Node,Reference Node,Matched CPUs,Matched Cases,Compression Throughput Normalization Factor,Decompression Throughput Normalization Factor
+a120,a217,1,15,1.3432110053110096,1.473845745702707
+a245,a217,1,5,1.2592467174746598,1.186005129789634
+a124,a217,16,20,1.0736579048409258,1.0695454443653412

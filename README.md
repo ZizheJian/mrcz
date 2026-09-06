@@ -2,29 +2,54 @@
 
 ## 脚本列表
 
-| 脚本 | 功能 |
-|---|---|
-| `t1_start_c_code.py` | 构建并运行C++压缩与解压程序，执行主要rate-distortion和throughput实验，并将各field的结果写入CSV。数据集、方法、field和error bound可通过文件配置或`MRCZ_T1_*`环境变量选择。 |
-| `t2_find_three_irregular_elements.py` | 在NekRS数据中寻找三个两两共享面的非平面element，并生成element、内部节点层和reference element的交互式三维图。 |
-| `t3_test_interpolation_prediction.py` | 抽取NekRS element、寻找共享面邻居，比较跨公共面预测与element内部预测的误差，并生成相对误差ECDF。 |
-| `t4_plot_data_coeff_err_distribution.py` | 比较原始field、变换系数和误差的概率分布，输出三联直方图；运行前需要准备对应的`_coeff`和`_err`二进制文件。 |
-| `t5_start_weak_scaling.py` | 在固定目标PSNR下执行单节点weak scaling实验，结果写入`results/weak_scaling/`中的raw、summary和quality CSV。 |
-| `generate_mfem_and_nektar_data.py` | 构建MFEM ex0/ex1和Nektar++ FieldConvert，并生成项目使用的两个MFEM样例及Nektar++ cylinder VTU数据。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup>
+    <col width="30%">
+    <col width="70%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th width="30%">脚本</th>
+      <th width="70%">功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>t1_start_c_code.py</code></td><td>构建并运行C++压缩与解压程序，执行主要rate-distortion和throughput实验，并将各field的结果写入CSV。数据集、方法、field和error bound可通过文件配置或<code>MRCZ_T1_*</code>环境变量选择。</td></tr>
+    <tr><td><code>t2_find_three_irregular_elements.py</code></td><td>在NekRS数据中寻找三个两两共享面的非平面element，并生成element、内部节点层和reference element的交互式三维图。</td></tr>
+    <tr><td><code>t3_test_interpolation_prediction.py</code></td><td>抽取NekRS element、寻找共享面邻居，比较跨公共面预测与element内部预测的误差，并生成相对误差ECDF。</td></tr>
+    <tr><td><code>t4_plot_data_coeff_err_distribution.py</code></td><td>比较原始field、变换系数和误差的概率分布，输出三联直方图；运行前需要准备对应的<code>_coeff</code>和<code>_err</code>二进制文件。</td></tr>
+    <tr><td><code>t5_start_weak_scaling.py</code></td><td>在固定目标PSNR下执行单节点weak scaling实验；可选择端点、等宽区间中点或完整partition覆盖，结果写入<code>results/weak_scaling/</code>中的raw、summary和quality CSV。</td></tr>
+    <tr><td><code>generate_mfem_and_nektar_data.py</code></td><td>构建MFEM ex0/ex1和Nektar++ FieldConvert，并生成项目使用的两个MFEM样例及Nektar++ cylinder VTU数据。</td></tr>
+  </tbody>
+</table>
 
-正式weak scaling可分别使用`run_t5_weak_pb0.sbatch`和`run_t5_weak_jicf.sbatch`提交到Slurm。
+正式weak scaling可分别使用`run_t5_weak_pb0.sbatch`和`run_t5_weak_jicf.sbatch`提交到Slurm；jicf0低CPU全覆盖补测使用`run_t5_weak_jicf_1cpu.sbatch`和`run_t5_weak_jicf_16cpu.sbatch`。
 
 `py_funcs/`中的辅助功能：
 
-| 文件 | 功能 |
-|---|---|
-| `read_nekrs_header.py` | 解析NekRS field文件头，返回字节序、数据精度、element shape、element数量和field信息。 |
-| `interpolate_br_at_psnr.py` | 整理BR--PSNR曲线，并线性插值得到指定PSNR下的BR。 |
-| `plot_small_rd.py` | 根据18个小数据field的正式CSV生成RD汇总图。 |
-| `summarize_rd.py` | 对每个field在七种正式方法共同PSNR区间的近中点处汇总CR增长，并生成逐field CSV。 |
-| `plot_large_rd.py` | 为pb0或jicf0单独生成五个field的正式RD图。 |
-| `plot_large_throughput.py` | 根据pb0和jicf0的正式CSV生成以REL EB或PSNR为横坐标的压缩与解压throughput图。 |
-| `plot_weak_scaling.py` | 根据weak scaling summary CSV生成`results/weak_scaling/weak_scaling_efficiency.svg`。 |
-| `plot_weak_scaling_dataset.py` | 为pb0或jicf0单独生成weak scaling efficiency图。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup>
+    <col width="30%">
+    <col width="70%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th width="30%">文件</th>
+      <th width="70%">功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>read_nekrs_header.py</code></td><td>解析NekRS field文件头，返回字节序、数据精度、element shape、element数量和field信息。</td></tr>
+    <tr><td><code>interpolate_br_at_psnr.py</code></td><td>整理BR--PSNR曲线，并线性插值得到指定PSNR下的BR。</td></tr>
+    <tr><td><code>plot_small_rd.py</code></td><td>根据18个小数据field的正式CSV生成RD汇总图。</td></tr>
+    <tr><td><code>summarize_rd.py</code></td><td>对每个field在七种正式方法共同PSNR区间的近中点处汇总CR增长，并生成逐field CSV。</td></tr>
+    <tr><td><code>plot_large_rd.py</code></td><td>为pb0或jicf0单独生成五个field的正式RD图。</td></tr>
+    <tr><td><code>plot_large_throughput.py</code></td><td>根据pb0和jicf0的正式CSV生成以REL EB或PSNR为横坐标的压缩与解压throughput图。</td></tr>
+    <tr><td><code>plot_weak_scaling.py</code></td><td>根据weak scaling summary CSV生成<code>results/weak_scaling/weak_scaling_efficiency.svg</code>。</td></tr>
+    <tr><td><code>plot_weak_scaling_dataset.py</code></td><td>为pb0或jicf0单独生成weak scaling efficiency图。</td></tr>
+    <tr><td><code>merge_jicf_fdwz_weak.py</code></td><td>校验并合并jicf0 FDWZ的全覆盖补测结果，按重叠case校正节点速度差异，再更新正式raw、summary和quality CSV。</td></tr>
+  </tbody>
+</table>
 
 ## 安装
 
@@ -134,63 +159,83 @@ FDWZ与MRCZ一样在编译期生成正式、分段计时和消融三个版本。
 
 ## 2.2. 角点与初始seed阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| 4/8个角点预测为0并直接量化 | **采纳** | 最简单且在五个NekRS数据上最稳定，作为正式seed方案。 |
-| 使用前一编号element预测角点 | **放弃** | 依赖编号相邻element具有物理相关性，完整bitstream没有稳定收益。 |
-| element内角点Lorenzo、角点均值加deviation及其组合 | **放弃** | 局部角点流偶有改善，但额外符号或后续误差传播抵消了完整BR收益。 |
-| 将角点流从element-contiguous转成local-symbol-contiguous | **放弃** | test0、mixlay0和jicf0退化，仅tc_channel0和pb0小幅改善。 |
-| 先建立中心、最后向外外插角点 | **放弃** | 角点/中心点预测误差诊断已排除该方向。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>4/8个角点预测为0并直接量化</td><td><strong>采纳</strong></td><td>最简单且在五个NekRS数据上最稳定，作为正式seed方案。</td></tr>
+    <tr><td>使用前一编号element预测角点</td><td><strong>放弃</strong></td><td>依赖编号相邻element具有物理相关性，完整bitstream没有稳定收益。</td></tr>
+    <tr><td>element内角点Lorenzo、角点均值加deviation及其组合</td><td><strong>放弃</strong></td><td>局部角点流偶有改善，但额外符号或后续误差传播抵消了完整BR收益。</td></tr>
+    <tr><td>将角点流从element-contiguous转成local-symbol-contiguous</td><td><strong>放弃</strong></td><td>test0、mixlay0和jicf0退化，仅tc_channel0和pb0小幅改善。</td></tr>
+    <tr><td>先建立中心、最后向外外插角点</td><td><strong>放弃</strong></td><td>角点/中心点预测误差诊断已排除该方向。</td></tr>
+  </tbody>
+</table>
 
 ## 2.3. element内预测与访问顺序阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| 按GLL物理中点递归并使用真实GLL距离计算权重 | **采纳** | 比索引中点更符合非均匀GLL节点分布，是正式预测树的基础。 |
-| 三维数据中的六种维度顺序 | **采纳为partition级选择** | 不存在跨数据和partition普遍最优的固定顺序，因此由确定性的等间隔sample选择。官方SZ3调优只比较正序与逆序，但FDWZ限制为`XYZ/ZYX`后，即使使用完整数据oracle选择，小数据65个field/EB case的平均BR regret约2.97%、最大约21.80%，暂不照搬。 |
-| cubic插值 | **采纳** | 正式预测固定使用cubic；采样阶段比较六种linear顺序并将最佳方向映射到对应cubic，避免为选择方向重复运行昂贵的cubic sample。（SZ3中已有） |
-| surface-first：按边、面、体及中心向外顺序预测 | **放弃** | 在代表性数据上没有形成rate--distortion优势。 |
-| normal-boundary：先建立中心块，再沿法向外插边界 | **放弃** | 五个数据上均被正式物理中点预测树Pareto支配。 |
-| 官方SZ3式2幂stride、单原点seed的index-order | **放弃** | 对小element反复支付粗层级远距离预测成本，三个小数据均无优势。 |
-| 不预测物理中点，而是预测索引中点 | **放弃** | pb0和jicf0的BR分别增加约8.4%和4.7%，说明物理距离比索引邻近更重要。 |
-| element编号方向预测 | **放弃** | 在五个数据上严格优于所有element内方向的点不足约1.1%，加入空间oracle后的总体改善很小。 |
-| 真实共享面邻居与坐标匹配预测 | **放弃当前实现方向** | 早期跨公共面实验没有优于element内预测，同时会引入邻居搜索和拓扑metadata成本。 |
-| QoZ式GLL预测路径 | **放弃并删除旧实现** | test0/UZ上的BR明显差于FDWZ，不作为正式优化继续；QoZ对照使用官方API。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>按GLL物理中点递归并使用真实GLL距离计算权重</td><td><strong>采纳</strong></td><td>比索引中点更符合非均匀GLL节点分布，是正式预测树的基础。</td></tr>
+    <tr><td>三维数据中的六种维度顺序</td><td><strong>采纳为partition级选择</strong></td><td>不存在跨数据和partition普遍最优的固定顺序，因此由确定性的等间隔sample选择。官方SZ3调优只比较正序与逆序，但FDWZ限制为<code>XYZ/ZYX</code>后，即使使用完整数据oracle选择，小数据65个field/EB case的平均BR regret约2.97%、最大约21.80%，暂不照搬。</td></tr>
+    <tr><td>cubic插值</td><td><strong>采纳</strong></td><td>正式预测固定使用cubic；采样阶段比较六种linear顺序并将最佳方向映射到对应cubic，避免为选择方向重复运行昂贵的cubic sample。（SZ3中已有）</td></tr>
+    <tr><td>surface-first：按边、面、体及中心向外顺序预测</td><td><strong>放弃</strong></td><td>在代表性数据上没有形成rate--distortion优势。</td></tr>
+    <tr><td>normal-boundary：先建立中心块，再沿法向外插边界</td><td><strong>放弃</strong></td><td>五个数据上均被正式物理中点预测树Pareto支配。</td></tr>
+    <tr><td>官方SZ3式2幂stride、单原点seed的index-order</td><td><strong>放弃</strong></td><td>对小element反复支付粗层级远距离预测成本，三个小数据均无优势。</td></tr>
+    <tr><td>不预测物理中点，而是预测索引中点</td><td><strong>放弃</strong></td><td>pb0和jicf0的BR分别增加约8.4%和4.7%，说明物理距离比索引邻近更重要。</td></tr>
+    <tr><td>element编号方向预测</td><td><strong>放弃</strong></td><td>在五个数据上严格优于所有element内方向的点不足约1.1%，加入空间oracle后的总体改善很小。</td></tr>
+    <tr><td>真实共享面邻居与坐标匹配预测</td><td><strong>放弃当前实现方向</strong></td><td>早期跨公共面实验没有优于element内预测，同时会引入邻居搜索和拓扑metadata成本。</td></tr>
+    <tr><td>QoZ式GLL预测路径</td><td><strong>放弃并删除旧实现</strong></td><td>test0/UZ上的BR明显差于FDWZ，不作为正式优化继续；QoZ对照使用官方API。</td></tr>
+  </tbody>
+</table>
 
 ## 2.4. 量化与residual建模阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| 对之后仍会被引用的reference使用更严格EB | **放弃** | 同PSNR下仅mixlay0约有2%收益，其余数据持平或退化，不足以承担选择复杂度。 |
-| 每个局部位置学习prediction-residual bias | **放弃** | 单bin峰值和带置信度的稳健宽窗口版本都不能覆盖采样与bias metadata开销，且降低吞吐量。 |
-| 根据前面element在线更新预测统计 | **放弃** | 会引入顺序依赖和同步成本，没有进入正式bitstream。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>对之后仍会被引用的reference使用更严格EB</td><td><strong>放弃</strong></td><td>同PSNR下仅mixlay0约有2%收益，其余数据持平或退化，不足以承担选择复杂度。</td></tr>
+    <tr><td>每个局部位置学习prediction-residual bias</td><td><strong>放弃</strong></td><td>单bin峰值和带置信度的稳健宽窗口版本都不能覆盖采样与bias metadata开销，且降低吞吐量。</td></tr>
+    <tr><td>根据前面element在线更新预测统计</td><td><strong>放弃</strong></td><td>会引入顺序依赖和同步成本，没有进入正式bitstream。</td></tr>
+  </tbody>
+</table>
 
 ## 2.5. QB布局、Huffman与Zstd阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| 非角点QB按实际预测访问顺序保存 | **采纳** | 大数据随机段上稳定降低约5%--7% BR，压缩吞吐代价约1%，解压局部性也更好。（SZ3中已有） |
-| 非角点QB转置一下，使得element编号维度最快 | **放弃** | pb0和jicf0平均BR分别增加约4.2%和3.5%，跨步访问还显著破坏缓存局部性。 |
-| 1--5棵Huffman tree分离角点和不同预测层 | **采纳最大有效tree数** | 大partition上多tree可利用各预测层不同的符号分布；正式FDWZ按shape固定最多五棵，避免额外tree选择逻辑。 |
-| 32位QB与unpredictable原值逃逸 | **采纳** | `INT32_MIN`作为标记，超出32位范围或浮点重构不安全的点在Huffman流后顺序保存无损原值，不再整块回退64位；正常残差通过relative-EB上界走无逐点判断的快速路径。pb0/P、64核同节点测试中，32位QB在`1e-4`和`1e-5`下比64位实现分别快约11.0%和14.8%；18个小数据field的90个常规case全部通过误差界，极端double逃逸测试也通过。 |
-| 从sample直接选择tree数 | **放弃** | 小sample无法正确摊销tree metadata，tree数与完整partition的最优选择经常不一致。 |
-| 按符号数阈值或half/full sample外推tree成本 | **放弃** | regret仍不够稳定；最终固定最大有效tree比自适应规则更简单稳健。 |
-| 每个partition的多个Huffman流合并到一个Zstd frame | **采纳** | 保留不同符号分布的Huffman收益，同时让Zstd继续利用整个partition的字节级冗余。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>非角点QB按实际预测访问顺序保存</td><td><strong>采纳</strong></td><td>大数据随机段上稳定降低约5%--7% BR，压缩吞吐代价约1%，解压局部性也更好。（SZ3中已有）</td></tr>
+    <tr><td>非角点QB转置一下，使得element编号维度最快</td><td><strong>放弃</strong></td><td>pb0和jicf0平均BR分别增加约4.2%和3.5%，跨步访问还显著破坏缓存局部性。</td></tr>
+    <tr><td>1--5棵Huffman tree分离角点和不同预测层</td><td><strong>采纳最大有效tree数</strong></td><td>大partition上多tree可利用各预测层不同的符号分布；正式FDWZ按shape固定最多五棵，避免额外tree选择逻辑。</td></tr>
+    <tr><td>32位QB与unpredictable原值逃逸</td><td><strong>采纳</strong></td><td><code>INT32_MIN</code>作为标记，超出32位范围或浮点重构不安全的点在Huffman流后顺序保存无损原值，不再整块回退64位；正常残差通过relative-EB上界走无逐点判断的快速路径。pb0/P、64核同节点测试中，32位QB在<code>1e-4</code>和<code>1e-5</code>下比64位实现分别快约11.0%和14.8%；18个小数据field的90个常规case全部通过误差界，极端double逃逸测试也通过。</td></tr>
+    <tr><td>从sample直接选择tree数</td><td><strong>放弃</strong></td><td>小sample无法正确摊销tree metadata，tree数与完整partition的最优选择经常不一致。</td></tr>
+    <tr><td>按符号数阈值或half/full sample外推tree成本</td><td><strong>放弃</strong></td><td>regret仍不够稳定；最终固定最大有效tree比自适应规则更简单稳健。</td></tr>
+    <tr><td>每个partition的多个Huffman流合并到一个Zstd frame</td><td><strong>采纳</strong></td><td>保留不同符号分布的Huffman收益，同时让Zstd继续利用整个partition的字节级冗余。</td></tr>
+  </tbody>
+</table>
 
 ## 2.6. 配置采样、并行与实现加速阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| partition内确定性的均匀采样 | **采纳interval=128、min=32** | sample比较六种linear顺序，正式压缩映射到同方向cubic。相对完整比较六种固定cubic的oracle，18个小数据field在各自共同PSNR近中点处平均CR regret约0.34%、最大4.34%，均低于5%。 |
-| 只采样partition连续前缀 | **放弃** | 对非平稳partition代表性不足，曾出现超过100%的holdout regret。 |
-| 预计算prediction stencil和GLL权重 | **采纳** | 避免在每个element重复构造预测关系，并保证编解码路径一致。 |
-| partition级OpenMP并行 | **采纳** | partition天然独立，无需在element预测树内部增加同步。 |
-| 四个element分批执行正式预测 | **采纳** | 保持每个element内部预测顺序不变，同时复用stencil读取并增加独立指令；两个本地数据上的端到端压缩时间减少约2%--5%，bitstream逐字节不变。八个element一批没有进一步收益。 |
-| 未初始化的Huffman/Zstd输出工作区 | **采纳** | 避免`vector(size)`对最坏情况缓冲做无意义清零，仍将实际allocation计入codec wall time；两个本地数据上的端到端压缩时间减少约9%--14%，bitstream逐字节不变。 |
-| 跨element AVX2并行预测与量化 | **放弃正式合并** | 约256 KB tile解决了整partition position-major访问的缓存退化，但float没有收益，double端到端仅约快9%，不足以承担独立舍入语义和复杂实现。 |
-| 为固定`8x8x8` shape展开直接索引kernel | **放弃** | pb0上保持bitstream和误差结果不变，但总压缩时间只减少约2%--6%，同时生成约3.9万行代码并增大binary，不足以抵消维护成本。 |
-| 在同一预测轮内改为逐线遍历 | **放弃** | 相比当前按目标地址递增的memory顺序，总时间变化为约`+0.5%`、`+0.9%`和`-0.3%`，没有稳定收益；保留当前memory顺序。 |
-| 用紧凑模板表替代展开的stencil/plan表示 | **放弃** | 总压缩时间慢约0.6%--1.4%，decision阶段慢约1.8%--7.1%，binary也更大。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>partition内确定性的均匀采样</td><td><strong>采纳interval=128、min=32</strong></td><td>sample比较六种linear顺序，正式压缩映射到同方向cubic。相对完整比较六种固定cubic的oracle，18个小数据field在各自共同PSNR近中点处平均CR regret约0.34%、最大4.34%，均低于5%。</td></tr>
+    <tr><td>只采样partition连续前缀</td><td><strong>放弃</strong></td><td>对非平稳partition代表性不足，曾出现超过100%的holdout regret。</td></tr>
+    <tr><td>预计算prediction stencil和GLL权重</td><td><strong>采纳</strong></td><td>避免在每个element重复构造预测关系，并保证编解码路径一致。</td></tr>
+    <tr><td>partition级OpenMP并行</td><td><strong>采纳</strong></td><td>partition天然独立，无需在element预测树内部增加同步。</td></tr>
+    <tr><td>四个element分批执行正式预测</td><td><strong>采纳</strong></td><td>保持每个element内部预测顺序不变，同时复用stencil读取并增加独立指令；两个本地数据上的端到端压缩时间减少约2%--5%，bitstream逐字节不变。八个element一批没有进一步收益。</td></tr>
+    <tr><td>未初始化的Huffman/Zstd输出工作区</td><td><strong>采纳</strong></td><td>避免<code>vector(size)</code>对最坏情况缓冲做无意义清零，仍将实际allocation计入codec wall time；两个本地数据上的端到端压缩时间减少约9%--14%，bitstream逐字节不变。</td></tr>
+    <tr><td>跨element AVX2并行预测与量化</td><td><strong>放弃正式合并</strong></td><td>约256 KB tile解决了整partition position-major访问的缓存退化，但float没有收益，double端到端仅约快9%，不足以承担独立舍入语义和复杂实现。</td></tr>
+    <tr><td>为固定<code>8x8x8</code> shape展开直接索引kernel</td><td><strong>放弃</strong></td><td>pb0上保持bitstream和误差结果不变，但总压缩时间只减少约2%--6%，同时生成约3.9万行代码并增大binary，不足以抵消维护成本。</td></tr>
+    <tr><td>在同一预测轮内改为逐线遍历</td><td><strong>放弃</strong></td><td>相比当前按目标地址递增的memory顺序，总时间变化为约<code>+0.5%</code>、<code>+0.9%</code>和<code>-0.3%</code>，没有稳定收益；保留当前memory顺序。</td></tr>
+    <tr><td>用紧凑模板表替代展开的stencil/plan表示</td><td><strong>放弃</strong></td><td>总压缩时间慢约0.6%--1.4%，decision阶段慢约1.8%--7.1%，binary也更大。</td></tr>
+  </tbody>
+</table>
 
 # 3. MRCZ核心与优化记录
 
@@ -210,40 +255,56 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 ## 3.2. 变换与coefficient error bound阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| 在真实GLL节点上使用DChT | **采纳** | 旧稿实验中，同PSNR下DChT+GLL相对DLT+GLL约改善20% CR；主要收益来自更集中的系数分布，而不是residual差异。 |
-| DLT、DST、DCT以及将节点视为uniform的变换 | **放弃为正式配置** | 已比较不同基函数和节点假设，整体rate--distortion不如DChT+GLL稳定；实现仍允许构造部分变换，但正式MRCZ固定使用DChT+GLL。 |
-| 全局`coeff_eb_scale=0.05` | **采纳** | 在系数码率与反变换预测精度之间形成稳定折中；过小会浪费用户误差预算，过大会增加BR。 |
-| 按模式的L1/RMS敏感度、乘积或总阶数分配coefficient EB | **放弃** | 不同数据上的BR变化方向不一致，系数流与residual流经常相互抵消，未形成稳定规则。 |
-| 扩大量化为零的低频系数区间 | **放弃** | mixlay0和jicf0上的同PSNR结果均更差，不能仅依靠增加零系数改善完整bitstream。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>在真实GLL节点上使用DChT</td><td><strong>采纳</strong></td><td>旧稿实验中，同PSNR下DChT+GLL相对DLT+GLL约改善20% CR；主要收益来自更集中的系数分布，而不是residual差异。</td></tr>
+    <tr><td>DLT、DST、DCT以及将节点视为uniform的变换</td><td><strong>放弃为正式配置</strong></td><td>已比较不同基函数和节点假设，整体rate--distortion不如DChT+GLL稳定；实现仍允许构造部分变换，但正式MRCZ固定使用DChT+GLL。</td></tr>
+    <tr><td>全局<code>coeff_eb_scale=0.05</code></td><td><strong>采纳</strong></td><td>在系数码率与反变换预测精度之间形成稳定折中；过小会浪费用户误差预算，过大会增加BR。</td></tr>
+    <tr><td>按模式的L1/RMS敏感度、乘积或总阶数分配coefficient EB</td><td><strong>放弃</strong></td><td>不同数据上的BR变化方向不一致，系数流与residual流经常相互抵消，未形成稳定规则。</td></tr>
+    <tr><td>扩大量化为零的低频系数区间</td><td><strong>放弃</strong></td><td>mixlay0和jicf0上的同PSNR结果均更差，不能仅依靠增加零系数改善完整bitstream。</td></tr>
+  </tbody>
+</table>
 
 ## 3.3. coefficient与pointwise residual阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| partition级coefficient zero map，用于标注某个model的系数是否在partition内所有element上全部被量化为0 | **放弃** | jicf0五个field、五个EB上的CR平均仅提高约0.107%、最大约0.486%，不足以补偿扫描、metadata和格式复杂度。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>partition级coefficient zero map，用于标注某个model的系数是否在partition内所有element上全部被量化为0</td><td><strong>放弃</strong></td><td>jicf0五个field、五个EB上的CR平均仅提高约0.107%、最大约0.486%，不足以补偿扫描、metadata和格式复杂度。</td></tr>
+  </tbody>
+</table>
 
 ## 3.4. QB布局、Huffman与Zstd阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| coefficient-major布局 | **采纳** | 相同基模式跨element连续排列，可聚集高阶模式中的大量零值及同模式统计规律；旧稿实验中约改善20% CR。 |
-| coefficient与residual各使用一棵Huffman tree | **采纳** | 两类QB分布不同，独立建树后仍可放入同一Zstd frame利用partition级字节冗余。 |
-| 按系数总阶数拆成2--4棵Huffman tree | **放弃** | 小数据上最多有约10%的平均BR收益，但jicf0大partition上三树和四树相对单树仅改善约1.1%且依赖数据区域，正式格式保持单棵coefficient tree。 |
-| coefficient和residual的Huffman流合并到一个Zstd frame | **采纳** | 避免为同一partition支付多个Zstd frame，并允许Zstd继续利用两段Huffman数据的字节级冗余。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>coefficient-major布局</td><td><strong>采纳</strong></td><td>相同基模式跨element连续排列，可聚集高阶模式中的大量零值及同模式统计规律；旧稿实验中约改善20% CR。</td></tr>
+    <tr><td>coefficient与residual各使用一棵Huffman tree</td><td><strong>采纳</strong></td><td>两类QB分布不同，独立建树后仍可放入同一Zstd frame利用partition级字节冗余。</td></tr>
+    <tr><td>按系数总阶数拆成2--4棵Huffman tree</td><td><strong>放弃</strong></td><td>小数据上最多有约10%的平均BR收益，但jicf0大partition上三树和四树相对单树仅改善约1.1%且依赖数据区域，正式格式保持单棵coefficient tree。</td></tr>
+    <tr><td>coefficient和residual的Huffman流合并到一个Zstd frame</td><td><strong>采纳</strong></td><td>避免为同一partition支付多个Zstd frame，并允许Zstd继续利用两段Huffman数据的字节级冗余。</td></tr>
+  </tbody>
+</table>
 
 ## 3.5. 并行、内存与实现加速阶段
 
-| 优化或候选方案 | 状态 | 结论 |
-|---|---|---|
-| 支持任意`(n0,n1,n2)`的统一变换内核 | **采纳** | 等尺寸专用内核在8x8x8 element上的性能差异不足1%，删除重复的regular/irregular路径更易维护。 |
-| 连续指针访问并由编译器自动生成AVX2 | **采纳** | 重构六个张量变换内层循环后，GCC能够使用32-byte vector；pb0/T计算节点样例的压缩和解压分别加速约1.36x和1.38x，bitstream与误差结果不变。 |
-| 32x32分块coefficient transpose | **采纳** | 以cache-aware tiled transpose完成element-major到coefficient-major的布局转换，不改变bitstream；pb0/T样例中压缩和解压时间分别减少约11.3%和14.7%。IPDPS路线可将其作为数据布局与缓存优化的算法贡献，DCC路线只作为实现加速，不单列核心算法贡献。 |
-| 只添加`#pragma omp simd`或手写transform intrinsics | **放弃** | 单独添加pragma曾使压缩变慢约1.5%--3%；指针重构已能触发稳定自动向量化，无需维护手写intrinsics。 |
-| 跨element batched transform | **放弃正式合并** | float/double批处理能够逐字节复现正式bitstream，但独立消融中transform本身反而变慢；组合收益主要来自绕过素朴转置，已由32x32分块转置以更简单方式获得。 |
-| partition级OpenMP与独立`partition_num` | **采纳** | partition边界决定bitstream，`max_cpus`只决定并发度；固定partition时不同线程数可产生相同结果，并避免实现partition内并行Huffman。 |
-| 每线程复用partition-local QB缓冲区 | **采纳** | 避免同时为整个field保留两份完整`int64_t`数组；pb0/T样例的峰值RSS由约595 MB降至245 MB，同时略微缩短压缩时间。 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="27%"><col width="13%"><col width="60%"></colgroup>
+  <thead><tr><th width="27%">优化或候选方案</th><th width="13%">状态</th><th width="60%">结论</th></tr></thead>
+  <tbody>
+    <tr><td>支持任意<code>(n0,n1,n2)</code>的统一变换内核</td><td><strong>采纳</strong></td><td>等尺寸专用内核在8x8x8 element上的性能差异不足1%，删除重复的regular/irregular路径更易维护。</td></tr>
+    <tr><td>连续指针访问并由编译器自动生成AVX2</td><td><strong>采纳</strong></td><td>重构六个张量变换内层循环后，GCC能够使用32-byte vector；pb0/T计算节点样例的压缩和解压分别加速约1.36x和1.38x，bitstream与误差结果不变。</td></tr>
+    <tr><td>32x32分块coefficient transpose</td><td><strong>采纳</strong></td><td>以cache-aware tiled transpose完成element-major到coefficient-major的布局转换，不改变bitstream；pb0/T样例中压缩和解压时间分别减少约11.3%和14.7%。IPDPS路线可将其作为数据布局与缓存优化的算法贡献，DCC路线只作为实现加速，不单列核心算法贡献。</td></tr>
+    <tr><td>只添加<code>#pragma omp simd</code>或手写transform intrinsics</td><td><strong>放弃</strong></td><td>单独添加pragma曾使压缩变慢约1.5%--3%；指针重构已能触发稳定自动向量化，无需维护手写intrinsics。</td></tr>
+    <tr><td>跨element batched transform</td><td><strong>放弃正式合并</strong></td><td>float/double批处理能够逐字节复现正式bitstream，但独立消融中transform本身反而变慢；组合收益主要来自绕过素朴转置，已由32x32分块转置以更简单方式获得。</td></tr>
+    <tr><td>partition级OpenMP与独立<code>partition_num</code></td><td><strong>采纳</strong></td><td>partition边界决定bitstream，<code>max_cpus</code>只决定并发度；固定partition时不同线程数可产生相同结果，并避免实现partition内并行Huffman。</td></tr>
+    <tr><td>每线程复用partition-local QB缓冲区</td><td><strong>采纳</strong></td><td>避免同时为整个field保留两份完整<code>int64_t</code>数组；pb0/T样例的峰值RSS由约595 MB降至245 MB，同时略微缩短压缩时间。</td></tr>
+  </tbody>
+</table>
 
 # 4. 消融实验
 
@@ -254,16 +315,20 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 以下CR增长均由RD曲线在相同PSNR下插值得到，不比较相同REL EB的点。对每个field先求MRCZ、FDWZ和五个正式官方baseline共同覆盖的PSNR区间，再选择最接近区间中点的整数PSNR；不同field使用各自的目标PSNR。CR增长由BR之比计算，例如MRCZ相对FDWZ为`BR_FDWZ/BR_MRCZ-1`。pb0、jicf0和小数据的FDWZ数字均已于2026-09-05使用当前linear-proxy、`fdwz_sample_interval=128`和32位QB/unpredictable版本重跑。
 
-| 数据 | 比较 | CR平均增长 | CR最大增长 | 最大值对应field |
-|---|---|---:|---:|---|
-| pb0（当前FDWZ） | MRCZ相对FDWZ | 125.30% | 130.00% | P |
-| pb0（当前FDWZ） | FDWZ相对最优官方baseline | 37.84% | 49.05% | UX |
-| jicf0（当前FDWZ） | MRCZ相对FDWZ | 97.49% | 131.83% | P |
-| jicf0（当前FDWZ） | FDWZ相对最优官方baseline | 123.72% | 205.87% | P |
-| 大数据（当前FDWZ） | MRCZ相对FDWZ | 111.39% | 131.83% | jicf0/P |
-| 大数据（当前FDWZ） | FDWZ相对最优官方baseline | 80.78% | 205.87% | jicf0/P |
-| 小数据（当前FDWZ） | MRCZ相对FDWZ | 136.66% | 669.47% | tc_channel0/UY |
-| 小数据（当前FDWZ） | FDWZ相对最优官方baseline | 58.83% | 359.95% | MFEM ex0/no_name_field |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="18%"><col width="34%"><col width="14%"><col width="14%"><col width="20%"></colgroup>
+  <thead><tr><th width="18%">数据</th><th width="34%">比较</th><th width="14%">CR平均增长</th><th width="14%">CR最大增长</th><th width="20%">最大值对应field</th></tr></thead>
+  <tbody>
+    <tr><td>pb0（当前FDWZ）</td><td>MRCZ相对FDWZ</td><td>125.30%</td><td>130.00%</td><td>P</td></tr>
+    <tr><td>pb0（当前FDWZ）</td><td>FDWZ相对最优官方baseline</td><td>37.84%</td><td>49.05%</td><td>UX</td></tr>
+    <tr><td>jicf0（当前FDWZ）</td><td>MRCZ相对FDWZ</td><td>97.49%</td><td>131.83%</td><td>P</td></tr>
+    <tr><td>jicf0（当前FDWZ）</td><td>FDWZ相对最优官方baseline</td><td>123.72%</td><td>205.87%</td><td>P</td></tr>
+    <tr><td>大数据（当前FDWZ）</td><td>MRCZ相对FDWZ</td><td>111.39%</td><td>131.83%</td><td>jicf0/P</td></tr>
+    <tr><td>大数据（当前FDWZ）</td><td>FDWZ相对最优官方baseline</td><td>80.78%</td><td>205.87%</td><td>jicf0/P</td></tr>
+    <tr><td>小数据（当前FDWZ）</td><td>MRCZ相对FDWZ</td><td>136.66%</td><td>669.47%</td><td>tc_channel0/UY</td></tr>
+    <tr><td>小数据（当前FDWZ）</td><td>FDWZ相对最优官方baseline</td><td>58.83%</td><td>359.95%</td><td>MFEM ex0/no_name_field</td></tr>
+  </tbody>
+</table>
 
 五个baseline为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D；每个field在目标PSNR处取其中最低BR。大数据汇总10个field；小数据不计入RD曲线接近PSNR轴的test0/UZ，汇总其余17个field。各field等权，逐field共同区间、目标PSNR和最优baseline保存在`results/RD/midpoint_cr_summary.csv`，统计可由`python3 py_funcs/summarize_rd.py`复现。
 
@@ -271,43 +336,59 @@ MRCZ共享同一份模板实现并在编译期生成三个版本：`MRCZ`且`if_
 
 小数据实验使用mixlay0、test0、tc_channel0三个NekRS数据集、MFEM ex0/ex1两个样例和Nektar++ cylinder样例。各数据的非常数field如下：
 
-| 数据 | 非常数field |
-|---|---|
-| mixlay0 | UX、UY、P、T、S00、S01 |
-| test0 | UZ、T、S00、S01 |
-| tc_channel0 | UX、UY、UZ |
-| MFEM ex0 | no_name_field |
-| MFEM ex1 | no_name_field |
-| Nektar++ cylinder | p、u、v |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="25%"><col width="75%"></colgroup>
+  <thead><tr><th width="25%">数据</th><th width="75%">非常数field</th></tr></thead>
+  <tbody>
+    <tr><td>mixlay0</td><td>UX、UY、P、T、S00、S01</td></tr>
+    <tr><td>test0</td><td>UZ、T、S00、S01</td></tr>
+    <tr><td>tc_channel0</td><td>UX、UY、UZ</td></tr>
+    <tr><td>MFEM ex0</td><td>no_name_field</td></tr>
+    <tr><td>MFEM ex1</td><td>no_name_field</td></tr>
+    <tr><td>Nektar++ cylinder</td><td>p、u、v</td></tr>
+  </tbody>
+</table>
 
 实验比较MRCZ、FDWZ以及官方SZ3、SZ2、QoZ、ZFP和SPERR API。每个case使用完整field、1 CPU和1个partition，REL EB为`1e-2`、`1e-3`、`1e-4`、`1e-5`和`1e-6`；正式结果重测同样固定使用1 CPU。各官方API可用的布局如下：
 
-| 官方API | 1D | 2D | fused 3D | per-element 3D | 4D |
-|---|:---:|:---:|:---:|:---:|:---:|
-| SZ3 | ✓ | ✓ | ✓ | ✓ | ✓ |
-| SZ2 | ✓ | ✓ | ✓ | ✓ | ✓ |
-| QoZ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ZFP | ✓ | ✓ | ✓ | ✓ | ✓ |
-| SPERR | — | ✓ | ✓ | ✓ | — |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="18%"><col width="12%"><col width="12%"><col width="18%"><col width="25%"><col width="15%"></colgroup>
+  <thead><tr><th width="18%">官方API</th><th width="12%">1D</th><th width="12%">2D</th><th width="18%">fused 3D</th><th width="25%">per-element 3D</th><th width="15%">4D</th></tr></thead>
+  <tbody>
+    <tr><td>SZ3</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+    <tr><td>SZ2</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+    <tr><td>QoZ</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+    <tr><td>ZFP</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+    <tr><td>SPERR</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+  </tbody>
+</table>
 
 设一个partition包含`E`个element，每个element的shape为`[N0,N1,N2]`，`N=N0*N1*N2`。各布局调用官方API的方式如下：
 
-| 布局 | API调用 |
-|---|---|
-| 1D | 将整个partition作为`[E*N]`调用一次 |
-| 2D | 作为`[E,N]`调用一次 |
-| fused 3D | 作为`[E*N0,N1,N2]`调用一次 |
-| per-element 3D | 对每个`[N0,N1,N2]` element分别调用，并保存各bitstream长度 |
-| 4D | 作为`[E,N0,N1,N2]`调用一次 |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="25%"><col width="75%"></colgroup>
+  <thead><tr><th width="25%">布局</th><th width="75%">API调用</th></tr></thead>
+  <tbody>
+    <tr><td>1D</td><td>将整个partition作为<code>[E*N]</code>调用一次</td></tr>
+    <tr><td>2D</td><td>作为<code>[E,N]</code>调用一次</td></tr>
+    <tr><td>fused 3D</td><td>作为<code>[E*N0,N1,N2]</code>调用一次</td></tr>
+    <tr><td>per-element 3D</td><td>对每个<code>[N0,N1,N2]</code> element分别调用，并保存各bitstream长度</td></tr>
+    <tr><td>4D</td><td>作为<code>[E,N0,N1,N2]</code>调用一次</td></tr>
+  </tbody>
+</table>
 
 官方库中需要保留的特殊处理如下；SPERR缺少1D和4D入口已由上表体现。
 
-| 官方API | 特殊处理 |
-|---|---|
-| SZ3 | float路径传入`0.999*abs_eb`，避免曾观测到的约0.031%误差越界 |
-| SZ2 | 会删除长度为1的维度；完整3D element的4D与fused 3D路径产生相同bitstream。其状态为进程级全局变量，不能安全并发，因此正式封装串行调用且不报告多CPU scaling |
-| SZ2（MFEM ex1） | `5x5x1` per-element布局在REL `1e-4`会触发官方库allocator断言；失败保留在原始结果中 |
-| QoZ | 删除长度为1的维度；q4自动调优只用于2D/3D，1D通过官方API固定使用插值后端，以避开默认路径的heap corruption |
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="25%"><col width="75%"></colgroup>
+  <thead><tr><th width="25%">官方API</th><th width="75%">特殊处理</th></tr></thead>
+  <tbody>
+    <tr><td>SZ3</td><td>float路径传入<code>0.999*abs_eb</code>，避免曾观测到的约0.031%误差越界</td></tr>
+    <tr><td>SZ2</td><td>会删除长度为1的维度；完整3D element的4D与fused 3D路径产生相同bitstream。其状态为进程级全局变量，不能安全并发，因此正式封装串行调用且不报告多CPU scaling</td></tr>
+    <tr><td>SZ2（MFEM ex1）</td><td><code>5x5x1</code> per-element布局在REL <code>1e-4</code>会触发官方库allocator断言；失败保留在原始结果中</td></tr>
+    <tr><td>QoZ</td><td>删除长度为1的维度；q4自动调优只用于2D/3D，1D通过官方API固定使用插值后端，以避开默认路径的heap corruption</td></tr>
+  </tbody>
+</table>
 
 完整布局矩阵包含25种方法、18个非常数field和5个REL EB，共2250个case；其中2249个成功并满足error bound，唯一失败是上表所列MFEM ex1的per-element SZ2案例。
 
@@ -365,11 +446,17 @@ jicf0以REL EB和实际PSNR为横坐标的对应结果如下。
 
 CPU数量较少时，实验只处理完整field中的局部区间，而不同区间的data range可能不同。如果直接使用REL EB，程序会根据局部data range得到不同的ABS EB，使各CPU点的实际误差界和重建质量不再一致。因此，每个method/field先根据完整数据的RD曲线插值得到目标PSNR对应的REL EB，再乘以完整field的data range得到ABS EB；所有CPU数量和抽样区间均使用这个固定的ABS EB。同时，实验通过`-compute-precision`固定使用完整数据在该REL EB下选择的float或double，避免局部data range变化导致计算精度切换。局部区间的data range还可能小到触发constant compression，因此weak scaling压缩命令统一设置`-constant-compression false`，确保每个case都实际运行对应backend。汇总PSNR也使用完整field的data range和各区间的加权MSE重新计算。
 
-每个CPU数、每个field测试4次。先将完整数据固定划分为最大CPU数个全局partition；使用N个CPU时，一个测试段由N个相邻partition组成，再从所有可选测试段中等间隔选择4段。例如jicf0使用2 CPU时选择全局partition `[0,2)`、`[42,44)`、`[84,86)`和`[126,128)`。当N较大、完整数据只能提供2段或1段时，每段分别重复2次或4次。因此每个CPU点仍覆盖jicf0中多个位置，而不是复制某个代表性partition。每次测试先汇总全部五个field的原始数据量和内部时间，再计算综合throughput与efficiency。图中展示四次测试合并后的综合efficiency，不绘制误差棒；四次测试的样本标准差仍保存在summary CSV中。Slurm脚本使用`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`将OpenMP线程固定到物理核，并使用`--exclusive --mem=235G`独占节点及235 GiB内存，避免并发Huffman工作区触发cgroup OOM或受到同节点任务干扰；pb0程序仍只使用64个线程，jicf0使用128个线程。
+冻结的官方方法、MRCZ及pb0 FDWZ在每个CPU数、每个field测试4次。先将完整数据固定划分为最大CPU数个全局partition；使用N个CPU时，一个测试段由N个相邻partition组成，再从所有可选测试段中等间隔选择4段。例如jicf0使用2 CPU时选择全局partition `[0,2)`、`[42,44)`、`[84,86)`和`[126,128)`。当N较大、完整数据只能提供2段或1段时，每段分别重复2次或4次。每次测试先汇总全部五个field的原始数据量和内部时间，再计算综合throughput与efficiency。图中不绘制误差棒，分段结果的样本标准差仍保存在summary CSV中。正式Slurm脚本使用`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`将OpenMP线程固定到物理核，并使用`--exclusive --mem=235G`独占节点及235 GiB内存；pb0程序使用64个线程，jicf0使用128个线程。
 
-图中各方法的efficiency以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且不画入趋势图。pb0的FDWZ于2026-09-05在节点a173上使用当前版本重跑（Slurm job `20424829`），140个raw case均通过`100.01%`误差容差，各field/CPU汇总PSNR为99.942--100.015 dB。其他方法沿用节点a214上统一线程绑定的冻结结果；efficiency均由同一方法在同一节点上的结果自归一化，因此节点间绝对速度差异不会直接进入efficiency。FDWZ的压缩/解压efficiency在8 CPU时为0.880/0.841，64 CPU时为0.241/0.227；由于其单核速度更高，它比其他方法更早撞上内存带宽瓶颈。即便如此，64 CPU绝对压缩与解压吞吐仍为4422和5523 MB/s，分别比冻结的SZ3-4D结果高18.7%和38.1%；该幅度大于已观察到的约2%--5%跨节点差异。jicf0的当前FDWZ结果尚待重测。
+图中各方法的efficiency以自身1 CPU吞吐量为基准；SZ2官方实现使用进程级全局状态，不能安全并发，因此只有1 CPU结果且不画入趋势图。pb0的FDWZ于2026-09-05在节点a173上使用当前版本重跑（Slurm job `20424829`），140个raw case均通过`100.01%`误差容差，各field/CPU汇总PSNR为99.942--100.015 dB。其他方法沿用节点a214上统一线程绑定的冻结结果；efficiency均由同一方法在同一节点上的结果自归一化，因此节点间绝对速度差异不会直接进入efficiency。FDWZ的压缩/解压efficiency在8 CPU时为0.880/0.841，64 CPU时为0.241/0.227；由于其单核速度更高，它比其他方法更早撞上内存带宽瓶颈。即便如此，64 CPU绝对压缩与解压吞吐仍为4422和5523 MB/s，分别比冻结的SZ3-4D结果高18.7%和38.1%；该幅度大于已观察到的约2%--5%跨节点差异。
+
+jicf0的当前FDWZ考虑到不同空间区间的耗时差异，改用完整数据覆盖：1、2、4、8、16和32 CPU各覆盖全部128个全局partition一次，64和128 CPU分别覆盖两次和四次，因此不再依赖少量区间能否代表完整数据。合并结果含1300个raw case，各CPU点的aggregate BR相对完整数据最多偏差`0.006%`，五个field的汇总PSNR为149.918--150.146 dB，全部最大误差均通过`100.01%`容差。32、64和128 CPU来自a217上的独占节点任务`20428623`；1 CPU全覆盖来自a120上的任务`20447692`及在a245补齐7个case的任务`20448590`；2--16 CPU全覆盖来自a124上的任务`20448943`。为消除节点速度差异，使用a120、a245与a217间分别15和5个相同1 CPU case，以及a124与a217间20个相同16 CPU case校正到a217；压缩/解压throughput乘数分别为`1.3432/1.4738`、`1.2592/1.1860`和`1.0737/1.0695`。1 CPU的7个a245 case单独应用对应乘数后，整组有效乘数为`1.3426/1.4718`。原始throughput、有效乘数和校正后throughput均保存在summary CSV，各节点的匹配信息另存于`weak_jicf_current_fdwz_node_calibration.csv`；图中的FDWZ efficiency使用校正后数值。
+
+jicf0 FDWZ的压缩/解压efficiency在16 CPU时为0.467/0.403，在128 CPU时为0.102/0.079，对应128 CPU speedup为13.09/10.08。绝对吞吐随CPU数持续上升，128 CPU达到4708/5940 MB/s，但32 CPU以后增益已经很小，说明单节点内存带宽与共享资源已成为主要瓶颈。其他六种方法仍是四区间冻结结果，因此曲线可以展示既有结果，但与FDWZ全覆盖曲线的细粒度差异不应解释为严格的逐区间配对比较。
 
 ![pb0 weak-scaling efficiency](results/weak_scaling/weak_pb0_efficiency.svg)
+
+![jicf0 weak-scaling efficiency](results/weak_scaling/weak_jicf_efficiency.svg)
 
 # 8. Strong scaling
 
@@ -383,7 +470,7 @@ CPU数量较少时，实验只处理完整field中的局部区间，而不同区
 - 官方API baseline及tensorization已经冻结，定义见第5.1节。
 - README中的18个小数据field FDWZ曲线已使用当前linear-proxy与32位QB/unpredictable实现重跑，90个case全部满足误差界；其余24种方法沿用冻结结果。
 - pb0与jicf0的rate--distortion与throughput均已使用当前FDWZ版本重跑，各25个case都通过`100.01%`浮点数值容差检查且没有触发unpredictable；其他六种方法沿用冻结结果。
-- pb0 weak scaling已使用当前FDWZ版本重跑，140个case均通过误差容差；jicf0的当前FDWZ结果待重测。
+- pb0和jicf0 weak scaling均已使用当前FDWZ版本重跑并通过误差容差；jicf0的1--32 CPU点覆盖完整数据一次，64和128 CPU点分别覆盖两次和四次，跨节点结果已通过相同case校正到a217。
 
 # 11. 投稿前主线
 

@@ -21,4 +21,4 @@ export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
 unset MRCZ_PROFILE_HUFFMAN || true
-srun --ntasks=1 --cpus-per-task=128 --cpu-bind=cores python3 -u t5_start_weak_scaling.py jicf "$@"
+srun --ntasks=1 --cpus-per-task="${SLURM_CPUS_PER_TASK}" --cpu-bind=cores python3 -u t5_start_weak_scaling.py jicf "$@"

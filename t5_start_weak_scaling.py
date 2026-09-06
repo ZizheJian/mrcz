@@ -75,7 +75,7 @@ def cleanup(config,method,field):
     remove_if_exists(f"{data_path}_header.mrcz")
     remove_if_exists(f"{data_path}_element_map.mrcz")
 
-def selected_groups(max_partitions,cpus,sample_count=4):
+def selected_groups(max_partitions,cpus,sample_count=4,group_sampling="endpoints"):
     group_num=max_partitions//cpus
     if group_num<=sample_count:
         if sample_count%group_num:
@@ -85,7 +85,16 @@ def selected_groups(max_partitions,cpus,sample_count=4):
         for group_index in range(group_num):
             group_indices.extend([group_index]*repeat)
         return group_indices
-    return [round(index*(group_num-1)/(sample_count-1)) for index in range(sample_count)]
+    if group_sampling=="endpoints":
+        return [round(index*(group_num-1)/(sample_count-1)) for index in range(sample_count)]
+    if group_sampling=="stratified-midpoint":
+        return [((2*index+1)*group_num)//(2*sample_count) for index in range(sample_count)]
+    raise ValueError(f"未知分组采样方式: {group_sampling}")
+
+def groups_for_cpu(max_partitions,cpus,sample_count,group_sampling,full_coverage):
+    if full_coverage:
+        return list(range(max_partitions//cpus))
+    return selected_groups(max_partitions,cpus,sample_count,group_sampling)
 
 def group_element_range(config,cpus,group_index):
     max_partitions=config["max_cpus"]
@@ -155,7 +164,7 @@ def row_key(row):
 
 def write_raw_rows(path,rows):
     with open(path,"w",newline="") as f:
-        writer=csv.DictWriter(f,fieldnames=fieldnames)
+        writer=csv.DictWriter(f,fieldnames=fieldnames,lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -197,12 +206,12 @@ def write_summaries(rows,config,dataset,result_tag):
     quality_path=os.path.join(result_dir,f"weak_{dataset}{tag}_quality.csv")
     if summary:
         with open(summary_path,"w",newline="") as f:
-            writer=csv.DictWriter(f,fieldnames=list(summary[0]))
+            writer=csv.DictWriter(f,fieldnames=list(summary[0]),lineterminator="\n")
             writer.writeheader()
             writer.writerows(summary)
     if quality:
         with open(quality_path,"w",newline="") as f:
-            writer=csv.DictWriter(f,fieldnames=list(quality[0]))
+            writer=csv.DictWriter(f,fieldnames=list(quality[0]),lineterminator="\n")
             writer.writeheader()
             writer.writerows(quality)
 
@@ -213,6 +222,8 @@ def main():
     parser.add_argument("--methods",default=",".join(methods))
     parser.add_argument("--cpu-counts")
     parser.add_argument("--sample-count",type=int,default=4)
+    parser.add_argument("--group-sampling",choices=["endpoints","stratified-midpoint"],default="endpoints")
+    parser.add_argument("--full-coverage",action="store_true")
     parser.add_argument("--append-existing",action="store_true")
     parser.add_argument("--result-tag",default="")
     parser.add_argument("--measure-phase-time",action="store_true")
@@ -235,7 +246,8 @@ def main():
         raise ValueError("--sample-count必须至少为2")
     if args.dry_run:
         for cpus in cpu_counts:
-            print(cpus,selected_groups(config["max_cpus"],cpus,args.sample_count),[group_element_range(config,cpus,index) for index in selected_groups(config["max_cpus"],cpus,args.sample_count)])
+            groups=groups_for_cpu(config["max_cpus"],cpus,args.sample_count,args.group_sampling,args.full_coverage)
+            print(cpus,groups,[group_element_range(config,cpus,index) for index in groups])
         return
     tag=f"_{args.result_tag}" if args.result_tag else ""
     raw_path=os.path.join(result_dir,f"weak_{args.dataset}{tag}_raw.csv")
@@ -248,7 +260,7 @@ def main():
     with open(log_path,"a" if args.append_existing else "w") as log_file:
         existing_keys={row_key(row) for row in rows}
         for cpus in cpu_counts:
-            groups=selected_groups(config["max_cpus"],cpus,args.sample_count)
+            groups=groups_for_cpu(config["max_cpus"],cpus,args.sample_count,args.group_sampling,args.full_coverage)
             for trial,group_index in enumerate(groups,1):
                 for field_index,field in enumerate(config["fields"]):
                     ordered_methods=selected_methods if (trial+field_index+cpus)%2 else list(reversed(selected_methods))
