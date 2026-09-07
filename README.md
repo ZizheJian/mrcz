@@ -45,7 +45,6 @@
     <tr><td><code>summarize_rd.py</code></td><td>对每个field在七种正式方法共同PSNR区间的近中点处汇总CR增长，并生成逐field CSV。</td></tr>
     <tr><td><code>plot_large_rd.py</code></td><td>为pb0或jicf0单独生成五个field的正式RD图。</td></tr>
     <tr><td><code>plot_large_throughput.py</code></td><td>根据pb0和jicf0的正式CSV生成以REL EB或PSNR为横坐标的压缩与解压throughput图。</td></tr>
-    <tr><td><code>plot_weak_scaling.py</code></td><td>根据weak scaling summary CSV生成<code>results/weak_scaling/weak_scaling_efficiency.svg</code>。</td></tr>
     <tr><td><code>plot_weak_scaling_dataset.py</code></td><td>为pb0或jicf0单独生成weak scaling efficiency图。</td></tr>
     <tr><td><code>merge_jicf_fdwz_weak.py</code></td><td>校验并合并jicf0 FDWZ的全覆盖补测结果，按重叠case校正节点速度差异，再更新正式raw、summary和quality CSV。</td></tr>
   </tbody>
