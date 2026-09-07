@@ -19,11 +19,12 @@
     <tr><td><code>t3_test_interpolation_prediction.py</code></td><td>抽取NekRS element、寻找共享面邻居，比较跨公共面预测与element内部预测的误差，并生成相对误差ECDF。</td></tr>
     <tr><td><code>t4_plot_data_coeff_err_distribution.py</code></td><td>比较原始field、变换系数和误差的概率分布，输出三联直方图；运行前需要准备对应的<code>_coeff</code>和<code>_err</code>二进制文件。</td></tr>
     <tr><td><code>t5_start_weak_scaling.py</code></td><td>在固定目标PSNR下执行单节点weak scaling实验；可选择端点、等宽区间中点或完整partition覆盖，结果写入<code>results/weak_scaling/</code>中的raw、summary和quality CSV。</td></tr>
+    <tr><td><code>t6_start_strong_scaling.py</code></td><td>固定完整数据范围、ABS EB、计算精度和partition网格，只改变OpenMP线程数执行单节点strong scaling实验。</td></tr>
     <tr><td><code>generate_mfem_and_nektar_data.py</code></td><td>构建MFEM ex0/ex1和Nektar++ FieldConvert，并生成项目使用的两个MFEM样例及Nektar++ cylinder VTU数据。</td></tr>
   </tbody>
 </table>
 
-正式weak scaling可分别使用`run_t5_weak_pb0.sbatch`和`run_t5_weak_jicf.sbatch`提交到Slurm；jicf0低CPU全覆盖补测使用`run_t5_weak_jicf_1cpu.sbatch`和`run_t5_weak_jicf_16cpu.sbatch`。
+正式weak scaling可分别使用`run_t5_weak_pb0.sbatch`和`run_t5_weak_jicf.sbatch`提交到Slurm；jicf0低CPU全覆盖补测使用`run_t5_weak_jicf_1cpu.sbatch`和`run_t5_weak_jicf_16cpu.sbatch`。pb0 strong scaling使用`run_t6_strong_pb0.sbatch`。
 
 `py_funcs/`中的辅助功能：
 
