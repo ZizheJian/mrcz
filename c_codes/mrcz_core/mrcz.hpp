@@ -62,6 +62,7 @@ namespace mrcz
             string grid_assumption="GLL"; // GLL, chebyshev, uniform
             bool if_constant_compression=true;
             bool if_measure_phase_time=false;
+            bool if_analyze_error_distribution=false;
 
             // MRCZ优化开关
             string transform="DChT"; // DLT, DChT, DST, DCT
@@ -225,6 +226,7 @@ namespace mrcz
             {
                 if_constant_compression=other.if_constant_compression;
                 if_measure_phase_time=other.if_measure_phase_time;
+                if_analyze_error_distribution=other.if_analyze_error_distribution;
                 if_coefficient_transpose=other.if_coefficient_transpose;
                 if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
                 if_max_huffman_tree=other.if_max_huffman_tree;

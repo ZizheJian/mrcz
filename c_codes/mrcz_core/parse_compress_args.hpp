@@ -106,6 +106,12 @@ namespace mrcz
                     throw runtime_error("缺少-measure-phase-time参数后的布尔值");
                 params.if_measure_phase_time=parse_bool(argv[++i],"-measure-phase-time");
             }
+            else if(string(argv[i])=="-analyze-error-distribution")
+            {
+                if(i+1>=argc)
+                    throw runtime_error("缺少-analyze-error-distribution参数后的布尔值");
+                params.if_analyze_error_distribution=parse_bool(argv[++i],"-analyze-error-distribution");
+            }
             else if (string(argv[i])=="-grid-assumption")
             {
                 if (i+1>=argc)

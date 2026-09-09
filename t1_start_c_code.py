@@ -24,8 +24,9 @@ formal_method_list=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused
 layout_list=["1D","2D","3D-fused","3D-per-element","4D"]
 small_method_list=["MRCZ","FDWZ"]+[f"{compressor}-{layout}" for compressor in ["SZ3","SZ2","QoZ","ZFP"] for layout in layout_list]+["SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"]
 eb_mode="REL"
-write_to_csv=True
-cleanup_after_each_test=True
+write_to_csv=os.environ.get("MRCZ_T1_WRITE_TO_CSV","true").lower() in ["1","true","yes"]
+cleanup_after_each_test=os.environ.get("MRCZ_T1_CLEANUP_AFTER_EACH_TEST","true").lower() in ["1","true","yes"]
+run_decompression=os.environ.get("MRCZ_T1_RUN_DECOMPRESSION","true").lower() in ["1","true","yes"]
 project_root=os.path.dirname(os.path.abspath(__file__))
 
 # format="nekrs"
@@ -221,7 +222,7 @@ for method in method_list:
             if "fields" in locals():
                 command_list=[f"{command} -fields [{','.join(fields)}]" for command in command_list] # type: ignore
             compression_output=run_command(command_list[0])
-            decompression_output=run_command(command_list[1])
+            decompression_output=run_command(command_list[1]) if run_decompression else ""
             if write_to_csv:
                 compression_throughput=parse_field_throughput(compression_output,"compression")
                 decompression_throughput=parse_field_throughput(decompression_output,"decompression")

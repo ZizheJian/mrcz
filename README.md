@@ -46,8 +46,13 @@
     <tr><td><code>summarize_rd.py</code></td><td>对每个field在七种正式方法共同PSNR区间的近中点处汇总CR增长，并生成逐field CSV。</td></tr>
     <tr><td><code>plot_large_rd.py</code></td><td>为pb0或jicf0单独生成五个field的正式RD图。</td></tr>
     <tr><td><code>plot_large_throughput.py</code></td><td>根据pb0和jicf0的正式CSV生成以REL EB或PSNR为横坐标的压缩与解压throughput图。</td></tr>
+    <tr><td><code>summarize_end_to_end.py</code></td><td>合并固定REL EB的RD内部计时与三次Globus传输结果，生成端到端时间汇总CSV。</td></tr>
+    <tr><td><code>plot_end_to_end.py</code></td><td>根据端到端汇总结果生成总时间及三次传输波动范围图。</td></tr>
+    <tr><td><code>create_transfer_csv.py</code></td><td>核对七种方法各五个压缩文件的存在性与总字节数，并初始化三次Globus传输记录。</td></tr>
     <tr><td><code>plot_weak_scaling_dataset.py</code></td><td>为pb0或jicf0单独生成weak scaling efficiency图。</td></tr>
+    <tr><td><code>plot_strong_scaling_dataset.py</code></td><td>根据固定完整数据范围的strong scaling汇总结果生成压缩与解压speedup图。</td></tr>
     <tr><td><code>merge_jicf_fdwz_weak.py</code></td><td>校验并合并jicf0 FDWZ的全覆盖补测结果，按重叠case校正节点速度差异，再更新正式raw、summary和quality CSV。</td></tr>
+    <tr><td><code>merge_pb0_strong_64.py</code></td><td>校验pb0的8--32 CPU strong scaling结果并复用同配置的64 CPU weak scaling结果，记录每个数据点的来源任务与节点。</td></tr>
   </tbody>
 </table>
 
@@ -416,7 +421,7 @@ jicf0的当前128 CPU结果如下；其他六种方法同样沿用已冻结结�
 
 # 6. Throughput
 
-pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MB/s per CPU，纵轴使用对数尺度；backend为压缩或解压API调用本身，其内部QB、Huffman和Zstd工作区allocation仍计入对应时间。两个数据的FDWZ使用上述当前版本结果，其他六种方法沿用冻结结果。pb0的25个同REL EB点上，FDWZ压缩和解压吞吐均全部高于SZ3-4D，几何平均吞吐比分别为1.333和1.396，最小比分别为1.083和1.278。jicf0上，FDWZ压缩在25点中的18点快于SZ3-4D，几何平均吞吐比为1.059；解压在25点中的24点更快，几何平均吞吐比为1.482。因此FDWZ的解压优势在两个大数据上都很稳定，压缩端则只能说总体达到SZ3-4D速度，jicf0的严格误差界限下仍会明显落后。另在独占节点上对pb0/P的`1e-4`与`1e-5`各重复三次，FDWZ压缩分别比SZ3-4D快19.8%和20.1%，解压分别快30.7%和37.6%。
+pb0和jicf0的正式throughput分别使用64 CPU和128 CPU测量。吞吐量均为原始数据量除以backend内部耗时，并按CPU数归一化为MiB/s per CPU，图中沿用简写MB/s，纵轴使用对数尺度；backend为压缩或解压API调用本身，其内部QB、Huffman和Zstd工作区allocation仍计入对应时间。SZ2因官方API使用进程级全局状态而串行处理partition，其列表示单个实际活动CPU的整次调用吞吐量，不能再乘申请的64或128 CPU。两个数据的FDWZ使用上述当前版本结果，其他六种方法沿用冻结结果。pb0的25个同REL EB点上，FDWZ压缩和解压吞吐均全部高于SZ3-4D，几何平均吞吐比分别为1.333和1.396，最小比分别为1.083和1.278。jicf0上，FDWZ压缩在25点中的18点快于SZ3-4D，几何平均吞吐比为1.059；解压在25点中的24点更快，几何平均吞吐比为1.482。因此FDWZ的解压优势在两个大数据上都很稳定，压缩端则只能说总体达到SZ3-4D速度，jicf0的严格误差界限下仍会明显落后。另在独占节点上对pb0/P的`1e-4`与`1e-5`各重复三次，FDWZ压缩分别比SZ3-4D快19.8%和20.1%，解压分别快30.7%和37.6%。
 
 pb0结果首先以实验直接指定的REL EB为横坐标；同一横坐标位置上的所有方法具有相同的error bound和计算精度。
 
@@ -460,7 +465,72 @@ jicf0 FDWZ的压缩/解压efficiency在16 CPU时为0.467/0.403，在128 CPU时�
 
 # 8. Strong scaling
 
+pb0的初步strong scaling固定处理全部1,947,154个element，固定划分为64个partition，并对每个method/field固定目标100 dB所对应的ABS EB和计算精度；只有OpenMP线程数发生变化。所有吞吐量仍由原始数据量除以压缩器或解压器报告的backend内部时间得到，程序同时核验实际使用的线程数与请求值一致。8、16和32 CPU于2026-09-07在同一个独占节点a095上各测一次（Slurm job `20454976`），共90个新case；它们的BR和MSE在不同CPU数下保持一致，全部最大误差均通过`100.01%`容差。
+
+64 CPU点与现有pb0 weak scaling的完整数据点具有完全相同的element范围、ABS EB、计算精度和64-partition网格，因此直接复用其四次重复结果，不重新压缩。FDWZ来自节点a173上的job `20424829`，其余五个并行方法来自节点a214上的job `20348291`。由于当前没有与a095重叠的相同case可用于节点校正，图中8--32 CPU可作严格同节点strong scaling比较，32--64 CPU连线则只是跨节点的初步估计。MRCZ解压吞吐从32 CPU的3357 MB/s降至64 CPU的3184 MB/s（约5.2%），也说明不应把这一段的小幅变化解释为算法本身的确定趋势。1、2和4 CPU完整数据点尚未测量，因此当前图以8 CPU为基准展示speedup，而不是相对单核的parallel efficiency。
+
+![pb0 strong-scaling speedup](results/strong_scaling/strong_pb0_speedup.svg)
+
+FDWZ与SZ3-4D的绝对吞吐量及直接比值如下。FDWZ在当前全部四个CPU点均更快；相对SZ3-4D的压缩优势从8 CPU的1.721倍收窄到64 CPU的1.187倍，解压优势则从1.864倍收窄到1.381倍。FDWZ从8到32 CPU的压缩/解压speedup为2.036/2.004，继续增加到64 CPU只达到2.078/2.059，表明它在32 CPU附近已经接近单节点内存带宽或共享资源瓶颈。
+
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="8%"><col width="15%"><col width="15%"><col width="15%"><col width="15%"><col width="16%"><col width="16%"></colgroup>
+  <thead><tr><th width="8%">CPU</th><th width="15%">FDWZ压缩<br>MB/s</th><th width="15%">SZ3压缩<br>MB/s</th><th width="15%">FDWZ/SZ3<br>压缩</th><th width="15%">FDWZ解压<br>MB/s</th><th width="16%">SZ3解压<br>MB/s</th><th width="16%">FDWZ/SZ3<br>解压</th></tr></thead>
+  <tbody>
+    <tr><td>8</td><td>2128.0</td><td>1236.4</td><td>1.721</td><td>2682.8</td><td>1439.5</td><td>1.864</td></tr>
+    <tr><td>16</td><td>3525.5</td><td>2145.8</td><td>1.643</td><td>4348.1</td><td>2490.2</td><td>1.746</td></tr>
+    <tr><td>32</td><td>4332.5</td><td>3175.7</td><td>1.364</td><td>5376.2</td><td>3447.3</td><td>1.560</td></tr>
+    <tr><td>64</td><td>4422.2</td><td>3726.5</td><td>1.187</td><td>5523.0</td><td>3998.4</td><td>1.381</td></tr>
+  </tbody>
+</table>
+
+正式合并结果保存在`results/strong_scaling/strong_pb0_raw.csv`、`strong_pb0_summary.csv`和`strong_pb0_quality.csv`；独立的8--32 CPU原始结果保存在`strong_pb0_8to32_raw.csv`，便于之后补测1--4 CPU或替换跨节点64 CPU点时不混淆来源。
+
 # 9. End-to-end test
+
+端到端实验对每个数据集选择正式五点RD扫描在对数REL EB轴上的中点：pb0使用`1e-4`，jicf0使用`1e-6`。同一数据集的七种方法使用完全相同的REL EB，而不是为每种方法分别匹配PSNR；pb0使用64 CPU，jicf0使用128 CPU。每种方法产生五个field压缩文件，并将这五个文件作为一个Globus任务从ACCESS Anvil同时传输到LCRC Improv DTN，独立传输三次。文件生成任务分别为`20493296`和`20493297`，35个case均成功且错误日志为空。
+
+总时间定义为`T_compress+T_transfer+T_decompress`。压缩和解压时间复用相同REL EB处的正式RD backend内部计时，均为五个field的时间之和；不计文件读写、坐标和metadata。传输时间不使用Globus页面显示的整数秒Duration，而由debug data中的精确`Bytes Transferred/effective_bytes_per_second`逐次计算，正式结果取三次中位数，图中误差棒表示仅由三次传输造成的端到端最小--最大范围。除SZ2外，各方法的总backend吞吐为CSV中的per-CPU MiB/s乘CPU数；SZ2串行调用，活动CPU数固定为1。
+
+![Fixed-REL-EB end-to-end time](results/end_to_end/end_to_end_total.svg)
+
+pb0结果如下：
+
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="17%"><col width="13%"><col width="14%"><col width="14%"><col width="14%"><col width="17%"><col width="11%"></colgroup>
+  <thead><tr><th width="17%">方法</th><th width="13%">文件<br>GB</th><th width="14%">压缩<br>s</th><th width="14%">传输<br>s</th><th width="14%">解压<br>s</th><th width="17%">端到端<br>s</th><th width="11%">排名</th></tr></thead>
+  <tbody>
+    <tr><td>ZFP-3D-fused</td><td>3.542</td><td>2.283</td><td>7.144</td><td>2.347</td><td><strong>11.773</strong></td><td>1</td></tr>
+    <tr><td>FDWZ</td><td>0.851</td><td>3.849</td><td>5.006</td><td>3.111</td><td><strong>11.967</strong></td><td>2</td></tr>
+    <tr><td>SZ3-4D</td><td>2.421</td><td>4.617</td><td>5.716</td><td>4.257</td><td>14.590</td><td>3</td></tr>
+    <tr><td>QoZ-4D</td><td>2.618</td><td>4.663</td><td>5.463</td><td>4.478</td><td>14.604</td><td>4</td></tr>
+    <tr><td>MRCZ</td><td>0.613</td><td>7.354</td><td>5.038</td><td>5.884</td><td>18.276</td><td>5</td></tr>
+    <tr><td>SPERR-2D</td><td>4.417</td><td>29.708</td><td>7.262</td><td>18.043</td><td>55.012</td><td>6</td></tr>
+    <tr><td>SZ2-3D-fused</td><td>1.478</td><td>163.516</td><td>5.230</td><td>79.649</td><td>248.396</td><td>7</td></tr>
+  </tbody>
+</table>
+
+jicf0结果如下：
+
+<table class="fixed-layout-table" width="100%">
+  <colgroup><col width="17%"><col width="13%"><col width="14%"><col width="14%"><col width="14%"><col width="17%"><col width="11%"></colgroup>
+  <thead><tr><th width="17%">方法</th><th width="13%">文件<br>GB</th><th width="14%">压缩<br>s</th><th width="14%">传输<br>s</th><th width="14%">解压<br>s</th><th width="17%">端到端<br>s</th><th width="11%">排名</th></tr></thead>
+  <tbody>
+    <tr><td>FDWZ</td><td>1.133</td><td>8.346</td><td>5.138</td><td>7.119</td><td><strong>20.603</strong></td><td>1</td></tr>
+    <tr><td>ZFP-3D-fused</td><td>10.133</td><td>6.628</td><td>10.819</td><td>8.055</td><td><strong>25.502</strong></td><td>2</td></tr>
+    <tr><td>SZ3-4D</td><td>3.559</td><td>10.715</td><td>7.266</td><td>11.389</td><td>29.370</td><td>3</td></tr>
+    <tr><td>QoZ-4D</td><td>3.996</td><td>10.355</td><td>7.392</td><td>11.993</td><td>29.740</td><td>4</td></tr>
+    <tr><td>MRCZ</td><td>0.782</td><td>19.008</td><td>4.837</td><td>15.473</td><td>39.318</td><td>5</td></tr>
+    <tr><td>SPERR-2D</td><td>8.365</td><td>49.666</td><td>10.779</td><td>28.122</td><td>88.567</td><td>6</td></tr>
+    <tr><td>SZ2-3D-fused</td><td>3.024</td><td>412.213</td><td>6.098</td><td>182.698</td><td>601.009</td><td>7</td></tr>
+  </tbody>
+</table>
+
+pb0上FDWZ为11.967秒，仅比ZFP的11.773秒慢0.194秒（1.6%），且两者由三次传输得到的时间范围重叠，因此应表述为基本持平。jicf0上FDWZ为20.603秒，比ZFP的25.502秒减少4.899秒（19.2%），其三次范围也完全分离。FDWZ文件分别只有ZFP的24.0%和11.2%，固定任务启动开销在pb0上掩盖了大部分文件大小收益，而jicf0的数据规模足以让该收益转化为明确的端到端优势。MRCZ在两个数据集上都产生最小文件、CR分别为32.51和82.88，但当前计算成本仍超过节省的传输时间。
+
+为核验固定REL EB口径，又对pb0约100 dB的ZFP重建进行了五个field全量误差统计，共4,984,714,240个值。没有误差达到`0.5*ABS_EB`，最大值也只有`0.2196*ABS_EB`；99%的误差不超过`0.0700*ABS_EB`。这说明该case中ZFP整体显著低于名义误差上限，而不是仅有少量点触及上限，因此相同REL EB与相同PSNR回答的是不同问题。逐field结果保存在`results/error_distribution/zfp_pb0_100db_summary.csv`。
+
+原始三次传输记录、正式汇总及复现说明保存在`results/end_to_end/`。固定PSNR的旧压缩文件已经原地归档，未用于本节结果。
 
 # 10. 当前状态
 
@@ -471,6 +541,10 @@ jicf0 FDWZ的压缩/解压efficiency在16 CPU时为0.467/0.403，在128 CPU时�
 - README中的18个小数据field FDWZ曲线已使用当前linear-proxy与32位QB/unpredictable实现重跑，90个case全部满足误差界；其余24种方法沿用冻结结果。
 - pb0与jicf0的rate--distortion与throughput均已使用当前FDWZ版本重跑，各25个case都通过`100.01%`浮点数值容差检查且没有触发unpredictable；其他六种方法沿用冻结结果。
 - pb0和jicf0 weak scaling均已使用当前FDWZ版本重跑并通过误差容差；jicf0的1--32 CPU点覆盖完整数据一次，64和128 CPU点分别覆盖两次和四次，跨节点结果已通过相同case校正到a217。
+- pb0 strong scaling已完成同节点8--32 CPU完整数据测试，并复用同配置的四次64 CPU结果生成初步speedup图；1--4 CPU及同节点64 CPU仍待补测。
+- 固定REL EB端到端实验已完成：pb0与jicf0的七种方法均生成五个field文件并完成三次Globus传输；正式总时间由RD backend计时与传输中位数组合，FDWZ在pb0上与ZFP基本持平，在jicf0上快19.2%。
+- 后续可选scaling实验暂缓：若继续，应优先补齐pb0同节点1、2、4和64 CPU strong scaling，再决定是否为jicf0做同口径补测；现有正式结果保持冻结。
+- 后续同BR可视化暂缓：在各方法共同覆盖的代表性BR处生成原场、重建场和绝对误差图，所有方法共享色标与空间切片，避免用不同PSNR或自动色标造成视觉偏差。
 
 # 11. 投稿前主线
 
@@ -482,7 +556,7 @@ jicf0 FDWZ的压缩/解压efficiency在16 CPU时为0.467/0.403，在128 CPU时�
        从pb0和jicf0各field CSV生成BR--PSNR图，并按第5章的逐field共同区间近中点口径
        汇总MRCZ、FDWZ和五个官方baseline的BR、CR、最大误差与异常点。旧稿中的数字不得直接复用。
 
-[ ] 3. 整理速度与扩展性结果。
+[ ] 3. （暂缓）补充并整理速度与扩展性结果。
        绘制single-core throughput、fixed-quality strong/weak scaling、speedup和parallel
        efficiency；明确64--128 CPU后的内存带宽与NUMA瓶颈，不声称近线性扩展。
        所有正式性能实验全局统一使用物理核与OpenMP线程绑定：Slurm申请
@@ -492,10 +566,11 @@ jicf0 FDWZ的压缩/解压efficiency在16 CPU时为0.467/0.403，在128 CPU时�
        Strong scaling的所有CPU点必须固定element范围、error bound和partition网格，在同一
        Slurm allocation中运行，并核验申请的CPU数与程序实际使用的CPU数一致。
 
-[ ] 4. 完成新版端到端实验。
-       重新测量direct、MRCZ和FDWZ的压缩--传输--解压总时间，并使用
-       T_total=T_compress+compressed_size/bandwidth+T_decompress扫描存储或网络带宽，
-       给出三种方案各自占优的区间。旧稿Globus结果只作历史参考。
+[x] 4. 完成新版端到端实测。
+       pb0和jicf0分别使用RD扫描中间的REL EB `1e-4`和`1e-6`，七种方法均将五个field
+       作为一个Globus任务独立传输三次；总时间由正式backend内部计时和传输中位数组合，
+       旧稿固定PSNR结果只作历史参考。若论文需要，可继续用
+       T_total=T_compress+compressed_size/bandwidth+T_decompress扫描假设网络带宽和任务启动开销。
 
 [ ] 5. 决定投稿方向。
        若MRCZ与FDWZ在rate--throughput--end-to-end空间形成稳定互补Pareto点，按IPDPS

@@ -7,7 +7,7 @@ from t5_start_weak_scaling import cleanup,datasets,extract,methods,project_root,
 result_dir=os.path.join(project_root,"results","strong_scaling")
 os.makedirs(result_dir,exist_ok=True)
 parallel_methods=[method for method in methods if method!="SZ2-3D-fused"]
-fieldnames=["Dataset","Target PSNR","Method","Field","CPUs","Trial","Element Begin","Element End","Element Num","Partition Num","REL EB from full RD","ABS EB","Compute Precision","Raw Bytes","Value Num","Compression Time","Decompression Time","BR","MSE","PSNR using full range","Max Error"]
+fieldnames=["Dataset","Target PSNR","Method","Field","CPUs","Trial","Element Begin","Element End","Element Num","Partition Num","REL EB from full RD","ABS EB","Compute Precision","Raw Bytes","Value Num","Compression Time","Decompression Time","BR","MSE","PSNR using full range","Max Error","Source Job","Source Node","Source Result"]
 integer_columns=["CPUs","Trial","Element Begin","Element End","Element Num","Partition Num","Raw Bytes","Value Num"]
 float_columns=["Target PSNR","REL EB from full RD","ABS EB","Compression Time","Decompression Time","BR","MSE","PSNR using full range","Max Error"]
 
@@ -44,7 +44,7 @@ def run_case(config,dataset,method,field,cpus,partition_num,trial,measure_phase_
     max_error=extract(decompression_output,r"max_err= ([0-9.eE+-]+)","max error")
     if max_error>abs_eb*1.0001:
         raise RuntimeError(f"{method}/{field}/{cpus} CPU超过100.01%误差容差: {max_error/abs_eb:.9f}")
-    row={"Dataset":dataset,"Target PSNR":config["target_psnr"],"Method":method,"Field":field,"CPUs":cpus,"Trial":trial,"Element Begin":0,"Element End":config["element_num"],"Element Num":config["element_num"],"Partition Num":partition_num,"REL EB from full RD":config["rel_eb"][method][field],"ABS EB":abs_eb,"Compute Precision":config["precision"][method],"Raw Bytes":value_num*config["word_size"],"Value Num":value_num}
+    row={"Dataset":dataset,"Target PSNR":config["target_psnr"],"Method":method,"Field":field,"CPUs":cpus,"Trial":trial,"Element Begin":0,"Element End":config["element_num"],"Element Num":config["element_num"],"Partition Num":partition_num,"REL EB from full RD":config["rel_eb"][method][field],"ABS EB":abs_eb,"Compute Precision":config["precision"][method],"Raw Bytes":value_num*config["word_size"],"Value Num":value_num,"Source Job":os.environ.get("SLURM_JOB_ID",""),"Source Node":os.environ.get("SLURMD_NODENAME",""),"Source Result":"strong"}
     row["Compression Time"]=extract(compression_output,r"Compression time= ([0-9.eE+-]+) seconds","compression time")
     row["Decompression Time"]=extract(decompression_output,r"Decompression time= ([0-9.eE+-]+) seconds","decompression time")
     row["BR"]=extract(compression_output,r"BR= ([0-9.eE+-]+) bits/value","BR")
@@ -60,6 +60,8 @@ def normalize_strong_row(row):
         result[column]=int(result[column])
     for column in float_columns:
         result[column]=float(result[column])
+    for column in ["Source Job","Source Node","Source Result"]:
+        result.setdefault(column,"")
     return result
 
 def row_key(row):
@@ -97,7 +99,7 @@ def write_summaries(rows,config,dataset,result_tag):
             compression_speedup=compression/baseline_compression if baseline_compression is not None else ""
             decompression_speedup=decompression/baseline_decompression if baseline_decompression is not None else ""
             value_num=sum(row["Value Num"] for row in group)
-            summary.append({"Dataset":dataset,"Target PSNR":config["target_psnr"],"Method":method,"CPUs":cpus,"Trials":len({row["Trial"] for row in group}),"Fields":len({row["Field"] for row in group}),"Partition Num":group[0]["Partition Num"],"Compression Throughput MB/s":compression,"Compression Throughput Std Dev MB/s":statistics.stdev(trial_compression) if len(trial_compression)>1 else 0,"Decompression Throughput MB/s":decompression,"Decompression Throughput Std Dev MB/s":statistics.stdev(trial_decompression) if len(trial_decompression)>1 else 0,"Compression Speedup":compression_speedup,"Decompression Speedup":decompression_speedup,"Compression Efficiency":compression_speedup/cpus if compression_speedup!="" else "","Decompression Efficiency":decompression_speedup/cpus if decompression_speedup!="" else "","Aggregate BR":sum(row["BR"]*row["Value Num"] for row in group)/value_num})
+            summary.append({"Dataset":dataset,"Target PSNR":config["target_psnr"],"Method":method,"CPUs":cpus,"Trials":len({row["Trial"] for row in group}),"Fields":len({row["Field"] for row in group}),"Partition Num":group[0]["Partition Num"],"Source Jobs":",".join(sorted({str(row["Source Job"]) for row in group if row["Source Job"]})),"Source Nodes":",".join(sorted({row["Source Node"] for row in group if row["Source Node"]})),"Compression Throughput MB/s":compression,"Compression Throughput Std Dev MB/s":statistics.stdev(trial_compression) if len(trial_compression)>1 else 0,"Decompression Throughput MB/s":decompression,"Decompression Throughput Std Dev MB/s":statistics.stdev(trial_decompression) if len(trial_decompression)>1 else 0,"Compression Speedup":compression_speedup,"Decompression Speedup":decompression_speedup,"Compression Efficiency":compression_speedup/cpus if compression_speedup!="" else "","Decompression Efficiency":decompression_speedup/cpus if decompression_speedup!="" else "","Aggregate BR":sum(row["BR"]*row["Value Num"] for row in group)/value_num})
             for field in config["fields"]:
                 field_group=[row for row in group if row["Field"]==field]
                 if not field_group:
