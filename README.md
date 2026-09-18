@@ -148,15 +148,15 @@ python3 generate_mfem_and_nektar_data.py
 
 # 2. FDWZ核心与优化记录
 
-FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3的多层插值预测框架，但预测范围限制在单个高阶element内，并使用真实GLL节点坐标而不是均匀索引距离。它不是对官方SZ3的简单参数调整，而是项目内为高阶有限元/谱元数据实现的独立预测器。
+FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3的多层插值预测框架，但预测范围限制在单个高阶element内，并使用reference-space GLL节点坐标而不是均匀索引距离。它不是对官方SZ3的简单参数调整，而是项目内为高阶有限元/谱元数据实现的独立预测器。
 
 ## 2.1. 核心流程
 
-1. 根据element shape和各维GLL坐标预先构造可由编解码两端确定性复现的预测层、访问顺序、reference位置及插值权重。每个有效维度的两个端点构成初始边界，递归选择最接近物理中点的未编码GLL节点。
-2. 每个二维/三维element的4/8个角点直接进行误差有界量化；其余节点按照预测层和维度顺序逐步处理。linear模式使用两个已重建reference按真实GLL距离进行一次插值；cubic模式则根据当前可用的已重建reference数量，自适应使用三次、二次或一次Lagrange插值。
+1. 根据element shape和各维reference-space GLL坐标预先构造可由编解码两端确定性复现的预测层、访问顺序、reference位置及插值权重。每个有效维度的两个端点构成初始边界，递归选择reference space中最接近两端点中点的未编码GLL节点。
+2. 每个二维/三维element的4/8个角点直接进行误差有界量化；其余节点按照预测层和维度顺序逐步处理。linear模式使用两个已重建reference按reference-space GLL间距进行一次插值；cubic模式则根据当前可用的已重建reference数量，自适应使用三次、二次或一次Lagrange插值。
 3. 每次预测后立即量化prediction residual，并用量化结果覆盖目标值。后续预测只引用该重建值，因此压缩端与解压端具有完全相同的误差传播路径，并保证逐点误差界限。
 4. FDWZ在每个partition内进行确定性的均匀采样，默认采样间隔为128且至少取32个样本。sample真实压缩六种linear维度顺序，再以最佳linear的方向执行正式cubic压缩。
-5. 量化整数按照角点及预测层分组。正式FDWZ固定使用当前element shape允许的最大Huffman tree数，最多五棵；每个partition独立建立Huffman tree，将全部Huffman metadata和payload拼接后再压缩为一个Zstd frame。QB固定使用32位存储，并保留`INT32_MIN`作为unpredictable标记。为避免对每个预测点都执行溢出检查，程序先根据field的最小值、最大值、ABS EB和全部候选stencil权重估计预测误差quantization index的上界，同时判断当前浮点精度能否保证误差界。只有两项均可在field级确认安全时才使用快速量化路径；否则逐点检查index和实际重建误差，将不合格点标记为unpredictable，并在全部Huffman流后按出现顺序追加其原始浮点值。角点的预测值为零，因此始终逐点检查其index范围。
+5. 量化整数按照角点及预测层分组。正式FDWZ固定使用当前element shape允许的最大Huffman tree数，最多五棵；每个partition独立建立Huffman tree，将全部Huffman metadata和payload拼接后再压缩为一个Zstd frame。QB固定使用32位存储，并保留`INT32_MIN`作为unpredictable标记。为避免对每个预测点都执行溢出检查，程序先根据field的最小值、最大值、ABS EB和全部cubic stencil权重证明residual QB可安全存入`int32_t`。无法在field级证明时才逐点检查；超出范围的点使用`INT32_MIN`标记，并在全部Huffman流后按出现顺序追加其原始浮点值。角点的预测值为零，因此始终逐点检查其QB范围。
 6. partition之间彼此独立，通过OpenMP并行执行采样、预测、量化、Huffman和Zstd；解压端按相反顺序恢复Huffman符号，并在每个element内依次重建节点。
 
 ## 2.2. 角点
@@ -195,7 +195,7 @@ FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3�
   <thead><tr><th width="30%">优化方案</th><th width="10%">状态</th><th width="60%">已有结论</th></tr></thead>
   <tbody>
     <tr>
-      <td>按GLL物理中点递归并使用真实GLL距离计算权重</td>
+      <td>按reference-space GLL中点递归并使用reference-space GLL间距计算权重</td>
       <td>采纳</td>
       <td>比索引中点更符合非均匀GLL节点分布，是正式预测树的基础。</td>
     </tr>
@@ -217,7 +217,7 @@ FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3�
     <tr>
       <td>normal-boundary：先建立中心块，再沿法向外插边界</td>
       <td>放弃</td>
-      <td>五个数据上均被正式物理中点预测树Pareto支配。</td>
+      <td>五个数据上均被正式reference-space中点预测树Pareto支配。</td>
     </tr>
     <tr>
       <td>官方SZ3式2幂stride、单原点seed的index-order</td>
@@ -225,9 +225,9 @@ FDWZ（Fast Distance-Weighted Interpolation-Based Lossy Compressor）借鉴SZ3�
       <td>对小element反复支付粗层级远距离预测成本，三个小数据均无优势。</td>
     </tr>
     <tr>
-      <td>不预测物理中点，而是预测索引中点</td>
+      <td>不预测reference-space中点，而是预测索引中点</td>
       <td>放弃</td>
-      <td>pb0和jicf0的BR分别增加约8.4%和4.7%，说明物理距离比索引邻近更重要。</td>
+      <td>pb0和jicf0的BR分别增加约8.4%和4.7%，说明reference-space距离比索引邻近更重要。</td>
     </tr>
     <tr>
       <td>element编号方向预测</td>

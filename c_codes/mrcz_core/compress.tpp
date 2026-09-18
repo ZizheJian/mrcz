@@ -219,7 +219,12 @@ namespace mrcz
                         backend_params.template compress_fdwz<false,false>(field);
                 }
                 else if (backend_params.method=="FDWZ-ablation")
-                    backend_params.template compress_fdwz<false,true>(field);
+                {
+                    if(backend_params.if_measure_phase_time)
+                        backend_params.template compress_fdwz<true,true>(field);
+                    else
+                        backend_params.template compress_fdwz<false,true>(field);
+                }
                 else
                     throw runtime_error("未知的core压缩方法: "+backend_params.method);
             };

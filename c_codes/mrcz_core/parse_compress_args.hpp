@@ -106,12 +106,6 @@ namespace mrcz
                     throw runtime_error("缺少-measure-phase-time参数后的布尔值");
                 params.if_measure_phase_time=parse_bool(argv[++i],"-measure-phase-time");
             }
-            else if(string(argv[i])=="-analyze-error-distribution")
-            {
-                if(i+1>=argc)
-                    throw runtime_error("缺少-analyze-error-distribution参数后的布尔值");
-                params.if_analyze_error_distribution=parse_bool(argv[++i],"-analyze-error-distribution");
-            }
             else if (string(argv[i])=="-grid-assumption")
             {
                 if (i+1>=argc)
@@ -151,34 +145,6 @@ namespace mrcz
                 if (i+1>=argc)
                     throw runtime_error("缺少-max-huffman-tree参数后的布尔值");
                 params.if_max_huffman_tree=parse_bool(argv[++i],"-max-huffman-tree");
-            }
-            else if (string(argv[i])=="-fdwz-plan")
-            {
-                if (i+1>=argc)
-                    throw runtime_error("缺少-fdwz-plan参数后的预测方案");
-                params.fdwz_plan=argv[++i];
-                if (params.fdwz_plan!="sample" and params.fdwz_plan!="XYZ-linear" and params.fdwz_plan!="XZY-linear" and params.fdwz_plan!="YXZ-linear" and params.fdwz_plan!="YZX-linear" and params.fdwz_plan!="ZXY-linear" and params.fdwz_plan!="ZYX-linear" and params.fdwz_plan!="XYZ-cubic" and params.fdwz_plan!="XZY-cubic" and params.fdwz_plan!="YXZ-cubic" and params.fdwz_plan!="YZX-cubic" and params.fdwz_plan!="ZXY-cubic" and params.fdwz_plan!="ZYX-cubic")
-                    throw runtime_error("-fdwz-plan必须是sample或一种维度顺序与linear/cubic的组合");
-            }
-            else if(string(argv[i])=="-fdwz-sample-interval")
-            {
-                if(i+1>=argc)
-                    throw runtime_error("缺少-fdwz-sample-interval参数后的非负整数");
-                params.fdwz_sample_interval=parse_uint64(argv[++i],"-fdwz-sample-interval");
-            }
-            else if(string(argv[i])=="-fdwz-selector")
-            {
-                if(i+1>=argc)
-                    throw runtime_error("缺少-fdwz-selector参数后的选择器名称");
-                params.fdwz_selector=argv[++i];
-                if(params.fdwz_selector!="linear-only" and params.fdwz_selector!="linear-proxy" and params.fdwz_selector!="cubic-exhaustive")
-                    throw runtime_error("-fdwz-selector必须是linear-only、linear-proxy或cubic-exhaustive");
-            }
-            else if(string(argv[i])=="-fdwz-min-sample-num")
-            {
-                if(i+1>=argc)
-                    throw runtime_error("缺少-fdwz-min-sample-num参数后的非负整数");
-                params.fdwz_min_sample_num=parse_uint64(argv[++i],"-fdwz-min-sample-num");
             }
             else if (string(argv[i])=="-compute-precision")
             {

@@ -1,4 +1,4 @@
-import argparse,glob,os,runpy
+import argparse,glob,json,os,shlex
 from third_party.get_max_cpus.py_codes.get_max_cpus import get_max_cpus
 from third_party.run_command.run_command import run_command
 from third_party.csv_tools.py_codes.write_csv_item import write_csv_item
@@ -6,259 +6,239 @@ from third_party.csv_tools.py_codes.write_csv_item import write_csv_item
 project_root=os.path.dirname(os.path.abspath(__file__))
 config_directory=os.path.join(project_root,"configs")
 
-def load_named_config():
-    parser=argparse.ArgumentParser(description="运行指定的MRCZ实验配置")
-    parser.add_argument("config_name",help="configs中的配置名称")
-    args=parser.parse_args()
-    if os.path.basename(args.config_name)!=args.config_name:
-        raise ValueError("config_name只能是配置名称，不能包含路径")
-    config_path=os.path.join(config_directory,args.config_name)
-    if not os.path.splitext(config_path)[1]:
-        config_path+=".py"
-    if not os.path.isfile(config_path):
-        raise FileNotFoundError(f"找不到配置: {config_path}")
-    if not config_path.endswith(".py"):
-        raise ValueError("目前仅支持Python配置文件")
-    return runpy.run_path(config_path)
+def load_json_tasks(json_path):
+    with open(json_path,encoding="utf-8") as config_file:
+        tasks=json.load(config_file)
+    if not isinstance(tasks,list):
+        raise TypeError("JSON顶层必须是task list")
+    if not tasks:
+        raise ValueError("JSON中没有task")
+    if any(not isinstance(task,dict) for task in tasks):
+        raise TypeError("JSON中的每个task必须是object")
+    return tasks
 
-def main():
-    config=load_named_config()
-    redbegin="\033[91m"
-    redend="\033[0m"
-    silent_build=config.get("silent_build",False)
-    build_max_cpus=config.get("build_max_cpus",get_max_cpus(8))
-    build_before_test=config.get("build_before_test",True) # 多个slurm实验并行时，应该先完成build和install，再把这个设为False，再开始运行
-    
-    # method可选:
-    #   "MRCZ": 正式MRCZ，element内变换由编译器自动向量化，系数QB使用32x32分块转置
-    #   "MRCZ-ablation": 使用param中的MRCZ消融开关
-    #   "FDWZ": 使用最大有效Huffman tree数和cubic预测，并在每个partition用配置的selector选择维度顺序
-    #   "FDWZ-ablation": 使用param中的FDWZ消融开关
-    #   "SZ3-1D"/"SZ3-2D"/"SZ3-3D-fused"/"SZ3-3D-per-element"/"SZ3-4D": 官方SZ3 API的五种tensorization
-    #   "QoZ-1D"/"QoZ-2D"/"QoZ-3D-fused"/"QoZ-3D-per-element"/"QoZ-4D": 官方QoZ 2.0 q4 API的五种tensorization
-    #   "SZ2-1D"/"SZ2-2D"/"SZ2-3D-fused"/"SZ2-3D-per-element"/"SZ2-4D": 官方SZ2 API的五种tensorization
-    #   "ZFP-1D"/"ZFP-2D"/"ZFP-3D-fused"/"ZFP-3D-per-element"/"ZFP-4D": 官方ZFP API的五种tensorization
-    #   "SPERR-2D"/"SPERR-3D-fused"/"SPERR-3D-per-element": 官方SPERR API支持的三种tensorization
-    # 正式方法、外部baseline及其tensorization见README.md第5.1节。
-    formal_method_list=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
-    layout_list=["1D","2D","3D-fused","3D-per-element","4D"]
-    small_method_list=["MRCZ","FDWZ"]+[f"{compressor}-{layout}" for compressor in ["SZ3","SZ2","QoZ","ZFP"] for layout in layout_list]+["SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"]
-    eb_mode="REL"
-    write_to_csv=config.get("write_to_csv",True)
-    cleanup_after_each_test=config.get("cleanup_after_each_test",True)
-    run_decompression=config.get("run_decompression",True)
-    
-    # format="nekrs"
-    # data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001") #1600*8*8*1
-    # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7]
-    # fields=["UX","UY","P","T","S00","S01"]
-    
-    # format="nekrs"
-    # data_path=os.path.join(project_root,"third_party/fld_pyutils/demos/data/test0.f00001") #512*6*6*6
-    # fields=["UZ","T","S00","S01"]
-    # eb_list=[1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8,3.162e-9,1e-9,3.162e-10,1e-10]
-    
-    # format="nekrs"
-    # data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/tc_channel0.f00001") #512*8*8*8 (double)
-    # fields=["UX","UY","UZ"]
-    # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7,3.162e-8,1e-8]
-    
-    # format="nekrs"
-    # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8 #CR= 26.078980036305357
-    # eb_list=[1e-3]
-    # MRCZ的相对误差为1.04e-4时，T的CR=26.072790
-    # SZ3-3D的相对误差为2e-3时，T的CR=26.078980036305357
-    # ZFP-4D的相对误差为3.16e-1时，T的CR=27.974553
-    # eb_list=[1e-1,1e-2,1e-3,1e-4]
-    
-    test_case=config["test_case"]
-    if test_case=="pb0":
-        format="nekrs"
-        data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001" #1947154*8*8*8
-        fields=["UX","UY","UZ","P","T"]
-        eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
-    elif test_case=="jicf0":
-        format="nekrs"
-        data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000" #3240264*10*10*10
-        fields=["UX","UY","UZ","P","S00"]
-        eb_list=[1e-4,1e-5,1e-6,1e-7,1e-8]
-    elif test_case=="mixlay0":
-        format="nekrs"
-        data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/mixlay0.f00001")
-        fields=["UX","UY","P","T","S00","S01"]
-        eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
-    elif test_case=="test0":
-        format="nekrs"
-        data_path=os.path.join(project_root,"third_party/fld_pyutils/demos/data/test0.f00001")
-        fields=["UZ","T","S00","S01"]
-        eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
-    elif test_case=="tc_channel0":
-        format="nekrs"
-        data_path=os.path.join(project_root,"third_party/pySEMTools/examples/data/tc_channel0.f00001")
-        fields=["UX","UY","UZ"]
-        eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
-    elif test_case=="mfem_ex0":
-        format="mfem"
-        data_path=os.path.join(project_root,"build/mfem_build/examples/ex0examples/sol.gf")
-        mesh_path=os.path.join(project_root,"build/mfem_build/examples/ex0examples/mesh.mesh")
-        eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
-    elif test_case=="mfem_ex1":
-        format="mfem"
-        data_path=os.path.join(project_root,"build/mfem_build/examples/ex1examples/sol.gf")
-        mesh_path=os.path.join(project_root,"build/mfem_build/examples/ex1examples/refined.mesh")
-        eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
-    elif test_case=="nektar_cylinder":
-        format="nektar++"
-        data_path=os.path.join(project_root,"third_party/flow-stability-cylinder/tutorial/base/Cylinder-Base.vtu")
-        fields=["p","u","v"]
-        eb_list=[1e-2,1e-3,1e-4,1e-5,1e-6]
+def resolve_json_path(path_or_name):
+    path_or_name=os.path.expanduser(path_or_name)
+    if os.path.isabs(path_or_name) or os.path.dirname(path_or_name):
+        json_path=os.path.abspath(path_or_name)
     else:
-        raise ValueError(f"未知的test_case: {test_case}")
-    small_test_cases={"mixlay0","test0","tc_channel0","mfem_ex0","mfem_ex1","nektar_cylinder"}
-    default_method_list=small_method_list if test_case in small_test_cases else formal_method_list
-    method_list=config.get("method_list",default_method_list)
-    max_cpus_list=config.get("max_cpus_list",[128])
-    eb_mode=config.get("eb_mode",eb_mode)
-    fields=config.get("fields",fields if "fields" in locals() else None)
-    eb_list=config.get("eb_list",eb_list)
-    partition_num=config.get("partition_num")
-    elements=config.get("elements")
-    
-    # format="mfem"
-    # data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex0examples/sol.gf"
-    # mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex0examples/mesh.mesh"
-    # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
-    
-    # format="mfem"
-    # data_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex1examples/sol.gf"
-    # mesh_path="/home/x-zjian1/mrcz/build/mfem_build/examples/ex1examples/refined.mesh"
-    # eb_list=[1e-2,3.162e-3,1e-3,3.162e-4,1e-4,3.162e-5,1e-5,3.162e-6,1e-6,3.162e-7,1e-7]
-    
-    # format="nektar++"
-    # data_path="/home/x-zjian1/mrcz/c_codes/third_party/flow-stability-cylinder/tutorial/base/Cylinder-Base.vtu"
-    # eb_list=[1e-1,1e-2,1e-3,1e-4,1e-5]
-    # eb_list=[1e1,1e0,1e-1,1e-2,1e-3]
-    
-    def remove_file_if_exists(path):
-        if os.path.isfile(path):
-            os.remove(path)
-    
-    def cleanup_test_outputs(data_path,method,selected_fields=None):
-        if selected_fields is None:
-            compressed_paths=glob.glob(f"{glob.escape(data_path)}_*.{glob.escape(method)}")
-        else:
-            compressed_paths=[f"{data_path}_{field}.{method}" for field in selected_fields]
-    
-        for path in compressed_paths:
-            remove_file_if_exists(path)
-        remove_file_if_exists(f"{data_path}_header.mrcz")
-        remove_file_if_exists(f"{data_path}_element_map.mrcz")
-        remove_file_if_exists(f"{data_path}.{method}.bin")
-    
-    def remove_ansi_color(text):
-        return text.replace("\033[91m","").replace("\033[0m","")
-    
-    def parse_rate_distortion(output):
-        results={}
-        for line in output.splitlines():
-            line=remove_ansi_color(line).strip()
-            if not line.startswith("Field= "):
-                continue
-            segments=line.split(",")
-            if len(segments)!=8:
-                continue
-            field=segments[0].split("=",1)[1].strip()
-            br=float(segments[3].split("=",1)[1].strip())
-            psnr=float(segments[7].split("=",1)[1].strip().split()[0])
-            results[field]=(br,psnr)
-        return results
-    
-    def parse_field_throughput(output,task):
-        throughput={}
-        marker=f"{task} bandwidth per cpu= "
-        for line in output.splitlines():
-            line=remove_ansi_color(line).strip()
-            if not line.startswith("Field= "):
-                continue
-            segments=line.split(",")
-            if len(segments)!=2 or not segments[1].strip().startswith(marker):
-                continue
-            field=segments[0].split("=",1)[1].strip()
-            throughput[field]=float(segments[1].strip()[len(marker):].split()[0])
-        return throughput
-    
-    ######## build sperr ######## sperr的CMakeLists写的有问题，需要手动安装并链接
-    sperr_source_path="third_party/sperr"
-    sperr_build_path="build/sperr_build"
-    sperr_install_path="install/sperr_install"
+        config_filename=path_or_name if path_or_name.endswith(".json") else path_or_name+".json"
+        json_path=os.path.join(config_directory,config_filename)
+    if not os.path.isfile(json_path):
+        raise FileNotFoundError(f"找不到JSON配置: {json_path}")
+    return json_path
+
+def remove_file_if_exists(path):
+    if os.path.isfile(path):
+        os.remove(path)
+
+def cleanup_test_outputs(data_path,method,selected_fields=None):
+    if selected_fields is None:
+        compressed_paths=glob.glob(f"{glob.escape(data_path)}_*.{glob.escape(method)}")
+    else:
+        compressed_paths=[f"{data_path}_{field}.{method}" for field in selected_fields]
+    for path in compressed_paths:
+        remove_file_if_exists(path)
+    remove_file_if_exists(f"{data_path}_header.mrcz")
+    remove_file_if_exists(f"{data_path}_element_map.mrcz")
+    remove_file_if_exists(f"{data_path}.{method}.bin")
+
+def remove_ansi_color(text):
+    return text.replace("\033[91m","").replace("\033[0m","")
+
+def parse_rate_distortion(output):
+    results={}
+    for line in output.splitlines():
+        line=remove_ansi_color(line).strip()
+        if not line.startswith("Field= "):
+            continue
+        segments=line.split(",")
+        if len(segments)!=8:
+            continue
+        field=segments[0].split("=",1)[1].strip()
+        br=float(segments[3].split("=",1)[1].strip())
+        psnr=float(segments[7].split("=",1)[1].strip().split()[0])
+        results[field]=(br,psnr)
+    return results
+
+def parse_field_throughput(output,task):
+    throughput={}
+    marker=f"{task} bandwidth per cpu= "
+    for line in output.splitlines():
+        line=remove_ansi_color(line).strip()
+        if not line.startswith("Field= "):
+            continue
+        segments=line.split(",")
+        if len(segments)!=2 or not segments[1].strip().startswith(marker):
+            continue
+        field=segments[0].split("=",1)[1].strip()
+        throughput[field]=float(segments[1].strip()[len(marker):].split()[0])
+    return throughput
+
+def validate_parsed_fields(results,expected_fields,result_name,optional_fields=None):
+    optional_fields=set() if optional_fields is None else set(optional_fields)
+    missing_fields=[field for field in expected_fields if field not in results and field not in optional_fields]
+    if missing_fields:
+        raise RuntimeError(f"未能解析{result_name}: {','.join(missing_fields)}")
+
+def add_extra_parameters(command_list,extra_parameters):
+    for name,value in extra_parameters.items():
+        option=name if name.startswith("-") else "-"+name
+        if isinstance(value,bool):
+            value=str(value).lower()
+        command_list=[f"{command} {shlex.quote(option)} {shlex.quote(str(value))}" for command in command_list]
+    return command_list
+
+def prepare_tasks(json_path,task_parameters,silent_build,write_to_csv,cleanup_after_each_test):
+    required_keys=["name","data_path","format","field_list","eb_mode","eb_list","method_list","max_cpus_list"]
+    if json_path is None:
+        missing_keys=[key for key in required_keys if task_parameters[key] is None]
+        if missing_keys:
+            raise ValueError(f"没有提供JSON配置，且缺少参数: {','.join(missing_keys)}")
+        tasks=[{key:value for key,value in task_parameters.items() if value is not None}]
+    else:
+        if not os.path.isabs(json_path):
+            raise ValueError("json_path必须是绝对路径")
+        if not os.path.isfile(json_path):
+            raise FileNotFoundError(f"找不到JSON配置: {json_path}")
+        provided_task_parameters={}
+        for key,value in task_parameters.items():
+            if value is not None:
+                provided_task_parameters[key]=value
+        tasks=load_json_tasks(json_path)
+        if len(tasks)>1 and provided_task_parameters:
+            raise ValueError("多任务JSON不能使用task parameters覆盖")
+        if len(tasks)==1:
+            tasks[0].update(provided_task_parameters)
+    runtime_parameters={"silent_build":silent_build,"write_to_csv":write_to_csv,"cleanup_after_each_test":cleanup_after_each_test}
+    prepared_tasks=[]
+    for config in tasks:
+        missing_keys=[key for key in required_keys if key not in config]
+        if missing_keys:
+            raise ValueError(f"task缺少参数: {','.join(missing_keys)}")
+        if config["format"]=="mfem" and not config.get("mesh_path"):
+            raise ValueError(f"{config['name']}使用MFEM格式但没有mesh_path")
+        config={**config,**runtime_parameters}
+        if not os.path.isabs(config["data_path"]):
+            config["data_path"]=os.path.join(project_root,config["data_path"])
+        if config.get("mesh_path") is not None and not os.path.isabs(config["mesh_path"]):
+            config["mesh_path"]=os.path.join(project_root,config["mesh_path"])
+        if config.get("csv_path") is not None and not os.path.isabs(config["csv_path"]):
+            config["csv_path"]=os.path.join(project_root,config["csv_path"])
+        prepared_tasks.append(config)
+    return prepared_tasks
+
+def build_project(build_max_cpus,silent_build):
+    # SPERR的CMakeLists无法由主项目直接安装，需要单独构建和安装。
+    sperr_source_path=os.path.join(project_root,"third_party/sperr")
+    sperr_build_path=os.path.join(project_root,"build/sperr_build")
+    sperr_install_path=os.path.join(project_root,"install/sperr_install")
+    os.makedirs(sperr_build_path,exist_ok=True)
+    if not os.path.exists(os.path.join(sperr_build_path,"CMakeCache.txt")):
+        run_command(f"cmake -S \"{sperr_source_path}\" -B \"{sperr_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{sperr_install_path}\" -DBUILD_SHARED_LIBS=OFF",silent=silent_build)
+    run_command(f"cmake --build {sperr_build_path} --parallel {build_max_cpus}",silent=silent_build)
+    run_command(f"cmake --install {sperr_build_path}",silent=silent_build)
+    mfem_source_path=os.path.join(project_root,"third_party/mfem")
+    mfem_build_path=os.path.join(project_root,"build/mfem_build")
+    mfem_install_path=os.path.join(project_root,"install/mfem_install")
+    os.makedirs(mfem_build_path,exist_ok=True)
+    if not os.path.exists(os.path.join(mfem_build_path,"CMakeCache.txt")):
+        run_command(f"cmake -S \"{mfem_source_path}\" -B \"{mfem_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{mfem_install_path}\"",silent=silent_build)
+    run_command(f"cmake --build {mfem_build_path} --parallel {build_max_cpus}",silent=silent_build)
+    run_command(f"cmake --install {mfem_build_path}",silent=silent_build)
+    main_source_path=os.path.join(project_root,"c_codes")
+    main_build_path=os.path.join(project_root,"build")
+    main_install_path=os.path.join(project_root,"install")
+    os.makedirs(main_build_path,exist_ok=True)
+    run_command(f"cmake -S \"{main_source_path}\" -B \"{main_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{main_install_path}\"",silent=silent_build)
+    run_command(f"cmake --build {main_build_path} --parallel {build_max_cpus}",silent=silent_build)
+    run_command(f"cmake --install {main_build_path}",silent=silent_build)
+
+def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format=None,field_list=None,eb_mode=None,eb_list=None,
+                   method_list=None,max_cpus_list=None,partition_num=None,elements=None,extra_parameters=None,csv_path=None,
+                   build_before_test=True,build_max_cpus=None,silent_build=False,write_to_csv=True,cleanup_after_each_test=False):
+    task_parameters={"name":name,"data_path":data_path,"mesh_path":mesh_path,"format":format,"field_list":field_list,
+                     "eb_mode":eb_mode,"eb_list":eb_list,"method_list":method_list,"max_cpus_list":max_cpus_list,
+                     "partition_num":partition_num,"elements":elements,"extra_parameters":extra_parameters,"csv_path":csv_path}
+    prepared_tasks=prepare_tasks(json_path,task_parameters,silent_build,write_to_csv,cleanup_after_each_test)
     if build_before_test:
-        os.makedirs(sperr_build_path,exist_ok=True)
-        if not os.path.exists(os.path.join(sperr_build_path,"CMakeCache.txt")):
-            run_command(f"cmake -S \"{sperr_source_path}\" -B \"{sperr_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{sperr_install_path}\" \
-                        -DBUILD_SHARED_LIBS=OFF",silent=silent_build)
-        run_command(f"cmake --build {sperr_build_path} --parallel {build_max_cpus}",silent=silent_build)
-        run_command(f"cmake --install {sperr_build_path}",silent=silent_build)
-    ######## build mfem ########
-    mfem_source_path="third_party/mfem"
-    mfem_build_path="build/mfem_build"
-    mfem_install_path="install/mfem_install"
-    if build_before_test:
-        os.makedirs(mfem_build_path,exist_ok=True)
-        if not os.path.exists(os.path.join(mfem_build_path,"CMakeCache.txt")):
-            run_command(f"cmake -S \"{mfem_source_path}\" -B \"{mfem_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{mfem_install_path}\"",
-                        silent=silent_build)
-        run_command(f"cmake --build {mfem_build_path} --parallel {build_max_cpus}",silent=silent_build)
-        run_command(f"cmake --install {mfem_build_path}",silent=silent_build)
-    ######## build main ########
-    main_source_path="c_codes"
-    main_build_path="build"
-    main_install_path="install"
-    if build_before_test:
-        os.makedirs(main_build_path,exist_ok=True)
-        run_command(f"cmake -S \"{main_source_path}\" -B \"{main_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{main_install_path}\"",
-                    silent=silent_build)
-        run_command(f"cmake --build {main_build_path} --parallel {build_max_cpus}",silent=silent_build)
-        run_command(f"cmake --install {main_build_path}",silent=silent_build)
-    for method in method_list:
-        for eb in eb_list:
-            for max_cpus in max_cpus_list:
-                command_list=["./install/bin/mrcz_compress","./install/bin/mrcz_decompress"]
-                if format in ["nekrs","nektar++"]:
-                    command_list=[f"{command} -format {format} -i {data_path}" for command in command_list]
-                elif format in ["mfem"]:
-                    command_list=[f"{command} -format {format} -i {data_path} -mesh {mesh_path}" for command in command_list] # type: ignore
-                command_list=[f"{command} -M {eb_mode} {eb} -method {method}" for command in command_list]
-                command_list=[f"{command} -max-cpus {max_cpus}" for command in command_list]
-                if partition_num is not None:
-                    command_list=[f"{command} -partition-num {partition_num}" for command in command_list]
-                if elements is not None:
-                    command_list=[f"{command} -elements {elements}" for command in command_list]
-                if fields is not None:
-                    command_list=[f"{command} -fields [{','.join(fields)}]" for command in command_list] # type: ignore
-                compression_output=run_command(command_list[0])
-                decompression_output=run_command(command_list[1]) if run_decompression else ""
-                if write_to_csv:
-                    compression_throughput=parse_field_throughput(compression_output,"compression")
-                    decompression_throughput=parse_field_throughput(decompression_output,"decompression")
-                    rate_distortion=parse_rate_distortion(decompression_output)
-                    csv_method_name=method
-                    for field,(br,psnr) in rate_distortion.items():
-                        rate_distortion_path=f"{data_path}_{field}.csv"
-                        write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_BR",br)
-                        write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_PSNR",psnr)
-    
-                        throughput_path=f"{data_path}_{field}_throughput.csv"
-                        throughput_row={f"{eb_mode} EB":eb,"Max CPUs":max_cpus}
-                        if partition_num is not None:
-                            throughput_row["Partition Num"]=partition_num
-                        if field in compression_throughput:
-                            write_csv_item(throughput_path,throughput_row,
-                                f"{csv_method_name} Compression Throughput",compression_throughput[field])
-                        if field in decompression_throughput:
-                            write_csv_item(throughput_path,throughput_row,
-                                f"{csv_method_name} Decompression Throughput",decompression_throughput[field])
-                if cleanup_after_each_test:
-                    cleanup_test_outputs(data_path,method,fields)
+        build_project(get_max_cpus(8) if build_max_cpus is None else build_max_cpus,silent_build)
+    for config in prepared_tasks:
+        task_name=config["name"]
+        write_to_csv=config.get("write_to_csv",True)
+        cleanup_after_each_test=config.get("cleanup_after_each_test",False)
+        format=config["format"]
+        data_path=config["data_path"]
+        mesh_path=config.get("mesh_path")
+        fields=config["field_list"]
+        eb_mode=config["eb_mode"]
+        eb_list=config["eb_list"]
+        method_list=config["method_list"]
+        max_cpus_list=config["max_cpus_list"]
+        partition_num=config.get("partition_num")
+        elements=config.get("elements")
+        extra_parameters=config.get("extra_parameters") or {}
+        csv_path=config.get("csv_path")
+        csv_file_prefix=data_path
+        if csv_path is not None:
+            if write_to_csv:
+                os.makedirs(csv_path,exist_ok=True)
+            csv_file_prefix=os.path.join(csv_path,os.path.basename(data_path))
+
+        for method in method_list:
+            for eb in eb_list:
+                for max_cpus in max_cpus_list:
+                    command_list=[os.path.join(project_root,"install/bin/mrcz_compress"),os.path.join(project_root,"install/bin/mrcz_decompress")]
+                    if format in ["nekrs","nektar++"]:
+                        command_list=[f"{shlex.quote(command)} -format {shlex.quote(format)} -i {shlex.quote(data_path)}" for command in command_list]
+                    elif format=="mfem":
+                        command_list=[f"{shlex.quote(command)} -format {shlex.quote(format)} -i {shlex.quote(data_path)} -mesh {shlex.quote(mesh_path)}" for command in command_list] # type: ignore
+                    command_list=[f"{command} -M {shlex.quote(eb_mode)} {eb} -method {shlex.quote(method)}" for command in command_list]
+                    command_list=[f"{command} -max-cpus {max_cpus}" for command in command_list]
+                    if partition_num is not None:
+                        command_list=[f"{command} -partition-num {partition_num}" for command in command_list]
+                    if elements is not None:
+                        command_list=[f"{command} -elements {shlex.quote(str(elements))}" for command in command_list]
+                    if fields is not None:
+                        fields_argument=shlex.quote("["+",".join(fields)+"]")
+                        command_list=[f"{command} -fields {fields_argument}" for command in command_list] # type: ignore
+                    command_list=add_extra_parameters(command_list,extra_parameters)
+                    compression_output=run_command(command_list[0])
+                    decompression_output=run_command(command_list[1])
+                    if write_to_csv:
+                        compression_throughput=parse_field_throughput(compression_output,"compression")
+                        decompression_throughput=parse_field_throughput(decompression_output,"decompression")
+                        rate_distortion=parse_rate_distortion(decompression_output)
+                        constant_fields={field for field in fields if f"Field {field} is compressed as constant:" in compression_output}
+                        result_context=f"{task_name}/{method}/EB={eb}/max_cpus={max_cpus}"
+                        validate_parsed_fields(compression_throughput,fields,f"{result_context}的compression throughput",constant_fields)
+                        validate_parsed_fields(decompression_throughput,fields,f"{result_context}的decompression throughput",constant_fields)
+                        validate_parsed_fields(rate_distortion,fields,f"{result_context}的rate-distortion results")
+                        csv_method_name=method
+                        for field,(br,psnr) in rate_distortion.items():
+                            rate_distortion_path=f"{csv_file_prefix}_{field}.csv"
+                            write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_BR",br)
+                            write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_PSNR",psnr)
+
+                            throughput_path=f"{csv_file_prefix}_{field}_throughput.csv"
+                            throughput_row={f"{eb_mode} EB":eb,"Max CPUs":max_cpus}
+                            if partition_num is not None:
+                                throughput_row["Partition Num"]=partition_num
+                            if field in compression_throughput:
+                                write_csv_item(throughput_path,throughput_row,
+                                    f"{csv_method_name} Compression Throughput",compression_throughput[field])
+                            if field in decompression_throughput:
+                                write_csv_item(throughput_path,throughput_row,
+                                    f"{csv_method_name} Decompression Throughput",decompression_throughput[field])
+                    if cleanup_after_each_test:
+                        cleanup_test_outputs(data_path,method,fields)
 
 if __name__=="__main__":
-    main()
+    parser=argparse.ArgumentParser(description="运行configs目录中的MRCZ实验配置")
+    parser.add_argument("json",help="configs中的JSON配置名称，或JSON文件路径")
+    arguments=parser.parse_args()
+    try:
+        json_path=resolve_json_path(arguments.json)
+    except FileNotFoundError as error:
+        parser.error(str(error))
+    run_experiment(json_path=json_path)

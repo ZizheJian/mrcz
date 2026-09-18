@@ -151,53 +151,12 @@ namespace mrcz
                     }
                 }
 
-                uint64_t zero_error_num=0,error_ge_50_num=0,error_ge_90_num=0,error_ge_99_num=0,error_ge_999_num=0,error_ge_9999_num=0,error_ge_100_num=0,error_gt_10001_num=0;
-                constexpr uint32_t error_histogram_bin_num=10000;
-                vector<vector<uint64_t>> error_histograms;
-                if(params.if_analyze_error_distribution)
-                    error_histograms.assign(params.max_cpus,vector<uint64_t>(error_histogram_bin_num+1,0));
-                #pragma omp parallel for reduction(max:max_err) reduction(+:mse,zero_error_num,error_ge_50_num,error_ge_90_num,error_ge_99_num,error_ge_999_num,error_ge_9999_num,error_ge_100_num,error_gt_10001_num) schedule(static) num_threads(params.max_cpus)
+                #pragma omp parallel for reduction(max:max_err) reduction(+:mse) schedule(static) num_threads(params.max_cpus)
                 for (uint64_t i=0;i<params.data.size();i++)
                 {
                     T error=fabs(params.data[i]-params.decompressed_data[i]);
                     max_err=max(max_err,static_cast<double>(error));
                     mse+=error*error;
-                    if(params.if_analyze_error_distribution)
-                    {
-                        double normalized_error=static_cast<double>(error)/params.abs_eb[field];
-                        zero_error_num+=error==0;
-                        error_ge_50_num+=normalized_error>=0.5;
-                        error_ge_90_num+=normalized_error>=0.9;
-                        error_ge_99_num+=normalized_error>=0.99;
-                        error_ge_999_num+=normalized_error>=0.999;
-                        error_ge_9999_num+=normalized_error>=0.9999;
-                        error_ge_100_num+=normalized_error>=1;
-                        error_gt_10001_num+=normalized_error>1.0001;
-                        uint32_t bin=normalized_error>=1?error_histogram_bin_num:static_cast<uint32_t>(normalized_error*error_histogram_bin_num);
-                        error_histograms[omp_get_thread_num()][bin]++;
-                    }
-                }
-                if(params.if_analyze_error_distribution)
-                {
-                    vector<uint64_t> error_histogram(error_histogram_bin_num+1,0);
-                    for(auto &thread_histogram:error_histograms)
-                        for(uint32_t bin=0;bin<=error_histogram_bin_num;bin++)
-                            error_histogram[bin]+=thread_histogram[bin];
-                    auto quantile_upper_bound=[&](double quantile)
-                    {
-                        uint64_t target=max(uint64_t(1),static_cast<uint64_t>(ceil(quantile*params.data.size()))),cumulative=0;
-                        for(uint32_t bin=0;bin<=error_histogram_bin_num;bin++)
-                        {
-                            cumulative+=error_histogram[bin];
-                            if(cumulative>=target)
-                                return bin==error_histogram_bin_num?max_err/params.abs_eb[field]:static_cast<double>(bin+1)/error_histogram_bin_num;
-                        }
-                        return max_err/params.abs_eb[field];
-                    };
-                    double value_num=params.data.size();
-                    printf("Error distribution: field=%s, value_num=%lu, zero=%lu (%.9e), p50_upper=%.7f, p90_upper=%.7f, p99_upper=%.7f, p999_upper=%.7f, p9999_upper=%.7f, p99999_upper=%.7f, ge_0.5=%lu (%.9e), ge_0.9=%lu (%.9e), ge_0.99=%lu (%.9e), ge_0.999=%lu (%.9e), ge_0.9999=%lu (%.9e), ge_1=%lu (%.9e), gt_1.0001=%lu (%.9e)\n",
-                        field.c_str(),params.data.size(),zero_error_num,zero_error_num/value_num,quantile_upper_bound(0.5),quantile_upper_bound(0.9),quantile_upper_bound(0.99),quantile_upper_bound(0.999),quantile_upper_bound(0.9999),quantile_upper_bound(0.99999),
-                        error_ge_50_num,error_ge_50_num/value_num,error_ge_90_num,error_ge_90_num/value_num,error_ge_99_num,error_ge_99_num/value_num,error_ge_999_num,error_ge_999_num/value_num,error_ge_9999_num,error_ge_9999_num/value_num,error_ge_100_num,error_ge_100_num/value_num,error_gt_10001_num,error_gt_10001_num/value_num);
                 }
                 if (max_err>params.abs_eb[field]*1.1)
                 {
@@ -309,7 +268,12 @@ namespace mrcz
                         backend_params.template decompress_fdwz<false,false>(field);
                 }
                 else if (backend_params.method=="FDWZ-ablation")
-                    backend_params.template decompress_fdwz<false,true>(field);
+                {
+                    if(backend_params.if_measure_phase_time)
+                        backend_params.template decompress_fdwz<true,true>(field);
+                    else
+                        backend_params.template decompress_fdwz<false,true>(field);
+                }
                 else
                     throw runtime_error("未知的core解压方法: "+backend_params.method);
             };

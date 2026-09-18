@@ -58,6 +58,13 @@ Quantization-symbol distributions differ across FDWZ prediction levels. Earlier 
 
 Encoding symbols from all levels with one Huffman tree mixes these distributions and yields code lengths that are poorly matched to individual groups. FDWZ therefore aggregates corresponding symbols across elements and encodes them using at most five Huffman trees: one for corner symbols, separate trees for the earliest prediction levels, and one for any remaining levels. This cap retains most of the benefit of distribution-specific coding without excessive codebook overhead. The encoded streams are finally compressed together using Zstandard.
 
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=\linewidth]{figs/5/fdwz-tree-ablation.pdf}
+    \caption{Impact of multi-tree Huffman encoding on the $P$ field of pb0. (b) Rate--distortion performance using a single Huffman tree and up to five Huffman trees. Across the five error bounds, multi-tree encoding improves the compression ratio by 26.5\% on average.}
+    \label{fig:fdwz-tree-ablation}
+\end{figure}
+
 \subsection{Comparison of Prediction Locality}\label{sec:FDWZ:prediction-locality}\label{sec:SZ3-HOHS:element_dimension}\label{sec:SZ3-HOHS:cross_element}
 
 \begin{figure}[htb]

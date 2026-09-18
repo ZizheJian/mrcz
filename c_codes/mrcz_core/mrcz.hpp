@@ -62,7 +62,6 @@ namespace mrcz
             string grid_assumption="GLL"; // GLL, chebyshev, uniform
             bool if_constant_compression=true;
             bool if_measure_phase_time=false;
-            bool if_analyze_error_distribution=false;
 
             // MRCZ优化开关
             string transform="DChT"; // DLT, DChT, DST, DCT
@@ -72,10 +71,8 @@ namespace mrcz
 
             // FDWZ优化开关
             bool if_max_huffman_tree=true; //仅FDWZ-ablation读取；不写入metadata，解压时必须与压缩一致
-            string fdwz_plan="sample"; //仅FDWZ-ablation读取；sample或XYZ/XZY/YXZ/YZX/ZXY/ZYX-linear/cubic
-            uint64_t fdwz_sample_interval=128; //0使用旧自动样本数；正整数用于确定近似采样间隔
+            uint64_t fdwz_sample_interval=128; //抽样element的近似间隔，必须为正整数
             uint64_t fdwz_min_sample_num=32; //使用采样间隔时每个partition的最少均匀样本数
-            string fdwz_selector="linear-proxy"; //linear-only使用最佳linear；linear-proxy使用同方向cubic；cubic-exhaustive比较6个cubic
 
             string format;
             string data_path;
@@ -144,10 +141,10 @@ namespace mrcz
             void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
 
             // 通用量化
-            void quantize_and_overwrite(T &x,int64_t &y,T eb,T neg_2_eb);
-            void quantize_and_overwrite_array(T *data,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
-            void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T neg_2_eb);
-            void quantize_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T neg_2_eb);
+            void quantize_and_overwrite(T &x,int64_t &y,T eb,T inv_2_eb);
+            void quantize_and_overwrite_array(T *data,int64_t *qb,uint32_t size,T eb,T inv_2_eb);
+            void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T inv_2_eb);
+            void quantize_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T inv_2_eb);
 
             void default_init()
             {
@@ -226,14 +223,11 @@ namespace mrcz
             {
                 if_constant_compression=other.if_constant_compression;
                 if_measure_phase_time=other.if_measure_phase_time;
-                if_analyze_error_distribution=other.if_analyze_error_distribution;
                 if_coefficient_transpose=other.if_coefficient_transpose;
                 if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
                 if_max_huffman_tree=other.if_max_huffman_tree;
-                fdwz_plan=other.fdwz_plan;
                 fdwz_sample_interval=other.fdwz_sample_interval;
                 fdwz_min_sample_num=other.fdwz_min_sample_num;
-                fdwz_selector=other.fdwz_selector;
                 grid_assumption=other.grid_assumption;
                 transform=other.transform;
                 

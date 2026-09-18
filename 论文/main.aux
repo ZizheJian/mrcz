@@ -66,12 +66,14 @@
 \newlabel{tab:cubic-interpolation}{{I}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-tree Huffman Encoding}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:multi-tree}{{\mbox  {V-C}}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Impact of multi-tree Huffman encoding on the $P$ field of pb0. (b) Rate--distortion performance using a single Huffman tree and up to five Huffman trees. Across the five error bounds, multi-tree encoding improves the compression ratio by 26.5\% on average.\relax }}{5}\protected@file@percent }
+\newlabel{fig:fdwz-tree-ablation}{{5}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Comparison of Prediction Locality}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:prediction-locality}{{\mbox  {V-D}}{5}}
 \newlabel{sec:SZ3-HOHS:element_dimension}{{\mbox  {V-D}}{5}}
 \newlabel{sec:SZ3-HOHS:cross_element}{{\mbox  {V-D}}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Illustration of the Point Configurations Used in Cross-Element and Intra-Element Prediction\relax }}{5}\protected@file@percent }
-\newlabel{fig:cross-element}{{5}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Illustration of the Point Configurations Used in Cross-Element and Intra-Element Prediction\relax }}{5}\protected@file@percent }
+\newlabel{fig:cross-element}{{6}{5}}
 \citation{marin2016spectral}
 \citation{fischer2022nekrs}
 \citation{marin2016spectral}
@@ -80,19 +82,17 @@
 \@writefile{toc}{\contentsline {section}{\numberline {VI}Representation-Based Compression: MRCZ}{6}\protected@file@percent }
 \newlabel{sec:mrcz}{{VI}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Revisiting DLT for HOHS Data Compression}{6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Distributions of Original Data and Coefficients\relax }}{6}\protected@file@percent }
-\newlabel{fig:dlt_distributions}{{6}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Distributions of Original Data and Coefficients\relax }}{6}\protected@file@percent }
+\newlabel{fig:dlt_distributions}{{7}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}Overview of MRCZ}{6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Diagram of MRCZ Compression.\relax }}{6}\protected@file@percent }
-\newlabel{fig:mrcz_diagram}{{7}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Transform and Error Bound Selection}{6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Diagram of MRCZ Compression.\relax }}{6}\protected@file@percent }
+\newlabel{fig:mrcz_diagram}{{8}{6}}
 \citation{liu2024high}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Rate–Distortion Performance and Bit-Rate Breakdown of Different Transforms Across Error-Bound Configurations\relax }}{7}\protected@file@percent }
-\newlabel{fig:transform}{{8}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Transform and Error Bound Selection}{7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Rate–Distortion Performance and Bit-Rate Breakdown of Different Transforms Across Error-Bound Configurations\relax }}{7}\protected@file@percent }
+\newlabel{fig:transform}{{9}{7}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-D}}Improving Local Regularity for Lossless Encoding}{7}\protected@file@percent }
 \newlabel{sec:mrcz:transpose}{{\mbox  {VI-D}}{7}}
-\@writefile{toc}{\contentsline {section}{\numberline {VII}Performance Evaluation}{7}\protected@file@percent }
-\newlabel{sec:performance evaluation}{{VII}{7}}
 \citation{fischer2022nekrs}
 \citation{kolev2010modular}
 \citation{moxey2020nektar++}
@@ -100,6 +100,8 @@
 \citation{liang2022sz3,zhao2021optimizing}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Performance Evaluation}{8}\protected@file@percent }
+\newlabel{sec:performance evaluation}{{VII}{8}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}Experimental Setup}{8}\protected@file@percent }
 \newlabel{sec:performance evaluation:setup}{{\mbox  {VII-A}}{8}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}1}Evaluation Platform}{8}\protected@file@percent }
@@ -112,22 +114,22 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}End-to-End Workflow Evaluation}{9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Parallel Throughput}{9}\protected@file@percent }
 \newlabel{sec:parallel-throughput}{{\mbox  {VII-D}}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{9}\protected@file@percent }
-\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{9}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Evaluation of PSNR rate distortion curves between SZ3-HOHS, MRCZ, and baseline compressors.\relax }}{10}\protected@file@percent }
-\newlabel{fig:rate-distortion}{{9}{10}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces End-to-end Workflow Execution Time via Globus\relax }}{10}\protected@file@percent }
-\newlabel{fig:transfer}{{10}{10}}
-\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{10}\protected@file@percent }
-\newlabel{sec:conclusion}{{VIII}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Evaluation of PSNR rate distortion curves between SZ3-HOHS, MRCZ, and baseline compressors.\relax }}{10}\protected@file@percent }
+\newlabel{fig:rate-distortion}{{10}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces End-to-end Workflow Execution Time via Globus\relax }}{10}\protected@file@percent }
+\newlabel{fig:transfer}{{11}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{10}\protected@file@percent }
+\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{10}}
 \@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Compression ratios of two leading fields 4UX and 5P across all evaluated lossy compressors. The SZ3-0 and SZ2-0 are excluded due to sacrificed performance. The \textbf  {highest} and \underline  {second-highest} compression ratios are highlighted.\relax }}{11}\protected@file@percent }
 \newlabel{tab:compression-ratios}{{IV}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Parallel Execution Throughput (MB/s)\relax }}{11}\protected@file@percent }
-\newlabel{fig:throughput}{{11}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Parallel Execution Throughput (MB/s)\relax }}{11}\protected@file@percent }
+\newlabel{fig:throughput}{{12}{11}}
 \@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Error bounds at a compression ratio of $\sim $26.07.\relax }}{11}\protected@file@percent }
 \newlabel{tab:error-bound-visualization}{{V}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Difference visualization of a slice of the Temperature field from data 4T. The compression ratios for all compressors are unified as $\sim $26.07 for a fair comparison.\relax }}{11}\protected@file@percent }
-\newlabel{fig:distortion}{{12}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{11}\protected@file@percent }
+\newlabel{sec:conclusion}{{VIII}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Difference visualization of a slice of the Temperature field from data 4T. The compression ratios for all compressors are unified as $\sim $26.07 for a fair comparison.\relax }}{11}\protected@file@percent }
+\newlabel{fig:distortion}{{13}{11}}
 \bibstyle{IEEEtran}
 \bibdata{reference}
 \bibcite{fischer2022nekrs}{1}

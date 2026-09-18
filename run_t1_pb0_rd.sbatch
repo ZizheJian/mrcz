@@ -20,7 +20,6 @@ conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
 export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
-unset MRCZ_PROFILE_HUFFMAN
 export MRCZ_T1_DATASET=pb0
 export MRCZ_T1_MAX_CPUS=64
 export MRCZ_T1_BUILD_BEFORE_TEST=false

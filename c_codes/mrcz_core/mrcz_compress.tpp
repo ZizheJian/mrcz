@@ -20,7 +20,7 @@ namespace mrcz
         T abs_eb=this->abs_eb[field];
         T coeff_eb=abs_eb*coeff_eb_scale;
         T neg_2_coeff_eb=1/(2*coeff_eb);
-        T neg_2_eb=1/(2*abs_eb);
+        T inv_2_eb=1/(2*abs_eb);
         vector<double> forward_time(measure_phase_time?partitions.size():0,0),coeff_quant_time(measure_phase_time?partitions.size():0,0),inverse_time(measure_phase_time?partitions.size():0,0),residual_quant_time(measure_phase_time?partitions.size():0,0),coeff_huffman_time(measure_phase_time?partitions.size():0,0),residual_huffman_time(measure_phase_time?partitions.size():0,0),zstd_time(measure_phase_time?partitions.size():0,0);
         vector<int64_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
         vector<uint64_t> qb_capacity_by_thread(max_cpus,0);
@@ -63,7 +63,7 @@ namespace mrcz
                 inverse_transform(temp_element1,temp_element2,n0,n1,n2,n12,n012,neg_L0,neg_L1,neg_L2);
                 if constexpr(measure_phase_time) inverse_time[block_id]+=omp_get_wtime()-phase_start_time;
                 if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
-                quantize_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,neg_2_eb);
+                quantize_array(temp_element2.data(),element,element_err_qb,n012,abs_eb,inv_2_eb);
                 if constexpr(measure_phase_time) residual_quant_time[block_id]+=omp_get_wtime()-phase_start_time;
             }
             // 无损压缩

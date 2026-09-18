@@ -16,7 +16,6 @@ conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
 export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
-unset MRCZ_PROFILE_HUFFMAN
 export MRCZ_T1_BUILD_BEFORE_TEST=false
 export MRCZ_T1_METHODS=MRCZ,FDWZ,SZ3-4D,SZ2-3D-fused,QoZ-4D,ZFP-3D-fused,SPERR-2D
 export MRCZ_T1_CLEANUP_AFTER_EACH_TEST=false

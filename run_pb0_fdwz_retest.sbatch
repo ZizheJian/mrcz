@@ -20,5 +20,4 @@ conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
 export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
-unset MRCZ_PROFILE_HUFFMAN
 srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores python3 -u py_funcs/benchmark_fdwz_selector.py --dataset pb0 --fields P --ebs 1e-4,1e-5 --max-cpus 64 --repeats 3 --sample-interval 128 --strategies linear-proxy,SZ3-4D --output results/RD/pb0_fdwz_retest_clean_20260905.csv

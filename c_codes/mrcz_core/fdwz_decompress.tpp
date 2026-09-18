@@ -1,15 +1,14 @@
 #pragma once
 
-
 #include "mrcz.hpp"
-#include "fdwz_compress.tpp"
+#include "fdwz_common.hpp"
 
 namespace mrcz::detail
 {
     template<bool measure_phase_time,typename T,typename QB>
     void fdwz_decompress_block(mrcz::param_class<T> &params,uint64_t block_id,uint32_t n012,uint32_t corner_num,uint32_t residual_num,vector<uint32_t> &corner_positions,
         vector<fdwz_prediction_stencil<T>> &prediction_stencils,vector<uint32_t> &residual_group_offsets,vector<uint32_t> &residual_group_ids,vector<uint32_t> &residual_group_local_ids,
-        uint32_t huffman_tree_num,T abs_eb,const unsigned char *huffman_bs,const unsigned char *huffman_bs_end,bool has_unpredictable,vector<double> &huffman_time,vector<double> &prediction_reconstruction_time)
+        uint32_t huffman_tree_num,T abs_eb,const unsigned char *huffman_bs,const unsigned char *huffman_bs_end,vector<double> &huffman_time,vector<double> &prediction_reconstruction_time)
     {
         auto &block=params.partitions[block_id];
         auto &decompressed_data=params.decompressed_data;
@@ -55,15 +54,16 @@ namespace mrcz::detail
             phase_start_time=omp_get_wtime();
         auto recover_value=[&](T prediction,QB qb)->T
         {
-            if(has_unpredictable and qb==numeric_limits<int32_t>::min())
-            {
-                if(unpredictable_values+sizeof(T)>huffman_bs_end)
-                    throw runtime_error("FDWZ unpredictable原值数量不足");
-                T value;
-                memcpy(&value,unpredictable_values,sizeof(T));
-                unpredictable_values+=sizeof(T);
-                return value;
-            }
+            if constexpr(is_same_v<QB,int32_t>)
+                if(qb==numeric_limits<int32_t>::min())
+                {
+                    if(unpredictable_values+sizeof(T)>huffman_bs_end)
+                        throw runtime_error("FDWZ unpredictable原值数量不足");
+                    T value;
+                    memcpy(&value,unpredictable_values,sizeof(T));
+                    unpredictable_values+=sizeof(T);
+                    return value;
+                }
             return prediction-2*abs_eb*qb;
         };
         for(uint64_t i=begin_index;i<end_index;i++)
@@ -128,7 +128,7 @@ namespace mrcz::detail
                 }
             }
         }
-        if(has_unpredictable and unpredictable_values!=huffman_bs_end)
+        if(unpredictable_values!=huffman_bs_end)
             throw runtime_error("FDWZ unpredictable原值数量过多");
         if constexpr(measure_phase_time)
             prediction_reconstruction_time[block_id]=omp_get_wtime()-phase_start_time;
@@ -148,7 +148,6 @@ namespace mrcz::detail
         uint32_t n0=header.c_element_shape[0];
         uint32_t n1=header.c_element_shape[1];
         uint32_t n2=header.c_element_shape[2];
-        uint32_t n12=n1*n2;
         uint32_t n012=n0*n1*n2;
         uint32_t corner_num=1;
         for (uint32_t dim=0;dim<3;dim++)
@@ -160,54 +159,11 @@ namespace mrcz::detail
         // 与其他backend一致，输出数组分配不计时；总解压时间包含hierarchy、plan生成、无损解压和预测重构。
         double start_time=omp_get_wtime();
 
-        // 解压端根据坐标和shape确定性地重建全部候选plan，bitstream只需保存每个partition选择的plan id。
-        vector<vector<uint32_t>> left_indices0,right_indices0,mid_indices0,compressed_indices0;
-        vector<vector<uint32_t>> left_indices1,right_indices1,mid_indices1,compressed_indices1;
-        vector<vector<uint32_t>> left_indices2,right_indices2,mid_indices2,compressed_indices2;
-        left_indices0.push_back({0});       left_indices1.push_back({0});       left_indices2.push_back({0});
-        right_indices0.push_back({n0-1});   right_indices1.push_back({n1-1});   right_indices2.push_back({n2-1});
-        if (n0==1)
-            compressed_indices0.push_back({0});
-        else
-        {
-            compressed_indices0.push_back({0,n0-1});
-            fdwz_generate_hierarchy(left_indices0,right_indices0,mid_indices0,compressed_indices0,x0);
-        }
-        if (n1==1)
-            compressed_indices1.push_back({0});
-        else
-        {
-            compressed_indices1.push_back({0,n1-1});
-            fdwz_generate_hierarchy(left_indices1,right_indices1,mid_indices1,compressed_indices1,x1);
-        }
-        if (n2==1)
-            compressed_indices2.push_back({0});
-        else
-        {
-            compressed_indices2.push_back({0,n2-1});
-            fdwz_generate_hierarchy(left_indices2,right_indices2,mid_indices2,compressed_indices2,x2);
-        }
-        uint32_t max_level=max(max(mid_indices0.size(),mid_indices1.size()),mid_indices2.size());
-        vector<uint32_t> corner_positions=fdwz_generate_corner_positions(n0,n1,n2);
-        vector<fdwz_prediction_plan<T>> sampled_plans;
-        auto all_orders=fdwz_all_dimension_orders();
-        for (uint32_t cubic_id=0;cubic_id<2;cubic_id++)
-        {
-            bool use_cubic=cubic_id==1;
-            auto interpolation_stencils0=fdwz_generate_interpolation_stencils(left_indices0,right_indices0,mid_indices0,compressed_indices0,x0,use_cubic);
-            auto interpolation_stencils1=fdwz_generate_interpolation_stencils(left_indices1,right_indices1,mid_indices1,compressed_indices1,x1,use_cubic);
-            auto interpolation_stencils2=fdwz_generate_interpolation_stencils(left_indices2,right_indices2,mid_indices2,compressed_indices2,x2,use_cubic);
-            for (auto &order:all_orders)
-            {
-                fdwz_prediction_plan<T> plan;
-                plan.stencils=fdwz_generate_prediction_stencils(n0,n1,n2,n12,max_level,mid_indices0,compressed_indices0,interpolation_stencils0,
-                    mid_indices1,compressed_indices1,interpolation_stencils1,mid_indices2,compressed_indices2,interpolation_stencils2,plan.level_offsets,order);
-                if(!sampled_plans.empty() and plan.level_offsets!=sampled_plans[0].level_offsets)
-                    throw runtime_error("FDWZ采样配置的预测层结构不一致");
-                sampled_plans.push_back(move(plan));
-            }
-        }
-        auto &prediction_level_offsets=sampled_plans[0].level_offsets;
+        // 解压端只重建正式预测使用的六种cubic plans，linear proxy只在压缩端选择维度顺序时使用。
+        auto plan_set=fdwz_build_plan_set(n0,n1,n2,x0,x1,x2,false);
+        auto &corner_positions=plan_set.corner_positions;
+        auto &cubic_plans=plan_set.cubic_plans;
+        auto &prediction_level_offsets=cubic_plans[0].level_offsets;
         if (huffman_tree_num==0)
             huffman_tree_num=min<uint32_t>(5,prediction_level_offsets.size());
         if (huffman_tree_num<1 or huffman_tree_num>5)
@@ -248,15 +204,15 @@ namespace mrcz::detail
                 throw runtime_error("FDWZ采样配置的bitstream过短");
             unsigned char plan_metadata=*huffman_bs++;
             bool use_int32_qb=(plan_metadata&0x80)!=0;
-            bool has_unpredictable=(plan_metadata&0x40)!=0;
-            uint32_t selected_plan_id=plan_metadata&(has_unpredictable?0x3f:0x7f);
-            if(selected_plan_id>=sampled_plans.size())
+            // bit 6是旧格式的has_unpredictable标志；新格式不再写入，解压时忽略它以保持兼容。
+            uint32_t selected_plan_id=plan_metadata&0x3f;
+            if(selected_plan_id<6 or selected_plan_id>=6+cubic_plans.size())
                 throw runtime_error("FDWZ采样配置metadata无效");
-            auto &prediction_stencils=sampled_plans[selected_plan_id].stencils;
+            auto &prediction_stencils=cubic_plans[selected_plan_id-6].stencils;
             if(use_int32_qb)
-                fdwz_decompress_block<measure_phase_time,T,int32_t>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,residual_group_ids,residual_group_local_ids,huffman_tree_num,abs_eb,huffman_bs,huffman_bs_vec.data()+huffman_bs_len,has_unpredictable,huffman_time,prediction_reconstruction_time);
+                fdwz_decompress_block<measure_phase_time,T,int32_t>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,residual_group_ids,residual_group_local_ids,huffman_tree_num,abs_eb,huffman_bs,huffman_bs_vec.data()+huffman_bs_len,huffman_time,prediction_reconstruction_time);
             else
-                fdwz_decompress_block<measure_phase_time,T,int64_t>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,residual_group_ids,residual_group_local_ids,huffman_tree_num,abs_eb,huffman_bs,huffman_bs_vec.data()+huffman_bs_len,false,huffman_time,prediction_reconstruction_time);
+                fdwz_decompress_block<measure_phase_time,T,int64_t>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,residual_group_ids,residual_group_local_ids,huffman_tree_num,abs_eb,huffman_bs,huffman_bs_vec.data()+huffman_bs_len,huffman_time,prediction_reconstruction_time);
         }
         double end_time=omp_get_wtime();
         if constexpr(measure_phase_time)
