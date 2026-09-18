@@ -302,7 +302,7 @@ namespace mrcz::detail
         return numeric_limits<int32_t>::min();
     }
 
-    // 相对EB和stencil权重可以在field级证明全部残差QB安全；角点仍逐个检查其相对零的绝对QB。
+    // 根据field值域、ABS EB和全部候选stencil权重估计预测误差QB上界；无法证明int32安全时改为逐点检查。角点相对零量化，因此始终逐点检查。
     template<typename T>
     bool fdwz_residual_qb_range_is_safe(T data_min,T data_max,T abs_eb,vector<fdwz_prediction_plan<T>> &plans)
     {

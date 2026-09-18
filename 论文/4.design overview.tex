@@ -1,0 +1,17 @@
+\section{Parallel Execution and Element-local Design}\label{sec:design overview}
+
+This section describes the partitioning and parallelization strategy shared by all compressors evaluated in this work and motivates the element-local design of our two new compressors, FDWZ and MRCZ.
+
+\subsection{Partitioned Parallel Execution}
+
+All evaluated compressors are executed through a common partitioned processing layer. Before invoking a compressor, this layer divides each field into contiguous partitions of elements. An OpenMP thread processes each partition by invoking FDWZ or MRCZ, or by calling a baseline compressor through its API. The returned partition bitstreams are then concatenated to form the compressed field.
+
+\subsection{Element-local Design of FDWZ and MRCZ}
+
+FDWZ and MRCZ both adopt an element-local design for their main modeling steps. This choice is motivated by the following considerations.
+
+\begin{enumerate}
+\item \textit{Cross-element Prediction}: Prediction across elements can follow either the stored element order or the physical mesh connectivity. The former may expose statistical continuity and is used by some of the baselines evaluated in Section~\ref{sec:performance evaluation}. However, Section~\ref{sec:FDWZ:prediction-locality} shows that neither approach provides a consistent prediction advantage over element-local interpolation for FDWZ.
+\item \textit{Irregular Connectivity}: Accessing physically adjacent elements requires identifying their shared faces and aligning their local coordinate systems. This process is complex and time-consuming.
+\item \textit{Transform Locality}: The transform used by MRCZ operates naturally on the tensor-product arrangement within each element. This arrangement is not preserved across element boundaries, making an element-local transform the natural design.
+\end{enumerate}

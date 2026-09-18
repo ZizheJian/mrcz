@@ -1,0 +1,203 @@
+% VLDB-Template enhances the ACM master template, acmart.cls v2.19 (2026/06/27):
+% https://www.acm.org/publications/proceedings-template
+% The ACM Latex guide provides further information about the ACM template
+%
+% This bundle pins acmart.cls v2.19 (rather than relying on whatever version
+% ships with an author's local TeX install or Overleaf project) to guarantee
+% consistent formatting across all PVLDB submissions.
+
+\documentclass[sigconf, nonacm]{acmart}
+
+%%% do not modify the following VLDB block %%
+%%% VLDB block start %%%
+\usepackage{pvldb}% VLDB/PVLDB formatting overrides, see pvldb.sty for details.
+                      % Do not remove -- required for consistent proceedings
+                      % formatting across all VLDB submissions.
+%%% VLDB block end %%%
+
+\usepackage{subcaption}
+
+%% The following must be set for each paper (values below are placeholders).
+%% Everything else (volume/issue/year defaults, the PVLDB Reference Format
+%% block, license footer, and Artifact Availability block) is handled by
+%% pvldb.sty -- see that file if you need to change shared defaults.
+\renewcommand\vldbdoi{XX.XX/XXX.XX}
+\renewcommand\vldbpages{XXX-XXX}
+% leave empty if no availability url should be set
+\renewcommand\vldbavailabilityurl{https://github.com/ZizheJian/mrcz.git} 
+
+\begin{document}
+\title{Managing High-Order Hybrid-Structured Simulation Data with Error-Bounded Lossy Compression}
+
+%%
+%% The "author" command and its associated commands are used to define the authors and their affiliations.
+%1
+\author{Zizhe Jian}
+\affiliation{%
+  \institution{University of California, Riverside}
+  \city{Riverside}
+  \state{California}
+  \country{United States}
+}
+\email{zjian106@ucr.edu}
+%2
+\author{Yafan Huang}
+\affiliation{%
+  \institution{University of Iowa}
+  \city{Iowa City}
+  \state{Iowa}
+  \country{United States}
+}
+\email{yafan-huang@uiowa.edu}
+%3
+\author{Xuan Wu}
+\affiliation{%
+  \institution{Oregon State University}
+  \city{Corvallis}
+  \state{Oregon}
+  \country{United States}
+}
+\email{wuxuan@oregonstate.edu}
+%4
+\author{Sheng Di}
+\affiliation{%
+  \institution{Argonne National Laboratory}
+  \city{Lemont}
+  \state{Illinois}
+  \country{United States}
+}
+\email{sdi1@anl.gov}
+%6
+\author{Guanpeng Li}
+\affiliation{%
+  \institution{University of Florida}
+  \city{Gainesville}
+  \state{Florida}
+  \country{United States}
+}
+\email{liguanpeng@ufl.edu}
+%7
+\author{Hanqi Guo}
+\affiliation{%
+  \institution{Ohio State University}
+  \city{Columbus}
+  \state{Ohio}
+  \country{United States}
+}
+\email{guo.2154@osu.edu}
+%8
+\author{Haomin Yuan}
+\affiliation{%
+  \institution{Argonne National Laboratory}
+  \city{Lemont}
+  \state{Illinois}
+  \country{United States}
+}
+\email{hyuan@anl.gov}
+%9
+\author{Viral Sudip Shah}
+\affiliation{%
+  \institution{University of Illinois at Urbana-Champaign}
+  \city{Champaign}
+  \state{Illinois}
+  \country{United States}
+}
+\email{viralss2@illinois.edu}
+%10
+\author{Pinaki Pal}
+\affiliation{%
+  \institution{Argonne National Laboratory}
+  \city{Lemont}
+  \state{Illinois}
+  \country{United States}
+}
+\email{pal@anl.gov}
+%11
+\author{Ramesh Balakrishnan}
+\affiliation{%
+  \institution{Argonne National Laboratory}
+  \city{Lemont}
+  \state{Illinois}
+  \country{United States}
+}
+\email{bramesh@anl.gov}
+%12
+\author{Robert Underwood}
+\affiliation{%
+  \institution{Argonne National Laboratory}
+  \city{Lemont}
+  \state{Illinois}
+  \country{United States}
+}
+\email{runderwood@anl.gov}
+%13
+\author{Huangliang Dai}
+\affiliation{%
+  \institution{University of California, Riverside}
+  \city{Riverside}
+  \state{California}
+  \country{United States}
+}
+\email{hdai022@ucr.edu}
+%14
+\author{Shixun Wu}
+\affiliation{%
+  \institution{University of California, Riverside}
+  \city{Riverside}
+  \state{California}
+  \country{United States}
+}
+\email{swu264@ucr.edu}
+%15
+\author{Zizhong Chen}
+\affiliation{%
+  \institution{University of California, Riverside}
+  \city{Riverside}
+  \state{California}
+  \country{United States}
+}
+\email{chen@cs.ucr.edu}
+%16
+\author{Franck Cappello}
+\affiliation{%
+  \institution{Argonne National Laboratory}
+  \city{Lemont}
+  \state{Illinois}
+  \country{United States}
+}
+\email{cappello@mcs.anl.gov}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\input{0.abstract}
+
+\maketitle
+
+%%% do not modify the following VLDB block %%
+%%% VLDB block start %%%
+\vldbtopmatter
+%%% VLDB block end %%%
+
+\input{1.introduction}
+\input{2.related work}
+\input{3.data characteristics and problem formulation}
+\input{4.design overview}
+\input{5.sz3-hohs}
+\input{6.mrcz}
+\input{7.evaluation}
+\input{8.conclusion}
+
+\begin{acks}
+This research was supported by the U.S. Department of Energy, Office of Science, Advanced Scientific Computing Research (ASCR), under contract DE-AC02-06CH11357, and supported by the National Science Foundation under Grant OAC-2311875, OAC-2514036, OAC-2513768, OAC-2330367, OAC-2311756, and OAC-2313122. 
+This research used resources of the Argonne Leadership Computing Facility, which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357.
+We acknowledge the computing resources provided on Bebop, operated by the Laboratory Computing Resource Center at Argonne National Laboratory, and the ACCESS Anvil system, operated by Purdue University.
+\end{acks}
+
+%\clearpage
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{reference}
+
+\end{document}
+\endinput

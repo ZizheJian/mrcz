@@ -1,0 +1,64 @@
+[
+  {
+    "name": "mixlay0",
+    "data_path": "third_party/pySEMTools/examples/data/mixlay0.f00001",
+    "format": "nekrs",
+    "field_list": ["UX","UY","P","T","S00","S01"],
+    "eb_mode": "REL",
+    "eb_list": [0.01,0.001,0.0001,0.00001,0.000001],
+    "method_list": ["MRCZ","FDWZ","SZ3-1D","SZ3-2D","SZ3-3D-fused","SZ3-3D-per-element","SZ3-4D","SZ2-1D","SZ2-2D","SZ2-3D-fused","SZ2-3D-per-element","SZ2-4D","QoZ-1D","QoZ-2D","QoZ-3D-fused","QoZ-3D-per-element","QoZ-4D","ZFP-1D","ZFP-2D","ZFP-3D-fused","ZFP-3D-per-element","ZFP-4D","SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"],
+    "max_cpus_list": [1]
+  },
+  {
+    "name": "test0",
+    "data_path": "third_party/fld_pyutils/demos/data/test0.f00001",
+    "format": "nekrs",
+    "field_list": ["UZ","T","S00","S01"],
+    "eb_mode": "REL",
+    "eb_list": [0.01,0.001,0.0001,0.00001,0.000001],
+    "method_list": ["MRCZ","FDWZ","SZ3-1D","SZ3-2D","SZ3-3D-fused","SZ3-3D-per-element","SZ3-4D","SZ2-1D","SZ2-2D","SZ2-3D-fused","SZ2-3D-per-element","SZ2-4D","QoZ-1D","QoZ-2D","QoZ-3D-fused","QoZ-3D-per-element","QoZ-4D","ZFP-1D","ZFP-2D","ZFP-3D-fused","ZFP-3D-per-element","ZFP-4D","SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"],
+    "max_cpus_list": [1]
+  },
+  {
+    "name": "tc_channel0",
+    "data_path": "third_party/pySEMTools/examples/data/tc_channel0.f00001",
+    "format": "nekrs",
+    "field_list": ["UX","UY","UZ"],
+    "eb_mode": "REL",
+    "eb_list": [0.01,0.001,0.0001,0.00001,0.000001],
+    "method_list": ["MRCZ","FDWZ","SZ3-1D","SZ3-2D","SZ3-3D-fused","SZ3-3D-per-element","SZ3-4D","SZ2-1D","SZ2-2D","SZ2-3D-fused","SZ2-3D-per-element","SZ2-4D","QoZ-1D","QoZ-2D","QoZ-3D-fused","QoZ-3D-per-element","QoZ-4D","ZFP-1D","ZFP-2D","ZFP-3D-fused","ZFP-3D-per-element","ZFP-4D","SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"],
+    "max_cpus_list": [1]
+  },
+  {
+    "name": "mfem_ex0",
+    "data_path": "build/mfem_build/examples/ex0examples/sol.gf",
+    "mesh_path": "build/mfem_build/examples/ex0examples/mesh.mesh",
+    "format": "mfem",
+    "field_list": ["no_name_field"],
+    "eb_mode": "REL",
+    "eb_list": [0.01,0.001,0.0001,0.00001,0.000001],
+    "method_list": ["MRCZ","FDWZ","SZ3-1D","SZ3-2D","SZ3-3D-fused","SZ3-3D-per-element","SZ3-4D","SZ2-1D","SZ2-2D","SZ2-3D-fused","SZ2-3D-per-element","SZ2-4D","QoZ-1D","QoZ-2D","QoZ-3D-fused","QoZ-3D-per-element","QoZ-4D","ZFP-1D","ZFP-2D","ZFP-3D-fused","ZFP-3D-per-element","ZFP-4D","SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"],
+    "max_cpus_list": [1]
+  },
+  {
+    "name": "mfem_ex1",
+    "data_path": "build/mfem_build/examples/ex1examples/sol.gf",
+    "mesh_path": "build/mfem_build/examples/ex1examples/refined.mesh",
+    "format": "mfem",
+    "field_list": ["no_name_field"],
+    "eb_mode": "REL",
+    "eb_list": [0.01,0.001,0.0001,0.00001,0.000001],
+    "method_list": ["MRCZ","FDWZ","SZ3-1D","SZ3-2D","SZ3-3D-fused","SZ3-3D-per-element","SZ3-4D","SZ2-1D","SZ2-2D","SZ2-3D-fused","SZ2-3D-per-element","SZ2-4D","QoZ-1D","QoZ-2D","QoZ-3D-fused","QoZ-3D-per-element","QoZ-4D","ZFP-1D","ZFP-2D","ZFP-3D-fused","ZFP-3D-per-element","ZFP-4D","SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"],
+    "max_cpus_list": [1]
+  },
+  {
+    "name": "nektar_cylinder",
+    "data_path": "third_party/flow-stability-cylinder/tutorial/base/Cylinder-Base.vtu",
+    "format": "nektar++",
+    "field_list": ["p","u","v"],
+    "eb_mode": "REL",
+    "eb_list": [0.01,0.001,0.0001,0.00001,0.000001],
+    "method_list": ["MRCZ","FDWZ","SZ3-1D","SZ3-2D","SZ3-3D-fused","SZ3-3D-per-element","SZ3-4D","SZ2-1D","SZ2-2D","SZ2-3D-fused","SZ2-3D-per-element","SZ2-4D","QoZ-1D","QoZ-2D","QoZ-3D-fused","QoZ-3D-per-element","QoZ-4D","ZFP-1D","ZFP-2D","ZFP-3D-fused","ZFP-3D-per-element","ZFP-4D","SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"],
+    "max_cpus_list": [1]
+  }
+]

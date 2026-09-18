@@ -1,0 +1,43 @@
+\documentclass[tikz,border=4pt]{standalone}
+\usepackage{newtxtext}
+\usetikzlibrary{arrows.meta,positioning}
+
+\definecolor{fdwzgreen}{HTML}{DDF5EC}
+\definecolor{fdwzgreenline}{HTML}{27AE8A}
+\definecolor{fdwzblue}{HTML}{E5F0FF}
+\definecolor{fdwzblueline}{HTML}{5795E6}
+\definecolor{fdwzpurple}{HTML}{EEEAFE}
+\definecolor{fdwzpurpleline}{HTML}{7468D8}
+\definecolor{szgray}{HTML}{F0F0F0}
+\definecolor{szgrayline}{HTML}{777777}
+
+\begin{document}
+\begin{tikzpicture}[font=\sffamily\fontsize{7.5}{8.7}\selectfont,>=Latex,node distance=3mm and 8mm,flow/.style={-{Latex[length=1.8mm]},line width=0.65pt},box/.style={rounded corners=2pt,align=center,minimum height=7mm,text width=31mm,line width=0.7pt},title/.style={box,minimum height=6mm,fill=black,text=white,draw=black,font=\sffamily\bfseries\fontsize{8}{9}\selectfont},terminal/.style={box,minimum height=6.5mm,fill=szgray,draw=szgrayline},szstage/.style={box,minimum height=9mm,fill=szgray,draw=szgrayline},shared/.style={box,minimum height=8mm,fill=fdwzblue,draw=fdwzblueline},fdwzstage/.style={box,minimum height=9mm,fill=fdwzgreen,draw=fdwzgreenline},encoding/.style={box,minimum height=12mm,fill=fdwzpurple,draw=fdwzpurpleline}]
+\node[title](sz3title){SZ3};
+\node[title,right=of sz3title](fdwztitle){FDWZ};
+
+\node[terminal,below=2.5mm of sz3title](sz3input){Regular Tensor};
+\node[terminal,below=2.5mm of fdwztitle](fdwzinput){Element Partition};
+
+\node[szstage,below=of sz3input](sz3predict){Uniform-Grid Multilevel\\Interpolation};
+\node[fdwzstage,below=of fdwzinput](fdwzpredict){Distance-Weighted\\Multilevel Interpolation};
+
+\node[shared,below=of sz3predict](sz3quantize){Error-Bounded Residual\\Quantization};
+\node[shared,below=of fdwzpredict](fdwzquantize){Error-Bounded Residual\\Quantization};
+
+\node[szstage,minimum height=12mm,below=of sz3quantize](sz3encode){One Huffman Tree\\and Zstandard};
+\node[encoding,below=of fdwzquantize](fdwzencode){Group Symbols by Level,\\Build Multiple Huffman Trees,\\and Apply Zstandard};
+
+\node[terminal,below=of sz3encode](sz3output){Compressed Tensor};
+\node[terminal,below=of fdwzencode](fdwzoutput){Compressed Partition};
+
+\draw[flow](sz3input)--(sz3predict);
+\draw[flow](sz3predict)--(sz3quantize);
+\draw[flow](sz3quantize)--(sz3encode);
+\draw[flow](sz3encode)--(sz3output);
+\draw[flow](fdwzinput)--(fdwzpredict);
+\draw[flow](fdwzpredict)--(fdwzquantize);
+\draw[flow](fdwzquantize)--(fdwzencode);
+\draw[flow](fdwzencode)--(fdwzoutput);
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,9 @@
+\begin{abstract}
+
+High-order hybrid-structured (HOHS) simulations are increasingly used across diverse scientific domains to model complex physical phenomena with high accuracy. Their rapidly growing data volumes impose severe pressure on storage, I/O, and data transfer. Error-bounded lossy compression is a natural solution for reducing such data volumes while preserving user-specified reconstruction accuracy. Unfortunately, existing compression approaches are not well-suited to HOHS datasets: prior solutions designed for HOHS datasets lack strict error guarantees, whereas trivially applying general-purpose error-bounded compressors often results in unsatisfactory compression performance.
+
+To address this gap, we develop two complementary compression-based solutions for HOHS data management. SZ3-HOHS adapts SZ3’s interpolation to the non-uniform spatial spacing of HOHS discretizations, achieving high throughput while consistently improving compression ratios over existing error-bounded compressors. MRCZ further targets extreme compression ratios by leveraging model representations to decompose HOHS data into compact coefficient and residual tensors.
+
+We evaluate the proposed solutions on diverse HOHS simulation datasets from both storage and end-to-end data-transfer perspectives, comparing them with state-of-the-art error-bounded compressors such as ZFP, SPERR, SZ2, and SZ3. For storage reduction, SZ3-HOHS improves compression ratios by up to 1.5× over the best-performing baseline at the same reconstruction PSNR, while MRCZ further improves compression ratios by up to 5.5× over SZ3-HOHS. For end-to-end transfer through Globus, SZ3-HOHS achieves the shortest total transfer time among all evaluated methods, and MRCZ remains competitive despite its higher computational overhead, owing to its substantially greater reduction in transferred data.
+
+\end{abstract}

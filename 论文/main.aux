@@ -1,0 +1,154 @@
+\relax 
+\citation{fischer2022nekrs}
+\citation{liang2018error,liu2024high,zhao2021optimizing,liang2022sz3,lindstrom2014fixed,li2023lossy,di2025survey}
+\citation{tao2017significantly}
+\citation{liang2022sz3,zhao2021optimizing}
+\citation{liu2024high}
+\citation{lindstrom2014fixed}
+\citation{li2023lossy}
+\citation{wu2025enabling,gong2024general,ren2024prediction}
+\citation{shah2026solver}
+\citation{marin2016spectral}
+\citation{liang2022sz3,zhao2021optimizing}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}\protected@file@percent }
+\citation{chard2017globus}
+\citation{zhao2021optimizing,di2025survey,cappello2019usecases,liu2023ocelot}
+\citation{di2025survey}
+\citation{tao2017significantly}
+\citation{zhao2021optimizing,liang2022sz3}
+\citation{liu2024high}
+\citation{lindstrom2014fixed}
+\citation{li2023lossy}
+\citation{ren2024prediction}
+\citation{wu2025enabling}
+\citation{gong2024general}
+\citation{shah2026solver}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Related Work}{2}\protected@file@percent }
+\newlabel{sec:related work}{{II}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Structured Tensor Compression}{2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Unstructured Data Compression}{2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Compression for High-Order Element Data}{2}\protected@file@percent }
+\newlabel{sec:related work:prior work}{{\mbox  {II-C}}{2}}
+\citation{marin2016spectral}
+\citation{fischer2022nekrs}
+\citation{kolev2010modular}
+\citation{moxey2020nektar++}
+\citation{fischer2022nekrs,marin2016spectral}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Data Characteristics and Problem Formulation}{3}\protected@file@percent }
+\newlabel{sec:problem formulation}{{III}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Organization of High-Order Element Data}{3}\protected@file@percent }
+\newlabel{sec:problem formulation:data characteristics}{{\mbox  {III-A}}{3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Hybrid organization of high-order element data. (a) Physical elements have irregular global connectivity. (b) Each physical element contains a deformed tensor-product arrangement of data points. (c) Every physical element is obtained by geometrically mapping a common reference element.\relax }}{3}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:characterizing-hohs}{{1}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Problem Formulation}{3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Comparison of direct and compression-integrated data-movement workflows. Compression reduces storage and transfer costs while introducing compression and decompression overhead.\relax }}{3}\protected@file@percent }
+\newlabel{fig:end-to-end}{{2}{3}}
+\citation{tao2017significantly,liang2022sz3}
+\citation{zstd}
+\citation{Isoparametric-Mapping}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Parallel Execution and Element-local Design}{4}\protected@file@percent }
+\newlabel{sec:design overview}{{IV}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Partitioned Parallel Execution}{4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Element-local Design of FDWZ and MRCZ}{4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}Interpolation-Based Compression: FDWZ}{4}\protected@file@percent }
+\newlabel{sec:SZ3-HOHS}{{V}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Comparison of standard SZ3 compression on tensor data (left) and FDWZ compression on a high-order element partition (right). FDWZ replaces uniform-grid interpolation with distance-weighted interpolation and single-tree Huffman encoding with multi-tree encoding.\relax }}{4}\protected@file@percent }
+\newlabel{fig:fdwz-workflow}{{3}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}SZ Compression Framework}{4}\protected@file@percent }
+\newlabel{sec:SZ3-HOHS:sz3 interpolation}{{\mbox  {V-A}}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Distance-Weighted Multilevel Interpolation}{4}\protected@file@percent }
+\newlabel{sec:FDWZ:distance-weighted}{{\mbox  {V-B}}{4}}
+\citation{fischer2022nekrs}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of cubic interpolation stencils in SZ3 and FDWZ. The target $T$ is predicted from reference points $R_0$--$R_3$.\relax }}{5}\protected@file@percent }
+\newlabel{fig:cubic-interpolation}{{4}{5}}
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights in Figure\nobreakspace  {}4\hbox {}. FDWZ coordinates are normalized by the reference-element length $a$; FDWZ values are rounded to three decimal places.\relax }}{5}\protected@file@percent }
+\newlabel{tab:cubic-interpolation}{{I}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-tree Huffman Encoding}{5}\protected@file@percent }
+\newlabel{sec:FDWZ:multi-tree}{{\mbox  {V-C}}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Comparison of Prediction Locality}{5}\protected@file@percent }
+\newlabel{sec:FDWZ:prediction-locality}{{\mbox  {V-D}}{5}}
+\newlabel{sec:SZ3-HOHS:element_dimension}{{\mbox  {V-D}}{5}}
+\newlabel{sec:SZ3-HOHS:cross_element}{{\mbox  {V-D}}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Illustration of the Point Configurations Used in Cross-Element and Intra-Element Prediction\relax }}{5}\protected@file@percent }
+\newlabel{fig:cross-element}{{5}{5}}
+\citation{marin2016spectral}
+\citation{fischer2022nekrs}
+\citation{marin2016spectral}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Comparison of Cross-Element and Intra-Element Prediction MSEs of a Representative Element\relax }}{6}\protected@file@percent }
+\newlabel{tab:cross-element mse}{{II}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Representation-Based Compression: MRCZ}{6}\protected@file@percent }
+\newlabel{sec:mrcz}{{VI}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Revisiting DLT for HOHS Data Compression}{6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Distributions of Original Data and Coefficients\relax }}{6}\protected@file@percent }
+\newlabel{fig:dlt_distributions}{{6}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}Overview of MRCZ}{6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Diagram of MRCZ Compression.\relax }}{6}\protected@file@percent }
+\newlabel{fig:mrcz_diagram}{{7}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Transform and Error Bound Selection}{6}\protected@file@percent }
+\citation{liu2024high}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Rate–Distortion Performance and Bit-Rate Breakdown of Different Transforms Across Error-Bound Configurations\relax }}{7}\protected@file@percent }
+\newlabel{fig:transform}{{8}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-D}}Improving Local Regularity for Lossless Encoding}{7}\protected@file@percent }
+\newlabel{sec:mrcz:transpose}{{\mbox  {VI-D}}{7}}
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Performance Evaluation}{7}\protected@file@percent }
+\newlabel{sec:performance evaluation}{{VII}{7}}
+\citation{fischer2022nekrs}
+\citation{kolev2010modular}
+\citation{moxey2020nektar++}
+\citation{tao2017significantly}
+\citation{liang2022sz3,zhao2021optimizing}
+\citation{lindstrom2014fixed}
+\citation{li2023lossy}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}Experimental Setup}{8}\protected@file@percent }
+\newlabel{sec:performance evaluation:setup}{{\mbox  {VII-A}}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}1}Evaluation Platform}{8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}2}HOHS Datasets}{8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}3}Baseline Compressors}{8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{8}\protected@file@percent }
+\citation{chard2017globus}
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces HOHS datasets used for evaluating SZ3-HOHS, MRCZ, and baseline compressors\relax }}{9}\protected@file@percent }
+\newlabel{tab:datasets}{{III}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}End-to-End Workflow Evaluation}{9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Parallel Throughput}{9}\protected@file@percent }
+\newlabel{sec:parallel-throughput}{{\mbox  {VII-D}}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{9}\protected@file@percent }
+\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Evaluation of PSNR rate distortion curves between SZ3-HOHS, MRCZ, and baseline compressors.\relax }}{10}\protected@file@percent }
+\newlabel{fig:rate-distortion}{{9}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces End-to-end Workflow Execution Time via Globus\relax }}{10}\protected@file@percent }
+\newlabel{fig:transfer}{{10}{10}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{10}\protected@file@percent }
+\newlabel{sec:conclusion}{{VIII}{10}}
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Compression ratios of two leading fields 4UX and 5P across all evaluated lossy compressors. The SZ3-0 and SZ2-0 are excluded due to sacrificed performance. The \textbf  {highest} and \underline  {second-highest} compression ratios are highlighted.\relax }}{11}\protected@file@percent }
+\newlabel{tab:compression-ratios}{{IV}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Parallel Execution Throughput (MB/s)\relax }}{11}\protected@file@percent }
+\newlabel{fig:throughput}{{11}{11}}
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Error bounds at a compression ratio of $\sim $26.07.\relax }}{11}\protected@file@percent }
+\newlabel{tab:error-bound-visualization}{{V}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Difference visualization of a slice of the Temperature field from data 4T. The compression ratios for all compressors are unified as $\sim $26.07 for a fair comparison.\relax }}{11}\protected@file@percent }
+\newlabel{fig:distortion}{{12}{11}}
+\bibstyle{IEEEtran}
+\bibdata{reference}
+\bibcite{fischer2022nekrs}{1}
+\bibcite{liang2018error}{2}
+\bibcite{liu2024high}{3}
+\bibcite{zhao2021optimizing}{4}
+\bibcite{liang2022sz3}{5}
+\bibcite{lindstrom2014fixed}{6}
+\bibcite{li2023lossy}{7}
+\bibcite{di2025survey}{8}
+\bibcite{tao2017significantly}{9}
+\bibcite{wu2025enabling}{10}
+\bibcite{gong2024general}{11}
+\bibcite{ren2024prediction}{12}
+\bibcite{shah2026solver}{13}
+\bibcite{marin2016spectral}{14}
+\bibcite{chard2017globus}{15}
+\bibcite{cappello2019usecases}{16}
+\bibcite{liu2023ocelot}{17}
+\bibcite{kolev2010modular}{18}
+\bibcite{moxey2020nektar++}{19}
+\bibcite{zstd}{20}
+\bibcite{Isoparametric-Mapping}{21}
+\@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }
