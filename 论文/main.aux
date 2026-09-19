@@ -59,14 +59,13 @@
 \newlabel{sec:SZ3-HOHS:sz3 interpolation}{{\mbox  {V-A}}{4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Distance-Weighted Multilevel Interpolation}{4}\protected@file@percent }
 \newlabel{sec:FDWZ:distance-weighted}{{\mbox  {V-B}}{4}}
-\citation{fischer2022nekrs}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of cubic interpolation stencils in SZ3 and FDWZ. The target $T$ is predicted from reference points $R_0$--$R_3$.\relax }}{5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table\nobreakspace  {}I\hbox {}.\relax }}{5}\protected@file@percent }
 \newlabel{fig:cubic-interpolation}{{4}{5}}
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights in Figure\nobreakspace  {}4\hbox {}. FDWZ coordinates are normalized by the reference-element length $a$; FDWZ values are rounded to three decimal places.\relax }}{5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights in Figure\nobreakspace  {}4\hbox {}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.\relax }}{5}\protected@file@percent }
 \newlabel{tab:cubic-interpolation}{{I}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-tree Huffman Encoding}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:multi-tree}{{\mbox  {V-C}}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Impact of multi-tree Huffman encoding on the $P$ field of pb0. (b) Rate--distortion performance using a single Huffman tree and up to five Huffman trees. Across the five error bounds, multi-tree encoding improves the compression ratio by 26.5\% on average.\relax }}{5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on pb0/$P$. (a) At REL EB $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.\relax }}{5}\protected@file@percent }
 \newlabel{fig:fdwz-tree-ablation}{{5}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Comparison of Prediction Locality}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:prediction-locality}{{\mbox  {V-D}}{5}}
@@ -74,6 +73,7 @@
 \newlabel{sec:SZ3-HOHS:cross_element}{{\mbox  {V-D}}{5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Illustration of the Point Configurations Used in Cross-Element and Intra-Element Prediction\relax }}{5}\protected@file@percent }
 \newlabel{fig:cross-element}{{6}{5}}
+\citation{fischer2022nekrs}
 \citation{marin2016spectral}
 \citation{fischer2022nekrs}
 \citation{marin2016spectral}
@@ -118,18 +118,18 @@
 \newlabel{fig:rate-distortion}{{10}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces End-to-end Workflow Execution Time via Globus\relax }}{10}\protected@file@percent }
 \newlabel{fig:transfer}{{11}{10}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{10}\protected@file@percent }
-\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{10}}
 \@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Compression ratios of two leading fields 4UX and 5P across all evaluated lossy compressors. The SZ3-0 and SZ2-0 are excluded due to sacrificed performance. The \textbf  {highest} and \underline  {second-highest} compression ratios are highlighted.\relax }}{11}\protected@file@percent }
 \newlabel{tab:compression-ratios}{{IV}{11}}
 \@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Parallel Execution Throughput (MB/s)\relax }}{11}\protected@file@percent }
 \newlabel{fig:throughput}{{12}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{11}\protected@file@percent }
+\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{11}}
 \@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Error bounds at a compression ratio of $\sim $26.07.\relax }}{11}\protected@file@percent }
 \newlabel{tab:error-bound-visualization}{{V}{11}}
-\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{11}\protected@file@percent }
-\newlabel{sec:conclusion}{{VIII}{11}}
 \@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Difference visualization of a slice of the Temperature field from data 4T. The compression ratios for all compressors are unified as $\sim $26.07 for a fair comparison.\relax }}{11}\protected@file@percent }
 \newlabel{fig:distortion}{{13}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{11}\protected@file@percent }
+\newlabel{sec:conclusion}{{VIII}{11}}
 \bibstyle{IEEEtran}
 \bibdata{reference}
 \bibcite{fischer2022nekrs}{1}

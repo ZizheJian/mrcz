@@ -27,7 +27,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/5/cubic interpolation.pdf}
-    \caption{Comparison of cubic interpolation stencils in SZ3 and FDWZ. The target $T$ is predicted from reference points $R_0$--$R_3$.}
+    \caption{Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table~\ref{tab:cubic-interpolation}.}
     \label{fig:cubic-interpolation}
 \end{figure}
 
@@ -46,7 +46,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
         FDWZ: $w$ & \textminus0.771 & 1.458 & --- & 0.376 & \textminus0.063 \\
         \bottomrule
     \end{tabular*}}
-    \caption{Coordinates and cubic interpolation weights in Figure~\ref{fig:cubic-interpolation}. FDWZ coordinates are normalized by the reference-element length $a$; FDWZ values are rounded to three decimal places.}
+    \caption{Coordinates and cubic interpolation weights in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
     \label{tab:cubic-interpolation}
 \end{table}
 
@@ -56,12 +56,14 @@ Element-local prediction also provides favorable memory locality. On large regul
 
 Quantization-symbol distributions differ across FDWZ prediction levels. Earlier levels generally use reference points farther from their targets, producing larger prediction errors and a wider distribution of quantization symbols. Later levels use closer reference points and therefore tend to produce smaller errors and symbols that are more concentrated near zero.
 
-Encoding symbols from all levels with one Huffman tree mixes these distributions and yields code lengths that are poorly matched to individual groups. FDWZ therefore aggregates corresponding symbols across elements and encodes them using at most five Huffman trees: one for corner symbols, separate trees for the earliest prediction levels, and one for any remaining levels. This cap retains most of the benefit of distribution-specific coding without excessive codebook overhead. The encoded streams are finally compressed together using Zstandard.
+Encoding symbols from all levels with one Huffman tree mixes these distributions and yields code lengths that are poorly matched to individual groups. FDWZ therefore aggregates corresponding symbols across elements and encodes them using up to five Huffman trees. Tree0 encodes corner symbols, Tree1--Tree3 encode the earliest prediction levels, and Tree4 encodes any remaining levels. This cap retains most of the benefit of distribution-specific coding without excessive codebook overhead. The encoded streams are finally compressed together using Zstandard.
+
+Figure~\ref{fig:fdwz-tree-ablation}(a) illustrates the resulting level-dependent prediction-error distributions, while Figure~\ref{fig:fdwz-tree-ablation}(b) quantifies the rate--distortion benefit of encoding them separately.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/5/fdwz-tree-ablation.pdf}
-    \caption{Impact of multi-tree Huffman encoding on the $P$ field of pb0. (b) Rate--distortion performance using a single Huffman tree and up to five Huffman trees. Across the five error bounds, multi-tree encoding improves the compression ratio by 26.5\% on average.}
+    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on pb0/$P$. (a) At REL EB $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.}
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 

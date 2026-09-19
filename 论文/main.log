@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  18 SEP 2026 15:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  18 SEP 2026 17:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -454,18 +454,22 @@ LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 4
 x/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-<figs/5/fdwz-tree-ablation.pdf, id=85, 252.945pt x 112.0185pt>
+Underfull \hbox (badness 10000) in paragraph at lines 61--62
+[]\OT1/ptm/m/n/10 Figure 5[](a) il-lus-trates the re-sult-ing level-dependent
+ []
+
+<figs/5/fdwz-tree-ablation.pdf, id=85, 252.945pt x 97.5645pt>
 File: figs/5/fdwz-tree-ablation.pdf Graphic file (type pdf)
 <use figs/5/fdwz-tree-ablation.pdf>
-Package pdftex.def Info: figs/5/fdwz-tree-ablation.pdf  used on input line 63.
-(pdftex.def)             Requested size: 252.0pt x 111.60284pt.
+Package pdftex.def Info: figs/5/fdwz-tree-ablation.pdf  used on input line 65.
+(pdftex.def)             Requested size: 252.0pt x 97.20247pt.
 <figs/5/cross-element.pdf, id=86, 1341.01pt x 445.665pt>
 File: figs/5/cross-element.pdf Graphic file (type pdf)
 <use figs/5/cross-element.pdf>
-Package pdftex.def Info: figs/5/cross-element.pdf  used on input line 72.
+Package pdftex.def Info: figs/5/cross-element.pdf  used on input line 74.
 (pdftex.def)             Requested size: 252.0pt x 83.74559pt.
- [5 <./figs/5/cubic interpolation.pdf> <./figs/5/fdwz-tree-ablation.pdf> <./fig
-s/5/cross-element.pdf>]) (./6.mrcz.tex
+[5 <./figs/5/cubic interpolation.pdf> <./figs/5/fdwz-tree-ablation.pdf> <./figs
+/5/cross-element.pdf>]) (./6.mrcz.tex
 <figs/4-distribution-of-data-and-coefficients.pdf, id=136, 901.64417pt x 368.40
 45pt>
 File: figs/4-distribution-of-data-and-coefficients.pdf Graphic file (type pdf)
@@ -486,8 +490,7 @@ File: figs/6/transform-comparison.pdf Graphic file (type pdf)
 Package pdftex.def Info: figs/6/transform-comparison.pdf  used on input line 41
 .
 (pdftex.def)             Requested size: 252.0pt x 106.77167pt.
-)
-(./7.evaluation.tex [7 <./figs/6/transform-comparison.pdf>]
+ [7 <./figs/6/transform-comparison.pdf>]) (./7.evaluation.tex
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 1
 0.
 
@@ -516,6 +519,9 @@ Package pdftex.def Info: figs/8-fig9.pdf  used on input line 113.
 (pdftex.def)             Requested size: 226.79846pt x 158.30954pt.
 [9]
 Underfull \vbox (badness 2409) has occurred while \output is active []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [10 <./figs/7/rd.pdf> <./figs/7/e2e_time.pdf>]
 Overfull \hbox (4.19391pt too wide) in paragraph at lines 132--140
@@ -663,7 +669,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (12 pages, 34940529 bytes).
+Output written on main.pdf (12 pages, 34949322 bytes).
 PDF statistics:
  478 PDF objects out of 1000 (max. 8388607)
  210 compressed objects within 3 object streams

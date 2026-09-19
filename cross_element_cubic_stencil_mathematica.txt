@@ -1,0 +1,244 @@
+ClearAll["Global`*"];
+
+(*计算8点GLL坐标*)
+gll = Sort@
+   Join[{-1., 1.}, x /. NSolve[D[LegendreP[7, x], x] == 0, x, Reals]];
+
+(*单个reference element中的全部点*)
+referencePoints = Tuples[gll, 3];
+
+(*将两个reference element拼接到公共面X=0*)
+elementAPoints = ({#[[1]] - 1, #[[2]], #[[3]]} & /@ referencePoints);
+elementBPoints = ({#[[1]] + 1, #[[2]], #[[3]]} & /@ referencePoints);
+
+(*两个element在公共面上使用相同的变换*)
+sharedFace[y_, z_] := {0.18*(1 - y^2)*(1 - z^2), y, 
+   z + 0.10*(1 - y^2)*(1 - z^2)};
+
+(*Element A的变换*)
+transformA[{x_, y_, z_}] := 
+  sharedFace[y, z] + x*{1, 0.10 + 0.06*z, -0.06*y};
+
+(*Element B的变换*)
+transformB[{x_, y_, z_}] := 
+  sharedFace[y, z] + x*{1, -0.12 + 0.05*z, 0.08*y};
+
+(*变换全部点*)
+transformedElementAPoints = transformA /@ elementAPoints;
+transformedElementBPoints = transformB /@ elementBPoints;
+
+(*选择共享面上沿Y和Z方向均从边界向内两格的目标*)
+targetYIndex = 3;
+targetZIndex = 3;
+targetReferencePoint = {0, gll[[targetYIndex]], gll[[targetZIndex]]};
+targetPoint = transformA[targetReferencePoint];
+
+(*目标附近的5x5面上区域*)
+faceYIndices = Range[targetYIndex - 2, targetYIndex + 2];
+faceZIndices = Range[targetZIndex - 2, targetZIndex + 2];
+
+facePatchReferencePoints = 
+  Flatten[Table[{0, gll[[i]], gll[[j]]}, {i, faceYIndices}, {j, 
+     faceZIndices}], 1];
+
+(*去掉目标自身，剩余24个点*)
+faceNeighborReferencePoints = 
+  Select[facePatchReferencePoints, 
+   Norm[# - targetReferencePoint] > 10^-12 &];
+faceNeighborPoints = transformA /@ faceNeighborReferencePoints;
+
+(*两个面内方向实际参与cubic预测的8个参考点*)
+facePredictionReferencePoints = 
+  Join[Table[{0, gll[[i]], gll[[targetZIndex]]}, {i, 
+     DeleteCases[faceYIndices, targetYIndex]}], 
+   Table[{0, gll[[targetYIndex]], gll[[j]]}, {j, 
+     DeleteCases[faceZIndices, targetZIndex]}]];
+facePredictionPoints = transformA /@ facePredictionReferencePoints;
+
+(*不穿过目标的面内背景网格线*)
+faceBackgroundLinesAlongZ = 
+  Table[Line[
+    transformA /@ 
+     Table[{0, gll[[i]], gll[[j]]}, {j, faceZIndices}]], {i, 
+    DeleteCases[faceYIndices, targetYIndex]}];
+
+faceBackgroundLinesAlongY = 
+  Table[Line[
+    transformA /@ 
+     Table[{0, gll[[i]], gll[[j]]}, {i, faceYIndices}]], {j, 
+    DeleteCases[faceZIndices, targetZIndex]}];
+
+faceBackgroundLines = 
+  Join[faceBackgroundLinesAlongZ, faceBackgroundLinesAlongY];
+
+(*穿过目标的两个面内cubic prediction stencils*)
+facePredictionLines = {Line[
+    transformA /@ 
+     Table[{0, gll[[targetYIndex]], gll[[j]]}, {j, faceZIndices}]], 
+   Line[transformA /@ 
+     Table[{0, gll[[i]], gll[[targetZIndex]]}, {i, faceYIndices}]]};
+
+(*使用4x4个四边形给当前5x5共享面区域填色*)
+facePatchPolygons = 
+  Flatten[Table[
+    Polygon[transformA /@ {{0, gll[[i]], gll[[j]]}, {0, gll[[i + 1]], 
+        gll[[j]]}, {0, gll[[i + 1]], gll[[j + 1]]}, {0, gll[[i]], 
+        gll[[j + 1]]}}], {i, Most[faceYIndices]}, {j, 
+     Most[faceZIndices]}], 1];
+
+(*Element A中垂直于公共面的两个参考点，顺序为远点到近点*)
+normalReferencePointsA = {{gll[[6]] - 1, gll[[targetYIndex]], 
+    gll[[targetZIndex]]}, {gll[[7]] - 1, gll[[targetYIndex]], 
+    gll[[targetZIndex]]}};
+
+(*Element B中垂直于公共面的两个参考点，顺序为近点到远点*)
+normalReferencePointsB = {{gll[[2]] + 1, gll[[targetYIndex]], 
+    gll[[targetZIndex]]}, {gll[[3]] + 1, gll[[targetYIndex]], 
+    gll[[targetZIndex]]}};
+
+(*对两侧的参考点分别使用对应的element变换*)
+normalPredictionPointsA = transformA /@ normalReferencePointsA;
+normalPredictionPointsB = transformB /@ normalReferencePointsB;
+normalPredictionPoints = 
+  Join[normalPredictionPointsA, normalPredictionPointsB];
+
+(*连接法向四个参考点和目标点*)
+normalStencilLine = 
+  Line[Join[normalPredictionPointsA, {targetPoint}, 
+    normalPredictionPointsB]];
+
+(*显式给出所有可见几何的真实三维边界，使自动取景将Sphere半径计入包围盒*)
+facePatchPoints = transformA /@ facePatchReferencePoints;
+sphereExtentPoints[points_, radius_] := 
+  Flatten[({# - radius, # + radius} & /@ points), 1];
+renderBoundsPoints = 
+  Join[facePatchPoints, 
+   sphereExtentPoints[facePredictionPoints, 0.028], 
+   sphereExtentPoints[normalPredictionPoints, 0.028], 
+   {targetPoint - 0.038, targetPoint + 0.038}];
+
+(*检查点数，应当输出{24,8,4}*)
+{Length[faceNeighborPoints], Length[facePredictionPoints], 
+ Length[normalPredictionPoints]}
+
+(*三种实验点的颜色和label*)
+crossBoundaryReferenceColor = RGBColor[0.95, 0.72, 0.10];
+predictionTargetColor = RGBColor[0.85, 0.15, 0.15];
+interfaceReferenceColor = RGBColor[0.18, 0.65, 0.38];
+interfaceSurfaceColor = RGBColor[0.72, 0.84, 0.97];
+
+pointLegend = 
+  PointLegend[{crossBoundaryReferenceColor, predictionTargetColor, 
+    interfaceReferenceColor}, {"Cross-Element Reference", 
+    "Prediction Target", "Face-Parallel Reference"}, 
+   LegendLayout -> "Column", LegendMarkerSize -> 12, 
+   LabelStyle -> 
+    Directive[Black, FontFamily -> "Times", FontSize -> 11]];
+
+(*相对于共享面控制视角*)
+(*faceOpeningAngle=0时界面接近侧视；增大后能看见更多界面内部*)
+faceOpeningAngle = -22*Degree;
+(*faceRotationAngle控制绕界面法向旋转，法向在画面中始终保持竖直*)
+faceRotationAngle = -15*Degree;
+cameraNormalDirection = {1, 0, 0};
+inPlaneViewDirection = {0, Cos[faceRotationAngle], 
+   Sin[faceRotationAngle]};
+viewDirection = 
+  Cos[faceOpeningAngle]*inPlaneViewDirection + 
+   Sin[faceOpeningAngle]*cameraNormalDirection;
+viewDistance = 5.;
+viewTarget = targetPoint;
+viewPosition = viewTarget + viewDistance*Normalize[viewDirection];
+(*将-X法向固定为画面向上的方向*)
+viewUpDirection = {-1, 0, 0};
+
+(*绘图*)
+predictionStencilPlot = 
+  Graphics3D[{{(*纯白微小边界点参与包围盒计算，合成到白底后不可见*)White, 
+     PointSize[0.001], Point[renderBoundsPoints]},(*当前5x5共享面区域的浅色半透明曲面*){FaceForm[
+      Directive[interfaceSurfaceColor, Opacity[0.32]]], 
+     EdgeForm[None], 
+     facePatchPolygons},(*不穿过目标的面内背景网格线*){GrayLevel[0.72], 
+     AbsoluteThickness[1], 
+     faceBackgroundLines},(*穿过目标的两个面内cubic prediction \
+stencils*){interfaceReferenceColor, AbsoluteThickness[1.8], 
+     facePredictionLines},(*连接两侧四个参考点和目标点的法向线*){RGBColor[0.65, 0.48, 
+      0.05], AbsoluteThickness[1.8], 
+     normalStencilLine},(*公共面上参与两个切向cubic预测的8个参考点*){\
+interfaceReferenceColor, Specularity[White, 18], 
+     Sphere[#, 0.028] & /@ 
+      facePredictionPoints},(*跨边界cubic预测使用的4个参考点*){\
+crossBoundaryReferenceColor, Specularity[White, 18], 
+     Sphere[#, 0.028] & /@ 
+      normalPredictionPoints},(*目标点*){predictionTargetColor, 
+     Specularity[White, 18], Sphere[targetPoint, 0.038]}}, 
+   Boxed -> False, Axes -> False, 
+   ViewVector -> {viewPosition, viewTarget}, 
+   ViewVertical -> viewUpDirection, ViewProjection -> "Orthographic", 
+   ViewAngle -> All, 
+   SphericalRegion -> True, PlotRange -> All, 
+   PlotRangeClipping -> False, ImagePadding -> 30, 
+   ImageSize -> Large, 
+   Lighting -> {{"Ambient", GrayLevel[0.22]}, {"Directional", 
+      GrayLevel[0.72], 
+      ImageScaled[{0.20, 0.80, 2.0}]}, {"Directional", 
+      GrayLevel[0.32], ImageScaled[{0.80, 0.20, 2.0}]}}, 
+   Method -> {"SpherePoints" -> 60}, 
+   Background -> White];
+
+(*legend独立放在三维图右侧，使整幅图保持宽而扁*)
+predictionStencilFigure = 
+  Legended[predictionStencilPlot, Placed[pointLegend, Right]];
+
+predictionStencilFigure
+
+(*导出PDF到当前Notebook所在目录*)
+pdfPath = FileNameJoin[{NotebookDirectory[], "cross-element.pdf"}];
+
+(*直接使用Notebook中的原始Graphics3D取景，不在导出阶段重写相机、PlotRange或画布比例*)
+exportPlot = Show[predictionStencilPlot, Background -> None];
+
+(*主体使用alpha通道裁边，避免浅色半透明界面被误判为白色背景*)
+rawPlotImage = 
+  Rasterize[exportPlot, "Image", ImageResolution -> 300, 
+   Background -> None];
+croppedPlotImage = ImageCrop[rawPlotImage];
+plotTargetHeight = 480;
+plotImage = 
+  RemoveAlphaChannel[
+   ImageResize[croppedPlotImage, {Automatic, plotTargetHeight}], White];
+
+(*legend使用白色背景独立渲染和裁边，确保文字完整保留*)
+legendImage = 
+  ImageCrop[
+   Rasterize[pointLegend, "Image", ImageResolution -> 300, 
+    Background -> White]];
+
+(*主体和legend补成相同高度，再将legend紧接在主体包围盒右侧*)
+legendGap = 20;
+plotHeight = ImageDimensions[plotImage][[2]];
+legendHeight = ImageDimensions[legendImage][[2]];
+panelHeight = Max[plotHeight, legendHeight];
+plotBottomPadding = Floor[(panelHeight - plotHeight)/2];
+plotTopPadding = panelHeight - plotHeight - plotBottomPadding;
+legendBottomPadding = Floor[(panelHeight - legendHeight)/2];
+legendTopPadding = panelHeight - legendHeight - legendBottomPadding;
+plotPanel = 
+  ImagePad[
+   plotImage, {{0, legendGap}, {
+     plotBottomPadding, plotTopPadding}}, White];
+legendPanel = 
+  ImagePad[
+   legendImage, {{0, 0}, {legendBottomPadding, 
+     legendTopPadding}}, White];
+
+exportImage = ImageAssemble[{{plotPanel, legendPanel}}];
+
+(*在所有裁边和缩放完成后添加最终页面留白*)
+croppedExportImage = 
+  ImagePad[exportImage, {{24, 24}, {8, 8}}, White];
+
+Export[pdfPath, croppedExportImage, "PDF", ImageResolution -> 300];
+
+(*显示实际输出路径*)
+pdfPath

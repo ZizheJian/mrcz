@@ -6,10 +6,30 @@
 #include "fdwz_common.hpp"
 #include "huffman.hpp"
 #include "quantize.tpp"
+#include <fstream>
+#include <iomanip>
 #include <zstd.h>
 
 namespace mrcz::detail
 {
+    constexpr long double fdwz_prediction_error_bin_width=1e-3L;
+
+    inline string fdwz_tree_group_name(uint32_t tree_id,uint32_t huffman_tree_num)
+    {
+        if(huffman_tree_num==1)
+            return "all";
+        return tree_id==0?"corner":(tree_id+1==huffman_tree_num?"remaining":"prediction-level-"+to_string(tree_id-1));
+    }
+
+    template<typename T>
+    inline int32_t fdwz_prediction_error_bin(T error)
+    {
+        long double bin=floor(static_cast<long double>(error)/fdwz_prediction_error_bin_width+0.5L);
+        if(!isfinite(bin) or bin<=numeric_limits<int32_t>::min() or bin>numeric_limits<int32_t>::max())
+            return numeric_limits<int32_t>::min();
+        return static_cast<int32_t>(bin);
+    }
+
     // 复用候选方案评估所需的临时数组，避免每个partition连续评估6个方案时反复申请大块内存。
     template<typename T>
     struct fdwz_sampling_workspace
@@ -150,10 +170,10 @@ namespace mrcz::detail
     }
 
     // 压缩一个partition；QB固定为int32，plan字节的bit 7标记32位QB，INT32_MIN直接标记unpredictable原值。
-    template<bool measure_phase_time,bool check_residual_qb_range,typename T>
+    template<bool measure_phase_time,bool check_residual_qb_range,bool analyze_tree_distributions,typename T>
     void fdwz_compress_block(mrcz::param_class<T> &params,uint64_t block_id,uint32_t n012,uint32_t corner_num,uint32_t residual_num,vector<uint32_t> &corner_positions,
         vector<fdwz_prediction_stencil<T>> &prediction_stencils,vector<uint32_t> &residual_group_offsets,array<uint32_t,5> &tree_value_num,uint32_t huffman_tree_num,T abs_eb,T inv_2_eb,
-        unsigned char selected_plan_id,int32_t *block_qb,vector<uint64_t> &unpredictable_counts,vector<double> &prediction_quantization_time,vector<double> &huffman_time,vector<double> &zstd_time)
+        unsigned char selected_plan_id,int32_t *block_qb,int32_t *block_prediction_error_bins,vector<uint64_t> &unpredictable_counts,vector<double> &prediction_quantization_time,vector<double> &huffman_time,vector<double> &zstd_time)
     {
         auto &block=params.partitions[block_id];
         auto &data=params.data;
@@ -169,9 +189,12 @@ namespace mrcz::detail
         {
             uint64_t relative_element_id=i-begin_index;
             int32_t *element_corner_qb=block_qb+relative_element_id*(huffman_tree_num==1?n012:corner_num);
+            int32_t *element_corner_prediction_error_bins=block_prediction_error_bins+relative_element_id*(huffman_tree_num==1?n012:corner_num);
             for(uint32_t corner_id=0;corner_id<corner_num;corner_id++)
             {
                 uint32_t target=corner_positions[corner_id];
+                if constexpr(analyze_tree_distributions)
+                    element_corner_prediction_error_bins[corner_id]=fdwz_prediction_error_bin(data[i*n012+target]);
                 element_corner_qb[corner_id]=fdwz_quantize_or_save_unpredictable<true>(data[i*n012+target],T(0),abs_eb,inv_2_eb,unpredictable);
             }
         }
@@ -182,10 +205,13 @@ namespace mrcz::detail
                 T *element=data.data()+i*n012;
                 uint64_t relative_element_id=i-begin_index;
                 int32_t *element_residual_qb=block_qb+relative_element_id*n012+corner_num;
+                int32_t *element_residual_prediction_error_bins=block_prediction_error_bins+relative_element_id*n012+corner_num;
                 for(uint32_t residual_id=0;residual_id<residual_num;residual_id++)
                 {
                     auto &stencil=prediction_stencils[residual_id];
                     T prediction=fdwz_predict_from_stencil(element,stencil);
+                    if constexpr(analyze_tree_distributions)
+                        element_residual_prediction_error_bins[residual_id]=fdwz_prediction_error_bin(element[stencil.target]-prediction);
                     element_residual_qb[residual_id]=fdwz_quantize_or_save_unpredictable<check_residual_qb_range>(element[stencil.target],prediction,abs_eb,inv_2_eb,unpredictable);
                 }
             }
@@ -201,6 +227,7 @@ namespace mrcz::detail
                 {
                     uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
                     int32_t *batch_group_qb=block_qb+tree_offsets[group_id+1]+batch_relative_element_id*group_size;
+                    int32_t *batch_group_prediction_error_bins=block_prediction_error_bins+tree_offsets[group_id+1]+batch_relative_element_id*group_size;
                     for(uint32_t local_id=0;local_id<group_size;local_id++)
                     {
                         auto &stencil=prediction_stencils[group_begin+local_id];
@@ -209,6 +236,8 @@ namespace mrcz::detail
                         {
                             T *batch_element=data.data()+(batch_begin+lane)*n012;
                             T prediction=fdwz_predict_from_stencil(batch_element,stencil);
+                            if constexpr(analyze_tree_distributions)
+                                batch_group_prediction_error_bins[lane*group_size+local_id]=fdwz_prediction_error_bin(batch_element[stencil.target]-prediction);
                             batch_group_qb[lane*group_size+local_id]=fdwz_quantize_or_save_unpredictable<check_residual_qb_range>(batch_element[stencil.target],prediction,abs_eb,inv_2_eb,unpredictable);
                         }
                     }
@@ -222,10 +251,13 @@ namespace mrcz::detail
                 {
                     uint32_t group_begin=residual_group_offsets[group_id],group_size=residual_group_offsets[group_id+1]-group_begin;
                     int32_t *element_group_qb=block_qb+tree_offsets[group_id+1]+relative_element_id*group_size;
+                    int32_t *element_group_prediction_error_bins=block_prediction_error_bins+tree_offsets[group_id+1]+relative_element_id*group_size;
                     for(uint32_t local_id=0;local_id<group_size;local_id++)
                     {
                         auto &stencil=prediction_stencils[group_begin+local_id];
                         T prediction=fdwz_predict_from_stencil(element,stencil);
+                        if constexpr(analyze_tree_distributions)
+                            element_group_prediction_error_bins[local_id]=fdwz_prediction_error_bin(element[stencil.target]-prediction);
                         element_group_qb[local_id]=fdwz_quantize_or_save_unpredictable<check_residual_qb_range>(element[stencil.target],prediction,abs_eb,inv_2_eb,unpredictable);
                     }
                 }
@@ -267,8 +299,108 @@ namespace mrcz::detail
             zstd_time[block_id]=omp_get_wtime()-phase_start_time;
     }
 
+    // 导出正式量化阶段中每棵Huffman tree实际接收的QB频数；统计在压缩计时结束后执行，不改变bitstream。
+    template<typename T>
+    void fdwz_write_tree_qb_distribution(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num,array<uint32_t,5> &tree_value_num,vector<unique_ptr<int32_t[]>> &partition_qb)
+    {
+        vector<unordered_map<int32_t,uint64_t>> distributions(huffman_tree_num);
+        for(uint64_t block_id=0;block_id<params.partitions.size();block_id++)
+        {
+            uint64_t element_num=params.partitions[block_id].element_num;
+            uint64_t offset=0;
+            for(uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+            {
+                uint64_t tree_qb_num=tree_value_num[tree_id]*element_num;
+                int32_t *tree_qb=partition_qb[block_id].get()+offset;
+                auto &distribution=distributions[tree_id];
+                for(uint64_t qb_id=0;qb_id<tree_qb_num;qb_id++)
+                    distribution[tree_qb[qb_id]]++;
+                offset+=tree_qb_num;
+            }
+        }
+        ifstream existing_file(params.fdwz_tree_qb_distribution_path,ios::binary|ios::ate);
+        bool write_header=!existing_file.good() or existing_file.tellg()==0;
+        existing_file.close();
+        ofstream output(params.fdwz_tree_qb_distribution_path,ios::app);
+        if(!output)
+            throw runtime_error("无法写入FDWZ tree QB分布: "+params.fdwz_tree_qb_distribution_path);
+        if(write_header)
+            output<<"Field,REL EB,ABS EB,Tree ID,Group,QB,Count\n";
+        output<<setprecision(17);
+        for(uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+        {
+            string group=fdwz_tree_group_name(tree_id,huffman_tree_num);
+            vector<pair<int32_t,uint64_t>> sorted_distribution(distributions[tree_id].begin(),distributions[tree_id].end());
+            sort(sorted_distribution.begin(),sorted_distribution.end(),[](auto &left,auto &right){return left.first<right.first;});
+            for(auto &[qb,count]:sorted_distribution)
+                output<<field<<','<<params.rel_eb[field]<<','<<params.abs_eb[field]<<','<<tree_id<<','<<group<<','<<qb<<','<<count<<'\n';
+        }
+        printf("FDWZ tree QB distribution written to %s\n",params.fdwz_tree_qb_distribution_path.c_str());
+    }
+
+    template<typename T>
+    void fdwz_write_tree_prediction_error_distribution(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num,array<uint32_t,5> &tree_value_num,vector<unique_ptr<int32_t[]>> &partition_prediction_error_bins)
+    {
+        vector<int32_t> minimum_bins(huffman_tree_num,numeric_limits<int32_t>::max()),maximum_bins(huffman_tree_num,numeric_limits<int32_t>::min());
+        for(uint64_t block_id=0;block_id<params.partitions.size();block_id++)
+        {
+            uint64_t element_num=params.partitions[block_id].element_num,offset=0;
+            for(uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+            {
+                uint64_t tree_value_count=tree_value_num[tree_id]*element_num;
+                int32_t *tree_bins=partition_prediction_error_bins[block_id].get()+offset;
+                for(uint64_t value_id=0;value_id<tree_value_count;value_id++)
+                {
+                    if(tree_bins[value_id]==numeric_limits<int32_t>::min())
+                        throw runtime_error("FDWZ prediction error无法用1e-3宽度的int32 bin表示");
+                    minimum_bins[tree_id]=min(minimum_bins[tree_id],tree_bins[value_id]);
+                    maximum_bins[tree_id]=max(maximum_bins[tree_id],tree_bins[value_id]);
+                }
+                offset+=tree_value_count;
+            }
+        }
+        vector<vector<uint64_t>> distributions(huffman_tree_num);
+        for(uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+            distributions[tree_id].resize(static_cast<uint64_t>(maximum_bins[tree_id])-minimum_bins[tree_id]+1,0);
+        for(uint64_t block_id=0;block_id<params.partitions.size();block_id++)
+        {
+            uint64_t element_num=params.partitions[block_id].element_num,offset=0;
+            for(uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+            {
+                uint64_t tree_value_count=tree_value_num[tree_id]*element_num;
+                int32_t *tree_bins=partition_prediction_error_bins[block_id].get()+offset;
+                for(uint64_t value_id=0;value_id<tree_value_count;value_id++)
+                    distributions[tree_id][static_cast<int64_t>(tree_bins[value_id])-minimum_bins[tree_id]]++;
+                offset+=tree_value_count;
+            }
+        }
+        ifstream existing_file(params.fdwz_tree_prediction_error_distribution_path,ios::binary|ios::ate);
+        bool write_header=!existing_file.good() or existing_file.tellg()==0;
+        existing_file.close();
+        ofstream output(params.fdwz_tree_prediction_error_distribution_path,ios::app);
+        if(!output)
+            throw runtime_error("无法写入FDWZ tree prediction-error分布: "+params.fdwz_tree_prediction_error_distribution_path);
+        if(write_header)
+            output<<"Field,REL EB,ABS EB,Tree ID,Group,Bin ID,Bin Width,Prediction Error,Count\n";
+        output<<setprecision(17);
+        for(uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)
+        {
+            string group=fdwz_tree_group_name(tree_id,huffman_tree_num);
+            for(uint64_t distribution_id=0;distribution_id<distributions[tree_id].size();distribution_id++)
+            {
+                uint64_t count=distributions[tree_id][distribution_id];
+                if(count==0)
+                    continue;
+                int64_t bin_id=static_cast<int64_t>(minimum_bins[tree_id])+distribution_id;
+                long double prediction_error=bin_id*fdwz_prediction_error_bin_width;
+                output<<field<<','<<params.rel_eb[field]<<','<<params.abs_eb[field]<<','<<tree_id<<','<<group<<','<<bin_id<<','<<fdwz_prediction_error_bin_width<<','<<prediction_error<<','<<count<<'\n';
+            }
+        }
+        printf("FDWZ tree prediction-error distribution written to %s\n",params.fdwz_tree_prediction_error_distribution_path.c_str());
+    }
+
     // 执行单个field的完整FDWZ压缩；模板参数决定是否编译分段计时代码。
-    template<bool measure_phase_time,typename T>
+    template<bool measure_phase_time,bool analyze_tree_distributions,typename T>
     void fdwz_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num)
     {
         auto &header=params.header;
@@ -326,6 +458,7 @@ namespace mrcz::detail
         vector<unsigned char> selected_order_ids(blocks.size(),0);
         vector<uint64_t> sample_element_counts(blocks.size(),0);
         vector<uint64_t> unpredictable_counts(blocks.size(),0);
+        vector<unique_ptr<int32_t[]>> partition_prediction_error_bins(analyze_tree_distributions?blocks.size():0);
         array<uint32_t,5> tree_value_num{};
         if (huffman_tree_num==1)
             tree_value_num[0]=n012;
@@ -335,6 +468,9 @@ namespace mrcz::detail
             for (uint32_t group_id=0;group_id+1<residual_group_offsets.size();group_id++)
                 tree_value_num[group_id+1]=residual_group_offsets[group_id+1]-residual_group_offsets[group_id];
         }
+        if constexpr(analyze_tree_distributions)
+            for(uint64_t block_id=0;block_id<blocks.size();block_id++)
+                partition_prediction_error_bins[block_id]=make_unique_for_overwrite<int32_t[]>(n012*blocks[block_id].element_num);
         vector<double> decision_time(measure_phase_time?blocks.size():0,0),prediction_quantization_time(measure_phase_time?blocks.size():0,0),huffman_time(measure_phase_time?blocks.size():0,0),zstd_time(measure_phase_time?blocks.size():0,0);
         double decision_start_time=0,decision_wall_time=0;
         if constexpr(measure_phase_time)
@@ -386,13 +522,21 @@ namespace mrcz::detail
                 uint32_t selected_order_id=selected_order_ids[block_id];
                 auto &prediction_stencils=cubic_plans[selected_order_id].stencils;
                 unsigned char selected_plan_id=selected_order_id+6;
+                int32_t *block_prediction_error_bins=partition_qb[block_id].get();
+                if constexpr(analyze_tree_distributions)
+                    block_prediction_error_bins=partition_prediction_error_bins[block_id].get();
                 if(residual_qb_range_safe)
-                    fdwz_compress_block<measure_phase_time,false>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,tree_value_num,huffman_tree_num,abs_eb,inv_2_eb,selected_plan_id,partition_qb[block_id].get(),unpredictable_counts,prediction_quantization_time,huffman_time,zstd_time);
+                    fdwz_compress_block<measure_phase_time,false,analyze_tree_distributions>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,tree_value_num,huffman_tree_num,abs_eb,inv_2_eb,selected_plan_id,partition_qb[block_id].get(),block_prediction_error_bins,unpredictable_counts,prediction_quantization_time,huffman_time,zstd_time);
                 else
-                    fdwz_compress_block<measure_phase_time,true>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,tree_value_num,huffman_tree_num,abs_eb,inv_2_eb,selected_plan_id,partition_qb[block_id].get(),unpredictable_counts,prediction_quantization_time,huffman_time,zstd_time);
+                    fdwz_compress_block<measure_phase_time,true,analyze_tree_distributions>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,tree_value_num,huffman_tree_num,abs_eb,inv_2_eb,selected_plan_id,partition_qb[block_id].get(),block_prediction_error_bins,unpredictable_counts,prediction_quantization_time,huffman_time,zstd_time);
             }
         }
         double end_time=omp_get_wtime();
+        if constexpr(analyze_tree_distributions)
+        {
+            fdwz_write_tree_qb_distribution(params,field,huffman_tree_num,tree_value_num,partition_qb);
+            fdwz_write_tree_prediction_error_distribution(params,field,huffman_tree_num,tree_value_num,partition_prediction_error_bins);
+        }
         vector<uint64_t> configuration_counts(all_orders.size(),0);
         for(auto order_id:selected_order_ids)
             configuration_counts[order_id]++;
@@ -437,7 +581,11 @@ namespace mrcz
         // 正式FDWZ忽略消融开关并使用自动tree数量；FDWZ-ablation才读取if_max_huffman_tree。
         uint32_t huffman_tree_num=0;
         if constexpr(ablation)
+        {
             huffman_tree_num=if_max_huffman_tree?0:1;
-        detail::fdwz_compress_impl<measure_phase_time>(*this,field,huffman_tree_num);
+            if(if_analyze_fdwz_tree_distributions)
+                return detail::fdwz_compress_impl<measure_phase_time,true>(*this,field,huffman_tree_num);
+        }
+        detail::fdwz_compress_impl<measure_phase_time,false>(*this,field,huffman_tree_num);
     }
 }

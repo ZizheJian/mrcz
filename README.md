@@ -17,6 +17,7 @@
     <tr><td><code>t1_start_c_code.py</code></td><td>构建并运行C++压缩与解压程序，执行主要rate-distortion和throughput实验，并将各field的结果写入CSV。</td></tr>
     <tr><td><code>t2_find_three_irregular_elements.py</code></td><td>在NekRS数据中寻找三个两两共享面的非平面element，并生成三个element、其中一个element的分层节点及reference element的交互式三维图。</td></tr>
     <tr><td><code>t3_test_interpolation_prediction.py</code></td><td>随机抽取NekRS element、寻找共享面邻居，比较跨公共面预测与element内部预测两种一阶方案，并生成相对绝对误差ECDF。</td></tr>
+    <tr><td><code>t3_test_cubic_face_prediction.py</code></td><td>在共享面的中央目标点上比较跨element与沿共享面的cubic预测，分别使用有符号物理距离和reference-space GLL坐标计算权重，并输出NRMSE和NMAE。</td></tr>
     <tr><td><code>t4_plot_data_coeff_err_distribution.py</code></td><td>比较NekRS文件中第一个标量field、对应变换系数和误差的概率分布，输出三联直方图；运行前需要准备逐点对应的float64 <code>_coeff</code>和<code>_err</code>二进制文件。</td></tr>
     <tr><td><code>t5_start_weak_scaling.py（旧）</code></td><td>对每个method/field使用由完整数据RD曲线的目标PSNR确定的REL EB，并在各CPU数和数据区间固定对应的ABS EB与计算精度，执行单节点weak scaling实验；可选择端点、等宽区间中点或完整partition覆盖，结果写入<code>results/weak_scaling/</code>中的raw、summary和quality CSV。</td></tr>
     <tr><td><code>t6_start_strong_scaling.py（旧）</code></td><td>复用<code>t5_start_weak_scaling.py</code>中每个method/field的目标PSNR配置，固定完整数据范围、ABS EB、计算精度和partition网格，只改变OpenMP线程数执行单节点strong scaling实验。</td></tr>

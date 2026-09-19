@@ -71,6 +71,9 @@ namespace mrcz
 
             // FDWZ优化开关
             bool if_max_huffman_tree=true; //仅FDWZ-ablation读取；不写入metadata，解压时必须与压缩一致
+            bool if_analyze_fdwz_tree_distributions=false; //仅FDWZ-ablation读取；开启后导出每棵tree的QB与prediction-error分布
+            string fdwz_tree_qb_distribution_path="fdwz_tree_qb_distribution.csv";
+            string fdwz_tree_prediction_error_distribution_path="fdwz_tree_prediction_error_distribution.csv";
             uint64_t fdwz_sample_interval=128; //抽样element的近似间隔，必须为正整数
             uint64_t fdwz_min_sample_num=32; //使用采样间隔时每个partition的最少均匀样本数
 
@@ -226,6 +229,9 @@ namespace mrcz
                 if_coefficient_transpose=other.if_coefficient_transpose;
                 if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
                 if_max_huffman_tree=other.if_max_huffman_tree;
+                if_analyze_fdwz_tree_distributions=other.if_analyze_fdwz_tree_distributions;
+                fdwz_tree_qb_distribution_path=other.fdwz_tree_qb_distribution_path;
+                fdwz_tree_prediction_error_distribution_path=other.fdwz_tree_prediction_error_distribution_path;
                 fdwz_sample_interval=other.fdwz_sample_interval;
                 fdwz_min_sample_num=other.fdwz_min_sample_num;
                 grid_assumption=other.grid_assumption;
