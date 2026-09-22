@@ -29,7 +29,7 @@ Most of the compressors were compiled using GCC 11.2.0 using \verb|-Ofast|. SPER
     \end{tabular}
 \end{table*}
 
-Table~\ref{tab:datasets} summarizes the datasets used in our evaluation. Most datasets are large-scale NekRS~\cite{fischer2022nekrs} simulations provided by domain scientists. We also generated additional datasets using MFEM~\cite{kolev2010modular} and Nektar++~\cite{moxey2020nektar++} examples to validate compatibility with other HOHS data formats. For simplicity, we denote each field using the format X\textit{Name}, where X is the dataset index in Table~\ref{tab:datasets} and \textit{Name} is the field name. For example, 4T denotes the field T from the fourth dataset.
+Table~\ref{tab:datasets} summarizes the datasets used in our evaluation. Most datasets are large-scale NekRS~\cite{fischer2022nekrs} simulations provided by domain scientists. We also generated additional datasets using MFEM~\cite{kolev2010modular} and Nektar++~\cite{moxey2020nektar++} examples to validate compatibility with other HOHS data formats. For simplicity, we denote each field using the format X\textit{Name}, where X is the dataset index in Table~\ref{tab:datasets} and \textit{Name} is the field name. For example, 4T denotes the $T$ field of Dataset~4.
 
 \subsubsection{Baseline Compressors}\mbox{}
 
@@ -92,7 +92,7 @@ Table~\ref{tab:compression-ratios} shows the storage-reduction performance under
 
 \subsection{End-to-End Workflow Evaluation}
 
-In this subsection, we assess the practical impact of compression on end-to-end data movement between Purdue Anvil and Argonne Bebop using Globus~\cite{chard2017globus}, a widely used service for high-performance data transfer. For each evaluation, we compress all non-constant fields from HOHS Data 4 and 5 (Table~\ref{tab:datasets}) under an absolute error bound of $10^{-6}$, transfer the compressed data, and decompress it at the destination. The measured end-to-end time captures the trade-off between reduced transfer volume and compression/decompression overhead. Each dataset is evaluated three times, and the average results are reported.
+In this subsection, we assess the practical impact of compression on end-to-end data movement between Purdue Anvil and Argonne Bebop using Globus~\cite{chard2017globus}, a widely used service for high-performance data transfer. For each evaluation, we compress all non-constant fields from Datasets~4 and~5 (Table~\ref{tab:datasets}) under an absolute error bound of $10^{-6}$, transfer the compressed data, and decompress it at the destination. The measured end-to-end time captures the trade-off between reduced transfer volume and compression/decompression overhead. Each dataset is evaluated three times, and the average results are reported.
 
 
 \begin{figure}[htb]
@@ -115,7 +115,7 @@ Following the end-to-end workflow evaluation, we further isolate the compression
     \label{fig:throughput}
 \end{figure}
 
-The results are shown in Figure~\ref{fig:throughput}. \textit{\textbf{SZ3-HOHS achieves the highest overall throughput, particularly during decompression, while MRCZ remains competitive despite its more computationally intensive transform-based prediction.}} For example, with 16 threads on Dataset 4, SZ3-HOHS and MRCZ achieve per-thread compression throughputs of 136.55 and 60.33 MB/s, respectively. By comparison, SZ3-1, SZ2-1, SPERR, and ZFP achieve 107.18, 82.01, 20.57, and 51.01 MB/s, respectively. MRCZ therefore provides substantially higher throughput than SPERR and moderately higher throughput than ZFP, while also delivering a higher compression ratio. One contributing factor is its accurate prediction, which produces more concentrated quantization symbols and reduces the cost of the subsequent lossless encoding stage.
+The results are shown in Figure~\ref{fig:throughput}. \textit{\textbf{SZ3-HOHS achieves the highest overall throughput, particularly during decompression, while MRCZ remains competitive despite its more computationally intensive transform-based prediction.}} For example, with 16 threads on Dataset~4, SZ3-HOHS and MRCZ achieve per-thread compression throughputs of 136.55 and 60.33 MB/s, respectively. By comparison, SZ3-1, SZ2-1, SPERR, and ZFP achieve 107.18, 82.01, 20.57, and 51.01 MB/s, respectively. MRCZ therefore provides substantially higher throughput than SPERR and moderately higher throughput than ZFP, while also delivering a higher compression ratio. One contributing factor is its accurate prediction, which produces more concentrated quantization symbols and reduces the cost of the subsequent lossless encoding stage.
 
 These results reveal a practical trade-off between compression effectiveness and computational performance. MRCZ is preferable when maximizing compression ratio is the primary objective, whereas SZ3-HOHS offers a stronger balance between compression ratio and throughput when execution time is more important.
 
@@ -123,7 +123,7 @@ As the thread count increases, the per-thread throughput of MRCZ, SPERR, and ZFP
 
 \subsection{Visualization}\label{sec:performance evaluation:visualization}
 
-In this part, we examine a slice of the temperature field from the fourth dataset (4T in Table~\ref{tab:datasets}). To assess reconstruction quality across different error-bounded lossy compressors, we plot the pointwise absolute reconstruction errors produced by each method. Lighter colors indicate smaller errors and therefore higher reconstruction fidelity. For a fair comparison, all compressors are evaluated at comparable compression ratios close to 26.07. Only a small spatial region is shown for clarity.
+In this part, we examine a slice of the temperature field from Dataset~4 (4T in Table~\ref{tab:datasets}). To assess reconstruction quality across different error-bounded lossy compressors, we plot the pointwise absolute reconstruction errors produced by each method. Lighter colors indicate smaller errors and therefore higher reconstruction fidelity. For a fair comparison, all compressors are evaluated at comparable compression ratios close to 26.07. Only a small spatial region is shown for clarity.
 
 \begin{table}[htb]
     \centering

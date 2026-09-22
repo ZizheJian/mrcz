@@ -146,6 +146,12 @@ namespace mrcz
                     throw runtime_error("缺少-max-huffman-tree参数后的布尔值");
                 params.if_max_huffman_tree=parse_bool(argv[++i],"-max-huffman-tree");
             }
+            else if (string(argv[i])=="-analyze-fdwz-prediction-locality")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-analyze-fdwz-prediction-locality参数后的布尔值");
+                params.if_analyze_fdwz_prediction_locality=parse_bool(argv[++i],"-analyze-fdwz-prediction-locality");
+            }
             else if (string(argv[i])=="-compute-precision")
             {
                 if (i+1>=argc)

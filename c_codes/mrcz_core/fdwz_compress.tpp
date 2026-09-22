@@ -399,8 +399,8 @@ namespace mrcz::detail
         printf("FDWZ tree prediction-error distribution written to %s\n",params.fdwz_tree_prediction_error_distribution_path.c_str());
     }
 
-    // 执行单个field的完整FDWZ压缩；模板参数决定是否编译分段计时代码。
-    template<bool measure_phase_time,bool analyze_tree_distributions,typename T>
+    // 执行单个field的完整FDWZ压缩；模板参数决定是否编译计时和消融统计代码。
+    template<bool measure_phase_time,bool analyze_tree_distributions,bool analyze_prediction_locality,typename T>
     void fdwz_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num)
     {
         auto &header=params.header;
@@ -458,6 +458,16 @@ namespace mrcz::detail
         vector<unsigned char> selected_order_ids(blocks.size(),0);
         vector<uint64_t> sample_element_counts(blocks.size(),0);
         vector<uint64_t> unpredictable_counts(blocks.size(),0);
+        vector<vector<fdwz_element_index_stencil<T>>> element_index_stencils;
+        if constexpr(analyze_prediction_locality)
+        {
+            element_index_stencils.resize(blocks.size());
+            for(uint64_t block_id=0;block_id<blocks.size();block_id++)
+                element_index_stencils[block_id]=fdwz_generate_element_index_stencils<T>(blocks[block_id].element_num);
+        }
+        double element_local_absolute_error_sum=0,element_local_squared_error_sum=0;
+        double element_index_absolute_error_sum=0,element_index_squared_error_sum=0;
+        uint64_t element_local_value_num=0,element_index_value_num=0;
         vector<unique_ptr<int32_t[]>> partition_prediction_error_bins(analyze_tree_distributions?blocks.size():0);
         array<uint32_t,5> tree_value_num{};
         if (huffman_tree_num==1)
@@ -515,6 +525,68 @@ namespace mrcz::detail
                     decision_wall_time=omp_get_wtime()-decision_start_time;
             }
             #pragma omp barrier
+            if constexpr(analyze_prediction_locality)
+            {
+                // 两种方法均使用量化前的原始值，并限到相同的目标集合：全部非pivot element中的非角点。
+                #pragma omp for schedule(static) reduction(+:element_local_absolute_error_sum,element_local_squared_error_sum,element_local_value_num)
+                for(uint64_t block_id=0;block_id<blocks.size();block_id++)
+                {
+                    auto &block=blocks[block_id];
+                    auto &element_stencils=element_index_stencils[block_id];
+                    auto &prediction_stencils=cubic_plans[selected_order_ids[block_id]].stencils;
+                    for(const auto &element_stencil:element_stencils)
+                    {
+                        const T *element=data.data()+(block.begin_index+element_stencil.target)*n012;
+                        for(const auto &stencil:prediction_stencils)
+                        {
+                            double prediction=0;
+                            for(uint32_t reference_id=0;reference_id<stencil.point_num;reference_id++)
+                                prediction+=double(stencil.weights[reference_id])*double(element[stencil.indices[reference_id]]);
+                            double error=double(element[stencil.target])-prediction;
+                            element_local_absolute_error_sum+=fabs(error);
+                            element_local_squared_error_sum+=error*error;
+                            element_local_value_num++;
+                        }
+                    }
+                }
+                #pragma omp for schedule(static) reduction(+:element_index_absolute_error_sum,element_index_squared_error_sum,element_index_value_num)
+                for(uint64_t block_id=0;block_id<blocks.size();block_id++)
+                {
+                    auto &block=blocks[block_id];
+                    auto &element_stencils=element_index_stencils[block_id];
+                    // 所有dimension order覆盖相同的非角点集合，因此plan 0仅用于列举element-local位置。
+                    auto &local_targets=cubic_plans[0].stencils;
+                    for(const auto &element_stencil:element_stencils)
+                    {
+                        const T *target_element=data.data()+(block.begin_index+element_stencil.target)*n012;
+                        for(const auto &local_target:local_targets)
+                        {
+                            double prediction=0;
+                            for(uint32_t reference_id=0;reference_id<element_stencil.point_num;reference_id++)
+                            {
+                                const T *reference_element=data.data()+(block.begin_index+element_stencil.indices[reference_id])*n012;
+                                prediction+=double(element_stencil.weights[reference_id])*double(reference_element[local_target.target]);
+                            }
+                            double error=double(target_element[local_target.target])-prediction;
+                            element_index_absolute_error_sum+=fabs(error);
+                            element_index_squared_error_sum+=error*error;
+                            element_index_value_num++;
+                        }
+                    }
+                }
+                #pragma omp master
+                {
+                    double field_range=double(params.data_range_max[field])-double(params.data_range_min[field]);
+                    double element_local_nrmse=sqrt(element_local_squared_error_sum/element_local_value_num)/field_range;
+                    double element_local_nmae=(element_local_absolute_error_sum/element_local_value_num)/field_range;
+                    double element_index_nrmse=sqrt(element_index_squared_error_sum/element_index_value_num)/field_range;
+                    double element_index_nmae=(element_index_absolute_error_sum/element_index_value_num)/field_range;
+                    printf("FDWZ prediction locality: element-index pivot stride=%u\n",fdwz_element_index_pivot_stride);
+                    printf("FDWZ prediction locality: method=element-local, NRMSE=%.10e, NMAE=%.10e, value num=%lu\n",element_local_nrmse,element_local_nmae,element_local_value_num);
+                    printf("FDWZ prediction locality: method=element-index, NRMSE=%.10e, NMAE=%.10e, value num=%lu\n",element_index_nrmse,element_index_nmae,element_index_value_num);
+                }
+                #pragma omp barrier
+            }
             // partition覆盖互不重叠的element和QB范围，因此各线程可以安全地原地覆盖data并写入各自的bitstream。
             #pragma omp for schedule(static)
             for (uint64_t block_id=0;block_id<blocks.size();block_id++)
@@ -584,8 +656,14 @@ namespace mrcz
         {
             huffman_tree_num=if_max_huffman_tree?0:1;
             if(if_analyze_fdwz_tree_distributions)
-                return detail::fdwz_compress_impl<measure_phase_time,true>(*this,field,huffman_tree_num);
+            {
+                if(if_analyze_fdwz_prediction_locality)
+                    return detail::fdwz_compress_impl<measure_phase_time,true,true>(*this,field,huffman_tree_num);
+                return detail::fdwz_compress_impl<measure_phase_time,true,false>(*this,field,huffman_tree_num);
+            }
+            if(if_analyze_fdwz_prediction_locality)
+                return detail::fdwz_compress_impl<measure_phase_time,false,true>(*this,field,huffman_tree_num);
         }
-        detail::fdwz_compress_impl<measure_phase_time,false>(*this,field,huffman_tree_num);
+        detail::fdwz_compress_impl<measure_phase_time,false,false>(*this,field,huffman_tree_num);
     }
 }

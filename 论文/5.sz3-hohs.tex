@@ -1,6 +1,6 @@
 \section{Interpolation-Based Compression: FDWZ}\label{sec:SZ3-HOHS}
 
-FDWZ follows the SZ compression framework. Section~\ref{sec:SZ3-HOHS:sz3 interpolation} briefly reviews this framework. Sections~\ref{sec:FDWZ:distance-weighted} and~\ref{sec:FDWZ:multi-tree} describe how FDWZ differs from it, as summarized in Figure~\ref{fig:fdwz-workflow}. Finally, Section~\ref{sec:FDWZ:prediction-locality} compares predictability within an element, along the stored element-index dimension, and across adjacent element boundaries.
+FDWZ follows the SZ compression framework. Section~\ref{sec:SZ3-HOHS:sz3 interpolation} briefly reviews this framework. Sections~\ref{sec:FDWZ:distance-weighted} and~\ref{sec:FDWZ:multi-tree} describe how FDWZ differs from it, as summarized in Figure~\ref{fig:fdwz-workflow}. Finally, Sections~\ref{sec:FDWZ:cross-interface} and~\ref{sec:FDWZ:element-index-dimension} compare element-local prediction with prediction across shared element interfaces and along the element-index dimension, respectively.
 
 \begin{figure}[htb]
     \centering
@@ -26,15 +26,17 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/5/cubic interpolation.pdf}
+    \includegraphics[width=0.8\linewidth]{figs/5/cubic interpolation.pdf}
     \caption{Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table~\ref{tab:cubic-interpolation}.}
     \label{fig:cubic-interpolation}
 \end{figure}
 
 \begin{table}[htb]
+    \caption{Coordinates and cubic interpolation weights in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
+    \label{tab:cubic-interpolation}
     \centering
-    {\footnotesize
-    \setlength{\tabcolsep}{4pt}
+    \normalsize
+    \setlength{\tabcolsep}{2.5pt}
     \renewcommand{\arraystretch}{1.05}
     \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccccc@{}}
         \toprule
@@ -45,9 +47,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
         FDWZ: $x/a$ & 0 & 0.040 & 0.131 & 0.261 & 0.417 \\
         FDWZ: $w$ & \textminus0.771 & 1.458 & --- & 0.376 & \textminus0.063 \\
         \bottomrule
-    \end{tabular*}}
-    \caption{Coordinates and cubic interpolation weights in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
-    \label{tab:cubic-interpolation}
+    \end{tabular*}
 \end{table}
 
 Element-local prediction also provides favorable memory locality. On large regular tensor datasets, SZ3 may perform long-range accesses during multilevel prediction. High-order elements, in contrast, are typically small, often no larger than $10 \times 10 \times 10$, allowing FDWZ to operate primarily on cache-resident data.
@@ -63,50 +63,65 @@ Figure~\ref{fig:fdwz-tree-ablation}(a) illustrates the resulting level-dependent
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/5/fdwz-tree-ablation.pdf}
-    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on pb0/$P$. (a) At REL EB $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.}
+    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~4. (a) At REL EB $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.}
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 
-\subsection{Comparison of Prediction Locality}\label{sec:FDWZ:prediction-locality}\label{sec:SZ3-HOHS:element_dimension}\label{sec:SZ3-HOHS:cross_element}
+\subsection{Prediction Across Shared Element Interfaces}\label{sec:FDWZ:cross-interface}\label{sec:SZ3-HOHS:cross_element}
+
+We next examine whether cross-interface prediction can improve upon the element-local interpolation used by FDWZ. For a controlled comparison, both predictors are evaluated at the same target points on shared faces. As illustrated in Figure~\ref{fig:cross-element}, the cross-interface predictor uses two interior reference points from each adjacent element, whereas the element-local predictor uses four reference points along either reference-space direction of the shared face.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=1\linewidth]{figs/5/cross-element.pdf}
-    \caption{Illustration of the Point Configurations Used in Cross-Element and Intra-Element Prediction}
+    \caption{Cubic prediction stencils across and along a shared element interface. The blue surface denotes the shared interface. The regions above and below it belong to the two adjacent elements.}
     \label{fig:cross-element}
 \end{figure}
 
-We further explain the rationale for using intra-element prediction instead of cross-element prediction in FDWZ. In principle, cross-element prediction may benefit from the dense sampling near element boundaries. Since the physical distance between points across a shared face is small, their values may be more similar than those of neighboring points closer to the element interior, which can improve prediction accuracy. However, the reference points used in cross-element prediction are generally not collinear with the prediction target in physical space, which can reduce the effectiveness of linear interpolation. By contrast, the target and reference points used for intra-element prediction are collinear in the reference element and remain nearly collinear in physical space, with only minor distortion introduced by the element mapping. These competing effects make it unclear a priori which strategy provides more accurate predictions. We therefore perform an empirical comparison of cross-element and intra-element prediction.
+GLL points cluster near element boundaries, allowing cross-interface prediction to use reference points close to the target. However, the two elements can be geometrically distorted in different ways, and the deformation on one side need not continue smoothly onto the other. Consequently, the cross-interface reference points are generally not collinear with the target in physical space. In contrast, each face-parallel stencil lies along a tensor-product coordinate line in reference space. These competing effects make their relative prediction accuracy unclear a priori.
 
-We conduct experiments on the NekRS dataset~\cite{fischer2022nekrs} with an element size of $8\times8\times8$ (Dataset 4 in Table~\ref{tab:datasets}). We randomly sample a subset of elements, identify their neighboring elements, and align the neighboring elements to ensure consistent face orientations. For cross-element prediction, each point on the shared face is treated as a prediction target, and one neighboring interior grid point from each of the two adjacent elements is used as a reference for weighted linear interpolation. For comparison, the intra-element scheme predicts the same target using two reference points from the same element, both selected along the grid line extending from the shared face into the element interior. In both cases, prediction accuracy is quantified using mean squared error (MSE).
+We evaluate the $P$ field of Dataset~4 on randomly selected internal faces, each shared by two elements, and compare the prediction errors at the same interior points of each face.
 
-% \begin{table}[h]
-%     \caption{MSE between cross-element and intra-element predictions across five faces of element 1940839.}
-%     \label{tab:cross-element mse}
-%     \centering
-%     \begin{tabular}{c|cc}\toprule
-%         \textbf{Adjacent Element} & \textbf{Cross-Element MSE} & \textbf{Intra-Element MSE} \\\midrule
-        
-%         1940803 & 2.049e-09 & 1.842e-08 \\
-%         1940840 & 6.993e-04 & 1.146e-05\\
-%         1940827 & 2.695e-07 & 3.909e-07\\
-%         1940833 & 4.341e-08 & 2.526e-07\\
-%         1940849 & 7.868e-06 & 1.031e-06\\\bottomrule
-%     \end{tabular}
-% \end{table}
-
-\begin{table}[h]
-    \caption{Comparison of Cross-Element and Intra-Element Prediction MSEs of a Representative Element}
-    \label{tab:cross-element mse}
+\begin{table}[htb]
     \centering
-    \begin{tabular}{c|cc}\toprule
-        \textbf{Face Index} & \textbf{Cross-Element MSE} & \textbf{Intra-Element MSE} \\\midrule
-        1 & 2.049e-09 & 1.842e-08 \\
-        2 & 6.993e-04 & 1.146e-05\\
-        3 & 2.695e-07 & 3.909e-07\\
-        4 & 4.341e-08 & 2.526e-07\\
-        5 & 7.868e-06 & 1.031e-06\\\bottomrule
+    \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~4. \textbf{Face-parallel} is the method used by FDWZ. Error ratio denotes the error of cross-interface prediction relative to face-parallel prediction.}
+    \label{tab:cross-interface-prediction}
+    \normalsize
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{lcc}
+        \toprule
+        Method & Normalized RMSE & Normalized MAE \\
+        \midrule
+        \textbf{Face-parallel} & $4.215\times10^{-5}$ & $8.584\times10^{-6}$ \\
+        Cross-interface & $5.234\times10^{-5}$ & $1.875\times10^{-5}$ \\
+        Error ratio & $1.24\times$ & $2.18\times$ \\
+        \bottomrule
     \end{tabular}
 \end{table}
 
-Table~\ref{tab:cross-element mse} presents the results for a representative element with five faces that have adjacent elements. Its remaining face has no identifiable adjacent element and is therefore excluded from the comparison. Additional tests show that either cross-element or intra-element prediction may achieve lower MSE on an individual face, while their average MSEs over a large number of faces are comparable. Thus, cross-element prediction provides no consistent accuracy advantage to justify the additional overhead of connectivity identification and orientation alignment. We therefore adopt intra-element prediction in FDWZ.
+As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction is more accurate under both metrics. Although GLL clustering places cross-interface reference points closer to the target, this advantage is insufficient to make cross-interface prediction more accurate. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore keep FDWZ prediction within each element.
+
+\subsection{Prediction Along the Element-Index Dimension}\label{sec:FDWZ:element-index-dimension}\label{sec:SZ3-HOHS:element_dimension}
+
+We next examine whether prediction along the element-index dimension can outperform the element-local distance-weighted interpolation used by FDWZ. Section~\ref{sec:problem formulation:data characteristics} represents each scalar field as the four-dimensional logical array $X=\{x_{e,i,j,k}\}$, where $e$ enumerates the stored elements and $(i,j,k)$ identifies an element-local position. FDWZ does not exploit predictability along the dimension indexed by $e$.
+
+We evaluate the $P$ field of Dataset~4, applying both methods to the same target values. The element-local method uses FDWZ's distance-weighted interpolation, while the element-index method follows QoZ's one-dimensional interpolation approach~\cite{liu2024high}.
+
+\begin{table}[htb]
+    \centering
+    \caption{Comparison of element-local and element-index prediction errors for Dataset~4. \textbf{Element-local} is the method used by FDWZ. Error ratio denotes the error of element-index prediction relative to element-local prediction.}
+    \label{tab:element-index-prediction}
+    \normalsize
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{lcc}
+        \toprule
+        Method & Normalized RMSE & Normalized MAE \\
+        \midrule
+        \textbf{Element-local} & $3.323\times10^{-4}$ & $3.462\times10^{-5}$ \\
+        Element-index & $1.106\times10^{-2}$ & $4.362\times10^{-3}$ \\
+        Error ratio & $33.3\times$ & $126.0\times$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+As shown in Table~\ref{tab:element-index-prediction}, prediction along the element-index dimension is substantially less accurate under both metrics. Consecutive elements in storage order may be far apart in physical space, so their field values at the same local position may change abruptly, which limits the accuracy of element-index prediction.

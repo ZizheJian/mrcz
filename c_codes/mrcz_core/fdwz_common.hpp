@@ -58,6 +58,16 @@ namespace mrcz::detail
         T weights[4]={0,0,0,0};
     };
 
+    // 沿element-index dimension预测时还需要记录目标element索引。
+    template<typename T>
+    struct fdwz_element_index_stencil
+    {
+        uint32_t target=0;
+        uint32_t point_num=0;
+        uint32_t indices[4]={0,0,0,0};
+        T weights[4]={0,0,0,0};
+    };
+
     // 为一维hierarchy的每个目标生成linear或边界自适应的cubic插值stencil。
     template<typename T>
     vector<vector<fdwz_interpolation_stencil<T>>> fdwz_generate_interpolation_stencils(const vector<vector<uint32_t>> &left_indices,const vector<vector<uint32_t>> &right_indices,
@@ -118,6 +128,101 @@ namespace mrcz::detail
                 }
             }
         }
+        return stencils;
+    }
+
+    constexpr uint32_t fdwz_element_index_pivot_stride=256;
+
+    // 沿一个partition中的element-index dimension生成以周期pivot分段的多层cubic预测顺序。
+    template<typename T>
+    vector<fdwz_element_index_stencil<T>> fdwz_generate_element_index_stencils(uint64_t element_num,uint32_t pivot_stride=fdwz_element_index_pivot_stride)
+    {
+        if(element_num<3)
+            throw runtime_error("element-index预测至少需要3个element");
+        if(element_num>numeric_limits<uint32_t>::max())
+            throw runtime_error("单个partition的element数量超过element-index stencil索引范围");
+        if(pivot_stride<2)
+            throw runtime_error("element-index pivot间距至少为2");
+        uint32_t n=element_num;
+        vector<uint32_t> known_indices;
+        for(uint64_t index=0;index<n;index+=pivot_stride)
+            known_indices.push_back(uint32_t(index));
+        if(known_indices.back()!=n-1)
+            known_indices.push_back(n-1);
+        vector<pair<uint32_t,uint32_t>> intervals;
+        intervals.reserve(known_indices.size()-1);
+        for(size_t index=1;index<known_indices.size();index++)
+            if(known_indices[index]-known_indices[index-1]>1)
+                intervals.push_back({known_indices[index-1],known_indices[index]});
+        vector<fdwz_element_index_stencil<T>> stencils;
+        stencils.reserve(n-known_indices.size());
+        uint64_t pivot_num=known_indices.size();
+        while(!intervals.empty())
+        {
+            vector<pair<uint32_t,uint32_t>> next_intervals;
+            vector<uint32_t> mid_indices;
+            mid_indices.reserve(intervals.size());
+            for(auto [left_index,right_index]:intervals)
+            {
+                if(right_index-left_index<=1)
+                    continue;
+                uint32_t mid_index=left_index+(right_index-left_index)/2;
+                mid_indices.push_back(mid_index);
+                fdwz_element_index_stencil<T> stencil;
+                stencil.target=mid_index;
+                stencil.point_num=2;
+                stencil.indices[0]=left_index;
+                stencil.indices[1]=right_index;
+                uint32_t outer_left=left_index,outer_right=right_index;
+                auto left_position=lower_bound(known_indices.begin(),known_indices.end(),left_index);
+                if(left_position!=known_indices.begin())
+                    outer_left=*prev(left_position);
+                auto right_position=upper_bound(known_indices.begin(),known_indices.end(),right_index);
+                if(right_position!=known_indices.end())
+                    outer_right=*right_position;
+                if(outer_left!=left_index and outer_right!=right_index)
+                {
+                    stencil.point_num=4;
+                    stencil.indices[0]=outer_left;
+                    stencil.indices[1]=left_index;
+                    stencil.indices[2]=right_index;
+                    stencil.indices[3]=outer_right;
+                }
+                else if(outer_left!=left_index)
+                {
+                    stencil.point_num=3;
+                    stencil.indices[0]=outer_left;
+                    stencil.indices[1]=left_index;
+                    stencil.indices[2]=right_index;
+                }
+                else if(outer_right!=right_index)
+                {
+                    stencil.point_num=3;
+                    stencil.indices[0]=left_index;
+                    stencil.indices[1]=right_index;
+                    stencil.indices[2]=outer_right;
+                }
+                for(uint32_t i=0;i<stencil.point_num;i++)
+                {
+                    stencil.weights[i]=1;
+                    for(uint32_t j=0;j<stencil.point_num;j++)
+                        if(i!=j)
+                            stencil.weights[i]*=T(double(mid_index)-double(stencil.indices[j]))/T(double(stencil.indices[i])-double(stencil.indices[j]));
+                }
+                stencils.push_back(stencil);
+                if(mid_index-left_index>1)
+                    next_intervals.push_back({left_index,mid_index});
+                if(right_index-mid_index>1)
+                    next_intervals.push_back({mid_index,right_index});
+            }
+            vector<uint32_t> merged_indices;
+            merged_indices.reserve(known_indices.size()+mid_indices.size());
+            merge(known_indices.begin(),known_indices.end(),mid_indices.begin(),mid_indices.end(),back_inserter(merged_indices));
+            known_indices=move(merged_indices);
+            intervals=move(next_intervals);
+        }
+        if(stencils.size()!=n-pivot_num)
+            throw runtime_error("element-index prediction stencil数量错误");
         return stencils;
     }
 
@@ -326,4 +431,3 @@ namespace mrcz::detail
     }
 
 }
-

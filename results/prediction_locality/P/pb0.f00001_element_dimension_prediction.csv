@@ -1,0 +1,3 @@
+method,field,partition_num,pivot_stride,selection_rel_eb,value_num,nrmse,nmae
+element-local,P,64,256,0.0001,977494896,0.00033230801872,0.000034623706431
+element-index,P,64,256,0.0001,977494896,0.011058974393,0.0043616461899

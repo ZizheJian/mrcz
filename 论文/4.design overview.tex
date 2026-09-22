@@ -11,7 +11,7 @@ All evaluated compressors are executed through a common partitioned processing l
 FDWZ and MRCZ both adopt an element-local design for their main modeling steps. This choice is motivated by the following considerations.
 
 \begin{enumerate}
-\item \textit{Cross-element Prediction}: Prediction across elements can follow either the stored element order or the physical mesh connectivity. The former may expose statistical continuity and is used by some of the baselines evaluated in Section~\ref{sec:performance evaluation}. However, Section~\ref{sec:FDWZ:prediction-locality} shows that neither approach provides a consistent prediction advantage over element-local interpolation for FDWZ.
+\item \textit{Cross-element Prediction}: Prediction beyond an element can follow either the physical mesh connectivity or the stored element order. Sections~\ref{sec:FDWZ:cross-interface} and~\ref{sec:FDWZ:element-index-dimension} show that neither alternative to element-local interpolation provides a consistent prediction advantage for FDWZ.
 \item \textit{Irregular Connectivity}: Accessing physically adjacent elements requires identifying their shared faces and aligning their local coordinate systems. This process is complex and time-consuming.
 \item \textit{Transform Locality}: The transform used by MRCZ operates naturally on the tensor-product arrangement within each element. This arrangement is not preserved across element boundaries, making an element-local transform the natural design.
 \end{enumerate}
