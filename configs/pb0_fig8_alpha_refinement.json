@@ -1,0 +1,114 @@
+[
+  {
+    "name": "pb0_fig8_DST_uniform_alpha_1",
+    "data_path": "/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "format": "nekrs",
+    "field_list": [
+      "P"
+    ],
+    "eb_mode": "REL",
+    "eb_list": [
+      0.0001
+    ],
+    "method_list": [
+      "MRCZ-ablation"
+    ],
+    "max_cpus_list": [
+      64
+    ],
+    "partition_num": 64,
+    "extra_parameters": {
+      "grid-assumption": "uniform",
+      "transform": "DST",
+      "coeff-eb-scale": 1,
+      "coefficient-transpose": true,
+      "tiled-coefficient-transpose": true,
+      "compute-precision": "auto"
+    },
+    "csv_path": "results/fig8/alpha/DST_uniform/alpha_1"
+  },
+  {
+    "name": "pb0_fig8_DST_uniform_alpha_2",
+    "data_path": "/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "format": "nekrs",
+    "field_list": [
+      "P"
+    ],
+    "eb_mode": "REL",
+    "eb_list": [
+      0.0001
+    ],
+    "method_list": [
+      "MRCZ-ablation"
+    ],
+    "max_cpus_list": [
+      64
+    ],
+    "partition_num": 64,
+    "extra_parameters": {
+      "grid-assumption": "uniform",
+      "transform": "DST",
+      "coeff-eb-scale": 2,
+      "coefficient-transpose": true,
+      "tiled-coefficient-transpose": true,
+      "compute-precision": "auto"
+    },
+    "csv_path": "results/fig8/alpha/DST_uniform/alpha_2"
+  },
+  {
+    "name": "pb0_fig8_DST_uniform_alpha_5",
+    "data_path": "/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "format": "nekrs",
+    "field_list": [
+      "P"
+    ],
+    "eb_mode": "REL",
+    "eb_list": [
+      0.0001
+    ],
+    "method_list": [
+      "MRCZ-ablation"
+    ],
+    "max_cpus_list": [
+      64
+    ],
+    "partition_num": 64,
+    "extra_parameters": {
+      "grid-assumption": "uniform",
+      "transform": "DST",
+      "coeff-eb-scale": 5,
+      "coefficient-transpose": true,
+      "tiled-coefficient-transpose": true,
+      "compute-precision": "auto"
+    },
+    "csv_path": "results/fig8/alpha/DST_uniform/alpha_5"
+  },
+  {
+    "name": "pb0_fig8_DST_uniform_alpha_10",
+    "data_path": "/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "format": "nekrs",
+    "field_list": [
+      "P"
+    ],
+    "eb_mode": "REL",
+    "eb_list": [
+      0.0001
+    ],
+    "method_list": [
+      "MRCZ-ablation"
+    ],
+    "max_cpus_list": [
+      64
+    ],
+    "partition_num": 64,
+    "extra_parameters": {
+      "grid-assumption": "uniform",
+      "transform": "DST",
+      "coeff-eb-scale": 10,
+      "coefficient-transpose": true,
+      "tiled-coefficient-transpose": true,
+      "compute-precision": "auto"
+    },
+    "csv_path": "results/fig8/alpha/DST_uniform/alpha_10"
+  }
+]

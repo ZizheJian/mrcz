@@ -90,10 +90,8 @@
 \citation{liu2024high}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}DChT for Data on GLL Nodes}{7}\protected@file@percent }
 \newlabel{sec:mrcz:transform}{{\mbox  {VI-B}}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Rate--distortion performance and bit-rate breakdown of the evaluated transforms. The colored curves fix $\varepsilon _{\mathrm  {abs}}$ and vary $\alpha $, whereas the black reference curve fixes $\alpha $ and varies $\varepsilon _{\mathrm  {abs}}$.\relax }}{7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Two layouts of the rate--distortion performance of the valid transform--coordinate combinations. Each label identifies the transform followed by the coordinate assumption in parentheses. For each combination, the $\alpha $-sweep fixes $\varepsilon _{\mathrm  {rel}}=10^{-4}$, whereas the conventional rate--distortion curve fixes the selected $\alpha $ and varies $\varepsilon _{\mathrm  {rel}}$.\relax }}{7}\protected@file@percent }
 \newlabel{fig:transform}{{8}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Coefficient statistics for DLT and DChT on 8,192 elements sampled throughout the $P$ field of Dataset\nobreakspace  {}4. Modes are grouped by their maximum tensor-product order $\qopname  \relax m{max}(i,j,k)$. (a) Median coefficient magnitude normalized by the global value range; shading shows the interquartile range. (b) Empirical entropy after quantization with $\alpha =0.05$.\relax }}{7}\protected@file@percent }
-\newlabel{fig:transform-mode-statistics}{{9}{7}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Improving Local Regularity for Lossless Encoding}{7}\protected@file@percent }
 \newlabel{sec:mrcz:transpose}{{\mbox  {VI-C}}{7}}
 \citation{fischer2022nekrs}
@@ -103,6 +101,8 @@
 \citation{liang2022sz3,zhao2021optimizing}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Bit-rate breakdown and coefficient statistics for DLT and DChT evaluated at the GLL coordinates on the $P$ field of Dataset\nobreakspace  {}4. (a) Bit rates of the quantized coefficient and residual streams. (b)--(c) Coefficients from 8,192 sampled elements grouped by their maximum tensor-product order $\qopname  \relax m{max}(i,j,k)$. Panel (b) reports the median coefficient magnitude normalized by the global value range, with shading indicating the interquartile range. Panel (c) reports the empirical entropy after quantization with $\alpha =0.05$.\relax }}{8}\protected@file@percent }
+\newlabel{fig:transform-mode-statistics}{{9}{8}}
 \@writefile{toc}{\contentsline {section}{\numberline {VII}Performance Evaluation}{8}\protected@file@percent }
 \newlabel{sec:performance evaluation}{{VII}{8}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}Experimental Setup}{8}\protected@file@percent }
@@ -110,17 +110,17 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}1}Evaluation Platform}{8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}2}HOHS Datasets}{8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}3}Baseline Compressors}{8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{8}\protected@file@percent }
 \citation{chard2017globus}
 \@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces HOHS datasets used for evaluating SZ3-HOHS, MRCZ, and baseline compressors\relax }}{9}\protected@file@percent }
 \newlabel{tab:datasets}{{IV}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}End-to-End Workflow Evaluation}{9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Parallel Throughput}{9}\protected@file@percent }
-\newlabel{sec:parallel-throughput}{{\mbox  {VII-D}}{9}}
 \@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Evaluation of PSNR rate distortion curves between SZ3-HOHS, MRCZ, and baseline compressors.\relax }}{10}\protected@file@percent }
 \newlabel{fig:rate-distortion}{{10}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces End-to-end Workflow Execution Time via Globus\relax }}{10}\protected@file@percent }
 \newlabel{fig:transfer}{{11}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Parallel Throughput}{10}\protected@file@percent }
+\newlabel{sec:parallel-throughput}{{\mbox  {VII-D}}{10}}
 \@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Compression ratios of two leading fields 4UX and 5P across all evaluated lossy compressors. The SZ3-0 and SZ2-0 are excluded due to sacrificed performance. The \textbf  {highest} and \underline  {second-highest} compression ratios are highlighted.\relax }}{11}\protected@file@percent }
 \newlabel{tab:compression-ratios}{{V}{11}}
 \@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Parallel Execution Throughput (MB/s)\relax }}{11}\protected@file@percent }
@@ -131,8 +131,6 @@
 \newlabel{tab:error-bound-visualization}{{VI}{11}}
 \@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Difference visualization of a slice of the Temperature field from data 4T. The compression ratios for all compressors are unified as $\sim $26.07 for a fair comparison.\relax }}{11}\protected@file@percent }
 \newlabel{fig:distortion}{{13}{11}}
-\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{11}\protected@file@percent }
-\newlabel{sec:conclusion}{{VIII}{11}}
 \bibstyle{IEEEtran}
 \bibdata{reference}
 \bibcite{fischer2022nekrs}{1}
@@ -148,6 +146,9 @@
 \bibcite{gong2024general}{11}
 \bibcite{ren2024prediction}{12}
 \bibcite{shah2026solver}{13}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{12}\protected@file@percent }
+\newlabel{sec:conclusion}{{VIII}{12}}
+\@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }
 \bibcite{marin2016spectral}{14}
 \bibcite{chard2017globus}{15}
 \bibcite{cappello2019usecases}{16}
@@ -155,4 +156,3 @@
 \bibcite{kolev2010modular}{18}
 \bibcite{moxey2020nektar++}{19}
 \bibcite{zstd}{20}
-\@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }
