@@ -195,9 +195,4 @@ D.~Moxey, C.~D. Cantwell, Y.~Bao, A.~Cassinelli, G.~Castiglioni, S.~Chun,
 Y.~Collet, ``Zstandard -- real-time data compression algorithm,''
   \emph{http://facebook.github.io/zstd/}, 2015.
 
-\bibitem{Isoparametric-Mapping}
-``Isoparametric mapping,''
-  \emph{https://engcourses-uofa.ca/books/introduction-to-solid-mechanics/finite-element-analysis/one-and-two-dimensional-isoparametric-elements-and-gauss-integration/isoparametric-elements/},
-  2015.
-
 \end{thebibliography}

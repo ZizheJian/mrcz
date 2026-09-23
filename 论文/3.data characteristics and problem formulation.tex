@@ -14,7 +14,7 @@ The dimension indexed by $e$ enumerates the elements in the simulation mesh. In 
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/3/three_elements.pdf}
+    \includegraphics[width=\linewidth]{figs/3/three_elements.png}
     \caption{Hybrid organization of high-order element data. (a) Physical elements have irregular global connectivity. (b) Each physical element contains a deformed tensor-product arrangement of data points. (c) Every physical element is obtained by geometrically mapping a common reference element.}
     \label{fig:characterizing-hohs}
 \end{figure}
@@ -29,18 +29,18 @@ All four dimensions in this representation are logical indices rather than physi
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/3/End to End.pdf}
+    \includegraphics[width=\linewidth]{figs/3/End to End.png}
     \caption{Comparison of direct and compression-integrated data-movement workflows. Compression reduces storage and transfer costs while introducing compression and decompression overhead.}
     \label{fig:end-to-end}
 \end{figure}
 
-Given a field $X$ and an error bound $\varepsilon$, a compressor produces a bitstream $B$, from which the decompressor reconstructs a field $\widehat{X}$. We require a strict pointwise error guarantee:
+Given a field $X$ and an absolute error bound $\varepsilon_{\mathrm{abs}}$, a compressor produces a bitstream $B$, from which the decompressor reconstructs a field $\widehat{X}$. We require a strict pointwise error guarantee:
 \begin{equation}
-\max_{e,i,j,k}|x_{e,i,j,k}-\widehat{x}_{e,i,j,k}|\leq\varepsilon.
+\max_{e,i,j,k}|x_{e,i,j,k}-\widehat{x}_{e,i,j,k}|\leq\varepsilon_{\mathrm{abs}}.
 \end{equation}
-For an absolute error bound, $\varepsilon$ is specified directly. For a value-range-based relative error bound $\rho$, we set $\varepsilon=\rho R$, where $R=\max(X)-\min(X)$. Different physical fields may have different ranges, accuracy requirements, and downstream uses. We therefore compress each field independently and allow its error bound to be selected separately.
+The corresponding value-range-based relative error bound is $\varepsilon_{\mathrm{rel}}=\varepsilon_{\mathrm{abs}}/R$, where $R=\max(X)-\min(X)$. Different physical fields may have different ranges, accuracy requirements, and downstream uses. We therefore compress each field independently and allow its error bound to be selected separately.
 
-The pointwise error bound controls the largest reconstruction error but does not determine the overall distortion. We therefore quantify overall data quality using peak signal-to-noise ratio (PSNR), defined as $20\log_{10}(R/\mathrm{RMSE})$.
+The pointwise error bound controls the largest reconstruction error but does not determine the overall distortion. We therefore quantify overall data quality using peak signal-to-noise ratio (PSNR), defined as $20\log_{10}(R/\mathrm{RMSE})$. We define normalized RMSE (NRMSE) and normalized MAE (NMAE) as $\mathrm{RMSE}/R$ and $\mathrm{MAE}/R$, respectively.
 
 At a given PSNR, our first objective is to minimize the size of $B$. We report storage reduction using either compression ratio, defined as the original data size divided by the compressed size, or bit rate, defined as the average number of compressed bits per data value.
 

@@ -46,7 +46,6 @@
 \newlabel{fig:end-to-end}{{2}{3}}
 \citation{tao2017significantly,liang2022sz3}
 \citation{zstd}
-\citation{Isoparametric-Mapping}
 \@writefile{toc}{\contentsline {section}{\numberline {IV}Parallel Execution and Element-local Design}{4}\protected@file@percent }
 \newlabel{sec:design overview}{{IV}{4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Partitioned Parallel Execution}{4}\protected@file@percent }
@@ -61,11 +60,11 @@
 \newlabel{sec:FDWZ:distance-weighted}{{\mbox  {V-B}}{4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table\nobreakspace  {}I\hbox {}.\relax }}{5}\protected@file@percent }
 \newlabel{fig:cubic-interpolation}{{4}{5}}
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights in Figure\nobreakspace  {}4\hbox {}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.\relax }}{5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights for the 10-point GLL example in Figure\nobreakspace  {}4\hbox {}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.\relax }}{5}\protected@file@percent }
 \newlabel{tab:cubic-interpolation}{{I}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-tree Huffman Encoding}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:multi-tree}{{\mbox  {V-C}}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset\nobreakspace  {}4. (a) At REL EB $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.\relax }}{5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset\nobreakspace  {}4. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.\relax }}{5}\protected@file@percent }
 \newlabel{fig:fdwz-tree-ablation}{{5}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Prediction Across Shared Element Interfaces}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:cross-interface}{{\mbox  {V-D}}{5}}
@@ -73,8 +72,6 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Cubic prediction stencils across and along a shared element interface. The blue surface denotes the shared interface. The regions above and below it belong to the two adjacent elements.\relax }}{5}\protected@file@percent }
 \newlabel{fig:cross-element}{{6}{5}}
 \citation{liu2024high}
-\citation{marin2016spectral}
-\citation{fischer2022nekrs}
 \citation{marin2016spectral}
 \@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset\nobreakspace  {}4. \textbf  {Face-parallel} is the method used by FDWZ. Error ratio denotes the error of cross-interface prediction relative to face-parallel prediction.\relax }}{6}\protected@file@percent }
 \newlabel{tab:cross-interface-prediction}{{II}{6}}
@@ -85,16 +82,20 @@
 \newlabel{tab:element-index-prediction}{{III}{6}}
 \@writefile{toc}{\contentsline {section}{\numberline {VI}Representation-Based Compression: MRCZ}{6}\protected@file@percent }
 \newlabel{sec:mrcz}{{VI}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Revisiting DLT for HOHS Data Compression}{6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Distributions of Original Data and Coefficients\relax }}{6}\protected@file@percent }
-\newlabel{fig:dlt_distributions}{{7}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}Overview of MRCZ}{7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Diagram of MRCZ Compression.\relax }}{7}\protected@file@percent }
-\newlabel{fig:mrcz_diagram}{{8}{7}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Transform and Error Bound Selection}{7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Rate–Distortion Performance and Bit-Rate Breakdown of Different Transforms Across Error-Bound Configurations\relax }}{7}\protected@file@percent }
-\newlabel{fig:transform}{{9}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Overview of MRCZ}{6}\protected@file@percent }
+\newlabel{sec:mrcz:overview}{{\mbox  {VI-A}}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Overview of the MRCZ compression workflow.\relax }}{6}\protected@file@percent }
+\newlabel{fig:mrcz_diagram}{{7}{6}}
+\citation{marin2016spectral}
 \citation{liu2024high}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}DChT for Data on GLL Nodes}{7}\protected@file@percent }
+\newlabel{sec:mrcz:transform}{{\mbox  {VI-B}}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Rate--distortion performance and bit-rate breakdown of the evaluated transforms. The colored curves fix $\varepsilon _{\mathrm  {abs}}$ and vary $\alpha $, whereas the black reference curve fixes $\alpha $ and varies $\varepsilon _{\mathrm  {abs}}$.\relax }}{7}\protected@file@percent }
+\newlabel{fig:transform}{{8}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Coefficient statistics for DLT and DChT on 8,192 elements sampled throughout the $P$ field of Dataset\nobreakspace  {}4. Modes are grouped by their maximum tensor-product order $\qopname  \relax m{max}(i,j,k)$. (a) Median coefficient magnitude normalized by the global value range; shading shows the interquartile range. (b) Empirical entropy after quantization with $\alpha =0.05$.\relax }}{7}\protected@file@percent }
+\newlabel{fig:transform-mode-statistics}{{9}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Improving Local Regularity for Lossless Encoding}{7}\protected@file@percent }
+\newlabel{sec:mrcz:transpose}{{\mbox  {VI-C}}{7}}
 \citation{fischer2022nekrs}
 \citation{kolev2010modular}
 \citation{moxey2020nektar++}
@@ -102,8 +103,6 @@
 \citation{liang2022sz3,zhao2021optimizing}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-D}}Improving Local Regularity for Lossless Encoding}{8}\protected@file@percent }
-\newlabel{sec:mrcz:transpose}{{\mbox  {VI-D}}{8}}
 \@writefile{toc}{\contentsline {section}{\numberline {VII}Performance Evaluation}{8}\protected@file@percent }
 \newlabel{sec:performance evaluation}{{VII}{8}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}Experimental Setup}{8}\protected@file@percent }
@@ -111,10 +110,10 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}1}Evaluation Platform}{8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}2}HOHS Datasets}{8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}3}Baseline Compressors}{8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{8}\protected@file@percent }
 \citation{chard2017globus}
 \@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces HOHS datasets used for evaluating SZ3-HOHS, MRCZ, and baseline compressors\relax }}{9}\protected@file@percent }
 \newlabel{tab:datasets}{{IV}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}End-to-End Workflow Evaluation}{9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Parallel Throughput}{9}\protected@file@percent }
 \newlabel{sec:parallel-throughput}{{\mbox  {VII-D}}{9}}
@@ -153,8 +152,7 @@
 \bibcite{chard2017globus}{15}
 \bibcite{cappello2019usecases}{16}
 \bibcite{liu2023ocelot}{17}
-\@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }
 \bibcite{kolev2010modular}{18}
 \bibcite{moxey2020nektar++}{19}
 \bibcite{zstd}{20}
-\bibcite{Isoparametric-Mapping}{21}
+\@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }

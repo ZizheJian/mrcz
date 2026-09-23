@@ -4,7 +4,7 @@ FDWZ follows the SZ compression framework. Section~\ref{sec:SZ3-HOHS:sz3 interpo
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/5/fdwz diagram.pdf}
+    \includegraphics[width=\linewidth]{figs/5/fdwz diagram.png}
     \caption{Comparison of standard SZ3 compression on tensor data (left) and FDWZ compression on a high-order element partition (right). FDWZ replaces uniform-grid interpolation with distance-weighted interpolation and single-tree Huffman encoding with multi-tree encoding.}
     \label{fig:fdwz-workflow}
 \end{figure}
@@ -20,19 +20,19 @@ A representative predictor in SZ3 uses cubic interpolation on a uniform array gr
 FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points within each high-order element. This adaptation involves two changes: distance-weighted interpolation and a modified prediction order.
 
 \begin{enumerate}
-\item \textit{Distance-Weighted Interpolation}: Because GLL points are nonuniformly spaced, the fixed coefficients used by SZ3 no longer represent the cubic interpolant at the target position. In principle, FDWZ could compute interpolation weights from the physical coordinates of each element. However, repeating this calculation for every target in every element would be expensive. FDWZ therefore computes cubic Lagrange weights from the reference-space coordinates of the target and reference points. Figure~\ref{fig:cubic-interpolation}(b) illustrates such a stencil, and Table~\ref{tab:cubic-interpolation} lists its coordinates and weights. Because all elements with the same polynomial order share these coordinates~\cite{Isoparametric-Mapping}, the resulting weights can be reused across them.
+\item \textit{Distance-Weighted Interpolation}: Because GLL points are nonuniformly spaced, the fixed coefficients used by SZ3 no longer represent the cubic interpolant at the target position. In principle, FDWZ could compute interpolation weights from the physical coordinates of each element. However, repeating this calculation for every target in every element would be expensive. FDWZ therefore computes cubic Lagrange weights from the reference-space coordinates of the target and reference points. Figure~\ref{fig:cubic-interpolation}(b) illustrates such a stencil, and Table~\ref{tab:cubic-interpolation} lists its coordinates and weights. Because the reference-space GLL nodes depend only on the polynomial order, the resulting interpolation weights can be reused across all elements of that order.
 \item \textit{Modified Prediction Order}: SZ3 constructs its multilevel hierarchy by repeatedly selecting the array-index midpoint between two reconstructed endpoints. On a uniform grid, this point is also their geometric midpoint. FDWZ instead selects the unpredicted GLL point closest to the midpoint of the two endpoints in reference space. This choice helps limit the propagation of compression errors to later prediction levels. This order is also computed once per polynomial order and reused across elements.
 \end{enumerate}
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/5/cubic interpolation.pdf}
+    \includegraphics[width=0.8\linewidth]{figs/5/cubic interpolation.png}
     \caption{Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table~\ref{tab:cubic-interpolation}.}
     \label{fig:cubic-interpolation}
 \end{figure}
 
 \begin{table}[htb]
-    \caption{Coordinates and cubic interpolation weights in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
+    \caption{Coordinates and cubic interpolation weights for the 10-point GLL example in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
     \label{tab:cubic-interpolation}
     \centering
     \normalsize
@@ -63,7 +63,7 @@ Figure~\ref{fig:fdwz-tree-ablation}(a) illustrates the resulting level-dependent
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/5/fdwz-tree-ablation.pdf}
-    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~4. (a) At REL EB $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.}
+    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~4. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.}
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 
@@ -88,15 +88,15 @@ We evaluate the $P$ field of Dataset~4 on randomly selected internal faces, each
     \label{tab:cross-interface-prediction}
     \normalsize
     \setlength{\tabcolsep}{3pt}
-    \begin{tabular}{lcc}
+    \begin{tabular*}{0.95\columnwidth}{@{\extracolsep{\fill}}lcc@{}}
         \toprule
-        Method & Normalized RMSE & Normalized MAE \\
+        Method & NRMSE & NMAE \\
         \midrule
         \textbf{Face-parallel} & $4.215\times10^{-5}$ & $8.584\times10^{-6}$ \\
         Cross-interface & $5.234\times10^{-5}$ & $1.875\times10^{-5}$ \\
         Error ratio & $1.24\times$ & $2.18\times$ \\
         \bottomrule
-    \end{tabular}
+    \end{tabular*}
 \end{table}
 
 As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction is more accurate under both metrics. Although GLL clustering places cross-interface reference points closer to the target, this advantage is insufficient to make cross-interface prediction more accurate. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore keep FDWZ prediction within each element.
@@ -113,15 +113,15 @@ We evaluate the $P$ field of Dataset~4, applying both methods to the same target
     \label{tab:element-index-prediction}
     \normalsize
     \setlength{\tabcolsep}{3pt}
-    \begin{tabular}{lcc}
+    \begin{tabular*}{0.95\columnwidth}{@{\extracolsep{\fill}}lcc@{}}
         \toprule
-        Method & Normalized RMSE & Normalized MAE \\
+        Method & NRMSE & NMAE \\
         \midrule
         \textbf{Element-local} & $3.323\times10^{-4}$ & $3.462\times10^{-5}$ \\
         Element-index & $1.106\times10^{-2}$ & $4.362\times10^{-3}$ \\
         Error ratio & $33.3\times$ & $126.0\times$ \\
         \bottomrule
-    \end{tabular}
+    \end{tabular*}
 \end{table}
 
 As shown in Table~\ref{tab:element-index-prediction}, prediction along the element-index dimension is substantially less accurate under both metrics. Consecutive elements in storage order may be far apart in physical space, so their field values at the same local position may change abruptly, which limits the accuracy of element-index prediction.

@@ -11,48 +11,46 @@ Database file #1: reference.bib
 -- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
-Warning--empty author in Isoparametric-Mapping
 
 Done.
-You've used 21 entries,
+You've used 20 entries,
             4087 wiz_defined-function locations,
-            969 strings with 13719 characters,
-and the built_in function-call counts, 19389 in all, are:
-= -- 1504
-> -- 639
+            965 strings with 13475 characters,
+and the built_in function-call counts, 19093 in all, are:
+= -- 1481
+> -- 638
 < -- 132
-+ -- 338
++ -- 337
 - -- 131
-* -- 1000
-:= -- 2862
-add.period$ -- 51
-call.type$ -- 21
-change.case$ -- 22
+* -- 987
+:= -- 2810
+add.period$ -- 49
+call.type$ -- 20
+change.case$ -- 21
 chr.to.int$ -- 303
-cite$ -- 22
-duplicate$ -- 1341
-empty$ -- 1494
+cite$ -- 20
+duplicate$ -- 1310
+empty$ -- 1461
 format.name$ -- 149
-if$ -- 4506
+if$ -- 4439
 int.to.chr$ -- 0
-int.to.str$ -- 21
-missing$ -- 271
-newline$ -- 122
+int.to.str$ -- 20
+missing$ -- 267
+newline$ -- 119
 num.names$ -- 20
-pop$ -- 660
+pop$ -- 647
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 1462
+skip$ -- 1438
 stack$ -- 0
-substring$ -- 767
-swap$ -- 1115
+substring$ -- 766
+swap$ -- 1102
 text.length$ -- 31
 text.prefix$ -- 0
 top$ -- 5
-type$ -- 21
-warning$ -- 1
+type$ -- 20
+warning$ -- 0
 while$ -- 76
-width$ -- 23
-write$ -- 276
-(There was 1 warning)
+width$ -- 22
+write$ -- 269

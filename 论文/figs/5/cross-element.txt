@@ -161,7 +161,7 @@ legendFontSize = 8;
 
 pointLegend =
   PointLegend[{crossBoundaryReferenceColor, predictionTargetColor,
-    interfaceReferenceColor}, {"Cross-Element Reference",
+    interfaceReferenceColor}, {"Cross-Interface Reference",
     "Prediction Target", "Face-Parallel Reference"},
    LegendLayout -> "Column", LegendMarkerSize -> 12,
    LabelStyle ->
