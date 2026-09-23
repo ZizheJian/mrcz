@@ -35,7 +35,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
     \caption{Coordinates and cubic interpolation weights for the 10-point GLL example in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
     \label{tab:cubic-interpolation}
     \centering
-    \normalsize
+    \footnotesize
     \setlength{\tabcolsep}{2.5pt}
     \renewcommand{\arraystretch}{1.05}
     \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccccc@{}}
@@ -84,22 +84,22 @@ We evaluate the $P$ field of Dataset~4 on randomly selected internal faces, each
 
 \begin{table}[htb]
     \centering
-    \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~4. \textbf{Face-parallel} is the method used by FDWZ. Error ratio denotes the error of cross-interface prediction relative to face-parallel prediction.}
+    \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~4. \textbf{Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the cross-interface result divided by the face-parallel result.}
     \label{tab:cross-interface-prediction}
-    \normalsize
+    \footnotesize
     \setlength{\tabcolsep}{3pt}
-    \begin{tabular*}{0.95\columnwidth}{@{\extracolsep{\fill}}lcc@{}}
+    \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccc@{}}
         \toprule
-        Method & NRMSE & NMAE \\
+        Method & NRMSE & NMAE & Entropy \\
         \midrule
-        \textbf{Face-parallel} & $4.215\times10^{-5}$ & $8.584\times10^{-6}$ \\
-        Cross-interface & $5.234\times10^{-5}$ & $1.875\times10^{-5}$ \\
-        Error ratio & $1.24\times$ & $2.18\times$ \\
+        \textbf{Face-parallel} & $4.215\times10^{-5}$ & $8.584\times10^{-6}$ & $0.149$ \\
+        Cross-interface & $5.234\times10^{-5}$ & $1.875\times10^{-5}$ & $0.398$ \\
+        Ratio & $1.24\times$ & $2.18\times$ & $2.67\times$ \\
         \bottomrule
     \end{tabular*}
 \end{table}
 
-As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction is more accurate under both metrics. Although GLL clustering places cross-interface reference points closer to the target, this advantage is insufficient to make cross-interface prediction more accurate. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore keep FDWZ prediction within each element.
+As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction is more accurate and produces quantized errors with 2.67$\times$ lower entropy. Although GLL clustering places cross-interface reference points closer to the target, this advantage is insufficient to make cross-interface prediction more accurate. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore keep FDWZ prediction within each element.
 
 \subsection{Prediction Along the Element-Index Dimension}\label{sec:FDWZ:element-index-dimension}\label{sec:SZ3-HOHS:element_dimension}
 
@@ -109,19 +109,19 @@ We evaluate the $P$ field of Dataset~4, applying both methods to the same target
 
 \begin{table}[htb]
     \centering
-    \caption{Comparison of element-local and element-index prediction errors for Dataset~4. \textbf{Element-local} is the method used by FDWZ. Error ratio denotes the error of element-index prediction relative to element-local prediction.}
+    \caption{Comparison of element-local and element-index prediction errors for Dataset~4. \textbf{Element-local} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the element-index result divided by the element-local result.}
     \label{tab:element-index-prediction}
-    \normalsize
+    \footnotesize
     \setlength{\tabcolsep}{3pt}
-    \begin{tabular*}{0.95\columnwidth}{@{\extracolsep{\fill}}lcc@{}}
+    \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccc@{}}
         \toprule
-        Method & NRMSE & NMAE \\
+        Method & NRMSE & NMAE & Entropy \\
         \midrule
-        \textbf{Element-local} & $3.323\times10^{-4}$ & $3.462\times10^{-5}$ \\
-        Element-index & $1.106\times10^{-2}$ & $4.362\times10^{-3}$ \\
-        Error ratio & $33.3\times$ & $126.0\times$ \\
+        \textbf{Element-local} & $3.323\times10^{-4}$ & $3.462\times10^{-5}$ & $0.511$ \\
+        Element-index & $1.106\times10^{-2}$ & $4.362\times10^{-3}$ & $6.306$ \\
+        Ratio & $33.3\times$ & $126.0\times$ & $12.3\times$ \\
         \bottomrule
     \end{tabular*}
 \end{table}
 
-As shown in Table~\ref{tab:element-index-prediction}, prediction along the element-index dimension is substantially less accurate under both metrics. Consecutive elements in storage order may be far apart in physical space, so their field values at the same local position may change abruptly, which limits the accuracy of element-index prediction.
+As shown in Table~\ref{tab:element-index-prediction}, prediction along the element-index dimension is substantially less accurate and produces quantized errors with 12.3$\times$ higher entropy. Consecutive elements in storage order may be far apart in physical space, so their field values at the same local position may change abruptly, which limits both prediction accuracy and error compressibility.

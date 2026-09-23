@@ -468,6 +468,7 @@ namespace mrcz::detail
         double element_local_absolute_error_sum=0,element_local_squared_error_sum=0;
         double element_index_absolute_error_sum=0,element_index_squared_error_sum=0;
         uint64_t element_local_value_num=0,element_index_value_num=0;
+        vector<unordered_map<int64_t,uint64_t>> element_local_symbol_counts(analyze_prediction_locality?params.max_cpus:0),element_index_symbol_counts(analyze_prediction_locality?params.max_cpus:0);
         vector<unique_ptr<int32_t[]>> partition_prediction_error_bins(analyze_tree_distributions?blocks.size():0);
         array<uint32_t,5> tree_value_num{};
         if (huffman_tree_num==1)
@@ -531,6 +532,7 @@ namespace mrcz::detail
                 #pragma omp for schedule(static) reduction(+:element_local_absolute_error_sum,element_local_squared_error_sum,element_local_value_num)
                 for(uint64_t block_id=0;block_id<blocks.size();block_id++)
                 {
+                    auto &symbol_counts=element_local_symbol_counts[omp_get_thread_num()];
                     auto &block=blocks[block_id];
                     auto &element_stencils=element_index_stencils[block_id];
                     auto &prediction_stencils=cubic_plans[selected_order_ids[block_id]].stencils;
@@ -543,6 +545,7 @@ namespace mrcz::detail
                             for(uint32_t reference_id=0;reference_id<stencil.point_num;reference_id++)
                                 prediction+=double(stencil.weights[reference_id])*double(element[stencil.indices[reference_id]]);
                             double error=double(element[stencil.target])-prediction;
+                            symbol_counts[llround(error/(2*double(abs_eb)))]++;
                             element_local_absolute_error_sum+=fabs(error);
                             element_local_squared_error_sum+=error*error;
                             element_local_value_num++;
@@ -552,6 +555,7 @@ namespace mrcz::detail
                 #pragma omp for schedule(static) reduction(+:element_index_absolute_error_sum,element_index_squared_error_sum,element_index_value_num)
                 for(uint64_t block_id=0;block_id<blocks.size();block_id++)
                 {
+                    auto &symbol_counts=element_index_symbol_counts[omp_get_thread_num()];
                     auto &block=blocks[block_id];
                     auto &element_stencils=element_index_stencils[block_id];
                     // 所有dimension order覆盖相同的非角点集合，因此plan 0仅用于列举element-local位置。
@@ -568,6 +572,7 @@ namespace mrcz::detail
                                 prediction+=double(element_stencil.weights[reference_id])*double(reference_element[local_target.target]);
                             }
                             double error=double(target_element[local_target.target])-prediction;
+                            symbol_counts[llround(error/(2*double(abs_eb)))]++;
                             element_index_absolute_error_sum+=fabs(error);
                             element_index_squared_error_sum+=error*error;
                             element_index_value_num++;
@@ -576,14 +581,27 @@ namespace mrcz::detail
                 }
                 #pragma omp master
                 {
+                    auto entropy=[](const vector<unordered_map<int64_t,uint64_t>> &thread_counts,uint64_t value_num)
+                    {
+                        unordered_map<int64_t,uint64_t> counts;
+                        for(const auto &thread_count:thread_counts)
+                            for(const auto &[symbol,count]:thread_count)
+                                counts[symbol]+=count;
+                        double weighted_log_sum=0;
+                        for(const auto &[symbol,count]:counts)
+                            weighted_log_sum+=double(count)*log2(double(count));
+                        return log2(double(value_num))-weighted_log_sum/double(value_num);
+                    };
                     double field_range=double(params.data_range_max[field])-double(params.data_range_min[field]);
                     double element_local_nrmse=sqrt(element_local_squared_error_sum/element_local_value_num)/field_range;
                     double element_local_nmae=(element_local_absolute_error_sum/element_local_value_num)/field_range;
                     double element_index_nrmse=sqrt(element_index_squared_error_sum/element_index_value_num)/field_range;
                     double element_index_nmae=(element_index_absolute_error_sum/element_index_value_num)/field_range;
+                    double element_local_entropy=entropy(element_local_symbol_counts,element_local_value_num);
+                    double element_index_entropy=entropy(element_index_symbol_counts,element_index_value_num);
                     printf("FDWZ prediction locality: element-index pivot stride=%u\n",fdwz_element_index_pivot_stride);
-                    printf("FDWZ prediction locality: method=element-local, NRMSE=%.10e, NMAE=%.10e, value num=%lu\n",element_local_nrmse,element_local_nmae,element_local_value_num);
-                    printf("FDWZ prediction locality: method=element-index, NRMSE=%.10e, NMAE=%.10e, value num=%lu\n",element_index_nrmse,element_index_nmae,element_index_value_num);
+                    printf("FDWZ prediction locality: method=element-local, NRMSE=%.10e, NMAE=%.10e, entropy=%.10e bits/symbol, value num=%lu\n",element_local_nrmse,element_local_nmae,element_local_entropy,element_local_value_num);
+                    printf("FDWZ prediction locality: method=element-index, NRMSE=%.10e, NMAE=%.10e, entropy=%.10e bits/symbol, value num=%lu\n",element_index_nrmse,element_index_nmae,element_index_entropy,element_index_value_num);
                 }
                 #pragma omp barrier
             }

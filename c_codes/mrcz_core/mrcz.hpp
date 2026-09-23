@@ -68,6 +68,7 @@ namespace mrcz
             T coeff_eb_scale=0.05;
             bool if_coefficient_transpose=true;
             bool if_tiled_coefficient_transpose=true;
+            bool if_analyze_mrcz_stream_sizes=false;
 
             // FDWZ优化开关
             bool if_max_huffman_tree=true; //仅FDWZ-ablation读取；不写入metadata，解压时必须与压缩一致
@@ -229,6 +230,7 @@ namespace mrcz
                 if_measure_phase_time=other.if_measure_phase_time;
                 if_coefficient_transpose=other.if_coefficient_transpose;
                 if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
+                if_analyze_mrcz_stream_sizes=other.if_analyze_mrcz_stream_sizes;
                 if_max_huffman_tree=other.if_max_huffman_tree;
                 if_analyze_fdwz_tree_distributions=other.if_analyze_fdwz_tree_distributions;
                 if_analyze_fdwz_prediction_locality=other.if_analyze_fdwz_prediction_locality;

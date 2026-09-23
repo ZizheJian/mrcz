@@ -25,7 +25,7 @@ The local indexing shared by all elements originates from a reference element wi
 
 All four dimensions in this representation are logical indices rather than physical coordinates. Values adjacent in this logical layout may still be correlated, but the representation itself provides no such guarantee. Whether and how a compressor should exploit each dimension must therefore be determined empirically.
 
-\subsection{Problem Formulation}
+\subsection{Problem Formulation}\label{sec:problem formulation:metrics}
 
 \begin{figure}[htb]
     \centering
@@ -42,6 +42,8 @@ The corresponding value-range-based relative error bound is $\varepsilon_{\mathr
 
 The pointwise error bound controls the largest reconstruction error but does not determine the overall distortion. We therefore quantify overall data quality using peak signal-to-noise ratio (PSNR), defined as $20\log_{10}(R/\mathrm{RMSE})$. We define normalized RMSE (NRMSE) and normalized MAE (NMAE) as $\mathrm{RMSE}/R$ and $\mathrm{MAE}/R$, respectively.
 
-At a given PSNR, our first objective is to minimize the size of $B$. We report storage reduction using either compression ratio, defined as the original data size divided by the compressed size, or bit rate, defined as the average number of compressed bits per data value.
+To characterize symbol compressibility, we also report empirical entropy. For a scalar quantity $z$ quantized under an absolute error bound $\varepsilon$, we define $q=\operatorname{round}(z/(2\varepsilon))$ and $H=-\sum_qp_q\log_2p_q$, where $p_q$ is the observed frequency of symbol $q$. For prediction analysis, $z=x-\widetilde{x}$ is the prediction error. Entropy is reported in bits per symbol; it is not the final bit rate and excludes metadata and dependencies among symbols.
+
+At a given PSNR, our first objective is to minimize the size of $B$. We report storage reduction using either compression ratio, defined as the original data size divided by the compressed size, or bit rate (BR), defined as the average number of compressed bits per data value.
 
 Our second objective is to reduce end-to-end data-movement time under a prescribed pointwise error bound. As illustrated in Figure~\ref{fig:end-to-end}, this time includes compression, transfer of the compressed field, and decompression. A smaller bitstream generally shortens the transfer, but producing and decoding it may require more computation. We therefore report end-to-end runtime together with compression and decompression throughput to characterize this tradeoff.

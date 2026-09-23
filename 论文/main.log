@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  23 SEP 2026 00:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  23 SEP 2026 13:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -279,7 +279,7 @@ e \nobreakspace #2}\ifdim \wd \@tempboxa >\hsize \setbox \@tempboxa \hbox {\nor
 malfont \footnotesize {#1.}\nobreakspace \nobreakspace }\parbox [t]{\hsize }{\n
 ormalfont \footnotesize \noindent \unhbox \@tempboxa #2}\else \ifCLASSOPTIONcon
 ference \hbox to\hsize {\normalfont \footnotesize \hfil \box \@tempboxa \hfil }
-\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi \fi
+\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi \fi 
 \fi  on input line 1082.
 )
 
@@ -425,7 +425,7 @@ Package pdftex.def Info: figs/3/End to End.png  used on input line 32.
 (pdftex.def)             Requested size: 252.0pt x 79.7029pt.
 [3 <./figs/3/three_elements.png> <./figs/3/End to End.png>])
 (./4.design overview.tex
-Underfull \hbox (badness 3240) in paragraph at lines 47--1
+Underfull \hbox (badness 3240) in paragraph at lines 49--1
 []\OT1/ptm/m/n/10 Our sec-ond ob-jec-tive is to re-duce end-to-end data-
  []
 
@@ -468,112 +468,115 @@ File: figs/5/cross-element.pdf Graphic file (type pdf)
 <use figs/5/cross-element.pdf>
 Package pdftex.def Info: figs/5/cross-element.pdf  used on input line 76.
 (pdftex.def)             Requested size: 252.0pt x 78.0677pt.
-[5 <./figs/5/cubic interpolation.png> <./figs/5/fdwz-tree-ablation.pdf> <./figs
-/5/cross-element.pdf>]) (./6.mrcz.tex
-<figs/6/mrcz diagram.png, id=53, 2473.49904pt x 871.90259pt>
+[5 <./figs/5/cubic interpolation.png> <./figs/5/fdwz-tree-ablation.pdf>])
+(./6.mrcz.tex
+<figs/6/mrcz diagram.png, id=51, 2473.49904pt x 871.90259pt>
 File: figs/6/mrcz diagram.png Graphic file (type png)
 <use figs/6/mrcz diagram.png>
 Package pdftex.def Info: figs/6/mrcz diagram.png  used on input line 11.
 (pdftex.def)             Requested size: 252.0pt x 88.81847pt.
-
+ [6 <./figs/5/cross-element.pdf> <./figs/6/mrcz diagram.png>]
 Underfull \hbox (badness 1377) in paragraph at lines 18--19
 []\OT1/ptm/m/n/10 Finally, MRCZ forms its bit-stream from two sym-bol
  []
 
-[6 <./figs/6/mrcz diagram.png>]
-<figs/6/transform-comparison-side.pdf, id=57, 265.14653pt x 144.12616pt>
-File: figs/6/transform-comparison-side.pdf Graphic file (type pdf)
-<use figs/6/transform-comparison-side.pdf>
-Package pdftex.def Info: figs/6/transform-comparison-side.pdf  used on input li
-ne 30.
-(pdftex.def)             Requested size: 252.0pt x 136.98065pt.
-<figs/6/transform-comparison-stacked.pdf, id=58, 265.2309pt x 165.85965pt>
+<figs/6/transform-comparison-stacked.pdf, id=61, 260.50658pt x 135.42099pt>
 File: figs/6/transform-comparison-stacked.pdf Graphic file (type pdf)
 <use figs/6/transform-comparison-stacked.pdf>
 Package pdftex.def Info: figs/6/transform-comparison-stacked.pdf  used on input
- line 36.
-(pdftex.def)             Requested size: 252.0pt x 157.59106pt.
-<figs/6/transform-mode-statistics.pdf, id=59, 255.53563pt x 349.30061pt>
+ line 28.
+(pdftex.def)             Requested size: 252.0pt x 131.0007pt.
+
+Underfull \hbox (badness 3977) in paragraph at lines 29--29
+[]\OT1/ptm/m/n/10 Fig. 8: |Rate--distortion per-for-mance of the transform--
+ []
+
+<figs/6/transform-mode-statistics.pdf, id=62, 265.2309pt x 112.0185pt>
 File: figs/6/transform-mode-statistics.pdf Graphic file (type pdf)
 <use figs/6/transform-mode-statistics.pdf>
 Package pdftex.def Info: figs/6/transform-mode-statistics.pdf  used on input li
-ne 47.
-(pdftex.def)             Requested size: 252.0pt x 344.47087pt.
- [7 <./figs/6/transform-comparison-side.pdf> <./figs/6/transform-comparison-sta
-cked.pdf>]) (./7.evaluation.tex
+ne 37.
+(pdftex.def)             Requested size: 252.0pt x 106.43404pt.
+[7 <./figs/6/transform-comparison-stacked.pdf> <./figs/6/transform-mode-statist
+ics.pdf>]) (./7.evaluation.tex
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 1
 0.
 
 (/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/tex/late
 x/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [8 <./figs/6/transform-mode-statistics.pdf>]
-<figs/7/rd.pdf, id=167, 2121.43004pt x 1881.68571pt>
+)
+<figs/7/rd.pdf, id=111, 2121.43004pt x 1881.68571pt>
 File: figs/7/rd.pdf Graphic file (type pdf)
 <use figs/7/rd.pdf>
 Package pdftex.def Info: figs/7/rd.pdf  used on input line 57.
 (pdftex.def)             Requested size: 516.0pt x 457.67207pt.
-
+ [8]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figs/7/e2e_time.pdf, id=168, 1061.13002pt x 433.70737pt>
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+<figs/7/e2e_time.pdf, id=116, 1061.13002pt x 433.70737pt>
 File: figs/7/e2e_time.pdf Graphic file (type pdf)
 <use figs/7/e2e_time.pdf>
 Package pdftex.def Info: figs/7/e2e_time.pdf  used on input line 100.
 (pdftex.def)             Requested size: 252.0pt x 102.99333pt.
-[9]
-Underfull \vbox (badness 2409) has occurred while \output is active []
-
- [10 <./figs/7/rd.pdf> <./figs/7/e2e_time.pdf>]
-<figs/8-fig9.pdf, id=260, 965.25302pt x 673.78882pt>
+<figs/8-fig9.pdf, id=117, 965.25302pt x 673.78882pt>
 File: figs/8-fig9.pdf Graphic file (type pdf)
 <use figs/8-fig9.pdf>
 Package pdftex.def Info: figs/8-fig9.pdf  used on input line 113.
 (pdftex.def)             Requested size: 226.79846pt x 158.30954pt.
+ [9]
+Underfull \vbox (badness 2409) has occurred while \output is active []
 
+
+Underfull \vbox (badness 3942) has occurred while \output is active []
+
+ [10 <./figs/7/rd.pdf> <./figs/7/e2e_time.pdf>]
 Overfull \hbox (4.19391pt too wide) in paragraph at lines 132--140
- [][]
+ [][] 
  []
 
-<figs/7/pb0.png, id=261, 1215.3405pt x 920.238pt>
+<figs/7/pb0.png, id=208, 1215.3405pt x 920.238pt>
 File: figs/7/pb0.png Graphic file (type png)
 <use figs/7/pb0.png>
 Package pdftex.def Info: figs/7/pb0.png  used on input line 146.
 (pdftex.def)             Requested size: 113.39923pt x 85.85085pt.
-<figs/7/mrcz err.png, id=263, 1064.17575pt x 728.7225pt>
+<figs/7/mrcz err.png, id=210, 1064.17575pt x 728.7225pt>
 File: figs/7/mrcz err.png Graphic file (type png)
 <use figs/7/mrcz err.png>
 Package pdftex.def Info: figs/7/mrcz err.png  used on input line 152.
 (pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sz3nekrs err.png, id=264, 1064.17575pt x 728.7225pt>
+<figs/7/sz3nekrs err.png, id=211, 1064.17575pt x 728.7225pt>
 File: figs/7/sz3nekrs err.png Graphic file (type png)
 <use figs/7/sz3nekrs err.png>
 Package pdftex.def Info: figs/7/sz3nekrs err.png  used on input line 158.
 (pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sz3 err.png, id=265, 1064.17575pt x 728.7225pt>
+<figs/7/sz3 err.png, id=212, 1064.17575pt x 728.7225pt>
 File: figs/7/sz3 err.png Graphic file (type png)
 <use figs/7/sz3 err.png>
 Package pdftex.def Info: figs/7/sz3 err.png  used on input line 164.
 (pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sz2 err.png, id=266, 1064.17575pt x 728.7225pt>
+<figs/7/sz2 err.png, id=213, 1064.17575pt x 728.7225pt>
 File: figs/7/sz2 err.png Graphic file (type png)
 <use figs/7/sz2 err.png>
 Package pdftex.def Info: figs/7/sz2 err.png  used on input line 170.
 (pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/zfp err.png, id=267, 1064.17575pt x 728.7225pt>
+<figs/7/zfp err.png, id=214, 1064.17575pt x 728.7225pt>
 File: figs/7/zfp err.png Graphic file (type png)
 <use figs/7/zfp err.png>
 Package pdftex.def Info: figs/7/zfp err.png  used on input line 176.
 (pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sperr err.png, id=268, 1064.17575pt x 728.7225pt>
+<figs/7/sperr err.png, id=215, 1064.17575pt x 728.7225pt>
 File: figs/7/sperr err.png Graphic file (type png)
 <use figs/7/sperr err.png>
 Package pdftex.def Info: figs/7/sperr err.png  used on input line 182.
 (pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-[11 <./figs/8-fig9.pdf> <./figs/7/pb0.png> <./figs/7/mrcz err.png> <./figs/7/sz
-3nekrs err.png> <./figs/7/sz3 err.png> <./figs/7/sz2 err.png> <./figs/7/zfp err
-.png> <./figs/7/sperr err.png>]) (./8.conclusion.tex)
+) (./8.conclusion.tex [11 <./figs/8-fig9.pdf> <./figs/7/pb0.png> <./figs/7/mrcz
+ err.png> <./figs/7/sz3nekrs err.png> <./figs/7/sz3 err.png> <./figs/7/sz2 err.
+png> <./figs/7/zfp err.png> <./figs/7/sperr err.png>])
 Underfull \hbox (badness 2564) in paragraph at lines 60--63
 \OT1/ptm/m/n/10 En-ergy,Office of Sci-ence,Advanced Sci-en-tific Com-put-ing
  []
@@ -603,7 +606,7 @@ Underfull \hbox (badness 3590) in paragraph at lines 60--63
 \OT1/ptm/m/n/10 06CH11357. We ac-knowl-edge the com-put-ing re-sources
  []
 
-(./main.bbl [12]
+(./main.bbl
 Underfull \hbox (badness 3492) in paragraph at lines 195--197
 []\OT1/ptm/m/n/8 Y. Col-let, ``Zs-tan-dard -- real-time data com-pres-sion al-g
 o-rithm,''
@@ -621,51 +624,49 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[13
-
-] (./main.aux) )
+[12] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 5313 strings out of 480608
- 85248 string characters out of 5886422
- 332613 words of memory out of 5000000
- 21083 multiletter control sequences out of 15000+600000
- 579329 words of font info for 121 fonts, out of 8000000 for 9000
+ 5309 strings out of 480608
+ 85042 string characters out of 5886422
+ 332627 words of memory out of 5000000
+ 21080 multiletter control sequences out of 15000+600000
+ 579643 words of font info for 122 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  48i,14n,46p,1188b,435s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/tex
-mf-dist/fonts/enc/dvips/base/8r.enc}</apps/spack/anvil/apps/texlive/20200406-gc
-c-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></apps/sp
-ack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmmi10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-ee
-avxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></apps/spack/anvil/ap
-ps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmmi7.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></apps/spack/anvil/apps/texlive/20
-200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
-/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmr6.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.
-2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></apps/spack/anv
-il/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmr8.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></apps/spack/anvil/apps/texli
-ve/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.
-pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/font
-s/type1/public/amsfonts/cm/cmsy7.pfb></apps/spack/anvil/apps/texlive/20200406-g
-cc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></apps/sp
-ack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmsy9.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eea
-vxnm/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></apps/spack/anv
-il/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/courier/
-ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
-st/fonts/type1/urw/times/utmb8a.pfb></apps/spack/anvil/apps/texlive/20200406-gc
-c-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></apps/spack/anvi
-l/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utm
-r8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/
-fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 7124337 bytes).
+{/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/
+texmf-dist/fonts/enc/dvips/base/8r.enc}</apps/spack/anvil/apps/texlive/20200406
+-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></apps
+/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmmi10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0
+-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></apps/spack/anvil
+/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmmi7.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></apps/spack/anvil/apps/texlive
+/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pf
+b></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr6.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-
+11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></apps/spack/
+anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr8.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></apps/spack/anvil/apps/te
+xlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y6.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmsy7.pfb></apps/spack/anvil/apps/texlive/2020040
+6-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></apps
+/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmsy9.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-
+eeavxnm/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></apps/spack/
+anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/couri
+er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
+-dist/fonts/type1/urw/times/utmb8a.pfb></apps/spack/anvil/apps/texlive/20200406
+-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></apps/spack/a
+nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
+utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
+st/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (12 pages, 7116246 bytes).
 PDF statistics:
- 400 PDF objects out of 1000 (max. 8388607)
- 151 compressed objects within 2 object streams
+ 340 PDF objects out of 1000 (max. 8388607)
+ 139 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 101 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 96 words of extra memory for PDF output out of 10000 (max. 10000000)
 

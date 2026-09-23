@@ -10,13 +10,14 @@ import numpy as np
 from py_funcs.read_nekrs_header import read_nekrs_header
 
 data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001"
-requested_fields=None
+requested_fields=("P",)
 random_seed=0
 sample_element_num=100
 neighbor_scan_chunk_size=20000
 field_range_chunk_size=20000
 face_center_tol=1e-7
-result_directory="results/prediction_locality"
+result_directory="results/prediction_locality/P"
+entropy_relative_eb=1e-4
 
 # 角点顺序为000、001、010、011、100、101、110、111。
 face_corner_ids=((0,1,2,3),(0,1,4,5),(0,2,4,6),(1,3,5,7),(2,3,6,7),(4,5,6,7))
@@ -166,18 +167,32 @@ class ErrorAccumulator:
         self.absolute_error_sum=0.0
         self.squared_error_sum=0.0
         self.value_num=0
+        self.errors=[]
 
     def add(self,prediction,target):
         error=np.asarray(prediction,dtype=np.float64)-np.asarray(target,dtype=np.float64)
         self.absolute_error_sum+=float(np.sum(np.abs(error)))
         self.squared_error_sum+=float(np.sum(error*error))
         self.value_num+=error.size
+        self.errors.append(error.ravel())
 
     def mae(self):
         return self.absolute_error_sum/self.value_num
 
     def rmse(self):
         return np.sqrt(self.squared_error_sum/self.value_num)
+
+    def quantized_counts(self,absolute_eb):
+        errors=np.concatenate(self.errors)
+        scaled=errors/(2*absolute_eb)
+        symbols=(np.sign(scaled)*np.floor(np.abs(scaled)+0.5)).astype(np.int64)
+        values,counts=np.unique(symbols,return_counts=True)
+        return dict(zip(values,counts))
+
+def empirical_entropy(counts):
+    frequencies=np.asarray(list(counts.values()),dtype=np.float64)
+    probabilities=frequencies/np.sum(frequencies)
+    return float(-np.sum(probabilities*np.log2(probabilities)))
 
 def get_global_field_ranges(fields):
     field_ranges={}
@@ -251,29 +266,33 @@ def build_result_rows(method_errors,field_ranges,face_num,target_num_per_face):
         normalized_absolute_error_sum=0.0
         normalized_squared_error_sum=0.0
         normalized_value_num=0
+        aggregate_counts={}
         for field_name,error in field_errors.items():
             field_range=field_ranges[field_name]
             nmae=error.mae()/field_range
             nrmse=error.rmse()/field_range
-            rows.append({"method":method_name,"field":field_name,"face_num":face_num,"target_num_per_face":target_num_per_face,"value_num":error.value_num,"mae":error.mae(),"rmse":error.rmse(),"nmae":nmae,"nrmse":nrmse})
+            counts=error.quantized_counts(entropy_relative_eb*field_range)
+            entropy=empirical_entropy(counts)
+            rows.append({"method":method_name,"field":field_name,"face_num":face_num,"target_num_per_face":target_num_per_face,"value_num":error.value_num,"mae":error.mae(),"rmse":error.rmse(),"nmae":nmae,"nrmse":nrmse,"entropy":entropy})
+            for symbol,count in counts.items():aggregate_counts[symbol]=aggregate_counts.get(symbol,0)+count
             normalized_absolute_error_sum+=error.absolute_error_sum/field_range
             normalized_squared_error_sum+=error.squared_error_sum/(field_range*field_range)
             normalized_value_num+=error.value_num
-        rows.append({"method":method_name,"field":"ALL","face_num":face_num,"target_num_per_face":target_num_per_face,"value_num":normalized_value_num,"mae":"","rmse":"","nmae":normalized_absolute_error_sum/normalized_value_num,"nrmse":np.sqrt(normalized_squared_error_sum/normalized_value_num)})
+        rows.append({"method":method_name,"field":"ALL","face_num":face_num,"target_num_per_face":target_num_per_face,"value_num":normalized_value_num,"mae":"","rmse":"","nmae":normalized_absolute_error_sum/normalized_value_num,"nrmse":np.sqrt(normalized_squared_error_sum/normalized_value_num),"entropy":empirical_entropy(aggregate_counts)})
     return rows
 
 def print_results(rows):
     for row in rows:
         if row["field"]=="ALL":
-            print(f'{row["method"]} ALL: NRMSE={row["nrmse"]:.8e},NMAE={row["nmae"]:.8e},N={row["value_num"]}')
+            print(f'{row["method"]} ALL: NRMSE={row["nrmse"]:.8e},NMAE={row["nmae"]:.8e},entropy={row["entropy"]:.8f} bits/symbol,N={row["value_num"]}')
         else:
-            print(f'{row["method"]} {row["field"]}: RMSE={row["rmse"]:.8e},MAE={row["mae"]:.8e},NRMSE={row["nrmse"]:.8e},NMAE={row["nmae"]:.8e},N={row["value_num"]}')
+            print(f'{row["method"]} {row["field"]}: RMSE={row["rmse"]:.8e},MAE={row["mae"]:.8e},NRMSE={row["nrmse"]:.8e},NMAE={row["nmae"]:.8e},entropy={row["entropy"]:.8f} bits/symbol,N={row["value_num"]}')
 
 def write_results(rows,path):
     os.makedirs(os.path.dirname(path),exist_ok=True)
-    field_names=("method","field","face_num","target_num_per_face","value_num","mae","rmse","nmae","nrmse")
+    field_names=("method","field","face_num","target_num_per_face","value_num","mae","rmse","nmae","nrmse","entropy")
     with open(path,"w",newline="",encoding="utf-8") as output_file:
-        writer=csv.DictWriter(output_file,fieldnames=field_names)
+        writer=csv.DictWriter(output_file,fieldnames=field_names,lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     print(f"结果已写入{path}")

@@ -21,35 +21,27 @@ Finally, MRCZ forms its bitstream from two symbol streams: transform coefficient
 
 DLT is conventionally paired with data sampled on GLL nodes because the GLL nodes and their associated quadrature weights preserve the weighted orthogonality of distinct Legendre modes~\cite{marin2016spectral}. MRCZ, however, independently enforces the final reconstruction bound through residual correction, so its transform needs only to be invertible and numerically stable. It need not be orthogonal under the GLL quadrature weights. This freedom allows MRCZ to select the transform according to the compressibility of its coefficients and residuals. We therefore examine whether another commonly used transform can yield better compression than DLT for data sampled on GLL nodes.
 
-We compare DLT, DCT, DST, and DChT under two coordinate assumptions. The ``GLL'' variants construct the transform matrices using the actual GLL coordinates, whereas the ``Uniform'' variants treat the same values as samples at uniformly spaced coordinates. For each invertible combination, we vary the internal coefficient error bound introduced in Section~\ref{sec:mrcz:overview}, since it changes prediction accuracy and hence compression. We parameterize this bound as $\varepsilon_{\mathrm{coeff}}=\alpha\varepsilon_{\mathrm{abs}}$, where $\alpha$ is the coefficient-bound ratio. The best $\alpha$ may differ across transforms. Decreasing $\alpha$ improves prediction and lowers the residual bit rate but raises the coefficient bit rate. If too small, both the coefficients and predicted values are more accurate than needed to satisfy the user-specified bound. Increasing $\alpha$ reverses this tradeoff, lowering the coefficient bit rate but raising the residual bit rate and reducing PSNR as prediction worsens. The user-specified bound always sets a lower bound on the final PSNR.
+We compare DLT, DCT, DST, and DChT under two coordinate assumptions. The ``GLL'' variants construct the transform matrices using the actual GLL coordinates, whereas the ``Uniform'' variants treat the same values as samples at uniformly spaced coordinates. For each evaluated combination, we vary the internal coefficient error bound introduced in Section~\ref{sec:mrcz:overview}, since it changes prediction accuracy and hence compression. We parameterize this bound as $\varepsilon_{\mathrm{coeff}}=\alpha\varepsilon_{\mathrm{abs}}$, where $\alpha$ is the coefficient-bound ratio. The best $\alpha$ may differ across transforms. Decreasing $\alpha$ improves prediction and lowers the residual BR but raises the coefficient BR. If too small, both the coefficients and predicted values are more accurate than needed to satisfy the user-specified bound. Increasing $\alpha$ reverses this tradeoff, lowering the coefficient BR but raising the residual BR and reducing PSNR as prediction worsens. The user-specified bound always sets a lower bound on the final PSNR.
 
 \begin{figure}[htb]
     \centering
-    \begin{subfigure}{\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{figs/6/transform-comparison-side.pdf}
-        \caption{Side-by-side legend groups.}
-    \end{subfigure}
-    \vspace{0.4em}
-    \begin{subfigure}{\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{figs/6/transform-comparison-stacked.pdf}
-        \caption{Stacked legends and a taller plotting area.}
-    \end{subfigure}
-    \caption{Two layouts of the rate--distortion performance of the valid transform--coordinate combinations. Each label identifies the transform followed by the coordinate assumption in parentheses. For each combination, the $\alpha$-sweep fixes $\varepsilon_{\mathrm{rel}}=10^{-4}$, whereas the conventional rate--distortion curve fixes the selected $\alpha$ and varies $\varepsilon_{\mathrm{rel}}$.}
+    \includegraphics[width=\linewidth]{figs/6/transform-comparison-stacked.pdf}
+    \caption{Rate--distortion performance of the transform--coordinate combinations. DChT evaluated at the GLL coordinates achieves the best overall performance, improving the compression ratio over DLT at the same coordinates by 17.5\% on average at matched PSNRs.}
     \label{fig:transform}
 \end{figure}
 
-Figure~\ref{fig:transform} compares the rate--distortion behavior of the evaluated transform--coordinate combinations. For each combination, it overlays the fixed-bound $\alpha$-sweep with the conventional rate--distortion curve obtained using the selected $\alpha$. The DST (GLL) combination is not shown because its transform matrix is singular. Among the remaining combinations, DChT evaluated at the actual GLL coordinates generally achieves the best rate--distortion performance. At the same PSNR, it improves the compression ratio by approximately 20\% over DLT evaluated at the same coordinates. We therefore adopt this configuration with $\alpha=0.05$ in MRCZ.
+Figure~\ref{fig:transform} compares the rate--distortion behavior of the evaluated transform--coordinate combinations. For each combination, it overlays the fixed-bound $\alpha$-sweep with the conventional rate--distortion curve obtained using the selected $\alpha$. The DST (GLL) combination is not shown because its transform matrix is singular. DChT evaluated at the actual GLL coordinates generally achieves the best rate--distortion performance. At matched PSNRs, it improves the compression ratio by 17.5\% on average over DLT evaluated at the same coordinates. We therefore adopt this configuration with $\alpha=0.05$ in MRCZ.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=1\linewidth]{figs/6/transform-mode-statistics.pdf}
-    \caption{Bit-rate breakdown and coefficient statistics for DLT and DChT evaluated at the GLL coordinates on the $P$ field of Dataset~4. (a) Bit rates of the quantized coefficient and residual streams. (b)--(c) Coefficients from 8,192 sampled elements grouped by their maximum tensor-product order $\max(i,j,k)$. Panel (b) reports the median coefficient magnitude normalized by the global value range, with shading indicating the interquartile range. Panel (c) reports the empirical entropy after quantization with $\alpha=0.05$.}
+    \caption{Comparison of DLT and DChT at the GLL coordinates on the $P$ field of Dataset~4. (a) DChT's smaller coefficient stream accounts for its compression advantage. (b)--(c) DChT produces smaller high-order coefficients and lower entropy of the quantized coefficients. Shading in (b) indicates the interquartile range.}
     \label{fig:transform-mode-statistics}
 \end{figure}
 
-Figure~\ref{fig:transform-mode-statistics}(a) separates the bit rates of the coefficient and residual streams. The residual curves for DLT and DChT nearly overlap, whereas DChT consistently requires fewer bits for its coefficients. Figures~\ref{fig:transform-mode-statistics}(b) and~\ref{fig:transform-mode-statistics}(c) explain this difference by grouping coefficients by mode order. DLT and DChT are similar at low orders, but DChT produces progressively smaller coefficients at higher orders. At order~7, its median magnitude is seven times smaller than that of DLT. With the same $\alpha$, the corresponding entropy decreases from 0.176 to 0.074 bits per coefficient. The rate--distortion advantage of DChT therefore comes primarily from the coefficient stream rather than the residual stream.
+Figure~\ref{fig:transform-mode-statistics}(a) compares the independently compressed coefficient and residual streams of DLT and DChT, both evaluated at the actual GLL coordinates. Across the five error bounds, the DLT coefficient BR is 1.25$\times$ that of DChT on average. In contrast, the ratio between the residual BRs is unstable, with DLT ranging from 0.52$\times$ to 1.37$\times$ that of DChT. Despite this relative variation, the coefficient BR is 67.7--2002$\times$ the residual BR and therefore dominates the compressed representation. The rate--distortion advantage of DChT thus comes primarily from its smaller coefficient stream.
+
+Figures~\ref{fig:transform-mode-statistics}(b) and~\ref{fig:transform-mode-statistics}(c) explain this difference by grouping coefficients by total mode order. DLT and DChT are similar at low orders, but DChT produces progressively smaller coefficients at higher orders. At total order~15, the highest order at which both transforms retain nonzero entropy, the median DChT coefficient magnitude is 8.5 times smaller than that of DLT, while the entropy decreases from 0.031 to 0.00032 bits per coefficient.
 
 \subsection{Improving Local Regularity for Lossless Encoding}\label{sec:mrcz:transpose}
 

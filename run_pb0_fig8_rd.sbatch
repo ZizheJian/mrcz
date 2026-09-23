@@ -18,4 +18,5 @@ conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
 export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
-srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores python3 -u t1_start_c_code.py pb0_fig8_rd
+config_name="${1:-pb0_fig8_rd}"
+srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores python3 -u t1_start_c_code.py "${config_name}"

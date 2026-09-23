@@ -158,6 +158,9 @@ def make_ablation_figure(output_path):
     left_axes.get_xticklabels()[0].set_horizontalalignment("left")
     left_axes.get_xticklabels()[-1].set_horizontalalignment("right")
     draw_rate_distortion(right_axes)
+    for axes in (left_axes,right_axes):
+        axes.set_axisbelow(True)
+        axes.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
     figure.text(0.3575,0.015,"(a) Prediction-Error Density",ha="center",va="bottom")
     figure.text(0.86,0.015,"(b) Rate-Distortion",ha="center",va="bottom")
     figure.savefig(output_path,format="pdf",dpi=300)

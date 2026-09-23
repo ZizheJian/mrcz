@@ -140,6 +140,12 @@ namespace mrcz
                     throw runtime_error("缺少-tiled-coefficient-transpose参数后的布尔值");
                 params.if_tiled_coefficient_transpose=parse_bool(argv[++i],"-tiled-coefficient-transpose");
             }
+            else if (string(argv[i])=="-analyze-mrcz-stream-sizes")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-analyze-mrcz-stream-sizes参数后的布尔值");
+                params.if_analyze_mrcz_stream_sizes=parse_bool(argv[++i],"-analyze-mrcz-stream-sizes");
+            }
             else if (string(argv[i])=="-max-huffman-tree")
             {
                 if (i+1>=argc)

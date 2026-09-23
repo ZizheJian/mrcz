@@ -22,6 +22,7 @@ namespace mrcz
         T neg_2_coeff_eb=1/(2*coeff_eb);
         T inv_2_eb=1/(2*abs_eb);
         vector<double> forward_time(measure_phase_time?partitions.size():0,0),coeff_quant_time(measure_phase_time?partitions.size():0,0),inverse_time(measure_phase_time?partitions.size():0,0),residual_quant_time(measure_phase_time?partitions.size():0,0),coeff_huffman_time(measure_phase_time?partitions.size():0,0),residual_huffman_time(measure_phase_time?partitions.size():0,0),zstd_time(measure_phase_time?partitions.size():0,0);
+        vector<uint64_t> coeff_zstd_bytes_by_block(if_analyze_mrcz_stream_sizes?partitions.size():0,0),residual_zstd_bytes_by_block(if_analyze_mrcz_stream_sizes?partitions.size():0,0);
         vector<int64_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
         vector<uint64_t> qb_capacity_by_thread(max_cpus,0);
         double start_time=omp_get_wtime();
@@ -72,6 +73,7 @@ namespace mrcz
             if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
             lossless_compress_coeff_qb<ablation>(0,block_element_num,coeff_qb,huffman_bs,n012);
             if constexpr(measure_phase_time) coeff_huffman_time[block_id]=omp_get_wtime()-phase_start_time;
+            uint64_t coeff_huffman_bs_len=huffman_bs-huffman_bs_vec.data();
             if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
             huffman_encoder_class<int64_t> err_encoder;
             err_encoder.preprocess_encode(err_qb,block_value_num);
@@ -79,6 +81,19 @@ namespace mrcz
             err_encoder.encode(err_qb,block_value_num,huffman_bs);
             if constexpr(measure_phase_time) residual_huffman_time[block_id]=omp_get_wtime()-phase_start_time;
             uint64_t huffman_bs_len=huffman_bs-huffman_bs_vec.data();
+            if (if_analyze_mrcz_stream_sizes)
+            {
+                auto separately_compressed_size=[](const unsigned char *input,uint64_t input_size)
+                {
+                    vector<unsigned char> output(ZSTD_compressBound(input_size));
+                    uint64_t output_size=ZSTD_compress(output.data(),output.size(),input,input_size,3);
+                    if (ZSTD_isError(output_size))
+                        throw runtime_error("ZSTD_compress error in MRCZ stream-size analysis");
+                    return output_size;
+                };
+                coeff_zstd_bytes_by_block[block_id]=separately_compressed_size(huffman_bs_vec.data(),coeff_huffman_bs_len);
+                residual_zstd_bytes_by_block[block_id]=separately_compressed_size(huffman_bs_vec.data()+coeff_huffman_bs_len,huffman_bs_len-coeff_huffman_bs_len);
+            }
             uint64_t max_zstd_bs_len=ZSTD_compressBound(huffman_bs_len);
             block.zstd_bs.resize(max_zstd_bs_len);
             if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
@@ -92,6 +107,19 @@ namespace mrcz
             delete[] err_qb_by_thread[thread_id];
         }
         double end_time=omp_get_wtime();
+        if (if_analyze_mrcz_stream_sizes)
+        {
+            uint64_t coeff_zstd_bytes=0,residual_zstd_bytes=0;
+            for (uint64_t block_id=0;block_id<partitions.size();block_id++)
+            {
+                coeff_zstd_bytes+=coeff_zstd_bytes_by_block[block_id];
+                residual_zstd_bytes+=residual_zstd_bytes_by_block[block_id];
+            }
+            double value_num=element_num_to_process*n012;
+            double coeff_br=8*coeff_zstd_bytes/value_num;
+            double residual_br=8*residual_zstd_bytes/value_num;
+            printf("MRCZ stream bit rates: Field= %s, coefficient= %.15f, residual= %.15f, separately compressed total= %.15f bits/value\n",field.c_str(),coeff_br,residual_br,coeff_br+residual_br);
+        }
         if constexpr(measure_phase_time)
         {
             double total_forward_time=0,total_coeff_quant_time=0,total_inverse_time=0,total_residual_quant_time=0,total_coeff_huffman_time=0,total_residual_huffman_time=0,total_zstd_time=0;

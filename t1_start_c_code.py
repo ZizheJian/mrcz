@@ -1,4 +1,4 @@
-import argparse,glob,json,os,shlex
+import argparse,csv,glob,json,os,shlex
 from third_party.get_max_cpus.py_codes.get_max_cpus import get_max_cpus
 from third_party.run_command.run_command import run_command
 from third_party.csv_tools.py_codes.write_csv_item import write_csv_item
@@ -75,6 +75,59 @@ def parse_field_throughput(output,task):
         throughput[field]=float(segments[1].strip()[len(marker):].split()[0])
     return throughput
 
+def parse_mrcz_stream_bitrates(output):
+    stream_bitrates={}
+    prefix="MRCZ stream bit rates: Field= "
+    for line in output.splitlines():
+        line=remove_ansi_color(line).strip()
+        if not line.startswith(prefix):
+            continue
+        segments=line[len(prefix):].split(",")
+        if len(segments)!=4:
+            continue
+        field=segments[0].strip()
+        coefficient=float(segments[1].split("=",1)[1].strip())
+        residual=float(segments[2].split("=",1)[1].strip())
+        total=float(segments[3].split("=",1)[1].strip().split()[0])
+        stream_bitrates[field]=(coefficient,residual,total)
+    return stream_bitrates
+
+def parse_fdwz_prediction_locality(output):
+    results={}
+    pivot_stride=None
+    prefix="FDWZ prediction locality: "
+    for line in output.splitlines():
+        line=remove_ansi_color(line).strip()
+        if not line.startswith(prefix):continue
+        payload=line[len(prefix):]
+        if payload.startswith("element-index pivot stride="):
+            pivot_stride=int(payload.split("=",1)[1])
+            continue
+        segments=payload.split(",")
+        if len(segments)!=5 or not segments[0].startswith("method="):continue
+        method=segments[0].split("=",1)[1]
+        results[method]={
+            "nrmse":float(segments[1].split("=",1)[1]),
+            "nmae":float(segments[2].split("=",1)[1]),
+            "entropy":float(segments[3].split("=",1)[1].split()[0]),
+            "value_num":int(segments[4].split("=",1)[1]),
+        }
+    return pivot_stride,results
+
+def write_fdwz_prediction_locality(path,output,field,partition_num,selection_rel_eb):
+    pivot_stride,results=parse_fdwz_prediction_locality(output)
+    expected_methods=("element-local","element-index")
+    missing=[method for method in expected_methods if method not in results]
+    if pivot_stride is None or missing:
+        raise RuntimeError(f"未能解析FDWZ prediction locality结果: pivot_stride={pivot_stride},missing={missing}")
+    os.makedirs(os.path.dirname(path) or ".",exist_ok=True)
+    field_names=("method","field","partition_num","pivot_stride","selection_rel_eb","value_num","nrmse","nmae","entropy")
+    with open(path,"w",newline="") as file_obj:
+        writer=csv.DictWriter(file_obj,fieldnames=field_names,lineterminator="\n")
+        writer.writeheader()
+        for method in expected_methods:
+            writer.writerow({"method":method,"field":field,"partition_num":partition_num,"pivot_stride":pivot_stride,"selection_rel_eb":selection_rel_eb,**results[method]})
+
 def validate_parsed_fields(results,expected_fields,result_name,optional_fields=None):
     optional_fields=set() if optional_fields is None else set(optional_fields)
     missing_fields=[field for field in expected_fields if field not in results and field not in optional_fields]
@@ -125,6 +178,8 @@ def prepare_tasks(json_path,task_parameters,silent_build,write_to_csv,cleanup_af
             config["mesh_path"]=os.path.join(project_root,config["mesh_path"])
         if config.get("csv_path") is not None and not os.path.isabs(config["csv_path"]):
             config["csv_path"]=os.path.join(project_root,config["csv_path"])
+        if config.get("prediction_locality_csv_path") is not None and not os.path.isabs(config["prediction_locality_csv_path"]):
+            config["prediction_locality_csv_path"]=os.path.join(project_root,config["prediction_locality_csv_path"])
         prepared_tasks.append(config)
     return prepared_tasks
 
@@ -179,6 +234,8 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
         elements=config.get("elements")
         extra_parameters=config.get("extra_parameters") or {}
         csv_path=config.get("csv_path")
+        prediction_locality_csv_path=config.get("prediction_locality_csv_path")
+        compression_only=config.get("compression_only",False)
         csv_file_prefix=data_path
         if csv_path is not None:
             if write_to_csv:
@@ -204,21 +261,35 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
                         command_list=[f"{command} -fields {fields_argument}" for command in command_list] # type: ignore
                     command_list=add_extra_parameters(command_list,extra_parameters)
                     compression_output=run_command(command_list[0])
+                    if prediction_locality_csv_path is not None:
+                        if len(fields)!=1 or eb_mode!="REL":
+                            raise ValueError("prediction locality CSV要求单个field和REL EB")
+                        write_fdwz_prediction_locality(prediction_locality_csv_path,compression_output,fields[0],partition_num,eb)
+                    if compression_only:
+                        continue
                     decompression_output=run_command(command_list[1])
                     if write_to_csv:
                         compression_throughput=parse_field_throughput(compression_output,"compression")
                         decompression_throughput=parse_field_throughput(decompression_output,"decompression")
+                        stream_bitrates=parse_mrcz_stream_bitrates(compression_output)
                         rate_distortion=parse_rate_distortion(decompression_output)
                         constant_fields={field for field in fields if f"Field {field} is compressed as constant:" in compression_output}
                         result_context=f"{task_name}/{method}/EB={eb}/max_cpus={max_cpus}"
                         validate_parsed_fields(compression_throughput,fields,f"{result_context}的compression throughput",constant_fields)
                         validate_parsed_fields(decompression_throughput,fields,f"{result_context}的decompression throughput",constant_fields)
                         validate_parsed_fields(rate_distortion,fields,f"{result_context}的rate-distortion results")
+                        if extra_parameters.get("analyze-mrcz-stream-sizes"):
+                            validate_parsed_fields(stream_bitrates,fields,f"{result_context}的MRCZ stream bit rates")
                         csv_method_name=method
                         for field,(br,psnr) in rate_distortion.items():
                             rate_distortion_path=f"{csv_file_prefix}_{field}.csv"
                             write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_BR",br)
                             write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_PSNR",psnr)
+                            if field in stream_bitrates:
+                                coefficient_br,residual_br,separate_total_br=stream_bitrates[field]
+                                write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_Coefficient_BR",coefficient_br)
+                                write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_Residual_BR",residual_br)
+                                write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_Separately_Compressed_BR",separate_total_br)
 
                             throughput_path=f"{csv_file_prefix}_{field}_throughput.csv"
                             throughput_row={f"{eb_mode} EB":eb,"Max CPUs":max_cpus}
