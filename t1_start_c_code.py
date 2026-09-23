@@ -236,6 +236,9 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
         csv_path=config.get("csv_path")
         prediction_locality_csv_path=config.get("prediction_locality_csv_path")
         compression_only=config.get("compression_only",False)
+        trials=config.get("trials",1)
+        if not isinstance(trials,int) or trials<=0:
+            raise ValueError(f"{task_name}的trials必须是正整数")
         csv_file_prefix=data_path
         if csv_path is not None:
             if write_to_csv:
@@ -245,64 +248,68 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
         for method in method_list:
             for eb in eb_list:
                 for max_cpus in max_cpus_list:
-                    command_list=[os.path.join(project_root,"install/bin/mrcz_compress"),os.path.join(project_root,"install/bin/mrcz_decompress")]
-                    if format in ["nekrs","nektar++"]:
-                        command_list=[f"{shlex.quote(command)} -format {shlex.quote(format)} -i {shlex.quote(data_path)}" for command in command_list]
-                    elif format=="mfem":
-                        command_list=[f"{shlex.quote(command)} -format {shlex.quote(format)} -i {shlex.quote(data_path)} -mesh {shlex.quote(mesh_path)}" for command in command_list] # type: ignore
-                    command_list=[f"{command} -M {shlex.quote(eb_mode)} {eb} -method {shlex.quote(method)}" for command in command_list]
-                    command_list=[f"{command} -max-cpus {max_cpus}" for command in command_list]
-                    if partition_num is not None:
-                        command_list=[f"{command} -partition-num {partition_num}" for command in command_list]
-                    if elements is not None:
-                        command_list=[f"{command} -elements {shlex.quote(str(elements))}" for command in command_list]
-                    if fields is not None:
-                        fields_argument=shlex.quote("["+",".join(fields)+"]")
-                        command_list=[f"{command} -fields {fields_argument}" for command in command_list] # type: ignore
-                    command_list=add_extra_parameters(command_list,extra_parameters)
-                    compression_output=run_command(command_list[0])
-                    if prediction_locality_csv_path is not None:
-                        if len(fields)!=1 or eb_mode!="REL":
-                            raise ValueError("prediction locality CSV要求单个field和REL EB")
-                        write_fdwz_prediction_locality(prediction_locality_csv_path,compression_output,fields[0],partition_num,eb)
-                    if compression_only:
-                        continue
-                    decompression_output=run_command(command_list[1])
-                    if write_to_csv:
-                        compression_throughput=parse_field_throughput(compression_output,"compression")
-                        decompression_throughput=parse_field_throughput(decompression_output,"decompression")
-                        stream_bitrates=parse_mrcz_stream_bitrates(compression_output)
-                        rate_distortion=parse_rate_distortion(decompression_output)
-                        constant_fields={field for field in fields if f"Field {field} is compressed as constant:" in compression_output}
-                        result_context=f"{task_name}/{method}/EB={eb}/max_cpus={max_cpus}"
-                        validate_parsed_fields(compression_throughput,fields,f"{result_context}的compression throughput",constant_fields)
-                        validate_parsed_fields(decompression_throughput,fields,f"{result_context}的decompression throughput",constant_fields)
-                        validate_parsed_fields(rate_distortion,fields,f"{result_context}的rate-distortion results")
-                        if extra_parameters.get("analyze-mrcz-stream-sizes"):
-                            validate_parsed_fields(stream_bitrates,fields,f"{result_context}的MRCZ stream bit rates")
-                        csv_method_name=method
-                        for field,(br,psnr) in rate_distortion.items():
-                            rate_distortion_path=f"{csv_file_prefix}_{field}.csv"
-                            write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_BR",br)
-                            write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_PSNR",psnr)
-                            if field in stream_bitrates:
-                                coefficient_br,residual_br,separate_total_br=stream_bitrates[field]
-                                write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_Coefficient_BR",coefficient_br)
-                                write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_Residual_BR",residual_br)
-                                write_csv_item(rate_distortion_path,{f"{eb_mode} EB":eb},f"{csv_method_name}_Separately_Compressed_BR",separate_total_br)
+                    for trial in range(1,trials+1):
+                        command_list=[os.path.join(project_root,"install/bin/mrcz_compress"),os.path.join(project_root,"install/bin/mrcz_decompress")]
+                        if format in ["nekrs","nektar++"]:
+                            command_list=[f"{shlex.quote(command)} -format {shlex.quote(format)} -i {shlex.quote(data_path)}" for command in command_list]
+                        elif format=="mfem":
+                            command_list=[f"{shlex.quote(command)} -format {shlex.quote(format)} -i {shlex.quote(data_path)} -mesh {shlex.quote(mesh_path)}" for command in command_list] # type: ignore
+                        command_list=[f"{command} -M {shlex.quote(eb_mode)} {eb} -method {shlex.quote(method)}" for command in command_list]
+                        command_list=[f"{command} -max-cpus {max_cpus}" for command in command_list]
+                        if partition_num is not None:
+                            command_list=[f"{command} -partition-num {partition_num}" for command in command_list]
+                        if elements is not None:
+                            command_list=[f"{command} -elements {shlex.quote(str(elements))}" for command in command_list]
+                        if fields is not None:
+                            fields_argument=shlex.quote("["+",".join(fields)+"]")
+                            command_list=[f"{command} -fields {fields_argument}" for command in command_list] # type: ignore
+                        command_list=add_extra_parameters(command_list,extra_parameters)
+                        compression_output=run_command(command_list[0])
+                        if prediction_locality_csv_path is not None:
+                            if len(fields)!=1 or eb_mode!="REL":
+                                raise ValueError("prediction locality CSV要求单个field和REL EB")
+                            write_fdwz_prediction_locality(prediction_locality_csv_path,compression_output,fields[0],partition_num,eb)
+                        if compression_only:
+                            continue
+                        decompression_output=run_command(command_list[1])
+                        if write_to_csv:
+                            compression_throughput=parse_field_throughput(compression_output,"compression")
+                            decompression_throughput=parse_field_throughput(decompression_output,"decompression")
+                            stream_bitrates=parse_mrcz_stream_bitrates(compression_output)
+                            rate_distortion=parse_rate_distortion(decompression_output)
+                            constant_fields={field for field in fields if f"Field {field} is compressed as constant:" in compression_output}
+                            result_context=f"{task_name}/{method}/EB={eb}/max_cpus={max_cpus}/trial={trial}"
+                            validate_parsed_fields(compression_throughput,fields,f"{result_context}的compression throughput",constant_fields)
+                            validate_parsed_fields(decompression_throughput,fields,f"{result_context}的decompression throughput",constant_fields)
+                            validate_parsed_fields(rate_distortion,fields,f"{result_context}的rate-distortion results")
+                            if extra_parameters.get("analyze-mrcz-stream-sizes"):
+                                validate_parsed_fields(stream_bitrates,fields,f"{result_context}的MRCZ stream bit rates")
+                            csv_method_name=method
+                            for field,(br,psnr) in rate_distortion.items():
+                                result_row={f"{eb_mode} EB":eb}
+                                if trials>1:
+                                    result_row["Trial"]=trial
+                                rate_distortion_path=f"{csv_file_prefix}_{field}.csv"
+                                write_csv_item(rate_distortion_path,result_row,f"{csv_method_name}_BR",br)
+                                write_csv_item(rate_distortion_path,result_row,f"{csv_method_name}_PSNR",psnr)
+                                if field in stream_bitrates:
+                                    coefficient_br,residual_br,separate_total_br=stream_bitrates[field]
+                                    write_csv_item(rate_distortion_path,result_row,f"{csv_method_name}_Coefficient_BR",coefficient_br)
+                                    write_csv_item(rate_distortion_path,result_row,f"{csv_method_name}_Residual_BR",residual_br)
+                                    write_csv_item(rate_distortion_path,result_row,f"{csv_method_name}_Separately_Compressed_BR",separate_total_br)
 
-                            throughput_path=f"{csv_file_prefix}_{field}_throughput.csv"
-                            throughput_row={f"{eb_mode} EB":eb,"Max CPUs":max_cpus}
-                            if partition_num is not None:
-                                throughput_row["Partition Num"]=partition_num
-                            if field in compression_throughput:
-                                write_csv_item(throughput_path,throughput_row,
-                                    f"{csv_method_name} Compression Throughput",compression_throughput[field])
-                            if field in decompression_throughput:
-                                write_csv_item(throughput_path,throughput_row,
-                                    f"{csv_method_name} Decompression Throughput",decompression_throughput[field])
-                    if cleanup_after_each_test:
-                        cleanup_test_outputs(data_path,method,fields)
+                                throughput_path=f"{csv_file_prefix}_{field}_throughput.csv"
+                                throughput_row={**result_row,"Max CPUs":max_cpus}
+                                if partition_num is not None:
+                                    throughput_row["Partition Num"]=partition_num
+                                if field in compression_throughput:
+                                    write_csv_item(throughput_path,throughput_row,
+                                        f"{csv_method_name} Compression Throughput",compression_throughput[field])
+                                if field in decompression_throughput:
+                                    write_csv_item(throughput_path,throughput_row,
+                                        f"{csv_method_name} Decompression Throughput",decompression_throughput[field])
+                        if cleanup_after_each_test:
+                            cleanup_test_outputs(data_path,method,fields)
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description="运行configs目录中的MRCZ实验配置")

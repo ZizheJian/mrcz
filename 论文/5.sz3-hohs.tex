@@ -50,7 +50,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
     \end{tabular*}
 \end{table}
 
-Element-local prediction also provides favorable memory locality. On large regular tensor datasets, SZ3 may perform long-range accesses during multilevel prediction. High-order elements, in contrast, are typically small, often no larger than $10 \times 10 \times 10$, allowing FDWZ to operate primarily on cache-resident data.
+Element-local prediction also provides favorable memory locality. On large regular tensor datasets, SZ3 may perform long-range accesses during multilevel prediction. The elements evaluated in this work contain at most 1,000 values, allowing FDWZ to operate primarily on cache-resident data.
 
 \subsection{Multi-tree Huffman Encoding}\label{sec:FDWZ:multi-tree}
 
@@ -63,7 +63,7 @@ Figure~\ref{fig:fdwz-tree-ablation}(a) illustrates the resulting level-dependent
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/5/fdwz-tree-ablation.pdf}
-    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~4. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average across the five error bounds.}
+    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~4. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.}
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 
@@ -99,7 +99,7 @@ We evaluate the $P$ field of Dataset~4 on randomly selected internal faces, each
     \end{tabular*}
 \end{table}
 
-As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction is more accurate and produces quantized errors with 2.67$\times$ lower entropy. Although GLL clustering places cross-interface reference points closer to the target, this advantage is insufficient to make cross-interface prediction more accurate. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore keep FDWZ prediction within each element.
+As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction is more accurate, and the quantized errors from cross-interface prediction have 2.67$\times$ the entropy of those from face-parallel prediction. Although GLL clustering places cross-interface reference points closer to the target, this advantage is insufficient to make cross-interface prediction more accurate. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore keep FDWZ prediction within each element.
 
 \subsection{Prediction Along the Element-Index Dimension}\label{sec:FDWZ:element-index-dimension}\label{sec:SZ3-HOHS:element_dimension}
 
@@ -124,4 +124,4 @@ We evaluate the $P$ field of Dataset~4, applying both methods to the same target
     \end{tabular*}
 \end{table}
 
-As shown in Table~\ref{tab:element-index-prediction}, prediction along the element-index dimension is substantially less accurate and produces quantized errors with 12.3$\times$ higher entropy. Consecutive elements in storage order may be far apart in physical space, so their field values at the same local position may change abruptly, which limits both prediction accuracy and error compressibility.
+As shown in Table~\ref{tab:element-index-prediction}, element-index prediction is substantially less accurate, and its quantized errors have 12.3$\times$ the entropy of those from element-local prediction. Consecutive elements in storage order may be far apart in physical space, causing abrupt changes at corresponding local positions and limiting error compressibility.

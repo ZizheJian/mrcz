@@ -1,0 +1,20 @@
+Metric,Value
+Minimum BR reduction (%),0.5026861138276147
+Maximum BR reduction (%),48.773959850455384
+Mean BR reduction (%),19.618458811979814
+Minimum CR improvement (%),0.5052258138372512
+Maximum CR improvement (%),95.21321520865003
+Mean CR improvement (%),31.874158664357328
+Element-major compression throughput mean (MB/s per CPU),46.556469
+Element-major compression throughput std (MB/s per CPU),0.25569736726646114
+Element-major decompression throughput mean (MB/s per CPU),64.11070000000001
+Element-major decompression throughput std (MB/s per CPU),0.455977776774264
+Direct compression throughput mean (MB/s per CPU),37.54962866666667
+Direct compression throughput std (MB/s per CPU),0.47333884656272823
+Direct decompression throughput mean (MB/s per CPU),45.407939999999996
+Direct decompression throughput std (MB/s per CPU),0.25705902382915996
+Tiled compression throughput mean (MB/s per CPU),36.771467666666666
+Tiled compression throughput std (MB/s per CPU),0.7304821886872647
+Tiled decompression throughput mean (MB/s per CPU),50.78882333333333
+Tiled decompression throughput std (MB/s per CPU),0.10730654744391367
+Tiled decompression improvement over direct (%),11.850093471171208
