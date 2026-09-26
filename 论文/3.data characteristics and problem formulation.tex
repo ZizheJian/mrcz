@@ -1,4 +1,4 @@
-\section{Data Characteristics and Problem Formulation}\label{sec:problem formulation}
+\section{Data Organization and Problem Formulation}\label{sec:problem formulation}
 
 This section describes the hybrid organization of high-order element data and formulates the data-reduction problem considered in this work.
 
@@ -7,14 +7,15 @@ This section describes the hybrid organization of high-order element data and fo
 Although simulation systems such as NekRS~\cite{fischer2022nekrs}, MFEM~\cite{kolev2010modular}, and Nektar++~\cite{moxey2020nektar++} use different file formats, their output fields share an organization determined by the underlying element discretization. We use the following common logical representation for one scalar field:
 \begin{equation}
 X=\{x_{e,i,j,k}\}\in\mathbb{R}^{E\times n_x\times n_y\times n_z},
+\label{eq:logical-representation}
 \end{equation}
-where $E$ is the number of elements, $e$ is the element index, and $(i,j,k)$ identifies a local position within an element.
+where $E$ is the number of elements, $e$ is the element index, and $(i,j,k)$ identifies a local position within an element. The element index follows the stored order, and consecutive values of $e$ do not necessarily identify physically adjacent elements.
 
-The dimension indexed by $e$ enumerates the elements in the simulation mesh. In a three-dimensional simulation, these elements are commonly geometrically deformed hexahedra connected through shared faces. In a two-dimensional simulation, they are deformed quadrilaterals connected through shared edges. Globally, this connectivity is unstructured. Neighboring elements do not follow a fixed multidimensional array layout. Figure~\ref{fig:characterizing-hohs}(a) illustrates three connected hexahedral elements in such a mesh.
+In a three-dimensional simulation, the elements are commonly geometrically deformed hexahedra connected through shared faces. In a two-dimensional simulation, they are deformed quadrilaterals connected through shared edges. Globally, this connectivity is unstructured. Neighboring elements do not follow a fixed multidimensional array layout. Figure~\ref{fig:characterizing-hohs}(a) illustrates three connected hexahedral elements in such a mesh.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/3/three_elements.png}
+    \includegraphics[width=\linewidth]{figs/raster300/d3-three-elements.png}
     \caption{Hybrid organization of high-order element data. (a) Physical elements have irregular global connectivity. (b) Each physical element contains a deformed tensor-product arrangement of data points. (c) Every physical element is obtained by geometrically mapping a common reference element.}
     \label{fig:characterizing-hohs}
 \end{figure}
@@ -23,13 +24,11 @@ Within each dataset considered in this work, every element contains the same ten
 
 The local indexing shared by all elements originates from a reference element with a canonical shape. Within the reference element, point coordinates along each dimension are selected from a fixed set. Gauss--Lobatto--Legendre (GLL) points are a common choice in high-order element methods~\cite{fischer2022nekrs,marin2016spectral}. They include the element boundaries and are nonuniformly spaced, as shown in Figure~\ref{fig:characterizing-hohs}(c). The arrow between Figures~\ref{fig:characterizing-hohs}(c) and~\ref{fig:characterizing-hohs}(b) represents the geometric mapping from the reference element to a physical element. Consequently, the same local index identifies the same reference-space position across elements even when the corresponding physical coordinates differ.
 
-All four dimensions in this representation are logical indices rather than physical coordinates. Values adjacent in this logical layout may still be correlated, but the representation itself provides no such guarantee. Whether and how a compressor should exploit each dimension must therefore be determined empirically.
-
 \subsection{Problem Formulation}\label{sec:problem formulation:metrics}
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/3/End to End.png}
+    \includegraphics[width=\linewidth]{figs/raster300/d3-end-to-end.png}
     \caption{Comparison of direct and compression-integrated data-movement workflows. Compression reduces storage and transfer costs while introducing compression and decompression overhead.}
     \label{fig:end-to-end}
 \end{figure}

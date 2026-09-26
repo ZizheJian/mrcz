@@ -1,0 +1,18 @@
+[
+  {
+    "name":"small_core_throughput_jicf0_16",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000",
+    "format":"nekrs",
+    "field_list":["UX","UY","UZ","P","S00"],
+    "eb_mode":"REL",
+    "eb_list":[0.0001,0.00001,0.0000001,0.00000001],
+    "method_list":["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"],
+    "max_cpus_list":[16],
+    "partition_num":128,
+    "extra_parameters":{
+      "compute-precision":"auto",
+      "constant-compression":false
+    },
+    "csv_path":"results/small_core_throughput/jicf0"
+  }
+]

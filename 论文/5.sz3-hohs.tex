@@ -4,7 +4,7 @@ FDWZ follows the SZ compression framework. Section~\ref{sec:SZ3-HOHS:sz3 interpo
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/5/fdwz diagram.png}
+    \includegraphics[width=\linewidth]{figs/raster300/fdwz-diagram.png}
     \caption{Comparison of standard SZ3 compression on tensor data (left) and FDWZ compression on a high-order element partition (right). FDWZ replaces uniform-grid interpolation with distance-weighted interpolation and single-tree Huffman encoding with multi-tree encoding.}
     \label{fig:fdwz-workflow}
 \end{figure}
@@ -26,7 +26,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/5/cubic interpolation.png}
+    \includegraphics[width=0.8\linewidth]{figs/raster300/cubic-interpolation.png}
     \caption{Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table~\ref{tab:cubic-interpolation}.}
     \label{fig:cubic-interpolation}
 \end{figure}
@@ -62,8 +62,8 @@ Figure~\ref{fig:fdwz-tree-ablation}(a) illustrates the resulting level-dependent
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/5/fdwz-tree-ablation.pdf}
-    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~4. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.}
+    \includegraphics[width=\linewidth]{figs/raster300/fdwz-tree-ablation.png}
+    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~7. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.}
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 
@@ -73,18 +73,18 @@ We next examine whether cross-interface prediction can improve upon the element-
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=1\linewidth]{figs/5/cross-element.pdf}
+    \includegraphics[width=1\linewidth]{figs/raster300/cross-element.png}
     \caption{Cubic prediction stencils across and along a shared element interface. The blue surface denotes the shared interface. The regions above and below it belong to the two adjacent elements.}
     \label{fig:cross-element}
 \end{figure}
 
 GLL points cluster near element boundaries, allowing cross-interface prediction to use reference points close to the target. However, the two elements can be geometrically distorted in different ways, and the deformation on one side need not continue smoothly onto the other. Consequently, the cross-interface reference points are generally not collinear with the target in physical space. In contrast, each face-parallel stencil lies along a tensor-product coordinate line in reference space. These competing effects make their relative prediction accuracy unclear a priori.
 
-We evaluate the $P$ field of Dataset~4 on randomly selected internal faces, each shared by two elements, and compare the prediction errors at the same interior points of each face.
+We evaluate the $P$ field of Dataset~7 on randomly selected internal faces, each shared by two elements, and compare the prediction errors at the same interior points of each face.
 
 \begin{table}[htb]
     \centering
-    \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~4. \textbf{Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the cross-interface result divided by the face-parallel result.}
+    \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~7. \textbf{Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the cross-interface result divided by the face-parallel result.}
     \label{tab:cross-interface-prediction}
     \footnotesize
     \setlength{\tabcolsep}{3pt}
@@ -105,11 +105,11 @@ As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction
 
 We next examine whether prediction along the element-index dimension can outperform the element-local distance-weighted interpolation used by FDWZ. Section~\ref{sec:problem formulation:data characteristics} represents each scalar field as the four-dimensional logical array $X=\{x_{e,i,j,k}\}$, where $e$ enumerates the stored elements and $(i,j,k)$ identifies an element-local position. FDWZ does not exploit predictability along the dimension indexed by $e$.
 
-We evaluate the $P$ field of Dataset~4, applying both methods to the same target values. The element-local method uses FDWZ's distance-weighted interpolation, while the element-index method follows QoZ's one-dimensional interpolation approach~\cite{liu2024high}.
+We evaluate the $P$ field of Dataset~7, applying both methods to the same target values. The element-local method uses FDWZ's distance-weighted interpolation, while the element-index method follows QoZ's one-dimensional interpolation approach~\cite{liu2024high}.
 
 \begin{table}[htb]
     \centering
-    \caption{Comparison of element-local and element-index prediction errors for Dataset~4. \textbf{Element-local} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the element-index result divided by the element-local result.}
+    \caption{Comparison of element-local and element-index prediction errors for Dataset~7. \textbf{Element-local} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the element-index result divided by the element-local result.}
     \label{tab:element-index-prediction}
     \footnotesize
     \setlength{\tabcolsep}{3pt}

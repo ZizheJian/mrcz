@@ -107,6 +107,32 @@ namespace mrcz
             else
                 write_data(params,field);
 
+            if (!params.reconstructed_output_path.empty())
+            {
+                string output_path=params.reconstructed_output_path;
+                if (params.fields_to_process.size()>1)
+                    output_path+="_"+field;
+                ofstream reconstructed_file(output_path,ios::binary);
+                if (!reconstructed_file)
+                    throw runtime_error("无法创建重建字段文件: "+output_path);
+                if constexpr (is_same_v<T,double>)
+                {
+                    if (params.header.word_size==4)
+                    {
+                        vector<float> float_data(params.decompressed_data.begin(),params.decompressed_data.end());
+                        reconstructed_file.write(reinterpret_cast<const char*>(float_data.data()),float_data.size()*sizeof(float));
+                    }
+                    else
+                        reconstructed_file.write(reinterpret_cast<const char*>(params.decompressed_data.data()),params.decompressed_data.size()*sizeof(T));
+                }
+                else
+                    reconstructed_file.write(reinterpret_cast<const char*>(params.decompressed_data.data()),params.decompressed_data.size()*sizeof(T));
+                if (!reconstructed_file)
+                    throw runtime_error("写入重建字段文件失败: "+output_path);
+                reconstructed_file.close();
+                printf("Reconstructed field output= %s\n",output_path.c_str());
+            }
+
             ifstream original_file(params.data_path,ios::binary);
             if (original_file)
             {

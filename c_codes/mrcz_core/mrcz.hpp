@@ -87,6 +87,7 @@ namespace mrcz
             unordered_map<string,T> abs_eb,rel_eb; //每个field的绝对误差和相对误差
             string compute_precision="auto"; //auto、float或double；double输入不会降为float
             string method;
+            string reconstructed_output_path;
             bool all_fields_to_process=false;
             vector<string> all_fields_in_file;
             vector<string> fields_to_process;
@@ -252,6 +253,7 @@ namespace mrcz
                 for (auto pair:other.rel_eb)
                     rel_eb[pair.first]=pair.second;
                 method=other.method;
+                reconstructed_output_path=other.reconstructed_output_path;
                 all_fields_to_process=other.all_fields_to_process;
                 all_fields_in_file=other.all_fields_in_file;
                 fields_to_process=other.fields_to_process;

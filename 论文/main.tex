@@ -9,9 +9,15 @@
 \usepackage{url}
 \usepackage{xcolor}
 
+\setcounter{topnumber}{5}
+\setcounter{dbltopnumber}{3}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+
 \begin{document}
 
-\title{Managing High-Order Hybrid-Structured Simulation Data with Error-Bounded Lossy Compression}
+\title{Managing High-Order Element Data with Error-Bounded Compression}
 
 \author{
 \IEEEauthorblockN{
@@ -57,11 +63,12 @@ runderwood@anl.gov,hdai022@ucr.edu,swu264@ucr.edu,chen@cs.ucr.edu,cappello@mcs.a
 \input{8.conclusion}
 
 \section*{Acknowledgment}
-This research was supported by the U.S. Department of Energy,Office of Science,Advanced Scientific Computing Research (ASCR),under contract DE-AC02-06CH11357,and supported by the National Science Foundation under Grant OAC-2311875,OAC-2514036,OAC-2513768,OAC-2330367,OAC-2311756,and OAC-2313122.
-This research used resources of the Argonne Leadership Computing Facility,which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357.
-We acknowledge the computing resources provided on Bebop,operated by the Laboratory Computing Resource Center at Argonne National Laboratory,and the ACCESS Anvil system,operated by Purdue University.
+This research was supported by the U.S. Department of Energy, Office of Science, Advanced Scientific Computing Research (ASCR), under contract DE-AC02-06CH11357, and supported by the National Science Foundation under Grant OAC-2311875, OAC-2514036, OAC-2513768, OAC-2330367, OAC-2311756, and OAC-2313122.
+This research used resources of the Argonne Leadership Computing Facility, which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357.
+We acknowledge the Laboratory Computing Resource Center at Argonne National Laboratory for providing access to the LCRC Improv DTN, and the ACCESS Anvil system, operated by Purdue University.
 
-% TODO: Add the ICDE-required AI-generated content disclosure before submission.
+\section*{AI-Generated Content Acknowledgment}
+OpenAI Codex was used as an interactive assistant to revise wording and organization throughout the manuscript and to assist with developing and debugging scripts for experiment execution, data processing, analysis, and figure generation, primarily for the evaluation in Section~\ref{sec:performance evaluation}. It also assisted in expressing summaries of the measured results. All AI-assisted text, code, figures, numerical results, interpretations, and conclusions were reviewed and independently verified by the authors, who take full responsibility for the content of this paper.
 
 \bibliographystyle{IEEEtran}
 \bibliography{reference}

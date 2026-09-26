@@ -1,6 +1,6 @@
 import csv,math,os,statistics
 
-methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
+methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
 configs={
     "pb0":{"rel_eb":1e-4,"cpus":64,"value_num":996942848,"fields":["UX","UY","UZ","P","T"],"rd_dir":"pb0","rd_prefix":"pb0.f00001","transfer_csv":"pb0_transfer_rel_eb.csv"},
     "jicf0":{"rel_eb":1e-6,"cpus":128,"value_num":3240264000,"fields":["UX","UY","UZ","P","S00"],"rd_dir":"jicf0","rd_prefix":"jicf0.f00000","transfer_csv":"jicf0_transfer_rel_eb.csv"}}
@@ -23,9 +23,8 @@ def summarize_dataset(project_root,result_dir,dataset,config):
         throughput_path=os.path.join(project_root,"results","RD",config["rd_dir"],f"{config['rd_prefix']}_{field}_throughput.csv")
         row=selected_throughput_row(throughput_path,config["rel_eb"],config["cpus"])
         for method in methods:
-            active_cpus=1 if method=="SZ2-3D-fused" else config["cpus"]
-            backend_times[method]["compression"]+=raw_mib/(float(row[f"{method} Compression Throughput"])*active_cpus)
-            backend_times[method]["decompression"]+=raw_mib/(float(row[f"{method} Decompression Throughput"])*active_cpus)
+            backend_times[method]["compression"]+=raw_mib/(float(row[f"{method} Compression Throughput"])*config["cpus"])
+            backend_times[method]["decompression"]+=raw_mib/(float(row[f"{method} Decompression Throughput"])*config["cpus"])
     transfer_path=os.path.join(result_dir,config["transfer_csv"])
     transfer_rows=read_rows(transfer_path)
     summaries=[]
@@ -46,7 +45,22 @@ def summarize_dataset(project_root,result_dir,dataset,config):
         compression_time=backend_times[method]["compression"]
         decompression_time=backend_times[method]["decompression"]
         end_to_end_times=[compression_time+transfer_time+decompression_time for transfer_time in transfer_times]
-        summaries.append({"Dataset":dataset,"REL EB":config["rel_eb"],"Method":method,"Allocated CPUs":config["cpus"],"Active Backend CPUs":1 if method=="SZ2-3D-fused" else config["cpus"],"Fields":len(config["fields"]),"Raw Bytes":config["value_num"]*4*len(config["fields"]),"Compressed Bytes":compressed_bytes,"Compression Ratio":config["value_num"]*4*len(config["fields"])/compressed_bytes,"Compression Time":compression_time,"Transfer Time Trial 1":transfer_times[0],"Transfer Time Trial 2":transfer_times[1],"Transfer Time Trial 3":transfer_times[2],"Transfer Time Mean":statistics.mean(transfer_times),"Transfer Time Median":statistics.median(transfer_times),"Transfer Time Std Dev":statistics.stdev(transfer_times),"Decompression Time":decompression_time,"End-to-end Time Min":min(end_to_end_times),"End-to-end Time Median":statistics.median(end_to_end_times),"End-to-end Time Max":max(end_to_end_times)})
+        raw_bytes=config["value_num"]*4*len(config["fields"])
+        summaries.append({"Dataset":dataset,"REL EB":config["rel_eb"],"Method":method,"Allocated CPUs":config["cpus"],"Active Backend CPUs":config["cpus"],"Fields":len(config["fields"]),"Raw Bytes":raw_bytes,"Compressed Bytes":compressed_bytes,"Compression Ratio":raw_bytes/compressed_bytes,"Compression Time":compression_time,"Transfer Time Trial 1":transfer_times[0],"Transfer Time Trial 2":transfer_times[1],"Transfer Time Trial 3":transfer_times[2],"Transfer Time Mean":statistics.mean(transfer_times),"Transfer Time Median":statistics.median(transfer_times),"Transfer Time Std Dev":statistics.stdev(transfer_times),"Decompression Time":decompression_time,"End-to-end Time Min":min(end_to_end_times),"End-to-end Time Median":statistics.median(end_to_end_times),"End-to-end Time Max":max(end_to_end_times)})
+    direct_rows=sorted((row for row in transfer_rows if row["Method"]=="Direct"),key=lambda row:int(row["Trial"]))
+    if direct_rows:
+        raw_bytes=config["value_num"]*4*len(config["fields"])
+        if len(direct_rows)!=3 or [int(row["Trial"]) for row in direct_rows]!=[1,2,3]:raise RuntimeError(f"{transfer_path}中的Direct必须恰好包含Trial 1、2、3")
+        if any(int(row["Files"])!=1 or int(row["Bytes Transferred"])!=raw_bytes or not math.isclose(float(row["REL EB"]),config["rel_eb"],rel_tol=1e-12) for row in direct_rows):raise RuntimeError(f"{transfer_path}中的Direct元数据不一致")
+        speed_text=[row["Effective Bytes Per Second"].strip() for row in direct_rows]
+        if any(speed_text) and not all(speed_text):raise RuntimeError(f"{transfer_path}中的Direct传输速度只填写了一部分")
+        if all(speed_text):
+            speeds=[float(value) for value in speed_text]
+            if any(not math.isfinite(speed) or speed<=0 for speed in speeds):raise RuntimeError(f"{transfer_path}中的Direct传输速度无效")
+            transfer_times=[raw_bytes/speed for speed in speeds]
+            summaries.append({"Dataset":dataset,"REL EB":config["rel_eb"],"Method":"Direct","Allocated CPUs":0,"Active Backend CPUs":0,"Fields":len(config["fields"]),"Raw Bytes":raw_bytes,"Compressed Bytes":raw_bytes,"Compression Ratio":1.0,"Compression Time":0.0,"Transfer Time Trial 1":transfer_times[0],"Transfer Time Trial 2":transfer_times[1],"Transfer Time Trial 3":transfer_times[2],"Transfer Time Mean":statistics.mean(transfer_times),"Transfer Time Median":statistics.median(transfer_times),"Transfer Time Std Dev":statistics.stdev(transfer_times),"Decompression Time":0.0,"End-to-end Time Min":min(transfer_times),"End-to-end Time Median":statistics.median(transfer_times),"End-to-end Time Max":max(transfer_times)})
+        else:
+            summaries.append({"Dataset":dataset,"REL EB":config["rel_eb"],"Method":"Direct","Allocated CPUs":0,"Active Backend CPUs":0,"Fields":len(config["fields"]),"Raw Bytes":raw_bytes,"Compressed Bytes":raw_bytes,"Compression Ratio":1.0,"Compression Time":0.0,"Transfer Time Trial 1":0.0,"Transfer Time Trial 2":0.0,"Transfer Time Trial 3":0.0,"Transfer Time Mean":0.0,"Transfer Time Median":0.0,"Transfer Time Std Dev":0.0,"Decompression Time":0.0,"End-to-end Time Min":0.0,"End-to-end Time Median":0.0,"End-to-end Time Max":0.0})
     summaries.sort(key=lambda row:row["End-to-end Time Median"])
     for rank,row in enumerate(summaries,1):
         row["Rank"]=rank

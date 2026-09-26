@@ -75,7 +75,7 @@ def main():
     colors={"Element-major":"#ff5a5a","Mode-major":"#3b7ded"}
     rd_ax.plot(element_br,element_psnr,color=colors["Element-major"],linewidth=0.9,label="Element-major")
     rd_ax.plot(mode_br,mode_psnr,color=colors["Mode-major"],linewidth=0.9,label="Mode-major")
-    rd_ax.set_xlabel("Bit Rate",labelpad=1)
+    rd_ax.set_xlabel("Bit rate",labelpad=1)
     rd_ax.set_ylabel("PSNR (dB)",labelpad=1)
     rd_ax.set_xlim(0,3.0)
     rd_ax.set_ylim(60,135)

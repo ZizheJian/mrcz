@@ -94,6 +94,12 @@ namespace mrcz
                     throw runtime_error("缺少-method参数后的压缩方法");
                 params.method=argv[++i];
             }
+            else if (string(argv[i])=="-reconstructed-output")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-reconstructed-output参数后的输出路径");
+                params.reconstructed_output_path=argv[++i];
+            }
             else if (string(argv[i])=="-constant-compression")
             {
                 if (i+1>=argc)

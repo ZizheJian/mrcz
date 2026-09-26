@@ -1,0 +1,19 @@
+[
+  {
+    "name":"strong_scaling_jicf0_rel_eb_1e-6",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000",
+    "format":"nekrs",
+    "field_list":["UX","UY","UZ","P","S00"],
+    "eb_mode":"REL",
+    "eb_list":[0.000001],
+    "method_list":["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"],
+    "max_cpus_list":[16,32,64,128],
+    "partition_num":128,
+    "trials":1,
+    "extra_parameters":{
+      "compute-precision":"auto",
+      "constant-compression":false
+    },
+    "csv_path":"results/strong_scaling/fixed_rel_eb/jicf0"
+  }
+]

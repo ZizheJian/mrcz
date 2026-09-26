@@ -4,7 +4,9 @@ This section describes the partitioning and parallelization strategy shared by a
 
 \subsection{Partitioned Parallel Execution}
 
-All evaluated compressors are executed through a common partitioned processing layer. Before invoking a compressor, this layer divides each field into contiguous partitions of elements. An OpenMP thread processes each partition by invoking FDWZ or MRCZ, or by calling a baseline compressor through its API. The returned partition bitstreams are then concatenated to form the compressed field.
+All evaluated methods use a common partitioned processing layer. It divides either a complete field or a selected contiguous element range into partitions and assigns each partition to an OpenMP thread, which invokes the selected compressor.
+
+Each compressor invocation produces an independently decodable partition payload. The field bitstream records the payload sizes followed by the payloads in partition order, allowing the decoder to locate each partition. This independence enables scalable parallel execution, which we evaluate in Section~\ref{sec:parallel-throughput}.
 
 \subsection{Element-local Design of FDWZ and MRCZ}
 

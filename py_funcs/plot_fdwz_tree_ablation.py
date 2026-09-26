@@ -94,7 +94,7 @@ def draw_rate_distortion(axes):
     axes.xaxis.set_major_locator(FixedLocator([0,2,4]))
     axes.xaxis.set_major_formatter(FixedFormatter(["0","2","4"]))
     axes.yaxis.set_major_locator(FixedLocator([40,80,120]))
-    axes.set_xlabel("Bit Rate",labelpad=1)
+    axes.set_xlabel("Bit rate",labelpad=1)
     axes.set_ylabel("PSNR (dB)",labelpad=1)
     axes.legend(loc="lower center",bbox_to_anchor=(0.5,0.98),frameon=False,handlelength=1,handletextpad=0.25,borderaxespad=0,labelspacing=0.1)
     configure_common_axes(axes)

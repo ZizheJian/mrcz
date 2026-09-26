@@ -138,8 +138,8 @@ def main():
         relative_eb=[float(row["REL EB"]) for row in rows]
         coefficient_br=[float(row["MRCZ-ablation_Coefficient_BR"]) for row in rows]
         residual_br=[float(row["MRCZ-ablation_Residual_BR"]) for row in rows]
-        coefficient_ax.plot(relative_eb,coefficient_br,color=colors[label],linestyle="-",linewidth=0.8)
-        residual_ax.plot(relative_eb,residual_br,color=colors[label],linestyle="--",linewidth=0.8)
+        coefficient_ax.plot(relative_eb,coefficient_br,color=colors[label],linestyle="-",linewidth=0.8,zorder=1)
+        residual_ax.plot(relative_eb,residual_br,color=colors[label],linestyle="--",linewidth=0.8,zorder=1)
     coefficient_ax.set_xscale("log")
     coefficient_ax.invert_xaxis()
     coefficient_ax.set_ylim(0,4)
@@ -153,14 +153,14 @@ def main():
 
     for label,stats in (("DLT",dlt),("DChT",dcht)):
         median,lower,upper,_=stats
-        magnitude_ax.plot(orders,median,marker=mode_marker,linewidth=0.8,markersize=1.8,label=label,color=colors[label])
-        magnitude_ax.fill_between(orders,lower,upper,color=colors[label],alpha=0.16,linewidth=0)
+        magnitude_ax.plot(orders,median,marker=mode_marker,linewidth=0.8,markersize=1.8,label=label,color=colors[label],zorder=1)
+        magnitude_ax.fill_between(orders,lower,upper,color=colors[label],alpha=0.16,linewidth=0,zorder=1)
     magnitude_ax.set_yscale("log")
     magnitude_ax.set_xlabel(axis_order_label,labelpad=1)
     magnitude_ax.set_ylabel("Normalized $|c|$",labelpad=1)
 
-    entropy_ax.plot(orders,dlt[3],marker=mode_marker,linewidth=0.8,markersize=1.8,label="DLT",color=colors["DLT"])
-    entropy_ax.plot(orders,dcht[3],marker=mode_marker,linewidth=0.8,markersize=1.8,label="DChT",color=colors["DChT"])
+    entropy_ax.plot(orders,dlt[3],marker=mode_marker,linewidth=0.8,markersize=1.8,label="DLT",color=colors["DLT"],zorder=1)
+    entropy_ax.plot(orders,dcht[3],marker=mode_marker,linewidth=0.8,markersize=1.8,label="DChT",color=colors["DChT"],zorder=1)
     entropy_ax.set_xlabel(axis_order_label,labelpad=1)
     entropy_ax.set_ylabel("Entropy (bits/value)",labelpad=1)
     if args.mode_order=="total":
@@ -183,7 +183,8 @@ def main():
         position=ax.get_position()
         fig.text((position.x0+position.x1)/2,y,label,ha="center",va="bottom",fontsize=8.4,linespacing=0.9)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
-    fig.savefig(args.output)
+    for ax in axes:ax.set_rasterization_zorder(1.5)
+    fig.savefig(args.output,dpi=300)
     fig.savefig(os.path.splitext(args.output)[0]+".png",dpi=300)
     os.makedirs(os.path.dirname(args.csv_output) or ".",exist_ok=True)
     with open(args.csv_output,"w",newline="") as file_obj:

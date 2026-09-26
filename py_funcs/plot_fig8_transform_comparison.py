@@ -105,7 +105,7 @@ def main():
 
     ax.set_xlim(0,3.5)
     ax.set_ylim(80,115)
-    ax.set_xlabel("Bit Rate",labelpad=1)
+    ax.set_xlabel("Bit rate",labelpad=1)
     ax.set_ylabel("PSNR (dB)",labelpad=1)
     ax.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
     ax.tick_params(direction="in",length=2.5,width=0.6)

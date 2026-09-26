@@ -314,9 +314,10 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description="运行configs目录中的MRCZ实验配置")
     parser.add_argument("json",help="configs中的JSON配置名称，或JSON文件路径")
+    parser.add_argument("--skip-build",action="store_true",help="使用现有安装而不重新构建")
     arguments=parser.parse_args()
     try:
         json_path=resolve_json_path(arguments.json)
     except FileNotFoundError as error:
         parser.error(str(error))
-    run_experiment(json_path=json_path)
+    run_experiment(json_path=json_path,build_before_test=not arguments.skip_build)

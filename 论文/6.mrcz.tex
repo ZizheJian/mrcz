@@ -8,7 +8,7 @@ Before presenting the MRCZ workflow, we briefly revisit the transform-based comp
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=1\linewidth]{figs/6/mrcz diagram.png}
+    \includegraphics[width=1\linewidth]{figs/raster300/mrcz-diagram.png}
     \caption{Overview of the MRCZ compression workflow.}
     \label{fig:mrcz_diagram}
 \end{figure}
@@ -25,7 +25,7 @@ We compare DLT, the discrete cosine transform (DCT), the discrete sine transform
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/6/transform-comparison-stacked.pdf}
+    \includegraphics[width=\linewidth]{figs/raster300/transform-comparison-stacked.png}
     \caption{Rate--distortion performance of the transform--coordinate combinations. DChT evaluated at the GLL coordinates achieves the best overall performance, improving the compression ratio over DLT at the same coordinates by 17.5\% on average at matched PSNRs.}
     \label{fig:transform}
 \end{figure}
@@ -34,8 +34,8 @@ Figure~\ref{fig:transform} compares the rate--distortion behavior of the evaluat
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=1\linewidth]{figs/6/transform-mode-statistics.pdf}
-    \caption{Comparison of DLT and DChT at the GLL coordinates on the $P$ field of Dataset~4. (a) DChT's smaller coefficient stream accounts for its compression advantage. (b)--(c) DChT produces smaller high-order coefficients and lower entropy of the quantized coefficients. Shading in (b) indicates the interquartile range.}
+    \includegraphics[width=1\linewidth]{figs/raster300/transform-mode-statistics.png}
+    \caption{Comparison of DLT and DChT at the GLL coordinates on the $P$ field of Dataset~7. (a) DChT's smaller coefficient stream accounts for its compression advantage. (b)--(c) DChT produces smaller high-order coefficients and lower entropy of the quantized coefficients. Shading in (b) indicates the interquartile range.}
     \label{fig:transform-mode-statistics}
 \end{figure}
 
@@ -55,8 +55,8 @@ A direct transpose traverses one dimension of the coefficient array with a large
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/6/mrcz-reordering-ablation.pdf}
-    \caption{Ablation of mode-major coefficient reordering on the $P$ field of Dataset~4. (a) Mode-major ordering improves the compression ratio by 31.9\% on average. (b) Compared with direct transposition, tiled transposition maintains nearly identical compression throughput and improves decompression throughput by 11.9\%. Original denotes the element-major layout without transposition.}
+    \includegraphics[width=\linewidth]{figs/raster300/mrcz-reordering-ablation.png}
+    \caption{Ablation of mode-major coefficient reordering on the $P$ field of Dataset~7. (a) Mode-major ordering improves the compression ratio by 31.9\% on average. (b) Compared with direct transposition, tiled transposition maintains nearly identical compression throughput and improves decompression throughput by 11.9\%. Original denotes the element-major layout without transposition.}
     \label{fig:mrcz-reordering-ablation}
 \end{figure}
 

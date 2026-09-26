@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  23 SEP 2026 16:16
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  26 SEP 2026 11:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -329,20 +329,20 @@ File: l3backend-pdfmode.def 2020-03-12 L3 backend support: PDF mode
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
 
 -- Lines per column: 56 (exact).
 
@@ -374,15 +374,15 @@ e
 ))
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Calculating math sizes for size <11> on input line 47.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 47.
+LaTeX Font Info:    Calculating math sizes for size <11> on input line 53.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 53.
 
 
 (/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/tex/late
 x/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 47.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 53.
 
 
 (/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/tex/late
@@ -392,15 +392,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}
 
 
-]
-Underfull \hbox (badness 1953) in paragraph at lines 21--22
-\OT1/ptm/m/n/10 management work-flow, mea-sur-ing stor-age re-duc-tion,
- []
-
-) (./2.related work.tex
-Underfull \vbox (badness 4543) has occurred while \output is active []
-
-
+]) (./2.related work.tex
 Underfull \hbox (badness 1616) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Many error-bounded com-pres-sors tar-get sci-en-tific data
  []
@@ -416,40 +408,43 @@ Underfull \hbox (badness 1527) in paragraph at lines 7--8
 g
  []
 
-<figs/3/three_elements.png, id=17, 3380.63pt x 1184.425pt>
-File: figs/3/three_elements.png Graphic file (type png)
-<use figs/3/three_elements.png>
-Package pdftex.def Info: figs/3/three_elements.png  used on input line 17.
-(pdftex.def)             Requested size: 252.0pt x 88.28586pt.
-<figs/3/End to End.png, id=18, 3541.23pt x 1120.185pt>
-File: figs/3/End to End.png Graphic file (type png)
-<use figs/3/End to End.png>
-Package pdftex.def Info: figs/3/End to End.png  used on input line 32.
-(pdftex.def)             Requested size: 252.0pt x 79.7029pt.
-[3 <./figs/3/three_elements.png> <./figs/3/End to End.png>])
-(./4.design overview.tex
-Underfull \hbox (badness 3240) in paragraph at lines 49--1
+<figs/raster300/d3-three-elements.png, id=15, 251.9814pt x 88.4103pt>
+File: figs/raster300/d3-three-elements.png Graphic file (type png)
+<use figs/raster300/d3-three-elements.png>
+Package pdftex.def Info: figs/raster300/d3-three-elements.png  used on input li
+ne 18.
+(pdftex.def)             Requested size: 252.0pt x 88.42085pt.
+<figs/raster300/d3-end-to-end.png, id=16, 251.9814pt x 79.7379pt>
+File: figs/raster300/d3-end-to-end.png Graphic file (type png)
+<use figs/raster300/d3-end-to-end.png>
+Package pdftex.def Info: figs/raster300/d3-end-to-end.png  used on input line 3
+1.
+(pdftex.def)             Requested size: 252.0pt x 79.74742pt.
+[3 <./figs/raster300/d3-three-elements.png (PNG copy)> <./figs/raster300/d3-end
+-to-end.png (PNG copy)>]) (./4.design overview.tex
+Underfull \hbox (badness 3240) in paragraph at lines 48--1
 []\OT1/ptm/m/n/10 Our sec-ond ob-jec-tive is to re-duce end-to-end data-
  []
 
 ) (./5.sz3-hohs.tex
-<figs/5/fdwz diagram.png, id=29, 2152.04pt x 1349.04pt>
-File: figs/5/fdwz diagram.png Graphic file (type png)
-<use figs/5/fdwz diagram.png>
-Package pdftex.def Info: figs/5/fdwz diagram.png  used on input line 7.
-(pdftex.def)             Requested size: 252.0pt x 157.96672pt.
+<figs/raster300/fdwz-diagram.png, id=28, 251.9814pt x 158.0304pt>
+File: figs/raster300/fdwz-diagram.png Graphic file (type png)
+<use figs/raster300/fdwz-diagram.png>
+Package pdftex.def Info: figs/raster300/fdwz-diagram.png  used on input line 7.
+
+(pdftex.def)             Requested size: 252.0pt x 158.04929pt.
 
 Underfull \hbox (badness 1776) in paragraph at lines 14--15
 []\OT1/ptm/m/n/10 The SZ frame-work fol-lows a prediction--quantization--
  []
 
-[4 <./figs/5/fdwz diagram.png>]
-<figs/5/cubic interpolation.png, id=33, 1507.6325pt x 469.755pt>
-File: figs/5/cubic interpolation.png Graphic file (type png)
-<use figs/5/cubic interpolation.png>
-Package pdftex.def Info: figs/5/cubic interpolation.png  used on input line 29.
-
-(pdftex.def)             Requested size: 201.60077pt x 62.81209pt.
+[4 <./figs/raster300/fdwz-diagram.png (PNG copy)>]
+<figs/raster300/cubic-interpolation.png, id=32, 201.3924pt x 62.634pt>
+File: figs/raster300/cubic-interpolation.png Graphic file (type png)
+<use figs/raster300/cubic-interpolation.png>
+Package pdftex.def Info: figs/raster300/cubic-interpolation.png  used on input 
+line 29.
+(pdftex.def)             Requested size: 201.60077pt x 62.69882pt.
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 4
 5.
 
@@ -461,53 +456,58 @@ Underfull \hbox (badness 10000) in paragraph at lines 61--62
 []\OT1/ptm/m/n/10 Figure 5[](a) il-lus-trates the re-sult-ing level-dependent
  []
 
-<figs/5/fdwz-tree-ablation.pdf, id=34, 252.945pt x 97.5645pt>
-File: figs/5/fdwz-tree-ablation.pdf Graphic file (type pdf)
-<use figs/5/fdwz-tree-ablation.pdf>
-Package pdftex.def Info: figs/5/fdwz-tree-ablation.pdf  used on input line 65.
-(pdftex.def)             Requested size: 252.0pt x 97.20247pt.
-<figs/5/cross-element.pdf, id=35, 440.64626pt x 136.51pt>
-File: figs/5/cross-element.pdf Graphic file (type pdf)
-<use figs/5/cross-element.pdf>
-Package pdftex.def Info: figs/5/cross-element.pdf  used on input line 76.
-(pdftex.def)             Requested size: 252.0pt x 78.0677pt.
-[5 <./figs/5/cubic interpolation.png> <./figs/5/fdwz-tree-ablation.pdf>])
-(./6.mrcz.tex
-<figs/6/mrcz diagram.png, id=51, 2473.49904pt x 871.90259pt>
-File: figs/6/mrcz diagram.png Graphic file (type png)
-<use figs/6/mrcz diagram.png>
-Package pdftex.def Info: figs/6/mrcz diagram.png  used on input line 11.
-(pdftex.def)             Requested size: 252.0pt x 88.81847pt.
- [6 <./figs/5/cross-element.pdf> <./figs/6/mrcz diagram.png>]
+<figs/raster300/fdwz-tree-ablation.png, id=33, 251.9814pt x 97.3236pt>
+File: figs/raster300/fdwz-tree-ablation.png Graphic file (type png)
+<use figs/raster300/fdwz-tree-ablation.png>
+Package pdftex.def Info: figs/raster300/fdwz-tree-ablation.png  used on input l
+ine 65.
+(pdftex.def)             Requested size: 252.0pt x 97.3352pt.
+<figs/raster300/cross-element.png, id=34, 251.9814pt x 78.2925pt>
+File: figs/raster300/cross-element.png Graphic file (type png)
+<use figs/raster300/cross-element.png>
+Package pdftex.def Info: figs/raster300/cross-element.png  used on input line 7
+6.
+(pdftex.def)             Requested size: 252.0pt x 78.30185pt.
+[5 <./figs/raster300/cubic-interpolation.png (PNG copy)> <./figs/raster300/fdwz
+-tree-ablation.png (PNG copy)>]) (./6.mrcz.tex
+<figs/raster300/mrcz-diagram.png, id=40, 251.9814pt x 88.6512pt>
+File: figs/raster300/mrcz-diagram.png Graphic file (type png)
+<use figs/raster300/mrcz-diagram.png>
+Package pdftex.def Info: figs/raster300/mrcz-diagram.png  used on input line 11
+.
+(pdftex.def)             Requested size: 252.0pt x 88.66179pt.
+ [6 <./figs/raster300/cross-element.png (PNG copy)> <./figs/raster300/mrcz-diag
+ram.png (PNG copy)>]
 Underfull \hbox (badness 1377) in paragraph at lines 18--19
 []\OT1/ptm/m/n/10 Finally, MRCZ forms its bit-stream from two sym-bol
  []
 
-<figs/6/transform-comparison-stacked.pdf, id=61, 260.50658pt x 135.42099pt>
-File: figs/6/transform-comparison-stacked.pdf Graphic file (type pdf)
-<use figs/6/transform-comparison-stacked.pdf>
-Package pdftex.def Info: figs/6/transform-comparison-stacked.pdf  used on input
- line 28.
-(pdftex.def)             Requested size: 252.0pt x 131.0007pt.
+<figs/raster300/transform-comparison-stacked.png, id=46, 251.9814pt x 130.5678p
+t>
+File: figs/raster300/transform-comparison-stacked.png Graphic file (type png)
+<use figs/raster300/transform-comparison-stacked.png>
+Package pdftex.def Info: figs/raster300/transform-comparison-stacked.png  used 
+on input line 28.
+(pdftex.def)             Requested size: 252.0pt x 130.58339pt.
 
 Underfull \hbox (badness 3977) in paragraph at lines 29--29
 []\OT1/ptm/m/n/10 Fig. 8: |Rate--distortion per-for-mance of the transform--
  []
 
-<figs/6/transform-mode-statistics.pdf, id=62, 265.2309pt x 112.0185pt>
-File: figs/6/transform-mode-statistics.pdf Graphic file (type pdf)
-<use figs/6/transform-mode-statistics.pdf>
-Package pdftex.def Info: figs/6/transform-mode-statistics.pdf  used on input li
-ne 37.
-(pdftex.def)             Requested size: 252.0pt x 106.43404pt.
-[7 <./figs/6/transform-comparison-stacked.pdf> <./figs/6/transform-mode-statist
-ics.pdf>]
-<figs/6/mrcz-reordering-ablation.pdf, id=111, 252.945pt x 119.2455pt>
-File: figs/6/mrcz-reordering-ablation.pdf Graphic file (type pdf)
-<use figs/6/mrcz-reordering-ablation.pdf>
-Package pdftex.def Info: figs/6/mrcz-reordering-ablation.pdf  used on input lin
-e 58.
-(pdftex.def)             Requested size: 252.0pt x 118.80304pt.
+<figs/raster300/transform-mode-statistics.png, id=47, 251.9814pt x 106.4778pt>
+File: figs/raster300/transform-mode-statistics.png Graphic file (type png)
+<use figs/raster300/transform-mode-statistics.png>
+Package pdftex.def Info: figs/raster300/transform-mode-statistics.png  used on 
+input line 37.
+(pdftex.def)             Requested size: 252.0pt x 106.49051pt.
+[7 <./figs/raster300/transform-comparison-stacked.png (PNG copy)> <./figs/raste
+r300/transform-mode-statistics.png (PNG copy)>]
+<figs/raster300/mrcz-reordering-ablation.png, id=52, 251.9814pt x 119.0046pt>
+File: figs/raster300/mrcz-reordering-ablation.png Graphic file (type png)
+<use figs/raster300/mrcz-reordering-ablation.png>
+Package pdftex.def Info: figs/raster300/mrcz-reordering-ablation.png  used on i
+nput line 58.
+(pdftex.def)             Requested size: 252.0pt x 119.01881pt.
 ) (./7.evaluation.tex
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 .
@@ -515,106 +515,48 @@ LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 (/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/tex/late
 x/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [8 <./figs/6/mrcz-reordering-ablation.pdf>]
-<figs/7/rd.pdf, id=124, 2121.43004pt x 1881.68571pt>
-File: figs/7/rd.pdf Graphic file (type pdf)
-<use figs/7/rd.pdf>
-Package pdftex.def Info: figs/7/rd.pdf  used on input line 66.
-(pdftex.def)             Requested size: 516.0pt x 457.67207pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figs/7/e2e_time.pdf, id=125, 1061.13002pt x 433.70737pt>
-File: figs/7/e2e_time.pdf Graphic file (type pdf)
-<use figs/7/e2e_time.pdf>
-Package pdftex.def Info: figs/7/e2e_time.pdf  used on input line 109.
-(pdftex.def)             Requested size: 252.0pt x 102.99333pt.
-[9]
+) [8 <./figs/raster300/mrcz-reordering-ablation.png (PNG copy)>]
+<figs/raster300/small-rd.png, id=57, 515.7669pt x 273.9033pt>
+File: figs/raster300/small-rd.png Graphic file (type png)
+<use figs/raster300/small-rd.png>
+Package pdftex.def Info: figs/raster300/small-rd.png  used on input line 69.
+(pdftex.def)             Requested size: 516.0pt x 274.03217pt.
+<figs/raster300/large-rd.png, id=58, 429.7656pt x 182.8431pt>
+File: figs/raster300/large-rd.png Graphic file (type png)
+<use figs/raster300/large-rd.png>
+Package pdftex.def Info: figs/raster300/large-rd.png  used on input line 78.
+(pdftex.def)             Requested size: 429.98163pt x 182.94028pt.
+<figs/raster300/combined-throughput.png, id=59, 515.7669pt x 231.0231pt>
+File: figs/raster300/combined-throughput.png Graphic file (type png)
+<use figs/raster300/combined-throughput.png>
+Package pdftex.def Info: figs/raster300/combined-throughput.png  used on input 
+line 93.
+(pdftex.def)             Requested size: 516.0pt x 231.13179pt.
+<figs/raster300/e2e-time.png, id=60, 251.9814pt x 146.7081pt>
+File: figs/raster300/e2e-time.png Graphic file (type png)
+<use figs/raster300/e2e-time.png>
+Package pdftex.def Info: figs/raster300/e2e-time.png  used on input line 108.
+(pdftex.def)             Requested size: 252.0pt x 146.72563pt.
+ [9]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 1558) has occurred while \output is active []
 
- [10 <./figs/7/rd.pdf> <./figs/7/e2e_time.pdf>]
-<figs/8-fig9.pdf, id=217, 965.25302pt x 673.78882pt>
-File: figs/8-fig9.pdf Graphic file (type pdf)
-<use figs/8-fig9.pdf>
-Package pdftex.def Info: figs/8-fig9.pdf  used on input line 122.
-(pdftex.def)             Requested size: 226.79846pt x 158.30954pt.
+ [10 <./figs/raster300/small-rd.png (PNG copy)> <./figs/raster300/large-rd.png 
+(PNG copy)>]
+<figs/raster300/visualization-cr33.png, id=68, 515.7669pt x 170.0754pt>
+File: figs/raster300/visualization-cr33.png Graphic file (type png)
+<use figs/raster300/visualization-cr33.png>
+Package pdftex.def Info: figs/raster300/visualization-cr33.png  used on input l
+ine 142.
+(pdftex.def)             Requested size: 516.0pt x 170.15541pt.
+) (./8.conclusion.tex
+Underfull \vbox (badness 2285) has occurred while \output is active []
 
-Overfull \hbox (4.19391pt too wide) in paragraph at lines 141--149
- [][] 
- []
-
-<figs/7/pb0.png, id=218, 1215.3405pt x 920.238pt>
-File: figs/7/pb0.png Graphic file (type png)
-<use figs/7/pb0.png>
-Package pdftex.def Info: figs/7/pb0.png  used on input line 155.
-(pdftex.def)             Requested size: 113.39923pt x 85.85085pt.
-<figs/7/mrcz err.png, id=220, 1064.17575pt x 728.7225pt>
-File: figs/7/mrcz err.png Graphic file (type png)
-<use figs/7/mrcz err.png>
-Package pdftex.def Info: figs/7/mrcz err.png  used on input line 161.
-(pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sz3nekrs err.png, id=221, 1064.17575pt x 728.7225pt>
-File: figs/7/sz3nekrs err.png Graphic file (type png)
-<use figs/7/sz3nekrs err.png>
-Package pdftex.def Info: figs/7/sz3nekrs err.png  used on input line 167.
-(pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sz3 err.png, id=222, 1064.17575pt x 728.7225pt>
-File: figs/7/sz3 err.png Graphic file (type png)
-<use figs/7/sz3 err.png>
-Package pdftex.def Info: figs/7/sz3 err.png  used on input line 173.
-(pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sz2 err.png, id=223, 1064.17575pt x 728.7225pt>
-File: figs/7/sz2 err.png Graphic file (type png)
-<use figs/7/sz2 err.png>
-Package pdftex.def Info: figs/7/sz2 err.png  used on input line 179.
-(pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/zfp err.png, id=224, 1064.17575pt x 728.7225pt>
-File: figs/7/zfp err.png Graphic file (type png)
-<use figs/7/zfp err.png>
-Package pdftex.def Info: figs/7/zfp err.png  used on input line 185.
-(pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-<figs/7/sperr err.png, id=225, 1064.17575pt x 728.7225pt>
-File: figs/7/sperr err.png Graphic file (type png)
-<use figs/7/sperr err.png>
-Package pdftex.def Info: figs/7/sperr err.png  used on input line 191.
-(pdftex.def)             Requested size: 75.60077pt x 51.76077pt.
-) (./8.conclusion.tex [11 <./figs/8-fig9.pdf>])
-Underfull \hbox (badness 2564) in paragraph at lines 60--63
-\OT1/ptm/m/n/10 En-ergy,Office of Sci-ence,Advanced Sci-en-tific Com-put-ing
- []
-
-
-Underfull \hbox (badness 6188) in paragraph at lines 60--63
-\OT1/ptm/m/n/10 sup-ported by the Na-tional Sci-ence Foun-da-tion un-der
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 60--63
-\OT1/ptm/m/n/10 Grant OAC-2311875,OAC-2514036,OAC-2513768,OAC-
- []
-
-
-Underfull \hbox (badness 4569) in paragraph at lines 60--63
-\OT1/ptm/m/n/10 2330367,OAC-2311756,and OAC-2313122. This re-search
- []
-
-
-Underfull \hbox (badness 3735) in paragraph at lines 60--63
-\OT1/ptm/m/n/10 used re-sources of the Ar-gonne Lead-er-ship Com-put-ing
- []
-
-
-Underfull \hbox (badness 3590) in paragraph at lines 60--63
-\OT1/ptm/m/n/10 06CH11357. We ac-knowl-edge the com-put-ing re-sources
- []
-
-(./main.bbl [12 <./figs/7/pb0.png> <./figs/7/mrcz err.png> <./figs/7/sz3nekrs e
-rr.png> <./figs/7/sz3 err.png> <./figs/7/sz2 err.png> <./figs/7/zfp err.png> <.
-/figs/7/sperr err.png>]
+ [11 <./figs/raster300/combined-throughput.png (PNG copy)> <./figs/raster300/e2
+e-time.png (PNG copy)>]) (./main.bbl [12 <./figs/raster300/visualization-cr33.p
+ng (PNG copy)>]
 Underfull \hbox (badness 3492) in paragraph at lines 195--197
 []\OT1/ptm/m/n/8 Y. Col-let, ``Zs-tan-dard -- real-time data com-pres-sion al-g
 o-rithm,''
@@ -636,13 +578,13 @@ Before submitting the final camera ready copy, remember to:
 
 ] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 5317 strings out of 480608
- 85340 string characters out of 5886422
- 332647 words of memory out of 5000000
- 21087 multiletter control sequences out of 15000+600000
- 579643 words of font info for 122 fonts, out of 8000000 for 9000
+ 5276 strings out of 480608
+ 85224 string characters out of 5886422
+ 330672 words of memory out of 5000000
+ 21056 multiletter control sequences out of 15000+600000
+ 578233 words of font info for 120 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 48i,14n,46p,1202b,435s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 48i,14n,46p,1191b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/tex
 mf-dist/fonts/enc/dvips/base/8r.enc}</apps/spack/anvil/apps/texlive/20200406-gc
 c-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></apps/sp
@@ -665,19 +607,18 @@ s/type1/public/amsfonts/cm/cmsy6.pfb></apps/spack/anvil/apps/texlive/20200406-g
 cc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></apps/sp
 ack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmsy8.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eea
-vxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></apps/spack/anvil/app
-s/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/sy
-mbols/msbm10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/te
-xmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></apps/spack/anvil/apps/texlive/202
-00406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></apps/spa
-ck/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/ti
-mes/utmbi8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/tex
-mf-dist/fonts/type1/urw/times/utmr8a.pfb></apps/spack/anvil/apps/texlive/202004
-06-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 7142716 bytes).
+vxnm/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></apps/spack/anv
+il/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/courier/
+ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
+st/fonts/type1/urw/times/utmb8a.pfb></apps/spack/anvil/apps/texlive/20200406-gc
+c-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></apps/spack/anvi
+l/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utm
+r8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/
+fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (13 pages, 4049584 bytes).
 PDF statistics:
- 357 PDF objects out of 1000 (max. 8388607)
- 150 compressed objects within 2 object streams
+ 143 PDF objects out of 1000 (max. 8388607)
+ 92 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 101 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 76 words of extra memory for PDF output out of 10000 (max. 10000000)
 

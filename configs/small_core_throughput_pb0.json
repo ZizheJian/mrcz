@@ -1,0 +1,18 @@
+[
+  {
+    "name":"small_core_throughput_pb0_8",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "format":"nekrs",
+    "field_list":["UX","UY","UZ","P","T"],
+    "eb_mode":"REL",
+    "eb_list":[0.01,0.001,0.00001,0.000001],
+    "method_list":["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"],
+    "max_cpus_list":[8],
+    "partition_num":64,
+    "extra_parameters":{
+      "compute-precision":"auto",
+      "constant-compression":false
+    },
+    "csv_path":"results/small_core_throughput/pb0"
+  }
+]
