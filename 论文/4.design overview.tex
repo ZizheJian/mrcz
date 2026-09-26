@@ -17,3 +17,5 @@ FDWZ and MRCZ both adopt an element-local design for their main modeling steps. 
 \item \textit{Irregular Connectivity}: Accessing physically adjacent elements requires identifying their shared faces and aligning their local coordinate systems. This process is complex and time-consuming.
 \item \textit{Transform Locality}: The transform used by MRCZ operates naturally on the tensor-product arrangement within each element. This arrangement is not preserved across element boundaries, making an element-local transform the natural design.
 \end{enumerate}
+
+Here, element-local describes the scope of prediction and transformation, not the granularity of the compressed bitstream. A partition still contains many elements and produces one payload. After modeling each element, FDWZ aggregates symbols from corresponding prediction levels across elements, while MRCZ groups coefficients from corresponding transform modes across elements. Both methods therefore avoid cross-element numerical dependencies while still exploiting statistical regularity across elements during lossless encoding.

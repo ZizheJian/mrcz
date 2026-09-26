@@ -42,7 +42,6 @@ Although these layouts preserve the stored value order and represent the same fi
     \centering
     \caption{Candidate layouts for the baseline compressors.}
     \label{tab:baseline-layouts}
-    \footnotesize
     \begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}
         \toprule
         Layout & Arrays Passed to the Compressor \\
@@ -72,6 +71,8 @@ We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a 
 \end{figure*}
 
 Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection results. We exclude 2UZ from the aggregate statistics because its nearly vertical curves do not permit reliable comparisons at matched PSNRs. For most baseline compressors, the per-element 3D layout ranks last. Across these compressors, it requires 385.5\% more BR on average than the next-worst layout. This degradation arises because it creates many independent bitstreams, repeats metadata, and cannot exploit redundancy across elements. The selected layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, and SPERR-2D.
+
+The selected configurations span 2D, fused 3D, and 4D layouts, showing that no single dimensional representation is best for every compressor. A layout determines the neighborhoods and blocks exposed to a compressor, so its effectiveness depends on the compressor's prediction or transform model. Selecting the layout independently for each baseline avoids penalizing a method through an unfavorable common representation.
 
 \begin{figure*}[t]
     \centering
@@ -112,6 +113,15 @@ Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end t
 
 Figure~\ref{fig:transfer} shows that compression substantially reduces both workflow times. The fastest methods reduce end-to-end time relative to direct transfer by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. ZFP and FDWZ perform nearly identically on Dataset~7, while FDWZ is 19.2\% faster than ZFP on Dataset~8. MRCZ produces the smallest transfers while remaining within 1.91$\times$ of the fastest method on both datasets.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figs/raster300/transfer-size-time.png}
+    \caption{Effective Globus transfer throughput as a function of compressed payload size. Effective throughput is the payload size divided by transfer time. Circles and triangles denote Datasets~7 and~8, and each error bar spans the three transfer trials.}
+    \label{fig:transfer-size-time}
+\end{figure}
+
+Figure~\ref{fig:transfer-size-time} shows a strong monotonic but nonlinear association between compressed payload size and effective Globus throughput (Spearman's $\rho=0.99$ across the two datasets). This size-dependent behavior may combine transfer startup costs with protocol and service dynamics; the experiment does not isolate their individual contributions. Consequently, compressors with weaker data reduction receive a higher effective transfer rate. This behavior makes the evaluation conservative for FDWZ: part of its benefit from transferring fewer bytes is offset by a lower effective transfer rate. Even under this condition, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
+
 \subsection{Visualization}\label{sec:performance evaluation:visualization}
 
 We visually compare pointwise reconstruction errors on an $x=0$ slice of the temperature field from Dataset~7 (7T in Table~\ref{tab:datasets}) at matched compression ratios near 33.184. Table~\ref{tab:error-bound-visualization} reports the selected relative error bounds and resulting compression ratios.
@@ -121,7 +131,6 @@ We visually compare pointwise reconstruction errors on an $x=0$ slice of the tem
     \centering
     \captionof{table}{Relative error bounds and achieved compression ratios used for the visualization comparison on 7T.}
     \label{tab:error-bound-visualization}
-    \footnotesize
     \setlength{\tabcolsep}{3pt}
     \begin{tabular}{lcccc}
         \toprule

@@ -32,6 +32,7 @@ figures=[
     ("large-rd.png","figs/7/large-rd.pdf",pixels(0.8333*text_width_pt)),
     ("combined-throughput.png","figs/7/combined-throughput.pdf",pixels(text_width_pt)),
     ("e2e-time.png","figs/7/e2e_time.pdf",pixels(column_width_pt)),
+    ("transfer-size-time.png","figs/7/transfer-size-time.pdf",pixels(column_width_pt)),
     ("visualization-cr33.png","figs/7/pb0-T-cr33-visualization.pdf",pixels(text_width_pt)),
 ]
 
