@@ -18,7 +18,7 @@ The main contributions of this work are as follows:
 \begin{itemize}
 \item We develop FDWZ, which combines distance-weighted multilevel interpolation and multi-tree Huffman encoding to improve compression ratio while maintaining high throughput under a strict pointwise error bound.
 \item We develop MRCZ, which combines an element-wise coefficient-and-residual representation with a mode-major coefficient layout across elements to achieve substantially higher compression ratios than FDWZ at the same data distortion while preserving a strict pointwise error bound.
-\item We build a common partitioned processing workflow for FDWZ, MRCZ, and five representative baselines. Using this workflow, we evaluate storage reduction, reconstruction quality, codec throughput, and end-to-end cross-facility data-movement performance in experiments spanning eight datasets.
+\item We build a common partitioned processing workflow for FDWZ, MRCZ, and five representative baselines and use it to evaluate storage reduction, reconstruction quality, codec throughput, and end-to-end cross-facility data-movement performance across eight datasets.
 \end{itemize}
 
 The rest of this paper is organized as follows. Section~\ref{sec:related work} reviews compression methods for structured, unstructured, and high-order element data. Section~\ref{sec:problem formulation} describes the data characteristics and formulates the compression problem. Section~\ref{sec:design overview} presents the parallel execution model and the element-local design of FDWZ and MRCZ. Sections~\ref{sec:SZ3-HOHS} and~\ref{sec:mrcz} describe FDWZ and MRCZ, respectively. Section~\ref{sec:performance evaluation} presents the experimental evaluation, and Section~\ref{sec:conclusion} concludes the paper.
