@@ -1,7 +1,7 @@
 [
   {
     "name":"strong_scaling_pb0_rel_eb_1e-4",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
     "format":"nekrs",
     "field_list":["UX","UY","UZ","P","T"],
     "eb_mode":"REL",

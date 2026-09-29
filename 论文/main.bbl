@@ -59,13 +59,13 @@ K.~Zhao, S.~Di, M.~Dmitriev, T.-L.~D. Tonellot, Z.~Chen, and F.~Cappello,
   \url{https://doi.org/10.1109/ICDE51399.2021.00145}
 \BIBentrySTDinterwordspacing
 
-\bibitem{liang2022sz3}
+\bibitem{liang2023sz3}
 \BIBentryALTinterwordspacing
 X.~Liang, K.~Zhao, S.~Di, S.~Li, R.~Underwood, A.~M. Gok, J.~Tian, J.~Deng,
-  J.~C. Calhoun, D.~Tao \emph{et~al.}, ``Sz3: A modular framework for composing
-  prediction-based error-bounded lossy compressors,'' \emph{IEEE Transactions
-  on Big Data}, vol.~9, no.~2, pp. 485--498, 2022. [Online]. Available:
-  \url{https://doi.org/10.1109/TBDATA.2022.3201176}
+  J.~C. Calhoun, D.~Tao \emph{et~al.}, ``{SZ3}: A modular framework for
+  composing prediction-based error-bounded lossy compressors,'' \emph{IEEE
+  Transactions on Big Data}, vol.~9, no.~2, pp. 485--498, 2023. [Online].
+  Available: \url{https://doi.org/10.1109/TBDATA.2022.3201176}
 \BIBentrySTDinterwordspacing
 
 \bibitem{lindstrom2014fixed}
@@ -126,9 +126,8 @@ Q.~Gong, Z.~Wang, V.~Reshniak, X.~Liang, J.~Chen, Q.~Liu, T.~M. Athawale,
 \bibitem{ren2024prediction}
 \BIBentryALTinterwordspacing
 C.~Ren, X.~Liang, and H.~Guo, ``A prediction-traversal approach for compressing
-  scientific data on unstructured meshes with bounded error,'' in
-  \emph{Computer Graphics Forum}, vol.~43, no.~3.\hskip 1em plus 0.5em minus
-  0.4em\relax Wiley Online Library, 2024, p. e15097. [Online]. Available:
+  scientific data on unstructured meshes with bounded error,'' \emph{Computer
+  Graphics Forum}, vol.~43, no.~3, p. e15097, 2024. [Online]. Available:
   \url{https://doi.org/10.1111/cgf.15097}
 \BIBentrySTDinterwordspacing
 
@@ -138,14 +137,17 @@ V.~S. Shah, H.~Tummalapalli, S.~Barwey, R.~Balin, R.~Balakrishnan, P.~Fischer,
   S.~Di, and F.~Cappello, ``Solver-integrated lossy and lossless compression
   for scalable flow simulations,'' in \emph{Proceedings of the Platform for
   Advanced Scientific Computing Conference}.\hskip 1em plus 0.5em minus
-  0.4em\relax Association for Computing Machinery, 2026. [Online]. Available:
-  \url{https://doi.org/10.1145/3815572.3815766}
+  0.4em\relax Association for Computing Machinery, 2026, pp. 1--12. [Online].
+  Available: \url{https://doi.org/10.1145/3815572.3815766}
 \BIBentrySTDinterwordspacing
 
 \bibitem{marin2016spectral}
+\BIBentryALTinterwordspacing
 O.~Marin, M.~Schanen, and P.~Fischer, ``Large-scale lossy data compression
   based on an a priori error estimator in a spectral element code,'' Argonne
-  National Laboratory, Tech. Rep., 2016, technical report.
+  National Laboratory, Tech. Rep. ANL/MCS-P6024-0616, 2016. [Online].
+  Available: \url{https://www.mcs.anl.gov/papers/P6024-0616.pdf}
+\BIBentrySTDinterwordspacing
 
 \bibitem{chard2017globus}
 \BIBentryALTinterwordspacing
@@ -175,10 +177,13 @@ Y.~Liu, S.~Di, K.~Chard, I.~Foster, and F.~Cappello, ``Optimizing scientific
   \url{https://doi.org/10.1109/ICDCS57875.2023.00064}
 \BIBentrySTDinterwordspacing
 
-\bibitem{kolev2010modular}
+\bibitem{anderson2021mfem}
 \BIBentryALTinterwordspacing
-T.~Kolev and V.~Dobrev, ``Modular finite element methods (mfem),'' \emph{US
-  Department of Energy (DOE) Software}, p.~12, 2010. [Online]. Available:
+R.~Anderson, J.~Andrej, A.~Barker, J.~Bramwell, J.-S. Camier, J.~Cerveny,
+  V.~Dobrev, Y.~Dudouit, A.~Fisher, T.~Kolev, W.~Pazner, M.~Stowell, V.~Tomov,
+  I.~Akkerman, J.~Dahm, D.~Medina, and S.~Zampini, ``{MFEM}: A modular finite
+  element methods library,'' \emph{Computers \& Mathematics with Applications},
+  vol.~81, pp. 42--74, 2021. [Online]. Available:
   \url{https://doi.org/10.1016/j.camwa.2020.06.009}
 \BIBentrySTDinterwordspacing
 
@@ -191,8 +196,11 @@ D.~Moxey, C.~D. Cantwell, Y.~Bao, A.~Cassinelli, G.~Castiglioni, S.~Chun,
   [Online]. Available: \url{https://doi.org/10.1016/j.cpc.2019.107110}
 \BIBentrySTDinterwordspacing
 
-\bibitem{zstd}
-Y.~Collet, ``Zstandard -- real-time data compression algorithm,''
-  \emph{http://facebook.github.io/zstd/}, 2015.
+\bibitem{ycollet2021zstd}
+\BIBentryALTinterwordspacing
+Y.~Collet and M.~Kucherawy, ``Zstandard compression and the 'application/zstd'
+  media type,'' Internet Requests for Comments, RFC Editor, RFC 8878, February
+  2021. [Online]. Available: \url{https://www.rfc-editor.org/info/rfc8878}
+\BIBentrySTDinterwordspacing
 
 \end{thebibliography}

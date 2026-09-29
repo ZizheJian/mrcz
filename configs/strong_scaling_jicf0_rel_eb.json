@@ -1,7 +1,7 @@
 [
   {
     "name":"strong_scaling_jicf0_rel_eb_1e-6",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000",
     "format":"nekrs",
     "field_list":["UX","UY","UZ","P","S00"],
     "eb_mode":"REL",

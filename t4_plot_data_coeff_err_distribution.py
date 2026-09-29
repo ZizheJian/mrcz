@@ -16,7 +16,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from py_funcs.read_nekrs_header import read_nekrs_header
 
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000"
 
 def read_exact(file_obj,dtype,count,label):
     values=np.fromfile(file_obj,dtype=dtype,count=count)

@@ -6,7 +6,7 @@ This section evaluates FDWZ and MRCZ in terms of rate--distortion performance, c
 
 \subsubsection{Evaluation Platform}\label{sec:evaluation-platform}\mbox{}
 
-The experiments were conducted on Purdue Anvil. Each compute node contains two 64-core AMD EPYC 7763 processors, for a total of 128 physical CPU cores, and approximately 256~GB of main memory. Datasets~1--6 use one CPU core and one partition, Dataset~7 uses 64 CPU cores and 64 partitions, and Dataset~8 uses 128 CPU cores and 128 partitions. All implementations other than SPERR were compiled with GCC 11.2.0 using \verb|-Ofast -march=native|. SPERR was built separately using its default configuration. For parallel runs, OpenMP threads were bound to physical cores using \verb|OMP_PLACES=cores| and \verb|OMP_PROC_BIND=spread|.
+The experiments were conducted on Purdue Anvil. Each compute node contains two 64-core AMD EPYC 7763 processors, for a total of 128 physical CPU cores, and approximately 256~GB of main memory. Unless stated otherwise, Datasets~1--6 use one CPU core and one partition, Dataset~7 uses 64 CPU cores and 64 partitions, and Dataset~8 uses 128 CPU cores and 128 partitions. All implementations other than SPERR were compiled with GCC 11.2.0 using \verb|-Ofast -march=native|. SPERR was built separately using its default configuration. For parallel runs, OpenMP threads were bound to physical cores using \verb|OMP_PLACES=cores| and \verb|OMP_PROC_BIND=spread|.
 
 \subsubsection{High-Order Element Datasets}\mbox{}
 
@@ -14,6 +14,7 @@ The experiments were conducted on Purdue Anvil. Each compute node contains two 6
     \centering
     \caption{High-order element datasets used for evaluating FDWZ, MRCZ, and the baseline compressors.}
     \label{tab:datasets}
+    \normalsize
     \begin{tabular}{c|ccclc}\toprule
          \textbf{Index} & \textbf{Framework} & \textbf{Element Shape} & \textbf{Number of Elements} & \textbf{Non-Constant Fields} & \textbf{Data Type} \\
          \midrule
@@ -28,11 +29,11 @@ The experiments were conducted on Purdue Anvil. Each compute node contains two 6
     \end{tabular}
 \end{table*}
 
-Table~\ref{tab:datasets} summarizes the eight datasets used in our evaluation. The five datasets generated with NekRS~\cite{fischer2022nekrs} were provided by domain scientists. The MFEM~\cite{kolev2010modular} and Nektar++~\cite{moxey2020nektar++} datasets were generated from examples distributed with the respective frameworks. For brevity, a field is denoted by its dataset index followed by its name; for example, 7T denotes the $T$ field of Dataset~7.
+Table~\ref{tab:datasets} summarizes the eight datasets used in our evaluation. The five datasets generated with NekRS~\cite{fischer2022nekrs} were provided by domain scientists. The MFEM~\cite{anderson2021mfem} and Nektar++~\cite{moxey2020nektar++} datasets were generated from examples distributed with the respective frameworks. For brevity, a field is denoted by its dataset index followed by its name. For example, 7T denotes the $T$ field of Dataset~7.
 
 \subsubsection{Baseline Compressors}\mbox{}
 
-We evaluate the official APIs of SZ3~\cite{liang2022sz3,zhao2021optimizing}, SZ2~\cite{tao2017significantly}, QoZ~\cite{liu2024high}, ZFP~\cite{lindstrom2014fixed}, and SPERR~\cite{li2023lossy}. Together, they represent interpolation-based, regression-based, block-transform, and wavelet-based compression. Because these APIs operate on regular arrays, their performance on high-order element data depends on how the element tensors are presented to them.
+We evaluate the official APIs of SZ3~\cite{liang2023sz3,zhao2021optimizing}, SZ2~\cite{tao2017significantly}, QoZ~\cite{liu2024high}, ZFP~\cite{lindstrom2014fixed}, and SPERR~\cite{li2023lossy}. Together, they represent interpolation-based, regression-based, block-transform, and wavelet-based compression. Because these APIs operate on regular arrays, their performance on high-order element data depends on how the element tensors are presented to them.
 
 Under the logical representation in Equation~\ref{eq:logical-representation}, a partition of $E_p$ consecutive elements has shape $[E_p,n_x,n_y,n_z]$. Table~\ref{tab:baseline-layouts} defines five candidate layouts for presenting this partition to a general-purpose compressor. The 1D, 2D, fused 3D, and 4D layouts each invoke the compressor once per partition, whereas the per-element 3D layout invokes it once per element and concatenates the resulting bitstreams.
 
@@ -42,6 +43,7 @@ Although these layouts preserve the stored value order and represent the same fi
     \centering
     \caption{Candidate layouts for the baseline compressors.}
     \label{tab:baseline-layouts}
+    \normalsize
     \begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}
         \toprule
         Layout & Arrays Passed to the Compressor \\
@@ -57,11 +59,11 @@ Although these layouts preserve the stored value order and represent the same fi
 
 SZ3, SZ2, QoZ, and ZFP support all five layouts. SPERR has no 1D or 4D API and is therefore evaluated with only the 2D and two 3D layouts.
 
-We include SZ2 in the rate--distortion evaluation but exclude it from the multicore timing evaluations. Rate--distortion measurements can process partitions serially, whereas multicore timing requires concurrent compressor calls to use the allocated CPU cores. SZ2's official API modifies mutable process-wide state, and our concurrent-call tests produced nondeterministic compressed bitstreams and occasional decompression failures.
+We exclude SZ2 from the multicore timing evaluations because its official API modifies mutable process-wide state. In our tests, concurrent SZ2 calls across CPU cores produced nondeterministic compressed bitstreams and occasional decompression failures. We nevertheless retain SZ2 in the rate--distortion evaluation because the same number of partitions can be processed serially, yielding deterministic compressed bitstreams and reliable BR and PSNR measurements.
 
 \subsection{Storage Reduction Evaluation}
 
-We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a lower BR indicates better storage reduction, while at a fixed BR, a higher PSNR indicates better reconstruction quality. The evaluation proceeds in two stages. First, we evaluate every supported baseline layout on Datasets~1--6 and compare BR over the common PSNR range of the resulting curves. We then select one layout for each baseline, fix these choices, and evaluate all compressors on the two large-scale datasets, Datasets~7 and~8.
+We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a lower BR indicates better storage reduction, while at a fixed BR, a higher PSNR indicates better reconstruction quality. The evaluation proceeds in two stages. First, we evaluate every supported baseline layout on Datasets~1--6 and compare BR over the common PSNR range of the resulting curves. For each baseline, we select the layout that generally yields the lowest BR at matched PSNRs across these datasets. We fix this layout and evaluate all compressors on the two large-scale datasets, Datasets~7 and~8.
 
 \begin{figure*}[t]
     \centering
@@ -72,7 +74,7 @@ We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a 
 
 Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection results. We exclude 2UZ from the aggregate statistics because its nearly vertical curves do not permit reliable comparisons at matched PSNRs. For most baseline compressors, the per-element 3D layout ranks last. Across these compressors, it requires 385.5\% more BR on average than the next-worst layout. This degradation arises because it creates many independent bitstreams, repeats metadata, and cannot exploit redundancy across elements. The selected layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, and SPERR-2D.
 
-The selected configurations span 2D, fused 3D, and 4D layouts, showing that no single dimensional representation is best for every compressor. A layout determines the neighborhoods and blocks exposed to a compressor, so its effectiveness depends on the compressor's prediction or transform model. Selecting the layout independently for each baseline avoids penalizing a method through an unfavorable common representation.
+The selected configurations span 2D, fused 3D, and 4D layouts, showing that no single dimensional representation is best for every compressor. A layout determines the neighborhoods and blocks exposed to a compressor, so its effectiveness depends on the compressor's prediction or transform model.
 
 \begin{figure*}[t]
     \centering
@@ -83,7 +85,7 @@ The selected configurations span 2D, fused 3D, and 4D layouts, showing that no s
 
 Figure~\ref{fig:large-rate-distortion} presents the resulting rate--distortion curves for the ten fields of Datasets~7 and~8. Combining results from all datasets, FDWZ improves the compression ratio over the best baseline by 67.0\% on average, and MRCZ further improves the compression ratio over FDWZ by 127.3\%.
 
-These gains are consistent with the design analyses in Sections~\ref{sec:SZ3-HOHS} and~\ref{sec:mrcz}. FDWZ's GLL-aware interpolation reduces prediction error, and its multi-tree Huffman encoding exploits the distinct quantization-symbol distributions across prediction levels. MRCZ's DChT representation and mode-major coefficient ordering concentrate the coefficient and residual streams for more effective lossless coding.
+These gains are consistent with the design analyses in Sections~\ref{sec:SZ3-HOHS} and~\ref{sec:mrcz}. FDWZ's GLL-aware interpolation reduces prediction error, and its multi-tree Huffman encoding exploits the distinct quantization-symbol distributions across prediction levels. MRCZ's DChT representation produces smaller high-order coefficients, while mode-major ordering groups coefficients with similar statistics for more effective lossless coding.
 
 \subsection{Codec Throughput}\label{sec:parallel-throughput}
 
@@ -92,7 +94,7 @@ We evaluate aggregate codec throughput on Datasets~7 and~8 at five relative erro
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figs/raster300/combined-throughput.png}
-    \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8; the bottom row uses 64 and 128 CPU cores, respectively.}
+    \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 38 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.}
     \label{fig:throughput}
 \end{figure*}
 
@@ -107,24 +109,24 @@ Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end t
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{figs/raster300/e2e-time.png}
-    \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time.}
+    \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time. Every evaluated compressor reduces end-to-end time relative to direct transfer, with reductions of up to 79.2\% on Dataset~7 and 88.3\% on Dataset~8. FDWZ matches the fastest method on Dataset~7 and is fastest on Dataset~8.}
     \label{fig:transfer}
 \end{figure}
 
-Figure~\ref{fig:transfer} shows that compression substantially reduces both workflow times. The fastest methods reduce end-to-end time relative to direct transfer by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. ZFP and FDWZ perform nearly identically on Dataset~7, while FDWZ is 19.2\% faster than ZFP on Dataset~8. MRCZ produces the smallest transfers while remaining within 1.91$\times$ of the fastest method on both datasets.
+Figure~\ref{fig:transfer} shows that compression substantially reduces both workflow times. The fastest methods reduce end-to-end time relative to direct transfer by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. ZFP and FDWZ perform nearly identically on Dataset~7, while FDWZ is 19.2\% faster than ZFP on Dataset~8. MRCZ produces the smallest compressed payloads, while its end-to-end time is at most 1.91$\times$ the minimum on each dataset.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{figs/raster300/transfer-size-time.png}
-    \caption{Effective Globus transfer throughput as a function of compressed payload size. Effective throughput is the payload size divided by transfer time. Circles and triangles denote Datasets~7 and~8, and each error bar spans the three transfer trials.}
+    \caption{Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets~7 and~8, and each error bar spans the three transfer trials. Larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.}
     \label{fig:transfer-size-time}
 \end{figure}
 
-Figure~\ref{fig:transfer-size-time} shows a strong monotonic but nonlinear association between compressed payload size and effective Globus throughput (Spearman's $\rho=0.99$ across the two datasets). This size-dependent behavior may combine transfer startup costs with protocol and service dynamics; the experiment does not isolate their individual contributions. Consequently, compressors with weaker data reduction receive a higher effective transfer rate. This behavior makes the evaluation conservative for FDWZ: part of its benefit from transferring fewer bytes is offset by a lower effective transfer rate. Even under this condition, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
+The Globus transfer times in Figure~\ref{fig:transfer} do not scale proportionally with compressed payload size. To characterize this discrepancy, Figure~\ref{fig:transfer-size-time} plots effective transfer throughput against payload size. The monotonic association is strong across both datasets (Spearman's $\rho=0.99$). This size dependence partially offsets the cost of moving more data, narrowing the transfer-time advantage of stronger compression and making the evaluation conservative for FDWZ. Even so, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
 
 \subsection{Visualization}\label{sec:performance evaluation:visualization}
 
-We visually compare pointwise reconstruction errors on an $x=0$ slice of the temperature field from Dataset~7 (7T in Table~\ref{tab:datasets}) at matched compression ratios near 33.184. Table~\ref{tab:error-bound-visualization} reports the selected relative error bounds and resulting compression ratios.
+We visually compare pointwise reconstruction errors on an $x=0$ slice of the temperature field from Dataset~7 at matched compression ratios near 33.184. Table~\ref{tab:error-bound-visualization} reports the selected relative error bounds and resulting compression ratios.
 
 \begin{center}
     \begin{minipage}{\columnwidth}
@@ -135,11 +137,11 @@ We visually compare pointwise reconstruction errors on an $x=0$ slice of the tem
     \begin{tabular}{lcccc}
         \toprule
         Compressor & MRCZ & FDWZ & SZ3 & SZ2 \\
-        Rel. EB & 0.000279 & 0.000514 & 0.00515 & 0.00684 \\
+        $\varepsilon_{\mathrm{rel}}$ & 0.000279 & 0.000514 & 0.00515 & 0.00684 \\
         Actual CR & 33.155 & 33.157 & 33.172 & 33.188 \\
         \midrule
         Compressor & QoZ & ZFP & SPERR & \\
-        Rel. EB & 0.00968 & 0.079 & 0.0565 & \\
+        $\varepsilon_{\mathrm{rel}}$ & 0.00968 & 0.079 & 0.0565 & \\
         Actual CR & 33.177 & 33.184 & 33.209 & \\
         \bottomrule
     \end{tabular}
@@ -149,7 +151,7 @@ We visually compare pointwise reconstruction errors on an $x=0$ slice of the tem
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figs/raster300/visualization-cr33.png}
-    \caption{Visualization comparison on an $x=0$ slice of the 7T field at matched compression ratios near 33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The remaining panels show pointwise reconstruction errors on a shared color scale. MRCZ and FDWZ exhibit the smallest reconstruction errors.}
+    \caption{Visualization comparison on an $x=0$ slice of the 7T field at matched compression ratios near 33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The remaining panels show pointwise reconstruction errors. MRCZ and FDWZ exhibit the smallest reconstruction errors.}
     \label{fig:distortion}
 \end{figure*}
 

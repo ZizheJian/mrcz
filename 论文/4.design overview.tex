@@ -6,16 +6,16 @@ This section describes the partitioning and parallelization strategy shared by a
 
 All evaluated methods use a common partitioned processing layer. It divides either a complete field or a selected contiguous element range into partitions and assigns each partition to an OpenMP thread, which invokes the selected compressor.
 
-Each compressor invocation produces an independently decodable partition payload. The field bitstream records the payload sizes followed by the payloads in partition order, allowing the decoder to locate each partition. This independence enables scalable parallel execution, which we evaluate in Section~\ref{sec:parallel-throughput}.
+Each compressor invocation produces an independently decodable partition payload. The field bitstream records the payload sizes followed by the payloads in partition order, allowing the decoder to locate each partition. This independence enables parallel execution at different CPU allocations, whose throughput we evaluate in Section~\ref{sec:parallel-throughput}.
 
 \subsection{Element-local Design of FDWZ and MRCZ}
 
 FDWZ and MRCZ both adopt an element-local design for their main modeling steps. This choice is motivated by the following considerations.
 
 \begin{enumerate}
-\item \textit{Cross-element Prediction}: Prediction beyond an element can follow either the physical mesh connectivity or the stored element order. Sections~\ref{sec:FDWZ:cross-interface} and~\ref{sec:FDWZ:element-index-dimension} show that neither alternative to element-local interpolation provides a consistent prediction advantage for FDWZ.
+\item \textit{Cross-element Prediction}: Prediction beyond an element can follow either the physical mesh connectivity or the stored element order. Sections~\ref{sec:FDWZ:cross-interface} and~\ref{sec:FDWZ:element-index-dimension} show that both alternatives yield larger prediction errors and higher quantized-error entropy than FDWZ's element-local interpolation.
 \item \textit{Irregular Connectivity}: Accessing physically adjacent elements requires identifying their shared faces and aligning their local coordinate systems. This process is complex and time-consuming.
 \item \textit{Transform Locality}: The transform used by MRCZ operates naturally on the tensor-product arrangement within each element. This arrangement is not preserved across element boundaries, making an element-local transform the natural design.
 \end{enumerate}
 
-Here, element-local describes the scope of prediction and transformation, not the granularity of the compressed bitstream. A partition still contains many elements and produces one payload. After modeling each element, FDWZ aggregates symbols from corresponding prediction levels across elements, while MRCZ groups coefficients from corresponding transform modes across elements. Both methods therefore avoid cross-element numerical dependencies while still exploiting statistical regularity across elements during lossless encoding.
+Here, element-local describes the scope of prediction and transformation, not bitstream granularity: each FDWZ or MRCZ partition produces one payload for many elements. Both methods therefore avoid cross-element numerical dependencies while still exploiting cross-element statistical redundancy during lossless encoding.

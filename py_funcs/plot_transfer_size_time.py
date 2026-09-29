@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 plt.rcParams["svg.hashsalt"]="mrcz-transfer-size-time"
-plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":7.2,"axes.labelsize":7.2,"axes.titlesize":7.2,"xtick.labelsize":6.8,"ytick.labelsize":6.8,"legend.fontsize":6.5,"pdf.fonttype":42,"ps.fonttype":42})
+plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.0,"axes.labelsize":8.0,"axes.titlesize":8.0,"xtick.labelsize":8.0,"ytick.labelsize":8.0,"legend.fontsize":8.0,"pdf.fonttype":42,"ps.fonttype":42})
 
 methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
 colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1"}
@@ -45,7 +45,7 @@ def draw_panel(axis,rows):
     axis.set_ylim(0,0.98)
     axis.set_xticks([0,5,10])
     axis.set_yticks([0,0.2,0.4,0.6,0.8])
-    axis.text(0.97,0.08,f"$\\rho={rank_correlation:.2f}$",transform=axis.transAxes,ha="right",va="bottom",fontsize=6.8)
+    axis.text(0.97,0.08,f"Spearman $\\rho={rank_correlation:.2f}$",transform=axis.transAxes,ha="right",va="bottom",fontsize=8.0)
     axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
     axis.tick_params(direction="in",length=1.8,width=0.45,pad=1)
     for spine in axis.spines.values():spine.set_linewidth(0.6)
@@ -59,11 +59,11 @@ def main():
     figure,axis=plt.subplots(1,1,figsize=(3.5,1.72))
     draw_panel(axis,rows)
     handles=[plt.Line2D([0],[0],marker="o",markersize=3.8,color=colors[method],markeredgecolor="black",markeredgewidth=0.3,linewidth=0,label=labels[method]) for method in methods]
-    figure.legend(handles=handles,loc="upper center",ncol=6,frameon=False,bbox_to_anchor=(0.5,0.99),handletextpad=0.15,columnspacing=0.42,borderaxespad=0)
+    figure.legend(handles=handles,loc="upper center",ncol=6,frameon=False,bbox_to_anchor=(0.5,0.99),handletextpad=0.12,columnspacing=0.32,borderaxespad=0)
     dataset_handles=[plt.Line2D([0],[0],marker=marker,markersize=4.0,color="black",markerfacecolor="white",markeredgewidth=0.5,linewidth=0,label=f"Dataset {dataset_index}") for marker,dataset_index in (("o",7),("^",8))]
-    figure.legend(handles=dataset_handles,loc="upper center",ncol=2,frameon=False,bbox_to_anchor=(0.5,0.865),handletextpad=0.2,columnspacing=0.8,borderaxespad=0,fontsize=6.5)
+    figure.legend(handles=dataset_handles,loc="upper center",ncol=2,frameon=False,bbox_to_anchor=(0.5,0.915),handletextpad=0.15,columnspacing=0.65,borderaxespad=0)
     axis.set_ylabel("Transfer Throughput (GiB/s)",labelpad=1.5)
-    figure.tight_layout(rect=(0,0,1,0.73),pad=0.2)
+    figure.tight_layout(rect=(0,0,1,0.83),pad=0.2)
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")
     pdf_output=os.path.join(project_root,"论文","figs","7","transfer-size-time.pdf")
     figure.savefig(svg_output,format="svg",metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)

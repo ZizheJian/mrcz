@@ -16,7 +16,7 @@ set -euo pipefail
 cd "${SLURM_SUBMIT_DIR}"
 mkdir -p results/visualization
 if [[ ! -e results/visualization/pb0.f00001 && ! -L results/visualization/pb0.f00001 ]];then
-    ln -s /anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001 results/visualization/pb0.f00001
+    ln -s /anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001 results/visualization/pb0.f00001
 fi
 source /home/x-zjian1/miniconda3/etc/profile.d/conda.sh
 conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"

@@ -29,7 +29,7 @@ export MRCZ_T1_EBS=1e-2,1e-3,1e-4,1e-5,1e-6
 export MRCZ_T1_FDWZ_SAMPLE_INTERVAL=128
 TIMEFORMAT=$'\nTotal wall time: %R seconds\nTotal CPU time: %U user + %S system seconds'
 time srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores python3 -u t1_start_c_code.py
-cp /anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001_*.csv results/RD/pb0/
+cp /anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001_*.csv results/RD/pb0/
 python3 py_funcs/plot_large_rd.py pb0
 python3 py_funcs/plot_large_throughput.py pb0 --x-axis eb
 python3 py_funcs/plot_large_throughput.py pb0

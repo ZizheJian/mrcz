@@ -1,7 +1,7 @@
 [
   {
     "name":"small_core_throughput_jicf0_fdwz_16",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000",
     "format":"nekrs",
     "field_list":["UX","UY","UZ","P","S00"],
     "eb_mode":"REL",

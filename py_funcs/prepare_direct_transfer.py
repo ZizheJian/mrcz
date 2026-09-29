@@ -3,8 +3,8 @@ import argparse,csv,hashlib,os
 PROJECT_ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_OUTPUT_ROOT="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/direct_transfer"
 DATASETS={
-    "pb0":{"source":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001","fields":["UX","UY","UZ","P","T"]},
-    "jicf0":{"source":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000","fields":["UX","UY","UZ","P","S00"]},
+    "pb0":{"source":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001","fields":["UX","UY","UZ","P","T"]},
+    "jicf0":{"source":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000","fields":["UX","UY","UZ","P","S00"]},
 }
 
 def parse_args():

@@ -4,14 +4,14 @@ This section describes the hybrid organization of high-order element data and fo
 
 \subsection{Organization of High-Order Element Data}\label{sec:problem formulation:data characteristics}
 
-Although simulation systems such as NekRS~\cite{fischer2022nekrs}, MFEM~\cite{kolev2010modular}, and Nektar++~\cite{moxey2020nektar++} use different file formats, their output fields share an organization determined by the underlying element discretization. We use the following common logical representation for one scalar field:
+Although simulation systems such as NekRS~\cite{fischer2022nekrs}, MFEM~\cite{anderson2021mfem}, and Nektar++~\cite{moxey2020nektar++} use different file formats, their output fields share an organization determined by the underlying element discretization. We use the following common logical representation for one scalar field:
 \begin{equation}
 X=\{x_{e,i,j,k}\}\in\mathbb{R}^{E\times n_x\times n_y\times n_z},
 \label{eq:logical-representation}
 \end{equation}
-where $E$ is the number of elements, $e$ is the element index, and $(i,j,k)$ identifies a local position within an element. The element index follows the stored order, and consecutive values of $e$ do not necessarily identify physically adjacent elements.
+where $E$ is the number of elements, $e$ is the element index, and $(i,j,k)$ identifies a local position within an element. The element index follows the stored order rather than a fixed multidimensional layout, so consecutive values of $e$ do not necessarily identify physically adjacent elements.
 
-In a three-dimensional simulation, the elements are commonly geometrically deformed hexahedra connected through shared faces. In a two-dimensional simulation, they are deformed quadrilaterals connected through shared edges. Globally, this connectivity is unstructured. Neighboring elements do not follow a fixed multidimensional array layout. Figure~\ref{fig:characterizing-hohs}(a) illustrates three connected hexahedral elements in such a mesh.
+In a three-dimensional simulation, the elements are commonly geometrically deformed hexahedra connected through shared faces. In a two-dimensional simulation, they are deformed quadrilaterals connected through shared edges. Globally, this connectivity is unstructured. Figure~\ref{fig:characterizing-hohs}(a) illustrates three connected hexahedral elements in such a mesh.
 
 \begin{figure}[htb]
     \centering
@@ -41,8 +41,8 @@ The corresponding value-range-based relative error bound is $\varepsilon_{\mathr
 
 The pointwise error bound controls the largest reconstruction error but does not determine the overall distortion. We therefore quantify overall data quality using peak signal-to-noise ratio (PSNR), defined as $20\log_{10}(R/\mathrm{RMSE})$. We define normalized RMSE (NRMSE) and normalized MAE (NMAE) as $\mathrm{RMSE}/R$ and $\mathrm{MAE}/R$, respectively.
 
-To characterize symbol compressibility, we also report empirical entropy. For a scalar quantity $z$ quantized under an absolute error bound $\varepsilon$, we define $q=\operatorname{round}(z/(2\varepsilon))$ and $H=-\sum_qp_q\log_2p_q$, where $p_q$ is the observed frequency of symbol $q$. For prediction analysis, $z=x-\widetilde{x}$ is the prediction error. Entropy is reported in bits per symbol; it is not the final bit rate and excludes metadata and dependencies among symbols.
+To characterize symbol compressibility, we also report the empirical zero-order entropy of the quantized symbols. For a scalar quantity $z$ quantized under an absolute error bound $\varepsilon$, we define the quantized symbol $q=\operatorname{round}(z/(2\varepsilon))$ and $H=-\sum_qp_q\log_2p_q$, where $p_q$ is the observed frequency of symbol $q$. For prediction analysis, $z=x-\widetilde{x}$ is the prediction error. Entropy is reported in bits per symbol. It is not the final bit rate and excludes metadata and dependencies among symbols.
 
-At a given PSNR, our first objective is to minimize the size of $B$. We report storage reduction using either compression ratio, defined as the original data size divided by the compressed size, or bit rate (BR), defined as the average number of compressed bits per data value.
+At a given PSNR, our first objective is to minimize the size of $B$. We report storage reduction using either compression ratio (CR), defined as the original data size divided by the compressed size, or bit rate (BR), defined as the average number of compressed bits per data value.
 
-Our second objective is to reduce end-to-end data-movement time under a prescribed pointwise error bound. As illustrated in Figure~\ref{fig:end-to-end}, this time includes compression, transfer of the compressed field, and decompression. A smaller bitstream generally shortens the transfer, but producing and decoding it may require more computation. We therefore report end-to-end runtime together with compression and decompression throughput to characterize this tradeoff.
+Our second objective is to reduce end-to-end data-movement time under a prescribed pointwise error bound. As illustrated in Figure~\ref{fig:end-to-end}, this requires balancing compression and decompression overhead against the transfer savings from a smaller bitstream. To capture this tradeoff beyond codec throughput, we also measure end-to-end runtime.

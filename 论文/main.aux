@@ -1,22 +1,22 @@
 \relax 
 \citation{fischer2022nekrs}
-\citation{liang2018error,liu2024high,zhao2021optimizing,liang2022sz3,lindstrom2014fixed,li2023lossy,di2025survey}
+\citation{liang2018error,liu2024high,zhao2021optimizing,liang2023sz3,lindstrom2014fixed,li2023lossy,di2025survey}
 \citation{tao2017significantly}
-\citation{liang2022sz3,zhao2021optimizing}
+\citation{liang2023sz3,zhao2021optimizing}
 \citation{liu2024high}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
 \citation{wu2025enabling,gong2024general,ren2024prediction}
 \citation{shah2026solver}
 \citation{marin2016spectral}
-\citation{liang2022sz3,zhao2021optimizing}
+\citation{liang2023sz3,zhao2021optimizing}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}\protected@file@percent }
 \citation{chard2017globus}
 \citation{zhao2021optimizing,di2025survey}
 \citation{cappello2019usecases,liu2023ocelot,shah2026solver}
 \citation{di2025survey}
 \citation{tao2017significantly}
-\citation{zhao2021optimizing,liang2022sz3}
+\citation{zhao2021optimizing,liang2023sz3}
 \citation{liu2024high}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
@@ -30,7 +30,7 @@
 \citation{shah2026solver}
 \citation{marin2016spectral}
 \citation{fischer2022nekrs}
-\citation{kolev2010modular}
+\citation{anderson2021mfem}
 \citation{moxey2020nektar++}
 \citation{fischer2022nekrs,marin2016spectral}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Compression for High-Order Element Data}{3}\protected@file@percent }
@@ -47,8 +47,8 @@
 \newlabel{sec:problem formulation:metrics}{{\mbox  {III-B}}{3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Comparison of direct and compression-integrated data-movement workflows. Compression reduces storage and transfer costs while introducing compression and decompression overhead.\relax }}{3}\protected@file@percent }
 \newlabel{fig:end-to-end}{{2}{3}}
-\citation{tao2017significantly,liang2022sz3}
-\citation{zstd}
+\citation{tao2017significantly,liang2023sz3}
+\citation{ycollet2021zstd}
 \@writefile{toc}{\contentsline {section}{\numberline {IV}Parallel Execution and Element-local Design}{4}\protected@file@percent }
 \newlabel{sec:design overview}{{IV}{4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Partitioned Parallel Execution}{4}\protected@file@percent }
@@ -59,15 +59,15 @@
 \newlabel{fig:fdwz-workflow}{{3}{4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}SZ Compression Framework}{4}\protected@file@percent }
 \newlabel{sec:SZ3-HOHS:sz3 interpolation}{{\mbox  {V-A}}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Distance-Weighted Multilevel Interpolation}{4}\protected@file@percent }
-\newlabel{sec:FDWZ:distance-weighted}{{\mbox  {V-B}}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Distance-Weighted Multilevel Interpolation}{5}\protected@file@percent }
+\newlabel{sec:FDWZ:distance-weighted}{{\mbox  {V-B}}{5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table\nobreakspace  {}I\hbox {}.\relax }}{5}\protected@file@percent }
 \newlabel{fig:cubic-interpolation}{{4}{5}}
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights for the 10-point GLL example in Figure\nobreakspace  {}4\hbox {}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.\relax }}{5}\protected@file@percent }
-\newlabel{tab:cubic-interpolation}{{I}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-tree Huffman Encoding}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:multi-tree}{{\mbox  {V-C}}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset\nobreakspace  {}7. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.\relax }}{5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights for the 10-point GLL example in Figure\nobreakspace  {}4\hbox {}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.\relax }}{5}\protected@file@percent }
+\newlabel{tab:cubic-interpolation}{{I}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset\nobreakspace  {}7 in Table\nobreakspace  {}IV\hbox {}. (a) Raw prediction-error densities across prediction levels. From Tree0 to Tree4, an increasing fraction of prediction errors is concentrated near zero. Tree0 uses zero as its predictor, so its prediction errors equal the corner values and span a much wider range that is not visible at this scale. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.\relax }}{5}\protected@file@percent }
 \newlabel{fig:fdwz-tree-ablation}{{5}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Prediction Across Shared Element Interfaces}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:cross-interface}{{\mbox  {V-D}}{5}}
@@ -87,9 +87,9 @@
 \newlabel{sec:mrcz}{{VI}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Overview of MRCZ}{6}\protected@file@percent }
 \newlabel{sec:mrcz:overview}{{\mbox  {VI-A}}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Overview of the MRCZ compression workflow.\relax }}{6}\protected@file@percent }
-\newlabel{fig:mrcz_diagram}{{7}{6}}
 \citation{marin2016spectral}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Overview of the MRCZ compression workflow.\relax }}{7}\protected@file@percent }
+\newlabel{fig:mrcz_diagram}{{7}{7}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}DChT for Data on GLL Nodes}{7}\protected@file@percent }
 \newlabel{sec:mrcz:transform}{{\mbox  {VI-B}}{7}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Rate--distortion performance of the transform--coordinate combinations. DChT evaluated at the GLL coordinates achieves the best overall performance, improving the compression ratio over DLT at the same coordinates by 17.5\% on average at matched PSNRs.\relax }}{7}\protected@file@percent }
@@ -97,16 +97,16 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Comparison of DLT and DChT at the GLL coordinates on the $P$ field of Dataset\nobreakspace  {}7. (a) DChT's smaller coefficient stream accounts for its compression advantage. (b)--(c) DChT produces smaller high-order coefficients and lower entropy of the quantized coefficients. Shading in (b) indicates the interquartile range.\relax }}{7}\protected@file@percent }
 \newlabel{fig:transform-mode-statistics}{{9}{7}}
 \citation{fischer2022nekrs}
-\citation{kolev2010modular}
+\citation{anderson2021mfem}
 \citation{moxey2020nektar++}
-\citation{liang2022sz3,zhao2021optimizing}
+\citation{liang2023sz3,zhao2021optimizing}
 \citation{tao2017significantly}
 \citation{liu2024high}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Mode-Major Coefficient Reordering}{8}\protected@file@percent }
 \newlabel{sec:mrcz:transpose}{{\mbox  {VI-C}}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Ablation of mode-major coefficient reordering on the $P$ field of Dataset\nobreakspace  {}7. (a) Mode-major ordering improves the compression ratio by 31.9\% on average. (b) Compared with direct transposition, tiled transposition maintains nearly identical compression throughput and improves decompression throughput by 11.9\%. Original denotes the element-major layout without transposition.\relax }}{8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Ablation of mode-major coefficient reordering on the $P$ field of Dataset\nobreakspace  {}7. (a) Mode-major ordering improves the compression ratio by 31.9\% on average. (b) Compared with direct transposition, tiled transposition maintains nearly identical compression throughput and improves decompression throughput by 11.9\%.\relax }}{8}\protected@file@percent }
 \newlabel{fig:mrcz-reordering-ablation}{{10}{8}}
 \@writefile{toc}{\contentsline {section}{\numberline {VII}Performance Evaluation}{8}\protected@file@percent }
 \newlabel{sec:performance evaluation}{{VII}{8}}
@@ -124,35 +124,35 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}Codec Throughput}{9}\protected@file@percent }
 \newlabel{sec:parallel-throughput}{{\mbox  {VII-C}}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}End-to-End Workflow Evaluation}{9}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Rate--distortion curves on Datasets\nobreakspace  {}1--6 for baseline-layout selection. Color identifies the compressor family, and line style identifies the layout. At matched PSNRs, FDWZ improves the compression ratio over the best baseline by 58.8\% on average, while MRCZ improves the compression ratio over FDWZ by 136.7\%. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, and SPERR-2D.\relax }}{10}\protected@file@percent }
 \newlabel{fig:small-rate-distortion}{{11}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. At matched PSNRs, FDWZ improves the compression ratio over the best baseline by 80.8\% on average, while MRCZ improves the compression ratio over FDWZ by 111.4\%.\relax }}{10}\protected@file@percent }
 \newlabel{fig:large-rate-distortion}{{12}{10}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{10}\protected@file@percent }
-\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{10}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Aggregate compression and decompression throughput on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. The top row uses 8 CPU cores for Dataset\nobreakspace  {}7 and 16 for Dataset\nobreakspace  {}8; the bottom row uses 64 and 128 CPU cores, respectively.\relax }}{11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}End-to-End Workflow Evaluation}{10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Aggregate compression and decompression throughput on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. The top row uses 8 CPU cores for Dataset\nobreakspace  {}7 and 16 for Dataset\nobreakspace  {}8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 38 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.\relax }}{11}\protected@file@percent }
 \newlabel{fig:throughput}{{13}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces End-to-end time at relative error bounds of $10^{-4}$ for Dataset\nobreakspace  {}7 and $10^{-6}$ for Dataset\nobreakspace  {}8, decomposed into compression, Globus transfer, and decompression time.\relax }}{11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces End-to-end time at relative error bounds of $10^{-4}$ for Dataset\nobreakspace  {}7 and $10^{-6}$ for Dataset\nobreakspace  {}8, decomposed into compression, Globus transfer, and decompression time. Every evaluated compressor reduces end-to-end time relative to direct transfer, with reductions of up to 79.2\% on Dataset\nobreakspace  {}7 and 88.3\% on Dataset\nobreakspace  {}8. FDWZ matches the fastest method on Dataset\nobreakspace  {}7 and is fastest on Dataset\nobreakspace  {}8.\relax }}{11}\protected@file@percent }
 \newlabel{fig:transfer}{{14}{11}}
-\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Relative error bounds and achieved compression ratios used for the visualization comparison on 7T.\relax }}{11}\protected@file@percent }
-\newlabel{tab:error-bound-visualization}{{VI}{11}}
-\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{11}\protected@file@percent }
-\newlabel{sec:conclusion}{{VIII}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets\nobreakspace  {}7 and\nobreakspace  {}8, and each error bar spans the three transfer trials. Larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.\relax }}{11}\protected@file@percent }
+\newlabel{fig:transfer-size-time}{{15}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{11}\protected@file@percent }
+\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{11}}
 \bibstyle{IEEEtran}
 \bibdata{reference}
 \bibcite{fischer2022nekrs}{1}
 \bibcite{liang2018error}{2}
 \bibcite{liu2024high}{3}
 \bibcite{zhao2021optimizing}{4}
-\bibcite{liang2022sz3}{5}
+\bibcite{liang2023sz3}{5}
 \bibcite{lindstrom2014fixed}{6}
 \bibcite{li2023lossy}{7}
 \bibcite{di2025survey}{8}
-\bibcite{tao2017significantly}{9}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Visualization comparison on an $x=0$ slice of the 7T field at matched compression ratios near 33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The remaining panels show pointwise reconstruction errors on a shared color scale. MRCZ and FDWZ exhibit the smallest reconstruction errors.\relax }}{12}\protected@file@percent }
-\newlabel{fig:distortion}{{15}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Relative error bounds and achieved compression ratios used for the visualization comparison on 7T.\relax }}{12}\protected@file@percent }
+\newlabel{tab:error-bound-visualization}{{VI}{12}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{12}\protected@file@percent }
+\newlabel{sec:conclusion}{{VIII}{12}}
 \@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }
+\bibcite{tao2017significantly}{9}
 \bibcite{wu2025enabling}{10}
 \bibcite{gong2024general}{11}
 \bibcite{ren2024prediction}{12}
@@ -161,6 +161,8 @@
 \bibcite{chard2017globus}{15}
 \bibcite{cappello2019usecases}{16}
 \bibcite{liu2023ocelot}{17}
-\bibcite{kolev2010modular}{18}
+\bibcite{anderson2021mfem}{18}
 \bibcite{moxey2020nektar++}{19}
-\bibcite{zstd}{20}
+\bibcite{ycollet2021zstd}{20}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Visualization comparison on an $x=0$ slice of the 7T field at matched compression ratios near 33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The remaining panels show pointwise reconstruction errors. MRCZ and FDWZ exhibit the smallest reconstruction errors.\relax }}{13}\protected@file@percent }
+\newlabel{fig:distortion}{{16}{13}}

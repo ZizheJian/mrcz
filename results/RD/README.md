@@ -2,8 +2,8 @@
 
 本目录保存`t1_start_c_code.py`生成的CSV在MRCZ主仓库中的版本化快照。程序仍将运行时结果写在原始数据旁边；完成一轮实验并检查所有方法、error bound和field后，再把完整CSV同步到这里。
 
-- `pb0/`：源自`/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/`中的`pb0.f00001_<field>.csv`和`pb0.f00001_<field>_throughput.csv`。
-- `jicf0/`：源自`/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/`中的`jicf0.f00000_<field>.csv`和`jicf0.f00000_<field>_throughput.csv`。
+- `pb0/`：源自`/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/`中的`pb0.f00001_<field>.csv`和`pb0.f00001_<field>_throughput.csv`。
+- `jicf0/`：源自`/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/`中的`jicf0.f00000_<field>.csv`和`jicf0.f00000_<field>_throughput.csv`。
 - `test0/`：源自`third_party/fld_pyutils/demos/data/`中的`test0.f00001_<field>.csv`和`test0.f00001_<field>_throughput.csv`。
 - `mixlay0/`：源自`third_party/pySEMTools/examples/data/`中的`mixlay0.f00001_<field>.csv`和`mixlay0.f00001_<field>_throughput.csv`。
 - `tc_channel0/`：源自`third_party/pySEMTools/examples/data/`中的`tc_channel0.f00001_<field>.csv`和`tc_channel0.f00001_<field>_throughput.csv`。

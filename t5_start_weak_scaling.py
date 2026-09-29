@@ -9,7 +9,7 @@ os.makedirs(result_dir,exist_ok=True)
 methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
 datasets={
     "pb0":{
-        "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+        "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
         "element_num":1947154,"element_size":512,"word_size":4,"max_cpus":64,"target_psnr":100.0,
         "fields":["UX","UY","UZ","P","T"],
         "precision":{"MRCZ":"double","FDWZ":"double","SZ3-4D":"double","SZ2-3D-fused":"double","QoZ-4D":"double","ZFP-3D-fused":"float","SPERR-2D":"double"},
@@ -31,7 +31,7 @@ datasets={
             "ZFP-3D-fused":{"UX":6.3063017375346e-3,"UY":5.9651654105089e-3,"UZ":6.17664396100441e-3,"P":3.24412507318927e-1,"T":6.77051133169889e-4},
             "SPERR-2D":{"UX":4.14241388966268e-4,"UY":4.02252009458703e-4,"UZ":4.12506849900842e-4,"P":1.53724567497992e-2,"T":3.88156462998639e-5}}},
     "jicf":{
-        "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000",
+        "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000",
         "element_num":3240264,"element_size":1000,"word_size":4,"max_cpus":128,"target_psnr":150.0,
         "fields":["UX","UY","UZ","P","S00"],
         "precision":{"MRCZ":"double","FDWZ":"double","SZ3-4D":"double","SZ2-3D-fused":"double","QoZ-4D":"double","ZFP-3D-fused":"double","SPERR-2D":"double"},

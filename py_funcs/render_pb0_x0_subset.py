@@ -12,7 +12,7 @@ from vtkmodules.vtkFiltersCore import vtkTriangleFilter
 
 from read_nekrs_header import read_nekrs_header
 
-input_path=os.environ.get("PB0_FIELD_FILE","/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001")
+input_path=os.environ.get("PB0_FIELD_FILE","/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001")
 field_name=os.environ.get("PB0_FIELD","P").upper()
 if field_name not in ("P","T"):raise ValueError("PB0_FIELD目前只支持P或T")
 output_path=os.environ.get("PB0_X0_SLICE_DATA",f"results/visualization/pb0_{field_name}_x0_slice.npz")

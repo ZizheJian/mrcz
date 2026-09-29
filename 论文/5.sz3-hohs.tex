@@ -11,7 +11,7 @@ FDWZ follows the SZ compression framework. Section~\ref{sec:SZ3-HOHS:sz3 interpo
 
 \subsection{SZ Compression Framework}\label{sec:SZ3-HOHS:sz3 interpolation}
 
-The SZ framework follows a prediction--quantization--encoding pipeline~\cite{tao2017significantly,liang2022sz3}. For each target value, it predicts from previously reconstructed values and quantizes the prediction error under a user-specified error bound. Using reconstructed references keeps the compressor and decompressor synchronized while preserving the pointwise error guarantee. The resulting quantization symbols are encoded using a single Huffman tree followed by Zstandard~\cite{zstd}. Within this pipeline, SZ3 applies multilevel interpolation to a multidimensional array, predicting points level by level and using each reconstructed level as a reference for later levels.
+The SZ framework follows a prediction--quantization--encoding pipeline~\cite{tao2017significantly,liang2023sz3}. For each target value, it predicts from previously reconstructed values and quantizes the prediction error under a user-specified error bound. Using reconstructed references keeps the compressor and decompressor synchronized while preserving the pointwise error guarantee. The resulting quantization symbols are encoded using a single Huffman tree followed by Zstandard~\cite{ycollet2021zstd}. Within this pipeline, SZ3 applies multilevel interpolation to a multidimensional array, predicting points level by level and using each reconstructed level as a reference for later levels.
 
 A representative predictor in SZ3 uses cubic interpolation on a uniform array grid. As illustrated in Figure~\ref{fig:cubic-interpolation}(a), it predicts a target by evaluating the cubic polynomial fitted through four reconstructed reference values. On a uniform grid, this yields the fixed Lagrange interpolation weights listed in Table~\ref{tab:cubic-interpolation}.
 
@@ -34,6 +34,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
 \begin{table}[htb]
     \caption{Coordinates and cubic interpolation weights for the 10-point GLL example in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
     \label{tab:cubic-interpolation}
+    \normalsize
     \centering
     \setlength{\tabcolsep}{2.5pt}
     \renewcommand{\arraystretch}{1.05}
@@ -55,20 +56,20 @@ Element-local prediction also provides favorable memory locality. On large regul
 
 Quantization-symbol distributions differ across FDWZ prediction levels. Earlier levels generally use reference points farther from their targets, producing larger prediction errors and a wider distribution of quantization symbols. Later levels use closer reference points and therefore tend to produce smaller errors and symbols that are more concentrated near zero.
 
-Encoding symbols from all levels with one Huffman tree mixes these distributions and yields code lengths that are poorly matched to individual groups. FDWZ therefore aggregates corresponding symbols across elements and encodes them using up to five Huffman trees. Tree0 encodes corner symbols, Tree1--Tree3 encode the earliest prediction levels, and Tree4 encodes any remaining levels. This cap retains most of the benefit of distribution-specific coding without excessive codebook overhead. The encoded streams are finally compressed together using Zstandard.
+Encoding symbols from all levels with one Huffman tree mixes these distributions and yields code lengths that are poorly matched to individual groups. FDWZ therefore aggregates corresponding symbols across elements and uses at most five Huffman trees to limit codebook metadata: Tree0 encodes corner symbols, Tree1--Tree3 encode the earliest prediction levels, and Tree4 encodes any remaining levels. The encoded streams are finally compressed together using Zstandard.
 
-Figure~\ref{fig:fdwz-tree-ablation}(a) illustrates the resulting level-dependent prediction-error distributions, while Figure~\ref{fig:fdwz-tree-ablation}(b) quantifies the rate--distortion benefit of encoding them separately.
+Figure~\ref{fig:fdwz-tree-ablation}(a) compares prediction-error distributions across the groups of predicted values, while Figure~\ref{fig:fdwz-tree-ablation}(b) quantifies the rate--distortion benefit of encoding their quantized symbols separately.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/raster300/fdwz-tree-ablation.png}
-    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~7. (a) At a relative error bound of $10^{-4}$, prediction errors become progressively more concentrated around zero from Tree1 to Tree4. Tree0 is visually indistinguishable from the horizontal axis because corner values are quantized relative to zero and have a much wider distribution. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.}
+    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~7 in Table~\ref{tab:datasets}. (a) Raw prediction-error densities across prediction levels. From Tree0 to Tree4, an increasing fraction of prediction errors is concentrated near zero. Tree0 uses zero as its predictor, so its prediction errors equal the corner values and span a much wider range that is not visible at this scale. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.}
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 
 \subsection{Prediction Across Shared Element Interfaces}\label{sec:FDWZ:cross-interface}\label{sec:SZ3-HOHS:cross_element}
 
-We next examine whether cross-interface prediction can improve upon the element-local interpolation used by FDWZ. For a controlled comparison, both predictors are evaluated at the same target points on shared faces. As illustrated in Figure~\ref{fig:cross-element}, the cross-interface predictor uses two interior reference points from each adjacent element, whereas the element-local predictor uses four reference points along either reference-space direction of the shared face.
+We next examine whether cross-interface prediction can improve upon the element-local interpolation used by FDWZ. For a controlled comparison, both predictors are evaluated at the same target points on faces shared by adjacent elements. As illustrated in Figure~\ref{fig:cross-element}, the cross-interface predictor uses two interior reference points from each adjacent element, whereas the element-local predictor uses four reference points along either reference-space direction of the shared face.
 
 \begin{figure}[htb]
     \centering
@@ -85,6 +86,7 @@ We evaluate the $P$ field of Dataset~7 on randomly selected internal faces, each
     \centering
     \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~7. \textbf{Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the cross-interface result divided by the face-parallel result.}
     \label{tab:cross-interface-prediction}
+    \normalsize
     \setlength{\tabcolsep}{3pt}
     \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccc@{}}
         \toprule
@@ -97,7 +99,7 @@ We evaluate the $P$ field of Dataset~7 on randomly selected internal faces, each
     \end{tabular*}
 \end{table}
 
-As shown in Table~\ref{tab:cross-interface-prediction}, face-parallel prediction is more accurate, and the quantized errors from cross-interface prediction have 2.67$\times$ the entropy of those from face-parallel prediction. Although GLL clustering places cross-interface reference points closer to the target, this advantage is insufficient to make cross-interface prediction more accurate. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore keep FDWZ prediction within each element.
+Table~\ref{tab:cross-interface-prediction} shows that face-parallel prediction has lower NRMSE and NMAE, while cross-interface prediction produces quantized errors with 2.67$\times$ the entropy. Thus, the shorter reference distances enabled by GLL clustering do not compensate for geometric misalignment across elements. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore retain element-local prediction in FDWZ.
 
 \subsection{Prediction Along the Element-Index Dimension}\label{sec:FDWZ:element-index-dimension}\label{sec:SZ3-HOHS:element_dimension}
 
@@ -109,6 +111,7 @@ We evaluate the $P$ field of Dataset~7, applying both methods to the same target
     \centering
     \caption{Comparison of element-local and element-index prediction errors for Dataset~7. \textbf{Element-local} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the element-index result divided by the element-local result.}
     \label{tab:element-index-prediction}
+    \normalsize
     \setlength{\tabcolsep}{3pt}
     \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccc@{}}
         \toprule

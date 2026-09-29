@@ -1,7 +1,7 @@
 [
   {
     "name":"pb0_fdwz_single_tree",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
     "format":"nekrs",
     "field_list":["P"],
     "eb_mode":"REL",

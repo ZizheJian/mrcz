@@ -25,14 +25,14 @@ export MRCZ_T1_FDWZ_SAMPLE_INTERVAL=128
 
 case "${MRCZ_E2E_DATASET}" in
     pb0)
-        data_path=/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001
+        data_path=/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001
         export MRCZ_T1_DATASET=pb0
         export MRCZ_T1_MAX_CPUS=64
         export MRCZ_T1_FIELDS=UX,UY,UZ,P,T
         export MRCZ_T1_EBS=1e-4
         ;;
     jicf0)
-        data_path=/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000
+        data_path=/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000
         export MRCZ_T1_DATASET=jicf0
         export MRCZ_T1_MAX_CPUS=128
         export MRCZ_T1_FIELDS=UX,UY,UZ,P,S00

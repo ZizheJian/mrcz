@@ -1,7 +1,7 @@
 [
   {
     "name":"pb0_mrcz_reordering_rd_element_major",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
     "format":"nekrs",
     "field_list":["P"],
     "eb_mode":"REL",
@@ -21,7 +21,7 @@
   },
   {
     "name":"pb0_mrcz_reordering_rd_mode_major",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
     "format":"nekrs",
     "field_list":["P"],
     "eb_mode":"REL",
@@ -41,7 +41,7 @@
   },
   {
     "name":"pb0_mrcz_reordering_throughput_element_major",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
     "format":"nekrs",
     "field_list":["P"],
     "eb_mode":"REL",
@@ -62,7 +62,7 @@
   },
   {
     "name":"pb0_mrcz_reordering_throughput_direct_transpose",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
     "format":"nekrs",
     "field_list":["P"],
     "eb_mode":"REL",
@@ -83,7 +83,7 @@
   },
   {
     "name":"pb0_mrcz_reordering_throughput_tiled_transpose",
-    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
     "format":"nekrs",
     "field_list":["P"],
     "eb_mode":"REL",

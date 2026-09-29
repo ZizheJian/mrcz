@@ -94,7 +94,7 @@ def add_element1(fig,x,element_id,corner_idx,color,with_hull=False):
         zs+=[c[a,2],c[b,2],None]
     fig.add_trace(go.Scatter3d(x=xs,y=ys,z=zs,mode="lines",line=dict(color=color,width=6),showlegend=False))
 
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/viral-flamespeed/jicf0.f00000"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000"
 selected_element_ids=(1120084,1120235,1120242)
 os.makedirs("fig",exist_ok=True)
 

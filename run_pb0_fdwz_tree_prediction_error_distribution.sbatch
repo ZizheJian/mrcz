@@ -18,4 +18,4 @@ cd "${SLURM_SUBMIT_DIR}"
 export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
-srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores build/mrcz_compress_fdwz_distribution -format nekrs -i /anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001 -M REL 0.0001 -method FDWZ-ablation -max-cpus 64 -partition-num 64 -fields '[P]'
+srun --ntasks=1 --cpus-per-task=64 --cpu-bind=cores build/mrcz_compress_fdwz_distribution -format nekrs -i /anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001 -M REL 0.0001 -method FDWZ-ablation -max-cpus 64 -partition-num 64 -fields '[P]'

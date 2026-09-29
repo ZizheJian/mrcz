@@ -24,7 +24,7 @@ from py_funcs.read_nekrs_header import read_nekrs_header
 
 # data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/fld_pyutils/demos/data/test0.f00001"
 # fields=["UZ","T","S00","S01"]
-data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/unstructured-data/hyuan/pb0.f00001"
+data_path="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001"
 random_seed=0
 sample_element_num=100
 neighbor_scan_chunk_size=20000
