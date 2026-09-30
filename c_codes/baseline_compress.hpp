@@ -6,6 +6,7 @@
 #include "qoz_impl/qoz_compress.tpp"
 #include "zfp_impl/zfp_compress.tpp"
 #include "sperr_impl/sperr_compress.tpp"
+#include "mgard_impl/mgard_compress.tpp"
 
 namespace mrcz::baseline
 {
@@ -24,6 +25,8 @@ namespace mrcz::baseline
                 zfp_compress(backend_params,field);
             else if (backend_params.method=="SPERR-2D" or backend_params.method=="SPERR-3D-fused" or backend_params.method=="SPERR-3D-per-element")
                 sperr_compress(backend_params,field);
+            else if (backend_params.method.rfind("MGARD-",0)==0)
+                mgard_compress(backend_params,field);
             else
                 throw runtime_error("未知的baseline压缩方法: "+backend_params.method);
         };

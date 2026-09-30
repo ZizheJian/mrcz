@@ -136,7 +136,7 @@ namespace mrcz::detail
 
     // 执行单个field的完整FDWZ解压，并使用与压缩端相同的shape和配置重建全部预测plan。
     template<bool measure_phase_time,typename T>
-    void fdwz_decompress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num)
+    void fdwz_decompress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num,bool use_gll_weights,bool use_gll_order)
     {
         auto &header=params.header;
         auto &blocks=params.partitions;
@@ -160,7 +160,7 @@ namespace mrcz::detail
         double start_time=omp_get_wtime();
 
         // 解压端只重建正式预测使用的六种cubic plans，linear proxy只在压缩端选择维度顺序时使用。
-        auto plan_set=fdwz_build_plan_set(n0,n1,n2,x0,x1,x2,false);
+        auto plan_set=fdwz_build_plan_set(n0,n1,n2,x0,x1,x2,false,use_gll_weights,use_gll_order);
         auto &corner_positions=plan_set.corner_positions;
         auto &cubic_plans=plan_set.cubic_plans;
         auto &prediction_level_offsets=cubic_plans[0].level_offsets;
@@ -243,7 +243,10 @@ namespace mrcz
     {
         uint32_t huffman_tree_num=0;
         if constexpr(ablation)
-            huffman_tree_num=if_max_huffman_tree?0:1;
-        detail::fdwz_decompress_impl<measure_phase_time>(*this,field,huffman_tree_num);
+        {
+            huffman_tree_num=fdwz_huffman_tree_num>0?fdwz_huffman_tree_num:(if_max_huffman_tree?0:1);
+            return detail::fdwz_decompress_impl<measure_phase_time>(*this,field,huffman_tree_num,fdwz_use_gll_weights,fdwz_use_gll_order);
+        }
+        detail::fdwz_decompress_impl<measure_phase_time>(*this,field,huffman_tree_num,true,true);
     }
 }

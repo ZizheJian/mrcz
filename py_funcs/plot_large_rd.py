@@ -4,8 +4,8 @@ from matplotlib.ticker import MaxNLocator
 
 plt.rcParams["svg.hashsalt"]="mrcz-large-rd"
 
-methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
-colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","SZ2-3D-fused":"#76b7b2","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1"}
+methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D"]
+colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","SZ2-3D-fused":"#76b7b2","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1","MGARD-1D":"#9c755f"}
 datasets={
     "pb0":("pb0",["UX","UY","UZ","P","T"],"pb0.f00001"),
     "jicf0":("jicf0",["UX","UY","UZ","P","S00"],"jicf0.f00000")}
@@ -14,6 +14,12 @@ datasets={
 def read_rows(path):
     with open(path,newline="") as f:
         return list(csv.DictReader(f))
+
+# MGARD的大数据RD来自可运行的8线程配置，BR和PSNR不依赖线程数。
+def method_rows(project_root,dataset,path,method,default_rows):
+    if method!="MGARD-1D":return default_rows
+    mgard_path=os.path.join(project_root,"results","small_core_throughput",dataset,os.path.basename(path))
+    return read_rows(mgard_path)
 
 # 忽略缺失或非有限的CSV值。
 def finite_pair(first,second):
@@ -45,14 +51,15 @@ def focus_axes(axis,method_points):
     axis.set_ylim(psnr_bottom-padding,psnr_top+padding)
 
 # 为一个大数据集的五个field绘制rate-distortion曲线。
-def plot_dataset(result_dir,dataset):
+def plot_dataset(result_dir,dataset,project_root):
     directory,fields,prefix=datasets[dataset]
     figure,axes=plt.subplots(1,len(fields),figsize=(19,4.5))
     for axis,field in zip(axes,fields):
         rows=read_rows(os.path.join(result_dir,directory,f"{prefix}_{field}.csv"))
         method_points={}
         for method in methods:
-            points=sorted(point for row in rows if (point:=finite_pair(row.get(f"{method}_BR"),row.get(f"{method}_PSNR"))) is not None)
+            source_rows=method_rows(project_root,dataset,os.path.join(result_dir,directory,f"{prefix}_{field}.csv"),method,rows)
+            points=sorted(point for row in source_rows if (point:=finite_pair(row.get(f"{method}_BR"),row.get(f"{method}_PSNR"))) is not None)
             method_points[method]=points
             axis.plot([point[0] for point in points],[point[1] for point in points],color=colors[method],linewidth=1.6,label=method)
         focus_axes(axis,method_points)
@@ -84,7 +91,9 @@ def plot_combined(result_dir,project_root):
         rows=read_rows(path)
         method_points={}
         for method in methods:
-            points=sorted(point for row in rows if (point:=finite_pair(row.get(f"{method}_BR"),row.get(f"{method}_PSNR"))) is not None)
+            dataset="pb0" if title.startswith("7") else "jicf0"
+            source_rows=method_rows(project_root,dataset,path,method,rows)
+            points=sorted(point for row in source_rows if (point:=finite_pair(row.get(f"{method}_BR"),row.get(f"{method}_PSNR"))) is not None)
             method_points[method]=points
             axis.plot([point[0] for point in points],[point[1] for point in points],color=colors[method],linewidth=0.8,label=method,zorder=1)
         focus_axes(axis,method_points)
@@ -117,7 +126,7 @@ def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     result_dir=os.path.join(project_root,"results","RD")
     if args.dataset=="combined":plot_combined(result_dir,project_root)
-    else:plot_dataset(result_dir,args.dataset)
+    else:plot_dataset(result_dir,args.dataset,project_root)
 
 if __name__=="__main__":
     main()

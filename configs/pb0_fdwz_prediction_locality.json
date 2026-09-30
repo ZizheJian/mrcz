@@ -7,7 +7,7 @@
     "eb_mode":"REL",
     "eb_list":[0.0001],
     "method_list":["FDWZ-ablation"],
-    "max_cpus_list":[8],
+    "max_cpus_list":[16],
     "partition_num":64,
     "extra_parameters":{"max-huffman-tree":true,"analyze-fdwz-prediction-locality":true},
     "compression_only":true,

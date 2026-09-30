@@ -72,6 +72,10 @@ namespace mrcz
 
             // FDWZ优化开关
             bool if_max_huffman_tree=true; //仅FDWZ-ablation读取；不写入metadata，解压时必须与压缩一致
+            uint32_t fdwz_huffman_tree_num=0; //0表示沿用if_max_huffman_tree，1--5表示强制tree数量
+            uint32_t fdwz_decision_huffman_tree_num=0; //0表示使用编码tree数量；消融时可固定采样决策口径
+            bool fdwz_use_gll_weights=true; //仅FDWZ-ablation消融使用
+            bool fdwz_use_gll_order=true; //仅FDWZ-ablation消融使用
             bool if_analyze_fdwz_tree_distributions=false; //仅FDWZ-ablation读取；开启后导出每棵tree的QB与prediction-error分布
             bool if_analyze_fdwz_prediction_locality=false; //仅FDWZ-ablation读取；比较element-local与element-index预测误差
             string fdwz_tree_qb_distribution_path="fdwz_tree_qb_distribution.csv";
@@ -233,6 +237,10 @@ namespace mrcz
                 if_tiled_coefficient_transpose=other.if_tiled_coefficient_transpose;
                 if_analyze_mrcz_stream_sizes=other.if_analyze_mrcz_stream_sizes;
                 if_max_huffman_tree=other.if_max_huffman_tree;
+                fdwz_huffman_tree_num=other.fdwz_huffman_tree_num;
+                fdwz_decision_huffman_tree_num=other.fdwz_decision_huffman_tree_num;
+                fdwz_use_gll_weights=other.fdwz_use_gll_weights;
+                fdwz_use_gll_order=other.fdwz_use_gll_order;
                 if_analyze_fdwz_tree_distributions=other.if_analyze_fdwz_tree_distributions;
                 if_analyze_fdwz_prediction_locality=other.if_analyze_fdwz_prediction_locality;
                 fdwz_tree_qb_distribution_path=other.fdwz_tree_qb_distribution_path;

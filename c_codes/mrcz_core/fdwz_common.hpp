@@ -374,9 +374,19 @@ namespace mrcz::detail
 
     // 压缩端同时需要linear proxy和cubic plans；解压端只需要重建cubic plans。
     template<typename T>
-    fdwz_plan_set<T> fdwz_build_plan_set(uint32_t n0,uint32_t n1,uint32_t n2,const vector<T> &x0,const vector<T> &x1,const vector<T> &x2,bool include_linear_plans)
+    fdwz_plan_set<T> fdwz_build_plan_set(uint32_t n0,uint32_t n1,uint32_t n2,const vector<T> &x0,const vector<T> &x1,const vector<T> &x2,bool include_linear_plans,bool use_gll_weights=true,bool use_gll_order=true)
     {
         uint32_t n12=n1*n2;
+        vector<T> uniform0(n0),uniform1(n1),uniform2(n2);
+        iota(uniform0.begin(),uniform0.end(),T(0));
+        iota(uniform1.begin(),uniform1.end(),T(0));
+        iota(uniform2.begin(),uniform2.end(),T(0));
+        const vector<T> &order_x0=use_gll_order?x0:uniform0;
+        const vector<T> &order_x1=use_gll_order?x1:uniform1;
+        const vector<T> &order_x2=use_gll_order?x2:uniform2;
+        const vector<T> &weight_x0=use_gll_weights?x0:uniform0;
+        const vector<T> &weight_x1=use_gll_weights?x1:uniform1;
+        const vector<T> &weight_x2=use_gll_weights?x2:uniform2;
         vector<vector<uint32_t>> left_indices0{{0}},right_indices0{{n0-1}},mid_indices0,compressed_indices0;
         vector<vector<uint32_t>> left_indices1{{0}},right_indices1{{n1-1}},mid_indices1,compressed_indices1;
         vector<vector<uint32_t>> left_indices2{{0}},right_indices2{{n2-1}},mid_indices2,compressed_indices2;
@@ -385,21 +395,21 @@ namespace mrcz::detail
         else
         {
             compressed_indices0.push_back({0,n0-1});
-            fdwz_generate_hierarchy(left_indices0,right_indices0,mid_indices0,compressed_indices0,x0);
+            fdwz_generate_hierarchy(left_indices0,right_indices0,mid_indices0,compressed_indices0,order_x0);
         }
         if(n1==1)
             compressed_indices1.push_back({0});
         else
         {
             compressed_indices1.push_back({0,n1-1});
-            fdwz_generate_hierarchy(left_indices1,right_indices1,mid_indices1,compressed_indices1,x1);
+            fdwz_generate_hierarchy(left_indices1,right_indices1,mid_indices1,compressed_indices1,order_x1);
         }
         if(n2==1)
             compressed_indices2.push_back({0});
         else
         {
             compressed_indices2.push_back({0,n2-1});
-            fdwz_generate_hierarchy(left_indices2,right_indices2,mid_indices2,compressed_indices2,x2);
+            fdwz_generate_hierarchy(left_indices2,right_indices2,mid_indices2,compressed_indices2,order_x2);
         }
         uint32_t max_level=max(max(mid_indices0.size(),mid_indices1.size()),mid_indices2.size());
         fdwz_plan_set<T> plan_set;
@@ -408,9 +418,9 @@ namespace mrcz::detail
         auto build_plans=[&](bool use_cubic)
         {
             vector<fdwz_prediction_plan<T>> plans;
-            auto interpolation_stencils0=fdwz_generate_interpolation_stencils(left_indices0,right_indices0,mid_indices0,compressed_indices0,x0,use_cubic);
-            auto interpolation_stencils1=fdwz_generate_interpolation_stencils(left_indices1,right_indices1,mid_indices1,compressed_indices1,x1,use_cubic);
-            auto interpolation_stencils2=fdwz_generate_interpolation_stencils(left_indices2,right_indices2,mid_indices2,compressed_indices2,x2,use_cubic);
+            auto interpolation_stencils0=fdwz_generate_interpolation_stencils(left_indices0,right_indices0,mid_indices0,compressed_indices0,weight_x0,use_cubic);
+            auto interpolation_stencils1=fdwz_generate_interpolation_stencils(left_indices1,right_indices1,mid_indices1,compressed_indices1,weight_x1,use_cubic);
+            auto interpolation_stencils2=fdwz_generate_interpolation_stencils(left_indices2,right_indices2,mid_indices2,compressed_indices2,weight_x2,use_cubic);
             for(const auto &order:all_orders)
             {
                 fdwz_prediction_plan<T> plan;

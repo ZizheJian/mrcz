@@ -24,6 +24,8 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
 \item \textit{Modified Prediction Order}: SZ3 constructs its multilevel hierarchy by repeatedly selecting the array-index midpoint between two reconstructed endpoints. On a uniform grid, this point is also their geometric midpoint. FDWZ instead selects the unpredicted GLL point closest to the midpoint of the two endpoints in reference space. This choice helps limit the propagation of compression errors to later prediction levels. This order is also computed once per polynomial order and reused across elements.
 \end{enumerate}
 
+For a controlled ablation on the $P$ field of Dataset~7, we compare the three predictor configurations at matched PSNRs of 67.0, 86.5, and 105.7~dB. Replacing SZ3's uniform-grid weights with GLL weights improves the compression ratio by 62.7\% on average. With the GLL weights fixed, the modified prediction order provides a further 6.8\% average improvement.
+
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.8\linewidth]{figs/raster300/cubic-interpolation.png}
@@ -34,7 +36,6 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
 \begin{table}[htb]
     \caption{Coordinates and cubic interpolation weights for the 10-point GLL example in Figure~\ref{fig:cubic-interpolation}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.}
     \label{tab:cubic-interpolation}
-    \normalsize
     \centering
     \setlength{\tabcolsep}{2.5pt}
     \renewcommand{\arraystretch}{1.05}
@@ -58,12 +59,12 @@ Quantization-symbol distributions differ across FDWZ prediction levels. Earlier 
 
 Encoding symbols from all levels with one Huffman tree mixes these distributions and yields code lengths that are poorly matched to individual groups. FDWZ therefore aggregates corresponding symbols across elements and uses at most five Huffman trees to limit codebook metadata: Tree0 encodes corner symbols, Tree1--Tree3 encode the earliest prediction levels, and Tree4 encodes any remaining levels. The encoded streams are finally compressed together using Zstandard.
 
-Figure~\ref{fig:fdwz-tree-ablation}(a) compares prediction-error distributions across the groups of predicted values, while Figure~\ref{fig:fdwz-tree-ablation}(b) quantifies the rate--distortion benefit of encoding their quantized symbols separately.
+Figure~\ref{fig:fdwz-tree-ablation}(a) compares prediction-error distributions across the groups of predicted values, while Figure~\ref{fig:fdwz-tree-ablation}(b) shows how the bit rate changes as the number of Huffman trees increases.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/raster300/fdwz-tree-ablation.png}
-    \caption{Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset~7 in Table~\ref{tab:datasets}. (a) Raw prediction-error densities across prediction levels. From Tree0 to Tree4, an increasing fraction of prediction errors is concentrated near zero. Tree0 uses zero as its predictor, so its prediction errors equal the corner values and span a much wider range that is not visible at this scale. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.}
+    \caption{Prediction-error distributions and tree-count ablation on 7P. (a) Raw prediction-error densities at $\varepsilon_{\mathrm{rel}}=10^{-3}$. From Tree0 to Tree4, an increasing fraction of errors concentrates near zero. Tree0 uses zero as its predictor, so its errors span a much wider range that is not visible at this scale. (b) BR at the same error bound for one to five Huffman trees. Five trees improve the compression ratio over one tree by 35.1\% at this error bound and by 26.6\% on average across all five bounds.}
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 
@@ -84,9 +85,8 @@ We evaluate the $P$ field of Dataset~7 on randomly selected internal faces, each
 
 \begin{table}[htb]
     \centering
-    \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~7. \textbf{Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the cross-interface result divided by the face-parallel result.}
+    \caption{Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset~7. \textbf{Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$.}
     \label{tab:cross-interface-prediction}
-    \normalsize
     \setlength{\tabcolsep}{3pt}
     \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccc@{}}
         \toprule
@@ -94,7 +94,6 @@ We evaluate the $P$ field of Dataset~7 on randomly selected internal faces, each
         \midrule
         \textbf{Face-parallel} & $4.215\times10^{-5}$ & $8.584\times10^{-6}$ & $0.149$ \\
         Cross-interface & $5.234\times10^{-5}$ & $1.875\times10^{-5}$ & $0.398$ \\
-        Ratio & $1.24\times$ & $2.18\times$ & $2.67\times$ \\
         \bottomrule
     \end{tabular*}
 \end{table}
@@ -109,19 +108,18 @@ We evaluate the $P$ field of Dataset~7, applying both methods to the same target
 
 \begin{table}[htb]
     \centering
-    \caption{Comparison of element-local and element-index prediction errors for Dataset~7. \textbf{Element-local} is the method used by FDWZ. The entropy column uses $\varepsilon_{\mathrm{rel}}=10^{-4}$. Ratio denotes the element-index result divided by the element-local result.}
+    \caption{Element-local and element-index prediction errors on 7P. \textbf{Element-local} is used by FDWZ. Shuffled element-index uses a fixed random permutation within each partition. Entropy uses $\varepsilon_{\mathrm{rel}}=10^{-4}$.}
     \label{tab:element-index-prediction}
-    \normalsize
-    \setlength{\tabcolsep}{3pt}
+    \setlength{\tabcolsep}{2.4pt}
     \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lccc@{}}
         \toprule
         Method & NRMSE & NMAE & Entropy \\
         \midrule
         \textbf{Element-local} & $3.323\times10^{-4}$ & $3.462\times10^{-5}$ & $0.511$ \\
         Element-index & $1.106\times10^{-2}$ & $4.362\times10^{-3}$ & $6.306$ \\
-        Ratio & $33.3\times$ & $126.0\times$ & $12.3\times$ \\
+        Shuffled & $1.045\times10^{-1}$ & $8.036\times10^{-2}$ & $11.060$ \\
         \bottomrule
     \end{tabular*}
 \end{table}
 
-As shown in Table~\ref{tab:element-index-prediction}, element-index prediction is substantially less accurate, and its quantized errors have 12.3$\times$ the entropy of those from element-local prediction. Consecutive elements in storage order may be far apart in physical space, causing abrupt changes at corresponding local positions and limiting error compressibility.
+Table~\ref{tab:element-index-prediction} shows that element-index prediction remains far less predictable than the element-local dimensions, producing 12.3$\times$ the quantized-error entropy. Shuffling the elements raises this ratio to 21.7$\times$, showing that the stored order nevertheless retains some statistical locality.

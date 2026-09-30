@@ -6,6 +6,7 @@
 #include "qoz_impl/qoz_decompress.tpp"
 #include "zfp_impl/zfp_decompress.tpp"
 #include "sperr_impl/sperr_decompress.tpp"
+#include "mgard_impl/mgard_decompress.tpp"
 
 namespace mrcz::baseline
 {
@@ -24,6 +25,8 @@ namespace mrcz::baseline
                 zfp_decompress(backend_params,field);
             else if (backend_params.method=="SPERR-2D" or backend_params.method=="SPERR-3D-fused" or backend_params.method=="SPERR-3D-per-element")
                 sperr_decompress(backend_params,field);
+            else if (backend_params.method.rfind("MGARD-",0)==0)
+                mgard_decompress(backend_params,field);
             else
                 throw runtime_error("未知的baseline解压方法: "+backend_params.method);
         };

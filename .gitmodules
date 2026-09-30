@@ -44,3 +44,6 @@
 [submodule "third_party/SZ2"]
 	path = third_party/SZ2
 	url = https://github.com/szcompressor/SZ2.git
+[submodule "third_party/MGARD"]
+	path = third_party/MGARD
+	url = https://github.com/CODARcode/MGARD.git

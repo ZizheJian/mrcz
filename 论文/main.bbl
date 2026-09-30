@@ -103,6 +103,15 @@ D.~Tao, S.~Di, Z.~Chen, and F.~Cappello, ``Significantly improving lossy
   \url{https://doi.org/10.1109/IPDPS.2017.115}
 \BIBentrySTDinterwordspacing
 
+\bibitem{gong2023mgard}
+\BIBentryALTinterwordspacing
+Q.~Gong, J.~Chen, B.~Whitney, X.~Liang, V.~Reshniak, T.~Banerjee, J.~Lee,
+  A.~Rangarajan, L.~Wan, N.~Vidal \emph{et~al.}, ``Mgard: A multigrid framework
+  for high-performance, error-controlled data compression and refactoring,''
+  \emph{SoftwareX}, vol.~24, p. 101590, 2023. [Online]. Available:
+  \url{https://doi.org/10.1016/j.softx.2023.101590}
+\BIBentrySTDinterwordspacing
+
 \bibitem{wu2025enabling}
 \BIBentryALTinterwordspacing
 X.~Wu, S.~Di, C.~Ren, P.~Jiao, M.~Xia, C.~Wang, H.~Guo, X.~Liang, and

@@ -8,6 +8,7 @@
 #include "quantize.tpp"
 #include <fstream>
 #include <iomanip>
+#include <random>
 #include <zstd.h>
 
 namespace mrcz::detail
@@ -401,7 +402,7 @@ namespace mrcz::detail
 
     // 执行单个field的完整FDWZ压缩；模板参数决定是否编译计时和消融统计代码。
     template<bool measure_phase_time,bool analyze_tree_distributions,bool analyze_prediction_locality,typename T>
-    void fdwz_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num)
+    void fdwz_compress_impl(mrcz::param_class<T> &params,string field,uint32_t huffman_tree_num,bool use_gll_weights,bool use_gll_order)
     {
         auto &header=params.header;
         auto &blocks=params.partitions;
@@ -427,7 +428,7 @@ namespace mrcz::detail
         double start_time=omp_get_wtime();
 
         // 三个坐标方向的hierarchy和六种维度顺序只依赖element shape与reference-space GLL坐标。
-        auto plan_set=fdwz_build_plan_set(n0,n1,n2,x0,x1,x2,true);
+        auto plan_set=fdwz_build_plan_set(n0,n1,n2,x0,x1,x2,true,use_gll_weights,use_gll_order);
         auto &corner_positions=plan_set.corner_positions;
         auto &linear_plans=plan_set.linear_plans;
         auto &cubic_plans=plan_set.cubic_plans;
@@ -439,16 +440,24 @@ namespace mrcz::detail
             huffman_tree_num=min<uint32_t>(5,prediction_level_offsets.size());
         if (huffman_tree_num<1 or huffman_tree_num>5)
             throw runtime_error("FDWZ Huffman tree数量必须为1、2、3、4或5");
-        vector<uint32_t> residual_group_offsets;
-        if (huffman_tree_num>=2)
+        uint32_t decision_huffman_tree_num=params.fdwz_decision_huffman_tree_num==0?huffman_tree_num:params.fdwz_decision_huffman_tree_num;
+        auto build_residual_group_offsets=[&](uint32_t tree_num)
         {
-            if (prediction_level_offsets.size()<huffman_tree_num)
+            if (tree_num<1 or tree_num>5)
+                throw runtime_error("FDWZ决策Huffman tree数量必须为1、2、3、4或5");
+            vector<uint32_t> offsets;
+            if(tree_num==1)
+                return offsets;
+            if (prediction_level_offsets.size()<tree_num)
                 throw runtime_error("FDWZ Huffman tree数量超过当前element的角点和预测层总数");
-            residual_group_offsets.push_back(0);
-            for (uint32_t level=1;level<huffman_tree_num-1;level++)
-                residual_group_offsets.push_back(prediction_level_offsets[level]);
-            residual_group_offsets.push_back(residual_num);
-        }
+            offsets.push_back(0);
+            for (uint32_t level=1;level<tree_num-1;level++)
+                offsets.push_back(prediction_level_offsets[level]);
+            offsets.push_back(residual_num);
+            return offsets;
+        };
+        vector<uint32_t> residual_group_offsets=build_residual_group_offsets(huffman_tree_num);
+        vector<uint32_t> decision_residual_group_offsets=build_residual_group_offsets(decision_huffman_tree_num);
         double structure_generation_time=0;
         if constexpr(measure_phase_time)
             structure_generation_time=omp_get_wtime()-start_time;
@@ -467,8 +476,10 @@ namespace mrcz::detail
         }
         double element_local_absolute_error_sum=0,element_local_squared_error_sum=0;
         double element_index_absolute_error_sum=0,element_index_squared_error_sum=0;
-        uint64_t element_local_value_num=0,element_index_value_num=0;
+        double shuffled_element_index_absolute_error_sum=0,shuffled_element_index_squared_error_sum=0;
+        uint64_t element_local_value_num=0,element_index_value_num=0,shuffled_element_index_value_num=0;
         vector<unordered_map<int64_t,uint64_t>> element_local_symbol_counts(analyze_prediction_locality?params.max_cpus:0),element_index_symbol_counts(analyze_prediction_locality?params.max_cpus:0);
+        vector<unordered_map<int64_t,uint64_t>> shuffled_element_index_symbol_counts(analyze_prediction_locality?params.max_cpus:0);
         vector<unique_ptr<int32_t[]>> partition_prediction_error_bins(analyze_tree_distributions?blocks.size():0);
         array<uint32_t,5> tree_value_num{};
         if (huffman_tree_num==1)
@@ -509,10 +520,10 @@ namespace mrcz::detail
                     memcpy(original_sample.data()+sample_id*n012,data.data()+(block.begin_index+relative_element_id)*n012,n012*sizeof(T));
                 }
                 uint32_t best_plan_id=0;
-                uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,linear_plans[best_plan_id],residual_group_offsets,huffman_tree_num,abs_eb,best_plan_id,sampling_workspace);
+                uint64_t best_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,linear_plans[best_plan_id],decision_residual_group_offsets,decision_huffman_tree_num,abs_eb,best_plan_id,sampling_workspace);
                 for(uint32_t plan_id=1;plan_id<6;plan_id++)
                 {
-                    uint64_t candidate_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,linear_plans[plan_id],residual_group_offsets,huffman_tree_num,abs_eb,plan_id,sampling_workspace);
+                    uint64_t candidate_size=fdwz_sample_compressed_size(original_sample,n012,corner_positions,linear_plans[plan_id],decision_residual_group_offsets,decision_huffman_tree_num,abs_eb,plan_id,sampling_workspace);
                     if(candidate_size<best_size)
                         best_size=candidate_size,best_plan_id=plan_id;
                 }
@@ -579,6 +590,36 @@ namespace mrcz::detail
                         }
                     }
                 }
+                #pragma omp for schedule(static) reduction(+:shuffled_element_index_absolute_error_sum,shuffled_element_index_squared_error_sum,shuffled_element_index_value_num)
+                for(uint64_t block_id=0;block_id<blocks.size();block_id++)
+                {
+                    auto &symbol_counts=shuffled_element_index_symbol_counts[omp_get_thread_num()];
+                    auto &block=blocks[block_id];
+                    auto &element_stencils=element_index_stencils[block_id];
+                    auto &local_targets=cubic_plans[0].stencils;
+                    vector<uint32_t> shuffled_element_ids(block.element_num);
+                    iota(shuffled_element_ids.begin(),shuffled_element_ids.end(),uint32_t(0));
+                    mt19937_64 generator(0x6a09e667f3bcc909ULL+block_id);
+                    shuffle(shuffled_element_ids.begin(),shuffled_element_ids.end(),generator);
+                    for(const auto &element_stencil:element_stencils)
+                    {
+                        const T *target_element=data.data()+(block.begin_index+shuffled_element_ids[element_stencil.target])*n012;
+                        for(const auto &local_target:local_targets)
+                        {
+                            double prediction=0;
+                            for(uint32_t reference_id=0;reference_id<element_stencil.point_num;reference_id++)
+                            {
+                                const T *reference_element=data.data()+(block.begin_index+shuffled_element_ids[element_stencil.indices[reference_id]])*n012;
+                                prediction+=double(element_stencil.weights[reference_id])*double(reference_element[local_target.target]);
+                            }
+                            double error=double(target_element[local_target.target])-prediction;
+                            symbol_counts[llround(error/(2*double(abs_eb)))]++;
+                            shuffled_element_index_absolute_error_sum+=fabs(error);
+                            shuffled_element_index_squared_error_sum+=error*error;
+                            shuffled_element_index_value_num++;
+                        }
+                    }
+                }
                 #pragma omp master
                 {
                     auto entropy=[](const vector<unordered_map<int64_t,uint64_t>> &thread_counts,uint64_t value_num)
@@ -597,11 +638,15 @@ namespace mrcz::detail
                     double element_local_nmae=(element_local_absolute_error_sum/element_local_value_num)/field_range;
                     double element_index_nrmse=sqrt(element_index_squared_error_sum/element_index_value_num)/field_range;
                     double element_index_nmae=(element_index_absolute_error_sum/element_index_value_num)/field_range;
+                    double shuffled_element_index_nrmse=sqrt(shuffled_element_index_squared_error_sum/shuffled_element_index_value_num)/field_range;
+                    double shuffled_element_index_nmae=(shuffled_element_index_absolute_error_sum/shuffled_element_index_value_num)/field_range;
                     double element_local_entropy=entropy(element_local_symbol_counts,element_local_value_num);
                     double element_index_entropy=entropy(element_index_symbol_counts,element_index_value_num);
+                    double shuffled_element_index_entropy=entropy(shuffled_element_index_symbol_counts,shuffled_element_index_value_num);
                     printf("FDWZ prediction locality: element-index pivot stride=%u\n",fdwz_element_index_pivot_stride);
                     printf("FDWZ prediction locality: method=element-local, NRMSE=%.10e, NMAE=%.10e, entropy=%.10e bits/symbol, value num=%lu\n",element_local_nrmse,element_local_nmae,element_local_entropy,element_local_value_num);
                     printf("FDWZ prediction locality: method=element-index, NRMSE=%.10e, NMAE=%.10e, entropy=%.10e bits/symbol, value num=%lu\n",element_index_nrmse,element_index_nmae,element_index_entropy,element_index_value_num);
+                    printf("FDWZ prediction locality: method=shuffled-element-index, NRMSE=%.10e, NMAE=%.10e, entropy=%.10e bits/symbol, value num=%lu\n",shuffled_element_index_nrmse,shuffled_element_index_nmae,shuffled_element_index_entropy,shuffled_element_index_value_num);
                 }
                 #pragma omp barrier
             }
@@ -672,16 +717,17 @@ namespace mrcz
         uint32_t huffman_tree_num=0;
         if constexpr(ablation)
         {
-            huffman_tree_num=if_max_huffman_tree?0:1;
+            huffman_tree_num=fdwz_huffman_tree_num>0?fdwz_huffman_tree_num:(if_max_huffman_tree?0:1);
             if(if_analyze_fdwz_tree_distributions)
             {
                 if(if_analyze_fdwz_prediction_locality)
-                    return detail::fdwz_compress_impl<measure_phase_time,true,true>(*this,field,huffman_tree_num);
-                return detail::fdwz_compress_impl<measure_phase_time,true,false>(*this,field,huffman_tree_num);
+                    return detail::fdwz_compress_impl<measure_phase_time,true,true>(*this,field,huffman_tree_num,fdwz_use_gll_weights,fdwz_use_gll_order);
+                return detail::fdwz_compress_impl<measure_phase_time,true,false>(*this,field,huffman_tree_num,fdwz_use_gll_weights,fdwz_use_gll_order);
             }
             if(if_analyze_fdwz_prediction_locality)
-                return detail::fdwz_compress_impl<measure_phase_time,false,true>(*this,field,huffman_tree_num);
+                return detail::fdwz_compress_impl<measure_phase_time,false,true>(*this,field,huffman_tree_num,fdwz_use_gll_weights,fdwz_use_gll_order);
+            return detail::fdwz_compress_impl<measure_phase_time,false,false>(*this,field,huffman_tree_num,fdwz_use_gll_weights,fdwz_use_gll_order);
         }
-        detail::fdwz_compress_impl<measure_phase_time,false,false>(*this,field,huffman_tree_num);
+        detail::fdwz_compress_impl<measure_phase_time,false,false>(*this,field,huffman_tree_num,true,true);
     }
 }

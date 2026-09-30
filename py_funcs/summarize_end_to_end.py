@@ -1,6 +1,6 @@
 import csv,math,os,statistics
 
-methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
+methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D"]
 configs={
     "pb0":{"rel_eb":1e-4,"cpus":64,"value_num":996942848,"fields":["UX","UY","UZ","P","T"],"rd_dir":"pb0","rd_prefix":"pb0.f00001","transfer_csv":"pb0_transfer_rel_eb.csv"},
     "jicf0":{"rel_eb":1e-6,"cpus":128,"value_num":3240264000,"fields":["UX","UY","UZ","P","S00"],"rd_dir":"jicf0","rd_prefix":"jicf0.f00000","transfer_csv":"jicf0_transfer_rel_eb.csv"}}
@@ -23,8 +23,12 @@ def summarize_dataset(project_root,result_dir,dataset,config):
         throughput_path=os.path.join(project_root,"results","RD",config["rd_dir"],f"{config['rd_prefix']}_{field}_throughput.csv")
         row=selected_throughput_row(throughput_path,config["rel_eb"],config["cpus"])
         for method in methods:
-            backend_times[method]["compression"]+=raw_mib/(float(row[f"{method} Compression Throughput"])*config["cpus"])
-            backend_times[method]["decompression"]+=raw_mib/(float(row[f"{method} Decompression Throughput"])*config["cpus"])
+            method_row=row
+            if method=="MGARD-1D":
+                mgard_path=os.path.join(project_root,"results","small_core_throughput",config["rd_dir"],f"{config['rd_prefix']}_{field}_throughput.csv")
+                method_row=selected_throughput_row(mgard_path,config["rel_eb"],8)
+            backend_times[method]["compression"]+=raw_mib/(float(method_row[f"{method} Compression Throughput"])*config["cpus"])
+            backend_times[method]["decompression"]+=raw_mib/(float(method_row[f"{method} Decompression Throughput"])*config["cpus"])
     transfer_path=os.path.join(result_dir,config["transfer_csv"])
     transfer_rows=read_rows(transfer_path)
     summaries=[]

@@ -1,4 +1,4 @@
-import argparse,csv,glob,json,os,shlex
+import argparse,csv,glob,json,os,shlex,shutil
 from third_party.get_max_cpus.py_codes.get_max_cpus import get_max_cpus
 from third_party.run_command.run_command import run_command
 from third_party.csv_tools.py_codes.write_csv_item import write_csv_item
@@ -116,7 +116,7 @@ def parse_fdwz_prediction_locality(output):
 
 def write_fdwz_prediction_locality(path,output,field,partition_num,selection_rel_eb):
     pivot_stride,results=parse_fdwz_prediction_locality(output)
-    expected_methods=("element-local","element-index")
+    expected_methods=("element-local","element-index","shuffled-element-index")
     missing=[method for method in expected_methods if method not in results]
     if pivot_stride is None or missing:
         raise RuntimeError(f"未能解析FDWZ prediction locality结果: pivot_stride={pivot_stride},missing={missing}")
@@ -201,6 +201,16 @@ def build_project(build_max_cpus,silent_build):
         run_command(f"cmake -S \"{mfem_source_path}\" -B \"{mfem_build_path}\" -DCMAKE_INSTALL_PREFIX=\"{mfem_install_path}\"",silent=silent_build)
     run_command(f"cmake --build {mfem_build_path} --parallel {build_max_cpus}",silent=silent_build)
     run_command(f"cmake --install {mfem_build_path}",silent=silent_build)
+    if shutil.which("protoc") is None:
+        raise RuntimeError("构建MGARD前需要可用的protobuf和protoc；在Anvil上请先运行module load protobuf/3.11.4")
+    mgard_source_path=os.path.join(project_root,"third_party/MGARD")
+    mgard_build_path=os.path.join(project_root,"build/mgard_serial")
+    mgard_install_path=os.path.join(project_root,"install/mgard_install")
+    os.makedirs(mgard_build_path,exist_ok=True)
+    if not os.path.exists(os.path.join(mgard_build_path,"CMakeCache.txt")):
+        run_command(f"cmake -S \"{mgard_source_path}\" -B \"{mgard_build_path}\" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=\"{mgard_install_path}\" -DMGARD_ENABLE_SERIAL=ON -DMGARD_ENABLE_OPENMP=OFF -DMGARD_ENABLE_CUDA=OFF -DMGARD_ENABLE_HIP=OFF -DMGARD_ENABLE_SYCL=OFF -DMGARD_ENABLE_MDR=OFF -DMGARD_ENABLE_UNSTRUCTURED=OFF -DMGARD_ENABLE_BENCHMARKS=OFF -DMGARD_ENABLE_DOCS=OFF -DBUILD_TESTING=OFF",silent=silent_build)
+    run_command(f"cmake --build {mgard_build_path} --parallel {build_max_cpus}",silent=silent_build)
+    run_command(f"cmake --install {mgard_build_path}",silent=silent_build)
     main_source_path=os.path.join(project_root,"c_codes")
     main_build_path=os.path.join(project_root,"build")
     main_install_path=os.path.join(project_root,"install")

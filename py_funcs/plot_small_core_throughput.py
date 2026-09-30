@@ -39,8 +39,9 @@ def aggregate_dataset(project_root,dataset,cpus,partition_num,error_bounds):
             for task in aggregate:
                 field_values=[]
                 for table in tables:
-                    row=next((row for row in table if int(row["Max CPUs"])==cpus and int(row["Partition Num"])==partition_num and math.isclose(float(row["REL EB"]),error_bound,rel_tol=1e-12)),None)
-                    if row is None or not row.get(f"{method} {task} Throughput"):raise RuntimeError(f"missing {dataset}/{method}/{task}/{error_bound:g}")
+                    column=f"{method} {task} Throughput"
+                    row=next((row for row in table if int(row["Max CPUs"])==cpus and int(row["Partition Num"])==partition_num and math.isclose(float(row["REL EB"]),error_bound,rel_tol=1e-12) and row.get(column)),None)
+                    if row is None:raise RuntimeError(f"missing {dataset}/{method}/{task}/{error_bound:g}")
                     field_values.append(float(row[f"{method} {task} Throughput"]))
                 aggregate[task][method].append(harmonic_mean(field_values)*cpus/1024)
     return aggregate

@@ -82,6 +82,12 @@ python -m pip install --upgrade pip
 python -m pip install numpy scipy matplotlib plotly
 ```
 
+MGARD-X还需要Protobuf。在Anvil上构建前加载对应模块：
+
+```bash
+module load protobuf/3.11.4
+```
+
 推荐直接运行`t1_start_c_code.py`。它会依次构建并安装SPERR、MFEM和MRCZ，然后执行当前配置的实验：
 
 ```bash
@@ -100,6 +106,10 @@ cmake --install build/sperr_build
 cmake -S third_party/mfem -B build/mfem_build -DCMAKE_INSTALL_PREFIX="$PWD/install/mfem_install"
 cmake --build build/mfem_build --parallel 8
 cmake --install build/mfem_build
+
+cmake -S third_party/MGARD -B build/mgard_serial -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install/mgard_install" -DMGARD_ENABLE_SERIAL=ON -DMGARD_ENABLE_OPENMP=OFF -DMGARD_ENABLE_CUDA=OFF -DMGARD_ENABLE_HIP=OFF -DMGARD_ENABLE_SYCL=OFF -DMGARD_ENABLE_MDR=OFF -DMGARD_ENABLE_UNSTRUCTURED=OFF -DMGARD_ENABLE_BENCHMARKS=OFF -DMGARD_ENABLE_DOCS=OFF -DBUILD_TESTING=OFF
+cmake --build build/mgard_serial --parallel 8
+cmake --install build/mgard_serial
 
 cmake -S c_codes -B build -DCMAKE_INSTALL_PREFIX="$PWD/install"
 cmake --build build --parallel 8

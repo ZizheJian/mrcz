@@ -6,6 +6,7 @@
 \citation{liu2024high}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
+\citation{gong2023mgard}
 \citation{wu2025enabling,gong2024general,ren2024prediction}
 \citation{shah2026solver}
 \citation{marin2016spectral}
@@ -20,6 +21,7 @@
 \citation{liu2024high}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
+\citation{gong2023mgard}
 \citation{ren2024prediction}
 \citation{wu2025enabling}
 \citation{gong2024general}
@@ -63,11 +65,11 @@
 \newlabel{sec:FDWZ:distance-weighted}{{\mbox  {V-B}}{5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table\nobreakspace  {}I\hbox {}.\relax }}{5}\protected@file@percent }
 \newlabel{fig:cubic-interpolation}{{4}{5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-tree Huffman Encoding}{5}\protected@file@percent }
-\newlabel{sec:FDWZ:multi-tree}{{\mbox  {V-C}}{5}}
 \@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Coordinates and cubic interpolation weights for the 10-point GLL example in Figure\nobreakspace  {}4\hbox {}. Here, $d$ is the spacing between adjacent points on the uniform SZ3 grid, whereas $a$ is the reference-element length along the interpolation direction.\relax }}{5}\protected@file@percent }
 \newlabel{tab:cubic-interpolation}{{I}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Prediction-error distributions and rate--distortion impact of multi-tree Huffman encoding on the $P$ field of Dataset\nobreakspace  {}7 in Table\nobreakspace  {}IV\hbox {}. (a) Raw prediction-error densities across prediction levels. From Tree0 to Tree4, an increasing fraction of prediction errors is concentrated near zero. Tree0 uses zero as its predictor, so its prediction errors equal the corner values and span a much wider range that is not visible at this scale. (b) One tree versus five trees. Multi-tree encoding improves the compression ratio by 26.5\% on average.\relax }}{5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-tree Huffman Encoding}{5}\protected@file@percent }
+\newlabel{sec:FDWZ:multi-tree}{{\mbox  {V-C}}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Prediction-error distributions and tree-count ablation on 7P. (a) Raw prediction-error densities at $\varepsilon _{\mathrm  {rel}}=10^{-3}$. From Tree0 to Tree4, an increasing fraction of errors concentrates near zero. Tree0 uses zero as its predictor, so its errors span a much wider range that is not visible at this scale. (b) BR at the same error bound for one to five Huffman trees. Five trees improve the compression ratio over one tree by 35.1\% at this error bound and by 26.6\% on average across all five bounds.\relax }}{5}\protected@file@percent }
 \newlabel{fig:fdwz-tree-ablation}{{5}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Prediction Across Shared Element Interfaces}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:cross-interface}{{\mbox  {V-D}}{5}}
@@ -76,20 +78,20 @@
 \citation{marin2016spectral}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Cubic prediction stencils across and along a shared element interface. The blue surface denotes the shared interface. The regions above and below it belong to the two adjacent elements.\relax }}{6}\protected@file@percent }
 \newlabel{fig:cross-element}{{6}{6}}
-\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset\nobreakspace  {}7. \textbf  {Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon _{\mathrm  {rel}}=10^{-4}$. Ratio denotes the cross-interface result divided by the face-parallel result.\relax }}{6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Comparison of face-parallel and cross-interface prediction errors on internal faces of Dataset\nobreakspace  {}7. \textbf  {Face-parallel} is the method used by FDWZ. The entropy column uses $\varepsilon _{\mathrm  {rel}}=10^{-4}$.\relax }}{6}\protected@file@percent }
 \newlabel{tab:cross-interface-prediction}{{II}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-E}}Prediction Along the Element-Index Dimension}{6}\protected@file@percent }
 \newlabel{sec:FDWZ:element-index-dimension}{{\mbox  {V-E}}{6}}
 \newlabel{sec:SZ3-HOHS:element_dimension}{{\mbox  {V-E}}{6}}
-\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Comparison of element-local and element-index prediction errors for Dataset\nobreakspace  {}7. \textbf  {Element-local} is the method used by FDWZ. The entropy column uses $\varepsilon _{\mathrm  {rel}}=10^{-4}$. Ratio denotes the element-index result divided by the element-local result.\relax }}{6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Element-local and element-index prediction errors on 7P. \textbf  {Element-local} is used by FDWZ. Shuffled element-index uses a fixed random permutation within each partition. Entropy uses $\varepsilon _{\mathrm  {rel}}=10^{-4}$.\relax }}{6}\protected@file@percent }
 \newlabel{tab:element-index-prediction}{{III}{6}}
 \@writefile{toc}{\contentsline {section}{\numberline {VI}Representation-Based Compression: MRCZ}{6}\protected@file@percent }
 \newlabel{sec:mrcz}{{VI}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Overview of MRCZ}{6}\protected@file@percent }
 \newlabel{sec:mrcz:overview}{{\mbox  {VI-A}}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Overview of the MRCZ compression workflow.\relax }}{6}\protected@file@percent }
+\newlabel{fig:mrcz_diagram}{{7}{6}}
 \citation{marin2016spectral}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Overview of the MRCZ compression workflow.\relax }}{7}\protected@file@percent }
-\newlabel{fig:mrcz_diagram}{{7}{7}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}DChT for Data on GLL Nodes}{7}\protected@file@percent }
 \newlabel{sec:mrcz:transform}{{\mbox  {VI-B}}{7}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Rate--distortion performance of the transform--coordinate combinations. DChT evaluated at the GLL coordinates achieves the best overall performance, improving the compression ratio over DLT at the same coordinates by 17.5\% on average at matched PSNRs.\relax }}{7}\protected@file@percent }
@@ -104,6 +106,7 @@
 \citation{liu2024high}
 \citation{lindstrom2014fixed}
 \citation{li2023lossy}
+\citation{gong2023mgard}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Mode-Major Coefficient Reordering}{8}\protected@file@percent }
 \newlabel{sec:mrcz:transpose}{{\mbox  {VI-C}}{8}}
 \@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Ablation of mode-major coefficient reordering on the $P$ field of Dataset\nobreakspace  {}7. (a) Mode-major ordering improves the compression ratio by 31.9\% on average. (b) Compared with direct transposition, tiled transposition maintains nearly identical compression throughput and improves decompression throughput by 11.9\%.\relax }}{8}\protected@file@percent }
@@ -116,7 +119,6 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}1}Evaluation Platform}{8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}2}High-Order Element Datasets}{8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VII-A}3}Baseline Compressors}{8}\protected@file@percent }
-\citation{chard2017globus}
 \@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces High-order element datasets used for evaluating FDWZ, MRCZ, and the baseline compressors.\relax }}{9}\protected@file@percent }
 \newlabel{tab:datasets}{{IV}{9}}
 \@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Candidate layouts for the baseline compressors.\relax }}{9}\protected@file@percent }
@@ -124,19 +126,26 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}Codec Throughput}{9}\protected@file@percent }
 \newlabel{sec:parallel-throughput}{{\mbox  {VII-C}}{9}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Rate--distortion curves on Datasets\nobreakspace  {}1--6 for baseline-layout selection. Color identifies the compressor family, and line style identifies the layout. At matched PSNRs, FDWZ improves the compression ratio over the best baseline by 58.8\% on average, while MRCZ improves the compression ratio over FDWZ by 136.7\%. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, and SPERR-2D.\relax }}{10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Rate--distortion curves on Datasets\nobreakspace  {}1--6 for baseline-layout selection. Color identifies the compressor family, and line style identifies the input representation. MGARD's per-element 3D results are omitted because they reproduce the inputs exactly while producing bitstreams larger than the uncompressed inputs. At matched PSNRs, FDWZ improves the compression ratio over the best baseline by 58.8\% on average, while MRCZ improves the compression ratio over FDWZ by 136.7\%. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-1D.\relax }}{10}\protected@file@percent }
 \newlabel{fig:small-rate-distortion}{{11}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. At matched PSNRs, FDWZ improves the compression ratio over the best baseline by 80.8\% on average, while MRCZ improves the compression ratio over FDWZ by 111.4\%.\relax }}{10}\protected@file@percent }
 \newlabel{fig:large-rate-distortion}{{12}{10}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}End-to-End Workflow Evaluation}{10}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Aggregate compression and decompression throughput on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. The top row uses 8 CPU cores for Dataset\nobreakspace  {}7 and 16 for Dataset\nobreakspace  {}8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 38 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.\relax }}{11}\protected@file@percent }
+\citation{chard2017globus}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Aggregate compression and decompression throughput on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. The top row uses 8 CPU cores for Dataset\nobreakspace  {}7 and 16 for Dataset\nobreakspace  {}8. The bottom row uses 64 and 128 CPU cores, respectively. Solid curves are measurements. Brown dashed curves are ideal linear projections from MGARD's eight-thread measurements. FDWZ ranks among the two fastest methods in 38 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.\relax }}{11}\protected@file@percent }
 \newlabel{fig:throughput}{{13}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces End-to-end time at relative error bounds of $10^{-4}$ for Dataset\nobreakspace  {}7 and $10^{-6}$ for Dataset\nobreakspace  {}8, decomposed into compression, Globus transfer, and decompression time. Every evaluated compressor reduces end-to-end time relative to direct transfer, with reductions of up to 79.2\% on Dataset\nobreakspace  {}7 and 88.3\% on Dataset\nobreakspace  {}8. FDWZ matches the fastest method on Dataset\nobreakspace  {}7 and is fastest on Dataset\nobreakspace  {}8.\relax }}{11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces End-to-end time at relative error bounds of $10^{-4}$ for Dataset\nobreakspace  {}7 and $10^{-6}$ for Dataset\nobreakspace  {}8, decomposed into compression, Globus transfer, and decompression time. Hatched MGARD codec segments use ideal projections, while its transfer times are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset\nobreakspace  {}7 and 88.3\% on Dataset\nobreakspace  {}8. FDWZ matches the fastest method on Dataset\nobreakspace  {}7 and is fastest on Dataset\nobreakspace  {}8.\relax }}{11}\protected@file@percent }
 \newlabel{fig:transfer}{{14}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets\nobreakspace  {}7 and\nobreakspace  {}8, and each error bar spans the three transfer trials. Larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.\relax }}{11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets\nobreakspace  {}7 and\nobreakspace  {}8, and each error bar spans the three transfer trials. Across all 14 cases, larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.\relax }}{11}\protected@file@percent }
 \newlabel{fig:transfer-size-time}{{15}{11}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{11}\protected@file@percent }
-\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Visualization of an $x=0$ slice of 7T at matched compression ratios near 33.184. Panel (a) shows the original field and the region enlarged in panels (b)--(h), which show pointwise reconstruction errors. MRCZ and FDWZ exhibit the smallest errors.\relax }}{12}\protected@file@percent }
+\newlabel{fig:distortion}{{16}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}End-to-End Workflow Evaluation}{12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{12}\protected@file@percent }
+\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Relative error bounds and achieved compression ratios used for the visualization comparison on 7T.\relax }}{12}\protected@file@percent }
+\newlabel{tab:error-bound-visualization}{{VI}{12}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{12}\protected@file@percent }
+\newlabel{sec:conclusion}{{VIII}{12}}
 \bibstyle{IEEEtran}
 \bibdata{reference}
 \bibcite{fischer2022nekrs}{1}
@@ -147,22 +156,17 @@
 \bibcite{lindstrom2014fixed}{6}
 \bibcite{li2023lossy}{7}
 \bibcite{di2025survey}{8}
-\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Relative error bounds and achieved compression ratios used for the visualization comparison on 7T.\relax }}{12}\protected@file@percent }
-\newlabel{tab:error-bound-visualization}{{VI}{12}}
-\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{12}\protected@file@percent }
-\newlabel{sec:conclusion}{{VIII}{12}}
-\@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }
 \bibcite{tao2017significantly}{9}
-\bibcite{wu2025enabling}{10}
-\bibcite{gong2024general}{11}
-\bibcite{ren2024prediction}{12}
-\bibcite{shah2026solver}{13}
-\bibcite{marin2016spectral}{14}
-\bibcite{chard2017globus}{15}
-\bibcite{cappello2019usecases}{16}
-\bibcite{liu2023ocelot}{17}
-\bibcite{anderson2021mfem}{18}
-\bibcite{moxey2020nektar++}{19}
-\bibcite{ycollet2021zstd}{20}
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Visualization comparison on an $x=0$ slice of the 7T field at matched compression ratios near 33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The remaining panels show pointwise reconstruction errors. MRCZ and FDWZ exhibit the smallest reconstruction errors.\relax }}{13}\protected@file@percent }
-\newlabel{fig:distortion}{{16}{13}}
+\bibcite{gong2023mgard}{10}
+\bibcite{wu2025enabling}{11}
+\bibcite{gong2024general}{12}
+\bibcite{ren2024prediction}{13}
+\bibcite{shah2026solver}{14}
+\bibcite{marin2016spectral}{15}
+\@writefile{toc}{\contentsline {section}{References}{13}\protected@file@percent }
+\bibcite{chard2017globus}{16}
+\bibcite{cappello2019usecases}{17}
+\bibcite{liu2023ocelot}{18}
+\bibcite{anderson2021mfem}{19}
+\bibcite{moxey2020nektar++}{20}
+\bibcite{ycollet2021zstd}{21}

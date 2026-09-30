@@ -1,0 +1,16 @@
+[
+  {
+    "name":"jicf0_mgard_rd_128",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/viral-flamespeed/jicf0.f00000",
+    "format":"nekrs",
+    "field_list":["UX","UY","UZ","P","S00"],
+    "eb_mode":"REL",
+    "eb_list":[0.0001,0.00001,0.000001,0.0000001,0.00000001],
+    "method_list":["MGARD-1D"],
+    "max_cpus_list":[128],
+    "partition_num":128,
+    "extra_parameters":{"grid-assumption":"uniform","compute-precision":"auto","constant-compression":false},
+    "cleanup_after_each_test":true,
+    "csv_path":"results/RD/jicf0"
+  }
+]

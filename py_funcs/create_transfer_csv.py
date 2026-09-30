@@ -1,6 +1,6 @@
 import argparse,csv,os
 
-methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
+methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D"]
 
 parser=argparse.ArgumentParser()
 parser.add_argument("data_path")

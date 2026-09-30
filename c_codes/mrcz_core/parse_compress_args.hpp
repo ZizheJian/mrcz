@@ -158,6 +158,34 @@ namespace mrcz
                     throw runtime_error("缺少-max-huffman-tree参数后的布尔值");
                 params.if_max_huffman_tree=parse_bool(argv[++i],"-max-huffman-tree");
             }
+            else if (string(argv[i])=="-fdwz-huffman-tree-num")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-fdwz-huffman-tree-num参数后的tree数量");
+                params.fdwz_huffman_tree_num=parse_positive_uint32(argv[++i],"-fdwz-huffman-tree-num");
+                if(params.fdwz_huffman_tree_num>5)
+                    throw runtime_error("-fdwz-huffman-tree-num必须为1--5");
+            }
+            else if (string(argv[i])=="-fdwz-decision-huffman-tree-num")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-fdwz-decision-huffman-tree-num参数后的tree数量");
+                params.fdwz_decision_huffman_tree_num=parse_positive_uint32(argv[++i],"-fdwz-decision-huffman-tree-num");
+                if(params.fdwz_decision_huffman_tree_num>5)
+                    throw runtime_error("-fdwz-decision-huffman-tree-num必须为1--5");
+            }
+            else if (string(argv[i])=="-fdwz-gll-weights")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-fdwz-gll-weights参数后的布尔值");
+                params.fdwz_use_gll_weights=parse_bool(argv[++i],"-fdwz-gll-weights");
+            }
+            else if (string(argv[i])=="-fdwz-gll-order")
+            {
+                if (i+1>=argc)
+                    throw runtime_error("缺少-fdwz-gll-order参数后的布尔值");
+                params.fdwz_use_gll_order=parse_bool(argv[++i],"-fdwz-gll-order");
+            }
             else if (string(argv[i])=="-analyze-fdwz-prediction-locality")
             {
                 if (i+1>=argc)

@@ -6,6 +6,7 @@ from matplotlib.ticker import FixedLocator,FixedFormatter
 project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 max_tree_path=os.path.join(project_root,"results/RD/pb0_fdwz_max_tree/pb0.f00001_P.csv")
 single_tree_path=os.path.join(project_root,"results/RD/pb0_fdwz_single_tree/pb0.f00001_P.csv")
+tree_count_paths=[os.path.join(project_root,f"results/RD/pb0_fdwz_tree_count/tree{tree_num}/pb0.f00001_P.csv") for tree_num in range(1,6)]
 tree_distribution_path=os.path.join(project_root,"results/RD/pb0_fdwz_tree_qb_distribution.csv")
 prediction_error_distribution_path=os.path.join(project_root,"results/RD/pb0_fdwz_tree_prediction_error_distribution_1e-3.csv")
 canonical_output_path=os.path.join(project_root,"论文/figs/5/fdwz-tree-ablation.pdf")
@@ -23,6 +24,13 @@ def read_curve(path):
     with open(path,encoding="utf-8") as csv_file:
         rows=list(csv.DictReader(csv_file))
     return sorted((float(row["FDWZ-ablation_BR"]),float(row["FDWZ-ablation_PSNR"])) for row in rows)
+
+def read_br_at_eb(path,target_eb):
+    with open(path,encoding="utf-8") as csv_file:
+        for row in csv.DictReader(csv_file):
+            if float(row["REL EB"])==target_eb:
+                return float(row["FDWZ-ablation_BR"])
+    raise ValueError(f"{path} does not contain REL EB={target_eb}")
 
 def read_tree_distributions(path):
     distributions=defaultdict(lambda:defaultdict(int))
@@ -99,6 +107,19 @@ def draw_rate_distortion(axes):
     axes.legend(loc="lower center",bbox_to_anchor=(0.5,0.98),frameon=False,handlelength=1,handletextpad=0.25,borderaxespad=0,labelspacing=0.1)
     configure_common_axes(axes)
 
+def draw_tree_count_bars(axes):
+    tree_nums=list(range(1,6))
+    bit_rates=[read_br_at_eb(path,1e-3) for path in tree_count_paths]
+    axes.bar(tree_nums,bit_rates,width=0.68,color=["#9ecae1","#6baed6","#4292c6","#2171b5","#08519c"],edgecolor="black",linewidth=0.45)
+    axes.set_xlim(0.45,5.55)
+    axes.set_ylim(0,0.27)
+    axes.xaxis.set_major_locator(FixedLocator(tree_nums))
+    axes.yaxis.set_major_locator(FixedLocator([0,0.1,0.2]))
+    axes.yaxis.set_major_formatter(FixedFormatter(["0","0.1","0.2"]))
+    axes.set_xlabel("Number of Trees",labelpad=1)
+    axes.set_ylabel("BR",labelpad=1)
+    configure_common_axes(axes)
+
 def draw_linear_qb_frequency(axes,distributions,x_limits,x_ticks):
     for tree_id,counts in sorted(distributions.items()):
         total=sum(counts.values())
@@ -157,12 +178,12 @@ def make_ablation_figure(output_path):
     left_axes.xaxis.set_major_formatter(FixedFormatter(["-0.15","0","0.15"]))
     left_axes.get_xticklabels()[0].set_horizontalalignment("left")
     left_axes.get_xticklabels()[-1].set_horizontalalignment("right")
-    draw_rate_distortion(right_axes)
+    draw_tree_count_bars(right_axes)
     for axes in (left_axes,right_axes):
         axes.set_axisbelow(True)
         axes.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
     figure.text(0.3575,0.015,"(a) Prediction-Error Density",ha="center",va="bottom")
-    figure.text(0.86,0.015,"(b) Rate-Distortion",ha="center",va="bottom")
+    figure.text(0.86,0.015,"(b) Tree Count",ha="center",va="bottom")
     figure.savefig(output_path,format="pdf",dpi=300)
     plt.close(figure)
 

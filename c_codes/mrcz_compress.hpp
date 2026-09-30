@@ -16,7 +16,9 @@ namespace mrcz
             method=="SZ3-1D" or method=="SZ3-2D" or method=="SZ3-3D-fused" or method=="SZ3-3D-per-element" or method=="SZ3-4D" or
             method=="QoZ-1D" or method=="QoZ-2D" or method=="QoZ-3D-fused" or method=="QoZ-3D-per-element" or method=="QoZ-4D" or
             method=="ZFP-1D" or method=="ZFP-2D" or method=="ZFP-3D-fused" or method=="ZFP-3D-per-element" or method=="ZFP-4D" or
-            method=="SPERR-2D" or method=="SPERR-3D-fused" or method=="SPERR-3D-per-element";
+            method=="SPERR-2D" or method=="SPERR-3D-fused" or method=="SPERR-3D-per-element" or
+            method=="MGARD-1D" or method=="MGARD-2D" or method=="MGARD-3D-fused" or method=="MGARD-3D-per-element" or method=="MGARD-3D-per-element-GLL" or method=="MGARD-4D" or
+            method=="MGARD-4D-GLL";
     }
 
     template<typename T>

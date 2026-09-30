@@ -5,6 +5,7 @@ find_package(OpenMP REQUIRED COMPONENTS CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -23,11 +24,13 @@ set(BUILD_OPENMP OFF CACHE BOOL "Build SZ2 internal OpenMP" FORCE)
 
 set(SPERR_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../install/sperr_install")
 set(MFEM_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../install/mfem_install")
+set(MGARD_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../install/mgard_install")
 find_package(MFEM CONFIG REQUIRED PATHS "${MFEM_INSTALL_PATH}/lib/cmake/mfem" NO_DEFAULT_PATH)
 
 add_subdirectory(../third_party/parsers/c_codes ${CMAKE_BINARY_DIR}/parsers_build)
 add_subdirectory(../third_party/zstd ${CMAKE_BINARY_DIR}/zstd_build)
 add_library(PkgConfig::ZSTD ALIAS libzstd_static)
+find_package(mgard CONFIG REQUIRED PATHS "${MGARD_INSTALL_PATH}/lib64/cmake/mgard" NO_DEFAULT_PATH)
 add_subdirectory(../third_party/tinyxml2 ${CMAKE_BINARY_DIR}/tinyxml2_build)
 add_subdirectory(mrcz_core)
 add_subdirectory(../third_party/zfp ${CMAKE_BINARY_DIR}/zfp_build)
@@ -48,7 +51,7 @@ function(add_mrcz_executable target source)
         ${CMAKE_BINARY_DIR}/sz3_build/include
         ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/SZ2/sz/include)
     target_compile_options(${target} PRIVATE -Wall -Ofast -march=native -Wno-dangling-else)
-    target_link_libraries(${target} PRIVATE mrcz::mrcz parsers::parsers zfp SZ3 SZ mrcz_qoz_bridge ${SPERR_INSTALL_PATH}/lib64/libSPERR.a)
+    target_link_libraries(${target} PRIVATE mrcz::mrcz parsers::parsers zfp SZ3 SZ mrcz_qoz_bridge mgard::mgard ${SPERR_INSTALL_PATH}/lib64/libSPERR.a)
 endfunction()
 
 add_mrcz_executable(mrcz_compress compress.cpp)
