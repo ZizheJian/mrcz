@@ -28,11 +28,11 @@ For each evaluated combination, we vary the internal coefficient error bound int
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/raster300/transform-comparison-stacked.png}
-    \caption{Rate--distortion performance of the transform--coordinate combinations. DChT evaluated at the GLL coordinates achieves the best overall performance, improving the compression ratio over DLT at the same coordinates by 17.5\% on average at matched PSNRs.}
+    \caption{Rate--distortion performance of the transform--coordinate combinations on 7P. DChT evaluated at the GLL coordinates achieves the best performance on this representative field, improving the compression ratio over DLT at the same coordinates by 17.5\% on average at matched PSNRs.}
     \label{fig:transform}
 \end{figure}
 
-Figure~\ref{fig:transform} compares the rate--distortion behavior of the evaluated transform--coordinate combinations. For each combination, it overlays the fixed-bound $\alpha$-sweep with the conventional rate--distortion curve obtained using the selected $\alpha$. The DST (GLL) combination is not shown because its transform matrix is singular. DChT evaluated at the GLL coordinates generally achieves the best rate--distortion performance. At matched PSNRs, it improves the compression ratio by 17.5\% on average over DLT evaluated at the same coordinates. We therefore adopt this configuration with $\alpha=0.05$ in MRCZ.
+Figure~\ref{fig:transform} presents a sensitivity study on 7P. For each transform--coordinate combination, it overlays the fixed-bound $\alpha$-sweep with the conventional rate--distortion curve obtained using the selected $\alpha$. The DST (GLL) combination is not shown because its transform matrix is singular. Among the evaluated configurations, DChT at the GLL coordinates provides the best rate--distortion performance on this representative field. At matched PSNRs, it improves the compression ratio by 17.5\% on average over DLT evaluated at the same coordinates. Based on this sweep, we empirically set $\alpha=0.05$ and use it unchanged for every field and dataset.
 
 \begin{figure}[htb]
     \centering

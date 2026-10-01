@@ -18,7 +18,7 @@ output_dir="results/visualization/cr33_slices"
 raw_dir="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/mrcz-visualization/cr33"
 mkdir -p "${output_dir}"
 module load paraview/5.10.1
-export PYTHONPATH="${SLURM_SUBMIT_DIR}/.python36${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH="${SLURM_SUBMIT_DIR}/paraview_env${PYTHONPATH:+:${PYTHONPATH}}"
 export PB0_FIELD=T
 unset PB0_FIELD_VALUES_FILE
 export PB0_SELECTED_ELEMENTS_OUTPUT="${output_dir}/pb0_T_x0_selected.npy"

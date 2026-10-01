@@ -1,5 +1,5 @@
 mrcz_env/
-.python36/
+paraview_env/
 build/
 install/
 *.fdb_latexmk

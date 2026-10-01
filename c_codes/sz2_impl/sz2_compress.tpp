@@ -52,7 +52,7 @@ void sz2_compress(mrcz::param_class<T> &params,string field)
     if (SZ_Init(nullptr)!=SZ_SCES)
         throw runtime_error("SZ2初始化失败");
     double start_time=omp_get_wtime();
-    // XXX SZ2官方API在一次进程内共享全局状态，并发压缩多个partition会产生损坏的bitstream
+    // SZ2官方API在一次进程内共享全局状态，并发压缩多个partition会产生损坏的bitstream
     for (uint64_t partition_id=0;partition_id<partitions.size();partition_id++)
     {
         auto &partition=partitions[partition_id];

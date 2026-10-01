@@ -7,8 +7,23 @@ small_fields=[
 large_fields=[
     ("pb0/UX","pb0/pb0.f00001_UX.csv"),("pb0/UY","pb0/pb0.f00001_UY.csv"),("pb0/UZ","pb0/pb0.f00001_UZ.csv"),("pb0/P","pb0/pb0.f00001_P.csv"),("pb0/T","pb0/pb0.f00001_T.csv"),
     ("jicf0/UX","jicf0/jicf0.f00000_UX.csv"),("jicf0/UY","jicf0/jicf0.f00000_UY.csv"),("jicf0/UZ","jicf0/jicf0.f00000_UZ.csv"),("jicf0/P","jicf0/jicf0.f00000_P.csv"),("jicf0/S00","jicf0/jicf0.f00000_S00.csv")]
-baselines=["SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
+required_baselines=["SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
+optional_baselines=["MGARD-1D"]
+baselines=required_baselines+optional_baselines
 methods=["MRCZ","FDWZ"]+baselines
+
+def read_rows(path):
+    with open(path,newline="") as f:
+        return list(csv.DictReader(f))
+
+def method_rows(result_dir,scope,relative_path,method,default_rows):
+    if method!="MGARD-1D":return default_rows
+    if scope=="large":
+        dataset=relative_path.split(os.sep,1)[0]
+        path=os.path.join(os.path.dirname(result_dir),"small_core_throughput",dataset,os.path.basename(relative_path))
+    else:
+        path=os.path.join(result_dir,"mgard_layout_selection",os.path.dirname(relative_path),"uniform",os.path.basename(relative_path))
+    return read_rows(path)
 
 def prepare_curve(rows,method):
     by_psnr={}
@@ -34,35 +49,37 @@ def interpolate(curve,target):
     return curve[-1][1]
 
 def select_target(psnr_low,psnr_high):
-    target=float(math.floor((psnr_low+psnr_high)/2+0.5))
-    return min(max(target,psnr_low),psnr_high)
+    return (psnr_low+psnr_high)/2
 
 def summarize_field(result_dir,scope,title,relative_path):
-    with open(os.path.join(result_dir,relative_path),newline="") as f:
-        rows=list(csv.DictReader(f))
-    curves={method:prepare_curve(rows,method) for method in methods}
-    if any(len(curve)<2 for curve in curves.values()):
+    rows=read_rows(os.path.join(result_dir,relative_path))
+    curves={method:prepare_curve(method_rows(result_dir,scope,relative_path,method,rows),method) for method in methods}
+    required_methods=["MRCZ","FDWZ"]+required_baselines
+    if any(len(curves[method])<2 for method in required_methods):
         raise RuntimeError(f"{title}缺少可插值的正式方法曲线")
-    psnr_low=max(curve[0][0] for curve in curves.values())
-    psnr_high=min(curve[-1][0] for curve in curves.values())
+    common_methods=required_methods+[method for method in optional_baselines if len(curves[method])>=2]
+    psnr_low=max(curves[method][0][0] for method in common_methods)
+    psnr_high=min(curves[method][-1][0] for method in common_methods)
     if psnr_high<=psnr_low:
         raise RuntimeError(f"{title}没有共同PSNR范围")
     target=select_target(psnr_low,psnr_high)
-    brs={method:interpolate(curve,target) for method,curve in curves.items()}
-    best_baseline=min(baselines,key=lambda method:brs[method])
+    comparable_methods=[method for method,curve in curves.items() if len(curve)>=2 and curve[0][0]<=target<=curve[-1][0]]
+    brs={method:interpolate(curves[method],target) for method in comparable_methods}
+    comparable_baselines=[method for method in baselines if method in brs]
+    best_baseline=min(comparable_baselines,key=lambda method:brs[method])
     return {
         "Data":scope,"Field":title,"Common PSNR Min":psnr_low,"Common PSNR Max":psnr_high,"Target PSNR":target,
         "MRCZ vs FDWZ CR Growth":brs["FDWZ"]/brs["MRCZ"]-1,"FDWZ vs Best Official CR Growth":brs[best_baseline]/brs["FDWZ"]-1,"Best Official Baseline":best_baseline}
 
 def summarize_scope(rows,scope):
-    selected=[row for row in rows if row["Data"]==scope]
+    selected=rows if scope=="all" else [row for row in rows if row["Data"]==scope]
     mrcz_values=[row["MRCZ vs FDWZ CR Growth"] for row in selected]
     fdwz_values=[row["FDWZ vs Best Official CR Growth"] for row in selected]
     mrcz_max=max(selected,key=lambda row:row["MRCZ vs FDWZ CR Growth"])
     fdwz_max=max(selected,key=lambda row:row["FDWZ vs Best Official CR Growth"])
     return {
-        "field_num":len(selected),"mrcz_mean":statistics.mean(mrcz_values),"mrcz_max":mrcz_max["MRCZ vs FDWZ CR Growth"],"mrcz_max_field":mrcz_max["Field"],
-        "fdwz_mean":statistics.mean(fdwz_values),"fdwz_max":fdwz_max["FDWZ vs Best Official CR Growth"],"fdwz_max_field":fdwz_max["Field"]}
+        "field_num":len(selected),"mrcz_mean":statistics.geometric_mean(1+value for value in mrcz_values)-1,"mrcz_max":mrcz_max["MRCZ vs FDWZ CR Growth"],"mrcz_max_field":mrcz_max["Field"],
+        "fdwz_mean":statistics.geometric_mean(1+value for value in fdwz_values)-1,"fdwz_max":fdwz_max["FDWZ vs Best Official CR Growth"],"fdwz_max_field":fdwz_max["Field"]}
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -78,11 +95,11 @@ def main():
         writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator="\n")
         writer.writeheader()
         writer.writerows({name:f"{value:.10g}" if isinstance(value,float) else value for name,value in row.items()} for row in rows)
-    for scope in ["large","small"]:
+    for scope in ["large","small","all"]:
         summary=summarize_scope(rows,scope)
         print(f"{scope}: {summary['field_num']} fields")
-        print(f"  MRCZ relative to FDWZ CR growth: mean={summary['mrcz_mean']*100:.2f}%, max={summary['mrcz_max']*100:.2f}% ({summary['mrcz_max_field']})")
-        print(f"  FDWZ relative to best official CR growth: mean={summary['fdwz_mean']*100:.2f}%, max={summary['fdwz_max']*100:.2f}% ({summary['fdwz_max_field']})")
+        print(f"  MRCZ relative to FDWZ CR growth: geometric mean={summary['mrcz_mean']*100:.2f}%, max={summary['mrcz_max']*100:.2f}% ({summary['mrcz_max_field']})")
+        print(f"  FDWZ relative to best official CR growth: geometric mean={summary['fdwz_mean']*100:.2f}%, max={summary['fdwz_max']*100:.2f}% ({summary['fdwz_max_field']})")
     print(output_path)
 
 if __name__=="__main__":

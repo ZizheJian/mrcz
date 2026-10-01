@@ -170,7 +170,7 @@ namespace mrcz::detail
         return zstd_bs_len;
     }
 
-    // 压缩一个partition；QB固定为int32，plan字节的bit 7标记32位QB，INT32_MIN直接标记unpredictable原值。
+    // 压缩一个partition；QB固定为int32，INT32_MIN直接标记unpredictable原值。
     template<bool measure_phase_time,bool check_residual_qb_range,bool analyze_tree_distributions,typename T>
     void fdwz_compress_block(mrcz::param_class<T> &params,uint64_t block_id,uint32_t n012,uint32_t corner_num,uint32_t residual_num,vector<uint32_t> &corner_positions,
         vector<fdwz_prediction_stencil<T>> &prediction_stencils,vector<uint32_t> &residual_group_offsets,array<uint32_t,5> &tree_value_num,uint32_t huffman_tree_num,T abs_eb,T inv_2_eb,
@@ -270,7 +270,7 @@ namespace mrcz::detail
         uint64_t huffman_bs_capacity=n012*element_num*sizeof(int64_t)+unpredictable.size()*sizeof(T)+4096*huffman_tree_num+1;
         auto huffman_bs_buffer=make_unique_for_overwrite<unsigned char[]>(huffman_bs_capacity);
         unsigned char *huffman_bs_begin=huffman_bs_buffer.get(),*huffman_bs=huffman_bs_begin;
-        *huffman_bs++=selected_plan_id|0x80;
+        *huffman_bs++=selected_plan_id;
         if constexpr(measure_phase_time)
             phase_start_time=omp_get_wtime();
         for(uint32_t tree_id=0;tree_id<huffman_tree_num;tree_id++)

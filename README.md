@@ -506,22 +506,22 @@ MRCZ是一种面向高阶有限元/谱元数据的model-representation-based com
 
 # 5. Rate-distortion结果
 
-以下CR增长均由RD曲线在相同PSNR下插值得到，不比较相同REL EB的点。对每个field先求MRCZ、FDWZ和五个正式官方baseline共同覆盖的PSNR区间，再选择最接近区间中点的整数PSNR；不同field使用各自的目标PSNR。
+以下CR增长均由RD曲线在相同PSNR下插值得到，不比较相同REL EB的点。对每个field先求至少含两个有限RD点的方法共同覆盖的PSNR区间，再使用区间中点作为目标PSNR；不同field使用各自的目标PSNR。
 
-五个baseline为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused和SPERR-2D；每个field在目标PSNR处取其中最低BR。大数据汇总10个field；小数据不计入RD曲线接近PSNR轴的test0/UZ，汇总其余17个field。各field等权，逐field共同区间、目标PSNR和最优baseline保存在`results/RD/midpoint_cr_summary.csv`，统计可由`python3 py_funcs/summarize_rd.py`复现。
+六个baseline为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused、SPERR-2D和MGARD-1D；每个field在目标PSNR处取能够覆盖该PSNR的baseline中的最低BR。大数据汇总10个field；小数据不计入多个压缩器产生非单调RD曲线的test0/UZ，汇总其余17个field。各field等权，汇总值是逐field CR比值的几何平均。逐field共同区间、目标PSNR和最优baseline保存在`results/RD/midpoint_cr_summary.csv`，统计可由`python3 py_funcs/summarize_rd.py`复现。
 
 <table class="fixed-layout-table" width="100%">
   <colgroup><col width="18%"><col width="34%"><col width="14%"><col width="14%"><col width="20%"></colgroup>
-  <thead><tr><th width="18%">数据</th><th width="34%">比较</th><th width="14%">CR平均增长</th><th width="14%">CR最大增长</th><th width="20%">最大值对应field</th></tr></thead>
+  <thead><tr><th width="18%">数据</th><th width="34%">比较</th><th width="14%">CR几何平均增长</th><th width="14%">CR最大增长</th><th width="20%">最大值对应field</th></tr></thead>
   <tbody>
-    <tr><td>pb0</td><td>MRCZ相对FDWZ</td><td>125.30%</td><td>130.00%</td><td>P</td></tr>
-    <tr><td>pb0</td><td>FDWZ相对最优官方baseline</td><td>37.84%</td><td>49.05%</td><td>UX</td></tr>
-    <tr><td>jicf0</td><td>MRCZ相对FDWZ</td><td>97.49%</td><td>131.83%</td><td>P</td></tr>
-    <tr><td>jicf0</td><td>FDWZ相对最优官方baseline</td><td>123.72%</td><td>205.87%</td><td>P</td></tr>
-    <tr><td>大数据</td><td>MRCZ相对FDWZ</td><td>111.39%</td><td>131.83%</td><td>jicf0/P</td></tr>
-    <tr><td>大数据</td><td>FDWZ相对最优官方baseline</td><td>80.78%</td><td>205.87%</td><td>jicf0/P</td></tr>
-    <tr><td>小数据</td><td>MRCZ相对FDWZ</td><td>136.66%</td><td>669.47%</td><td>tc_channel0/UY</td></tr>
-    <tr><td>小数据</td><td>FDWZ相对最优官方baseline</td><td>58.83%</td><td>359.95%</td><td>MFEM ex0/no_name_field</td></tr>
+    <tr><td>pb0</td><td>MRCZ相对FDWZ</td><td>130.41%</td><td>135.71%</td><td>UX</td></tr>
+    <tr><td>pb0</td><td>FDWZ相对最优官方baseline</td><td>39.07%</td><td>52.63%</td><td>UX</td></tr>
+    <tr><td>jicf0</td><td>MRCZ相对FDWZ</td><td>88.60%</td><td>129.07%</td><td>P</td></tr>
+    <tr><td>jicf0</td><td>FDWZ相对最优官方baseline</td><td>115.34%</td><td>205.02%</td><td>P</td></tr>
+    <tr><td>大数据</td><td>MRCZ相对FDWZ</td><td>108.46%</td><td>135.71%</td><td>pb0/UX</td></tr>
+    <tr><td>大数据</td><td>FDWZ相对最优官方baseline</td><td>73.05%</td><td>205.02%</td><td>jicf0/P</td></tr>
+    <tr><td>小数据</td><td>MRCZ相对FDWZ</td><td>90.63%</td><td>621.80%</td><td>tc_channel0/UY</td></tr>
+    <tr><td>小数据</td><td>FDWZ相对最优官方baseline</td><td>49.41%</td><td>357.73%</td><td>MFEM ex0/no_name_field</td></tr>
   </tbody>
 </table>
 
@@ -716,62 +716,6 @@ jicf0结果如下：
 
 pb0上FDWZ为11.967秒，仅比ZFP的11.773秒慢0.194秒（1.6%），且两者由三次传输得到的时间范围重叠，因此应表述为基本持平。jicf0上FDWZ为20.603秒，比ZFP的25.502秒减少4.899秒（19.2%），其三次范围也完全分离。FDWZ文件分别只有ZFP的24.0%和11.2%，固定任务启动开销在pb0上掩盖了大部分文件大小收益，而jicf0的数据规模足以让该收益转化为明确的端到端优势。MRCZ在两个数据集上都产生最小文件、CR分别为32.51和82.88，但当前计算成本仍超过节省的传输时间。
 
-为核验固定REL EB口径，又对pb0约100 dB的ZFP重建进行了五个field全量误差统计，共4,984,714,240个值。没有误差达到`0.5*ABS_EB`，最大值也只有`0.2196*ABS_EB`；99%的误差不超过`0.0700*ABS_EB`。这说明该case中ZFP整体显著低于名义误差上限，而不是仅有少量点触及上限，因此相同REL EB与相同PSNR回答的是不同问题。逐field结果保存在`results/error_distribution/zfp_pb0_100db_summary.csv`。
+为核验固定REL EB口径，又对pb0约100 dB的ZFP重建进行了五个field全量误差统计，共4,984,714,240个值。没有误差达到`0.5*ABS_EB`，最大值也只有`0.2196*ABS_EB`；99%的误差不超过`0.0700*ABS_EB`。这说明该case中ZFP整体显著低于名义误差上限，而不是仅有少量点触及上限，因此相同REL EB与相同PSNR回答的是不同问题。
 
 原始三次传输记录、正式汇总及复现说明保存在`results/end_to_end/`。固定PSNR的旧压缩文件已经原地归档，未用于本节结果。
-
-# 10. 当前状态
-
-- 后续可选scaling实验暂缓：若继续，应优先补齐pb0同节点1、2、4和64 CPU strong scaling，再决定是否为jicf0做同口径补测；现有正式结果保持冻结。
-- 后续同BR可视化暂缓：在各方法共同覆盖的代表性BR处生成原场、重建场和绝对误差图，所有方法共享色标与空间切片，避免用不同PSNR或自动色标造成视觉偏差。
-
-# 11. 投稿前主线
-
-[ ] 1. 冻结实验版本与结果。
-       提交当前正式代码、实验脚本和结果说明；记录生成正式CSV所用的commit、Slurm job、
-       编译器、CPU、partition数量和计时口径。CSV继续保存在对应数据旁边。
-
-[ ] 2. 生成论文用rate-distortion汇总。
-       从pb0和jicf0各field CSV生成BR--PSNR图，并按第5章的逐field共同区间近中点口径
-       汇总MRCZ、FDWZ和五个官方baseline的BR、CR、最大误差与异常点。旧稿中的数字不得直接复用。
-
-[ ] 3. （暂缓）补充并整理速度与扩展性结果。
-       绘制single-core throughput、fixed-quality strong/weak scaling、speedup和parallel
-       efficiency；明确64--128 CPU后的内存带宽与NUMA瓶颈，不声称近线性扩展。
-       所有正式性能实验全局统一使用物理核与OpenMP线程绑定：Slurm申请
-       `--hint=nomultithread`，`srun`使用`--cpu-bind=cores`，并设置
-       `OMP_DYNAMIC=false`、`OMP_PLACES=cores`和`OMP_PROC_BIND=spread`；记录这些设置，
-       禁止混用未绑定线程的旧throughput或scaling结果。
-       Strong scaling的所有CPU点必须固定element范围、error bound和partition网格，在同一
-       Slurm allocation中运行，并核验申请的CPU数与程序实际使用的CPU数一致。
-
-[x] 4. 完成新版端到端实测。
-       pb0和jicf0分别使用RD扫描中间的REL EB `1e-4`和`1e-6`，七种方法均将五个field
-       作为一个Globus任务独立传输三次；总时间由正式backend内部计时和传输中位数组合，
-       旧稿固定PSNR结果只作历史参考。若论文需要，可继续用
-       T_total=T_compress+compressed_size/bandwidth+T_decompress扫描假设网络带宽和任务启动开销。
-
-[ ] 5. 决定投稿方向。
-       若MRCZ与FDWZ在rate--throughput--end-to-end空间形成稳定互补Pareto点，按IPDPS
-       Algorithms组织；否则按DCC组织，只把MRCZ作为主要算法。
-
-[ ] 6. 重写论文。
-       使用high-order finite/spectral-element field data描述研究对象；替换旧baseline、
-       实验数字、方法名称和贡献列表。准备数据布局与流程图、BR--PSNR图、scaling图、
-       消融或bitstream组成图，以及数据集汇总表。
-
-# 12. 投稿后或artifact阶段
-
-[ ] 7. 审计并版本化bitstream metadata，增加未知版本、截断文件、错误method和错误数据类型测试。消融配置不写入metadata，由用户保证编解码参数一致。
-
-[ ] 8. 让t1在超过error bound、重建数量错误或编解码失败时自动返回非零状态，并处理低于机器精度的EB。
-
-[ ] 9. 清理正式路由中剩余的实验方法和历史注释。
-
-[ ] 10. 为未显式指定`partition_num`时定义与`max_cpus`无关的默认规则，并在jicf0上验证固定partition时不同线程数产生相同bitstream、BR、PSNR和最大误差。
-
-# 13. 不进入当前论文
-
-- 坐标X/Y/Z专用有损压缩及几何/拓扑安全定义。
-- NekRS尾metadata的语义解析；当前继续作为opaque blob无损保存。
-- coefficient delta、更多SZ3预测方案、跨element AVX2和GPU实现。

@@ -202,17 +202,11 @@ namespace mrcz::detail
             const unsigned char *huffman_bs=huffman_bs_vec.data();
             if (huffman_bs_len<1)
                 throw runtime_error("FDWZ采样配置的bitstream过短");
-            unsigned char plan_metadata=*huffman_bs++;
-            bool use_int32_qb=(plan_metadata&0x80)!=0;
-            // bit 6是旧格式的has_unpredictable标志；新格式不再写入，解压时忽略它以保持兼容。
-            uint32_t selected_plan_id=plan_metadata&0x3f;
+            uint32_t selected_plan_id=*huffman_bs++;
             if(selected_plan_id<6 or selected_plan_id>=6+cubic_plans.size())
                 throw runtime_error("FDWZ采样配置metadata无效");
             auto &prediction_stencils=cubic_plans[selected_plan_id-6].stencils;
-            if(use_int32_qb)
-                fdwz_decompress_block<measure_phase_time,T,int32_t>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,residual_group_ids,residual_group_local_ids,huffman_tree_num,abs_eb,huffman_bs,huffman_bs_vec.data()+huffman_bs_len,huffman_time,prediction_reconstruction_time);
-            else
-                fdwz_decompress_block<measure_phase_time,T,int64_t>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,residual_group_ids,residual_group_local_ids,huffman_tree_num,abs_eb,huffman_bs,huffman_bs_vec.data()+huffman_bs_len,huffman_time,prediction_reconstruction_time);
+            fdwz_decompress_block<measure_phase_time,T,int32_t>(params,block_id,n012,corner_num,residual_num,corner_positions,prediction_stencils,residual_group_offsets,residual_group_ids,residual_group_local_ids,huffman_tree_num,abs_eb,huffman_bs,huffman_bs_vec.data()+huffman_bs_len,huffman_time,prediction_reconstruction_time);
         }
         double end_time=omp_get_wtime();
         if constexpr(measure_phase_time)

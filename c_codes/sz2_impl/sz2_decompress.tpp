@@ -25,7 +25,7 @@ void sz2_decompress(mrcz::param_class<T> &params,string field)
     if (SZ_Init(nullptr)!=SZ_SCES)
         throw runtime_error("SZ2初始化失败");
     double start_time=omp_get_wtime();
-    // XXX SZ2官方threadsafe解压入口仍直接调用共享全局状态的普通API，因此必须串行处理partition
+    // SZ2官方threadsafe解压入口仍直接调用共享全局状态的普通API，因此必须串行处理partition
     for (uint64_t partition_id=0;partition_id<partitions.size();partition_id++)
     {
         auto &partition=partitions[partition_id];
