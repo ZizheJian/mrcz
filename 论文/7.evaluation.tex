@@ -64,12 +64,12 @@ We exclude SZ2 from the multicore timing evaluations because its official API mo
 
 \subsection{Storage Reduction Evaluation}
 
-We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a lower BR indicates better storage reduction, while at a fixed BR, a higher PSNR indicates better reconstruction quality. For each field, we interpolate BR at the midpoint of the PSNR range common to curves with at least two finite points. We compare FDWZ with the lowest-BR baseline spanning this midpoint and geometrically average the per-field CR ratios. The evaluation proceeds in two stages. First, we evaluate every supported baseline layout on Datasets~1--6 and compare BR over the common PSNR range of the resulting curves. For each baseline, we select the layout that generally yields the lowest BR at matched PSNRs across these datasets. We fix this layout and evaluate all compressors on the two large-scale datasets, Datasets~7 and~8.
+We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a lower BR indicates better storage reduction, while at a fixed BR, a higher PSNR indicates better reconstruction quality. For each field, we linearly interpolate $\log(\mathrm{BR})$ at the midpoint of the PSNR range common to curves with at least two finite points. We compare FDWZ with the lowest-BR baseline spanning this midpoint and geometrically average the per-field CR ratios. The evaluation proceeds in two stages. First, we evaluate every supported baseline layout on Datasets~1--6 and compare BR over the common PSNR range of the resulting curves. For each baseline, we select the layout that generally yields the lowest BR at matched PSNRs across these datasets. We fix this layout and evaluate all compressors on the two large-scale datasets, Datasets~7 and~8.
 
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figs/raster300/small-rd.png}
-    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Color identifies the compressor family, and line style identifies the input representation. MGARD's per-element 3D results are omitted because they reproduce the inputs exactly while producing bitstreams larger than the uncompressed inputs. Across fields, the geometric-mean CR improvements are 49.4\% for FDWZ over the best baseline and 90.6\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-1D.}
+    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Color identifies the compressor family, and line style identifies the input representation. MGARD's per-element 3D results are omitted because they reproduce the inputs exactly while producing bitstreams larger than the uncompressed inputs. Across fields, the geometric-mean CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-1D.}
     \label{fig:small-rate-distortion}
 \end{figure*}
 
@@ -80,7 +80,7 @@ The selected configurations span 1D, 2D, fused 3D, and 4D layouts, showing that 
 \begin{figure*}[t]
     \centering
     \includegraphics[width=0.8333\textwidth]{figs/raster300/large-rd.png}
-    \caption{Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets~7 and~8. Across fields, the geometric-mean CR improvements are 73.1\% for FDWZ over the best baseline and 108.5\% for MRCZ over FDWZ.}
+    \caption{Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets~7 and~8. Across fields, the geometric-mean CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ.}
     \label{fig:large-rate-distortion}
 \end{figure*}
 
@@ -112,7 +112,7 @@ The selected configurations span 1D, 2D, fused 3D, and 4D layouts, showing that 
     \label{fig:distortion}
 \end{figure*}
 
-Figure~\ref{fig:large-rate-distortion} presents the resulting rate--distortion curves for the ten fields of Datasets~7 and~8, including MGARD with its selected 1D layout. MGARD is included whenever its curve spans the target PSNR but is not the best baseline for any field. Combining results from all datasets, the geometric-mean CR improvements are 57.8\% for FDWZ over the best baseline and 97.1\% for MRCZ over FDWZ.
+Figure~\ref{fig:large-rate-distortion} presents the resulting rate--distortion curves for the ten fields of Datasets~7 and~8, including MGARD with its selected 1D layout. Although its curve spans the target PSNR, MGARD is not the best baseline for any field. Combining results from all datasets, the geometric-mean CR improvements are 60.8\% for FDWZ over the best baseline and 93.3\% for MRCZ over FDWZ.
 
 These gains are consistent with the design analyses in Sections~\ref{sec:SZ3-HOHS} and~\ref{sec:mrcz}. FDWZ's GLL-aware interpolation reduces prediction error, and its multi-tree Huffman encoding exploits the distinct quantization-symbol distributions across prediction levels. MRCZ's DChT representation produces smaller high-order coefficients, while mode-major ordering groups coefficients with similar statistics for more effective lossless coding.
 
@@ -128,11 +128,11 @@ Across all 40 cases shown in Figure~\ref{fig:throughput}, FDWZ ranks among the t
 
 Having evaluated storage reduction and codec performance, we next examine how these properties translate into end-to-end cross-facility data-movement time. We transfer data from ACCESS Anvil to the Argonne LCRC Improv DTN using Globus~\cite{chard2017globus}, with relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8.
 
-Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end time as the sum of compression, Globus transfer, and decompression time. We repeat each transfer three times and report the median end-to-end time. For MGARD, the transfer time is measured, while the codec times use the ideal projections from its eight-thread measurements described in Section~\ref{sec:parallel-throughput}.
+Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end time as the sum of compression, Globus transfer, and decompression time. We repeat each transfer three times and report the median total. For MGARD, the transfer component is measured, while the codec components use the ideal projections from its eight-thread measurements described in Section~\ref{sec:parallel-throughput}.
 
-Figure~\ref{fig:transfer} shows that all evaluated compressors except MGARD on Dataset~7 reduce end-to-end time relative to direct transfer. MGARD increases the Dataset~7 payload by 8.9\%, and its projected codec time raises the total above direct transfer. The fastest methods reduce end-to-end time by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. ZFP and FDWZ perform nearly identically on Dataset~7, while FDWZ is 19.2\% faster than ZFP on Dataset~8. MRCZ produces the smallest compressed payloads, while its end-to-end time is at most 1.91$\times$ the minimum on each dataset.
+Figure~\ref{fig:transfer} shows that all evaluated compressors except MGARD on Dataset~7 reduce end-to-end time relative to direct transfer. MGARD increases the payload there by 8.9\%, and its projected codec time raises the total above direct transfer. The fastest methods reduce end-to-end time by 79.2\% and 88.3\% on Datasets~7 and~8, respectively. ZFP and FDWZ perform nearly identically on the former, whereas FDWZ is 19.2\% faster than ZFP on the latter. MRCZ produces the smallest compressed payloads, while its end-to-end time is at most 1.91$\times$ the minimum on each dataset.
 
-The Globus transfer times of the compressed workflows in Figure~\ref{fig:transfer} do not scale proportionally with compressed payload size. To characterize this discrepancy, Figure~\ref{fig:transfer-size-time} plots effective transfer throughput against payload size. Including MGARD's substantially larger payloads, the monotonic association remains strong across the 14 compressed workflows (Spearman's $\rho=0.996$). This size dependence partially offsets the cost of moving more data, narrowing the transfer-time advantage of stronger compression and making the evaluation conservative for FDWZ. Even so, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
+Because the Globus transfer times in Figure~\ref{fig:transfer} do not scale proportionally with compressed payload size, Figure~\ref{fig:transfer-size-time} plots effective transfer throughput against payload size. The monotonic association remains strong across the 14 compressed workflows even with MGARD's substantially larger payloads (Spearman's $\rho=0.996$). This size dependence partially offsets the cost of moving more data, narrowing the transfer-time advantage of stronger compression and making the evaluation conservative for FDWZ. Even so, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
 
 \subsection{Visualization}\label{sec:performance evaluation:visualization}
 

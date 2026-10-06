@@ -6,7 +6,6 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --hint=nomultithread
-#SBATCH --mem=1800M
 #SBATCH --time=00:20:00
 #SBATCH --output=results/weak_scaling/slurm-%x-%j.out
 #SBATCH --error=results/weak_scaling/slurm-%x-%j.err

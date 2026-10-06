@@ -1,13 +1,14 @@
 import csv,math,os
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import LogLocator,MaxNLocator
+from plot_style import METHOD_COLORS,apply_paper_style,style_plot_axis
 
-plt.rcParams["svg.hashsalt"]="mrcz-small-rd"
+apply_paper_style("mrcz-small-rd")
 
 array_layouts=["1D","2D","3D-fused","3D-per-element","4D"]
 layouts=array_layouts+["4D+GLL"]
 methods=["MRCZ","FDWZ"]+[f"{compressor}-{layout}" for compressor in ["SZ3","SZ2","QoZ","ZFP"] for layout in array_layouts]+[f"MGARD-{layout}" for layout in layouts]+["SPERR-2D","SPERR-3D-fused","SPERR-3D-per-element"]
-family_colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3":"#4e79a7","SZ2":"#76b7b2","QoZ":"#59a14f","ZFP":"#f28e2b","MGARD":"#9c755f","SPERR":"#b07aa1"}
+family_colors={"MRCZ":METHOD_COLORS["MRCZ"],"FDWZ":METHOD_COLORS["FDWZ"],"SZ3":METHOD_COLORS["SZ3-4D"],"SZ2":METHOD_COLORS["SZ2-3D-fused"],"QoZ":METHOD_COLORS["QoZ-4D"],"ZFP":METHOD_COLORS["ZFP-3D-fused"],"MGARD":METHOD_COLORS["MGARD-1D"],"SPERR":METHOD_COLORS["SPERR-2D"]}
 layout_styles={"1D":(0,(5,1,1,1)),"2D":"--","3D-fused":"-.","3D-per-element":":","4D":"-","4D+GLL":(0,(3,1,1,1))}
 fields=[
     ("1UX","mixlay0/mixlay0.f00001_UX.csv"),("1UY","mixlay0/mixlay0.f00001_UY.csv"),("1P","mixlay0/mixlay0.f00001_P.csv"),("1T","mixlay0/mixlay0.f00001_T.csv"),("1S00","mixlay0/mixlay0.f00001_S00.csv"),("1S01","mixlay0/mixlay0.f00001_S01.csv"),
@@ -54,12 +55,14 @@ def percentile(values,fraction):
 def focus_rd_axes(axis,method_points):
     all_points=[point for points in method_points.values() for point in points]
     primary_points=method_points["MRCZ"]+method_points["FDWZ"]
+    br_left=min(point[0] for point in all_points)*0.9
     br_right=max(percentile([point[0] for point in all_points],0.8),max(point[0] for point in primary_points))*1.05
     psnr_values=[point[1] for point in all_points]
     psnr_top=max(percentile(psnr_values,0.95),max(point[1] for point in primary_points))
     psnr_bottom=min(psnr_values)
     psnr_padding=max(1,(psnr_top-psnr_bottom)*0.03)
-    axis.set_xlim(0,br_right)
+    axis.set_xscale("log")
+    axis.set_xlim(br_left,br_right)
     axis.set_ylim(psnr_bottom-psnr_padding,psnr_top+psnr_padding)
 
 def finish_figure(figure,xlabel,ylabel,output_path,paper_output):
@@ -82,7 +85,6 @@ def finish_figure(figure,xlabel,ylabel,output_path,paper_output):
     plt.close(figure)
 
 def plot_rd(result_dir):
-    plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.0,"axes.labelsize":8.0,"axes.titlesize":8.0,"xtick.labelsize":8.0,"ytick.labelsize":8.0,"legend.fontsize":8.0,"pdf.fonttype":42,"ps.fonttype":42})
     figure,axes=prepare_axes()
     for panel_index,(axis,(title,relative_path)) in enumerate(zip(axes,fields)):
         rows=read_rows(os.path.join(result_dir,relative_path))
@@ -96,12 +98,11 @@ def plot_rd(result_dir):
         focus_rd_axes(axis,method_points)
         axis.set_xlabel(f"({chr(ord('a')+panel_index)}) {title}",labelpad=1.5)
         axis.grid(True,which="both",alpha=0.25,linewidth=0.35)
-        axis.xaxis.set_major_locator(MaxNLocator(nbins=3))
+        axis.xaxis.set_major_locator(LogLocator(base=10,numticks=4))
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        axis.tick_params(direction="in",length=1.8,width=0.45,pad=1)
-        for spine in axis.spines.values():spine.set_linewidth(0.5)
+        style_plot_axis(axis)
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    finish_figure(figure,"Bit rate","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.pdf"))
+    finish_figure(figure,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.pdf"))
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

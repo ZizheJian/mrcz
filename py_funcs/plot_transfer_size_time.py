@@ -1,14 +1,13 @@
 import csv,os
 
 import matplotlib.pyplot as plt
+from plot_style import METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,style_plot_axis
 
+apply_paper_style("mrcz-transfer-size-time")
 
-plt.rcParams["svg.hashsalt"]="mrcz-transfer-size-time"
-plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.0,"axes.labelsize":8.0,"axes.titlesize":8.0,"xtick.labelsize":8.0,"ytick.labelsize":8.0,"legend.fontsize":8.0,"pdf.fonttype":42,"ps.fonttype":42})
-
-methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D"]
-colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1","MGARD-1D":"#9c755f"}
-labels={"MRCZ":"MRCZ","FDWZ":"FDWZ","SZ3-4D":"SZ3","QoZ-4D":"QoZ","ZFP-3D-fused":"ZFP","SPERR-2D":"SPERR","MGARD-1D":"MGARD"}
+methods=TRANSFER_METHODS
+colors=METHOD_COLORS
+labels=METHOD_LABELS
 datasets=(("pb0",7),("jicf0",8))
 
 
@@ -47,8 +46,7 @@ def draw_panel(axis,rows):
     axis.set_yticks([0,0.3,0.6,0.9,1.2])
     axis.text(0.97,0.08,f"Spearman $\\rho={rank_correlation:.3f}$",transform=axis.transAxes,ha="right",va="bottom",fontsize=8.0)
     axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
-    axis.tick_params(direction="in",length=1.8,width=0.45,pad=1)
-    for spine in axis.spines.values():spine.set_linewidth(0.6)
+    style_plot_axis(axis,spine_width=0.6)
     axis.set_xlabel("Transferred Data (GiB)",labelpad=1.0)
 
 

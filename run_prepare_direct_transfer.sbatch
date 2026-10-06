@@ -4,7 +4,6 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1G
 #SBATCH --time=00:15:00
 #SBATCH --job-name=mrcz-direct-data
 #SBATCH --output=results/end_to_end/slurm-%x-%j.out

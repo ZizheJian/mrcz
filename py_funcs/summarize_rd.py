@@ -45,7 +45,7 @@ def interpolate(curve,target):
         right_psnr,right_br=curve[index]
         if target<=right_psnr:
             weight=(target-left_psnr)/(right_psnr-left_psnr)
-            return left_br+(right_br-left_br)*weight
+            return math.exp(math.log(left_br)+(math.log(right_br)-math.log(left_br))*weight)
     return curve[-1][1]
 
 def select_target(psnr_low,psnr_high):

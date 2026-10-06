@@ -1,11 +1,11 @@
 import csv,os
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
+from plot_style import TRANSFER_METHODS,apply_paper_style,style_plot_axis
 
-plt.rcParams["svg.hashsalt"]="mrcz-end-to-end"
-plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.0,"axes.labelsize":8.0,"axes.titlesize":8.0,"xtick.labelsize":8.0,"ytick.labelsize":8.0,"legend.fontsize":8.0,"pdf.fonttype":42,"ps.fonttype":42})
+apply_paper_style("mrcz-end-to-end")
 
-methods=["Direct","MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D"]
+methods=("Direct",)+TRANSFER_METHODS
 components=[("Compression Time","Compression","#e3427a"),("Transfer Time Median","Transfer","#4bacc6"),("Decompression Time","Decompression","#f5aa36")]
 titles={"pb0":"(a) Dataset 7","jicf0":"(b) Dataset 8"}
 x_limits={"pb0":(0,78),"jicf0":(0,230)}
@@ -28,8 +28,7 @@ def draw_panel(axis,rows,dataset):
         base=[first+second for first,second in zip(base,values)]
     axis.grid(True,axis="x",linestyle="--",linewidth=0.35,alpha=0.35)
     axis.set_axisbelow(True)
-    axis.tick_params(direction="in",length=2,width=0.5,pad=0.8)
-    for spine in axis.spines.values():spine.set_linewidth(0.6)
+    style_plot_axis(axis,tick_length=2,tick_width=0.5,tick_pad=0.8,spine_width=0.6)
     axis.set_xlim(*x_limits[dataset])
     axis.set_yticks(y)
     axis.set_yticklabels(ordered_methods,fontsize=7)

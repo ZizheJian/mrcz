@@ -4,9 +4,8 @@
 #SBATCH --partition=shared
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=48
+#SBATCH --cpus-per-task=52
 #SBATCH --hint=nomultithread
-#SBATCH --mem=96G
 #SBATCH --time=00:45:00
 #SBATCH --output=results/small_core_throughput/slurm-%x-%j.out
 #SBATCH --error=results/small_core_throughput/slurm-%x-%j.err
@@ -21,4 +20,4 @@ export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
 config_name="${CONFIG_NAME:?CONFIG_NAME must name one method-specific JICF configuration}"
-srun --ntasks=1 --cpus-per-task="${SLURM_CPUS_PER_TASK}" --cpu-bind=cores python3 -u t1_start_c_code.py "${config_name}" --skip-build
+srun --ntasks=1 --cpus-per-task=48 --cpu-bind=cores python3 -u t1_start_c_code.py "${config_name}" --skip-build

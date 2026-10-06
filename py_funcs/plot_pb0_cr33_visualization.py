@@ -7,11 +7,12 @@ import matplotlib.tri as mtri
 import numpy as np
 from matplotlib.patches import Rectangle
 from matplotlib.colors import LinearSegmentedColormap,Normalize
+from plot_style import METHOD_LABELS,RD_METHODS,apply_paper_style
 
-plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.0,"axes.labelsize":8.0,"axes.titlesize":8.0,"xtick.labelsize":7.0,"ytick.labelsize":7.0,"pdf.fonttype":42,"ps.fonttype":42})
+apply_paper_style(tick_size=7.0)
 
-methods=["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
-labels={"MRCZ":"MRCZ","FDWZ":"FDWZ","SZ3-4D":"SZ3","SZ2-3D-fused":"SZ2","QoZ-4D":"QoZ","ZFP-3D-fused":"ZFP","SPERR-2D":"SPERR"}
+methods=RD_METHODS[:-1]
+labels=METHOD_LABELS
 crop_fractions=(1/6,1/2,1/3,2/3)
 
 def load_slice(path):

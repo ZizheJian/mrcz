@@ -3,6 +3,7 @@
 import argparse,csv,os
 import numpy as np
 from matplotlib import pyplot as plt
+from plot_style import apply_paper_style,style_plot_axis
 
 DEFAULT_ROOT="results/mrcz_reordering"
 DEFAULT_OUTPUT="论文/figs/6/mrcz-reordering-ablation.pdf"
@@ -67,7 +68,7 @@ def main():
     }
     write_summary(args.summary,element_br,mode_br,throughputs)
 
-    plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.4,"axes.labelsize":8.4,"axes.titlesize":8.4,"xtick.labelsize":8.4,"ytick.labelsize":8.4,"legend.fontsize":8.4,"pdf.fonttype":42,"ps.fonttype":42})
+    apply_paper_style(font_size=8.4)
     fig=plt.figure(figsize=(3.5,1.65))
     rd_ax=fig.add_axes([0.12,0.28,0.25,0.50])
     throughput_ax=fig.add_axes([0.48,0.28,0.49,0.50])
@@ -97,8 +98,7 @@ def main():
 
     for ax in axes:
         ax.grid(True,axis="y",linestyle="--",linewidth=0.4,alpha=0.35)
-        ax.tick_params(direction="in",length=2,width=0.5,pad=1.5)
-        for spine in ax.spines.values():spine.set_linewidth(0.6)
+        style_plot_axis(ax,tick_length=2,tick_width=0.5,tick_pad=1.5,spine_width=0.6)
     for label,ax in zip(("(a) Rate–Distortion","(b) Throughput"),axes):
         position=ax.get_position()
         fig.text((position.x0+position.x1)/2,0.04,label,ha="center",va="bottom",fontsize=8.4)

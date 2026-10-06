@@ -37,9 +37,9 @@ Given a field $X$ and an absolute error bound $\varepsilon_{\mathrm{abs}}$, a co
 \begin{equation}
 \max_{e,i,j,k}|x_{e,i,j,k}-\widehat{x}_{e,i,j,k}|\leq\varepsilon_{\mathrm{abs}}.
 \end{equation}
-The corresponding value-range-based relative error bound is $\varepsilon_{\mathrm{rel}}=\varepsilon_{\mathrm{abs}}/R$, where $R=\max(X)-\min(X)$. Different physical fields may have different ranges, accuracy requirements, and downstream uses. We therefore compress each field independently and allow its error bound to be selected separately.
+The corresponding value-range-based relative error bound is $\varepsilon_{\mathrm{rel}}=\varepsilon_{\mathrm{abs}}/R$, where $R=\max(X)-\min(X)$. Physical fields may differ in their ranges, accuracy requirements, and downstream uses. We therefore compress each field independently and allow its error bound to be selected separately.
 
-The pointwise error bound controls the largest reconstruction error but does not determine the overall distortion. We therefore quantify overall data quality using peak signal-to-noise ratio (PSNR), defined as $20\log_{10}(R/\mathrm{RMSE})$. We define normalized RMSE (NRMSE) and normalized MAE (NMAE) as $\mathrm{RMSE}/R$ and $\mathrm{MAE}/R$, respectively.
+The pointwise error bound controls the largest reconstruction error but does not determine distortion across the field. We therefore quantify overall data quality using peak signal-to-noise ratio (PSNR), defined as $20\log_{10}(R/\mathrm{RMSE})$. We define normalized RMSE (NRMSE) and normalized MAE (NMAE) as $\mathrm{RMSE}/R$ and $\mathrm{MAE}/R$, respectively.
 
 To characterize symbol compressibility, we also report the empirical zero-order entropy of the quantized symbols. For a scalar quantity $z$ quantized under an absolute error bound $\varepsilon$, we define the quantized symbol $q=\operatorname{round}(z/(2\varepsilon))$ and $H=-\sum_qp_q\log_2p_q$, where $p_q$ is the observed frequency of symbol $q$. For prediction analysis, $z=x-\widetilde{x}$ is the prediction error. Entropy is reported in bits per symbol. It is not the final bit rate and excludes metadata and dependencies among symbols.
 

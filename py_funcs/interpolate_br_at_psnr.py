@@ -26,7 +26,7 @@ def interpolate_br_from_curve(curve,target_psnr):
             return right_br
         if target_psnr<right_psnr:
             weight=(target_psnr-left_psnr)/(right_psnr-left_psnr)
-            return left_br+(right_br-left_br)*weight
+            return math.exp(math.log(left_br)+(math.log(right_br)-math.log(left_br))*weight)
     raise RuntimeError("未能在已验证的PSNR范围内完成插值")
 
 def interpolate_br_at_psnr(csv_path,method,target_psnr):

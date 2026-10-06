@@ -2,6 +2,7 @@ import csv,os
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,FixedFormatter
+from plot_style import apply_paper_style,style_plot_axis
 
 project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 max_tree_path=os.path.join(project_root,"results/RD/pb0_fdwz_max_tree/pb0.f00001_P.csv")
@@ -60,10 +61,7 @@ def read_prediction_error_distributions(path):
     return distributions,totals,bin_width
 
 def configure_common_axes(axes):
-    axes.tick_params(axis="both",which="major",direction="in",length=2.5,width=0.6,pad=1)
-    axes.tick_params(axis="both",which="minor",direction="in",length=1.5,width=0.5)
-    for spine in axes.spines.values():
-        spine.set_linewidth(0.6)
+    style_plot_axis(axes,tick_length=2.5,tick_width=0.6,spine_width=0.6,minor_tick_length=1.5,minor_tick_width=0.5)
 
 def draw_tree_distribution(axes,distributions,mode):
     for tree_id,counts in sorted(distributions.items()):
@@ -213,7 +211,7 @@ def make_focused_prediction_error_figure(output_path):
     figure.savefig(output_path,format="pdf",dpi=300)
     plt.close(figure)
 
-plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman","Times New Roman","Times"],"font.size":8,"axes.labelsize":8,"axes.titlesize":8,"xtick.labelsize":8,"ytick.labelsize":8,"legend.fontsize":8,"pdf.fonttype":42,"ps.fonttype":42})
+apply_paper_style(serif_fonts=["Nimbus Roman","Times New Roman","Times"])
 make_ablation_figure(canonical_output_path)
 make_qb_figure("cdf",[cdf_output_path])
 make_qb_figure("frequency",[frequency_output_path])

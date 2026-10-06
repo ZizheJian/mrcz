@@ -1,12 +1,12 @@
 import csv,glob,math,os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator,NullLocator
+from plot_style import METHOD_COLORS,TIMING_METHODS,apply_paper_style,style_plot_axis
 
-plt.rcParams["svg.hashsalt"]="mrcz-aggregate-throughput"
-plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.0,"axes.labelsize":8.0,"axes.titlesize":8.0,"xtick.labelsize":8.0,"ytick.labelsize":8.0,"legend.fontsize":8.0,"pdf.fonttype":42,"ps.fonttype":42})
+apply_paper_style("mrcz-aggregate-throughput")
 
-methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
-colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1"}
+methods=TIMING_METHODS
+colors=METHOD_COLORS
 datasets=[("pb0",7,64),("jicf0",8,128)]
 
 def read_rows(path):
@@ -47,8 +47,7 @@ def main():
             axis.set_ylim(0,18 if row==0 else 12)
             axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
             axis.grid(True,which="major",alpha=0.25,linewidth=0.35)
-            axis.tick_params(direction="in",length=1.8,width=0.45,pad=1)
-            for spine in axis.spines.values():spine.set_linewidth(0.5)
+            style_plot_axis(axis)
             panel=chr(ord("a")+panel_index)
             axis.set_xlabel(f"({panel}) Dataset {dataset_index}, {task}",labelpad=1.0)
             panel_index+=1

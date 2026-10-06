@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  1 OCT 2026 13:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  4 OCT 2026 01:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -427,6 +427,10 @@ Underfull \hbox (badness 3240) in paragraph at lines 48--1
  []
 
 ) (./5.sz3-hohs.tex
+Underfull \hbox (badness 2142) in paragraph at lines 3--4
+[]\OT1/ptm/m/n/10 FDWZ fol-lows the SZ com-pres-sion frame-work. Sec-
+ []
+
 <figs/raster300/fdwz-diagram.png, id=28, 251.9814pt x 158.0304pt>
 File: figs/raster300/fdwz-diagram.png Graphic file (type png)
 <use figs/raster300/fdwz-diagram.png>
@@ -473,7 +477,8 @@ File: figs/raster300/mrcz-diagram.png Graphic file (type png)
 Package pdftex.def Info: figs/raster300/mrcz-diagram.png  used on input line 11
 .
 (pdftex.def)             Requested size: 252.0pt x 88.66179pt.
- [6 <./figs/raster300/cross-element.png (PNG copy)>]
+ [6 <./figs/raster300/cross-element.png (PNG copy)> <./figs/raster300/mrcz-diag
+ram.png (PNG copy)>]
 Underfull \hbox (badness 1377) in paragraph at lines 18--19
 []\OT1/ptm/m/n/10 Finally, MRCZ forms its bit-stream from two sym-bol
  []
@@ -496,9 +501,8 @@ File: figs/raster300/transform-mode-statistics.png Graphic file (type png)
 Package pdftex.def Info: figs/raster300/transform-mode-statistics.png  used on 
 input line 39.
 (pdftex.def)             Requested size: 252.0pt x 106.49051pt.
-[7 <./figs/raster300/mrcz-diagram.png (PNG copy)> <./figs/raster300/transform-c
-omparison-stacked.png (PNG copy)> <./figs/raster300/transform-mode-statistics.p
-ng (PNG copy)>]
+[7 <./figs/raster300/transform-comparison-stacked.png (PNG copy)> <./figs/raste
+r300/transform-mode-statistics.png (PNG copy)>]
 <figs/raster300/mrcz-reordering-ablation.png, id=52, 251.9814pt x 119.0046pt>
 File: figs/raster300/mrcz-reordering-ablation.png Graphic file (type png)
 <use figs/raster300/mrcz-reordering-ablation.png>
@@ -513,16 +517,16 @@ LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 x/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 ) [8 <./figs/raster300/mrcz-reordering-ablation.png (PNG copy)>]
-<figs/raster300/small-rd.png, id=57, 515.7669pt x 273.6624pt>
+<figs/raster300/small-rd.png, id=57, 515.7669pt x 273.9033pt>
 File: figs/raster300/small-rd.png Graphic file (type png)
 <use figs/raster300/small-rd.png>
 Package pdftex.def Info: figs/raster300/small-rd.png  used on input line 71.
-(pdftex.def)             Requested size: 516.0pt x 273.79115pt.
-<figs/raster300/large-rd.png, id=58, 429.7656pt x 182.8431pt>
+(pdftex.def)             Requested size: 516.0pt x 274.03217pt.
+<figs/raster300/large-rd.png, id=58, 429.7656pt x 183.084pt>
 File: figs/raster300/large-rd.png Graphic file (type png)
 <use figs/raster300/large-rd.png>
 Package pdftex.def Info: figs/raster300/large-rd.png  used on input line 82.
-(pdftex.def)             Requested size: 429.98163pt x 182.94028pt.
+(pdftex.def)             Requested size: 429.98163pt x 183.1813pt.
 <figs/raster300/combined-throughput.png, id=59, 515.7669pt x 232.2276pt>
 File: figs/raster300/combined-throughput.png Graphic file (type png)
 <use figs/raster300/combined-throughput.png>
@@ -576,7 +580,7 @@ Here is how much of TeX's memory you used:
  21063 multiletter control sequences out of 15000+600000
  578233 words of font info for 120 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 48i,14n,46p,1242b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 48i,14n,46p,1234b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/tex
 mf-dist/fonts/enc/dvips/base/8r.enc}</apps/spack/anvil/apps/texlive/20200406-gc
 c-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></apps/sp
@@ -607,7 +611,7 @@ c-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></apps/spack/anvi
 l/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utm
 r8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/
 fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (14 pages, 4147733 bytes).
+Output written on main.pdf (14 pages, 3995420 bytes).
 PDF statistics:
  147 PDF objects out of 1000 (max. 8388607)
  94 compressed objects within 1 object stream

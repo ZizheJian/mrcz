@@ -1,9 +1,12 @@
 import argparse,csv,os
 import matplotlib.pyplot as plt
+from plot_style import METHOD_COLORS,METHOD_MARKERS,TIMING_METHODS,apply_paper_style
 
-methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
-colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1"}
-markers={"MRCZ":"*","FDWZ":"o","SZ3-4D":"^","QoZ-4D":"D","ZFP-3D-fused":"v","SPERR-2D":"P"}
+apply_paper_style()
+
+methods=TIMING_METHODS
+colors=METHOD_COLORS
+markers=METHOD_MARKERS
 dataset_titles={"pb0":"pb0 (100 dB)","jicf":"jicf0 (150 dB)"}
 
 # 读取单个数据集的weak-scaling汇总结果。

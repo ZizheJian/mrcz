@@ -8,6 +8,7 @@ import sys
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
+from plot_style import apply_paper_style,style_plot_axis
 
 sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from py_funcs.read_nekrs_header import read_nekrs_header
@@ -122,7 +123,7 @@ def main():
     order_label="Maximum mode order" if args.mode_order=="maximum" else "Total mode order"
     axis_order_label="Maximum Order" if args.mode_order=="maximum" else "Total Order"
 
-    plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.4,"axes.labelsize":8.4,"axes.titlesize":8.4,"xtick.labelsize":8.4,"ytick.labelsize":8.4,"legend.fontsize":8.4,"pdf.fonttype":42,"ps.fonttype":42})
+    apply_paper_style(font_size=8.4)
     fig=plt.figure(figsize=(3.67,1.55))
     outer_grid=fig.add_gridspec(1,3,left=0.115,right=0.995,bottom=0.31,top=0.84,wspace=0.62)
     stream_grid=outer_grid[0,0].subgridspec(2,1,hspace=0.10)
@@ -172,9 +173,8 @@ def main():
 
     for ax in axes:
         ax.grid(True,which="both",linestyle="--",linewidth=0.4,alpha=0.35)
-        ax.tick_params(direction="in",length=2,width=0.5,pad=1)
+        style_plot_axis(ax,tick_length=2,tick_width=0.5,spine_width=0.6)
         ax.tick_params(axis="x",pad=2.5)
-        for spine in ax.spines.values():spine.set_linewidth(0.6)
     transform_handles=[Line2D([0],[0],color=colors[label],linewidth=0.8,label=label) for label in ("DLT","DChT")]
     stream_handles=[Line2D([0],[0],color="black",linestyle=linestyle,linewidth=0.8,label=label) for label,linestyle in (("Coefficients","-"),("Residuals","--"))]
     fig.legend(handles=transform_handles+stream_handles,loc="upper center",bbox_to_anchor=(0.5,0.99),ncol=4,frameon=False,handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)

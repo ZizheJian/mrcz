@@ -5,14 +5,12 @@ from matplotlib.ticker import MaxNLocator,NullLocator
 
 import plot_aggregate_throughput as large
 import plot_small_core_throughput as small
+from plot_style import METHOD_COLORS,TIMING_METHODS,apply_paper_style,style_plot_axis
 
+apply_paper_style("mrcz-combined-throughput",tick_size=7.0)
 
-plt.rcParams["svg.hashsalt"]="mrcz-combined-throughput"
-plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.0,"axes.labelsize":8.0,"axes.titlesize":8.0,"xtick.labelsize":7.0,"ytick.labelsize":7.0,"legend.fontsize":8.0,"pdf.fonttype":42,"ps.fonttype":42})
-
-methods=large.methods
-colors=large.colors
-colors["MGARD-1D"]="#9c755f"
+methods=TIMING_METHODS
+colors=METHOD_COLORS
 tasks=("Compression","Decompression")
 
 
@@ -66,8 +64,7 @@ def main():
             axis.set_ylim(0,limits[(row,dataset)])
             axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
             axis.grid(True,which="major",alpha=0.25,linewidth=0.35)
-            axis.tick_params(direction="in",length=1.8,width=0.45,pad=1)
-            for spine in axis.spines.values():spine.set_linewidth(0.5)
+            style_plot_axis(axis)
             panel=chr(ord("a")+row*4+column)
             axis.set_xlabel(f"({panel}) Dataset {dataset_index}, {task}\n{cpus} cores",labelpad=1.0)
 

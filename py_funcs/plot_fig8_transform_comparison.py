@@ -3,6 +3,7 @@
 import argparse,csv,glob,os
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
+from plot_style import apply_paper_style,style_plot_axis
 
 CONFIGS=[
     ("DLT_GLL","DLT (GLL)","#ff4d4d"),
@@ -93,7 +94,7 @@ def main():
     write_alpha_summary(args.alpha_csv,rows_by_alpha)
     write_rd_summary(args.rd_summary,rows_by_eb)
 
-    plt.rcParams.update({"font.family":"serif","font.serif":["Nimbus Roman"],"mathtext.fontset":"stix","font.size":8.4,"axes.labelsize":8.4,"xtick.labelsize":8.4,"ytick.labelsize":8.4,"legend.fontsize":8.4,"pdf.fonttype":42,"ps.fonttype":42})
+    apply_paper_style(font_size=8.4)
     fig,ax=plt.subplots(figsize=(3.67,2.08) if args.legend_layout=="stacked" else (3.5,1.55))
     for key,_,color in CONFIGS:
         alpha_br,alpha_psnr=alpha_curves[key]
@@ -108,8 +109,7 @@ def main():
     ax.set_xlabel("Bit rate",labelpad=1)
     ax.set_ylabel("PSNR (dB)",labelpad=1)
     ax.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
-    ax.tick_params(direction="in",length=2.5,width=0.6)
-    for spine in ax.spines.values():spine.set_linewidth(0.7)
+    style_plot_axis(ax,tick_length=2.5,tick_width=0.6,tick_pad=3.5,spine_width=0.7)
 
     config_handles=[Line2D([0],[0],color=color,linewidth=0.9,label=label) for _,label,color in CONFIGS]
     if args.legend_layout=="stacked":

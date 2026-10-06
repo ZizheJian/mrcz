@@ -6,7 +6,6 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=64
 #SBATCH --hint=nomultithread
-#SBATCH --mem=96G
 #SBATCH --time=00:20:00
 #SBATCH --output=results/visualization/slurm-%x-%j.out
 #SBATCH --error=results/visualization/slurm-%x-%j.err

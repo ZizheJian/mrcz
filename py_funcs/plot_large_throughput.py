@@ -1,11 +1,12 @@
 import argparse,csv,math,os
 import matplotlib.pyplot as plt
+from plot_style import METHOD_COLORS,METHOD_MARKERS,TIMING_METHODS,apply_paper_style
 
-plt.rcParams["svg.hashsalt"]="mrcz-large-throughput"
+apply_paper_style("mrcz-large-throughput")
 
-methods=["MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D"]
-colors={"MRCZ":"#111827","FDWZ":"#e15759","SZ3-4D":"#4e79a7","QoZ-4D":"#59a14f","ZFP-3D-fused":"#f28e2b","SPERR-2D":"#b07aa1"}
-markers={"MRCZ":"*","FDWZ":"o","SZ3-4D":"^","QoZ-4D":"D","ZFP-3D-fused":"v","SPERR-2D":"P"}
+methods=TIMING_METHODS
+colors=METHOD_COLORS
+markers=METHOD_MARKERS
 fields=[
     ("pb0 / UX","pb0/pb0.f00001_UX.csv",64),("pb0 / UY","pb0/pb0.f00001_UY.csv",64),("pb0 / UZ","pb0/pb0.f00001_UZ.csv",64),("pb0 / P","pb0/pb0.f00001_P.csv",64),("pb0 / T","pb0/pb0.f00001_T.csv",64),
     ("jicf0 / UX","jicf0/jicf0.f00000_UX.csv",128),("jicf0 / UY","jicf0/jicf0.f00000_UY.csv",128),("jicf0 / UZ","jicf0/jicf0.f00000_UZ.csv",128),("jicf0 / P","jicf0/jicf0.f00000_P.csv",128),("jicf0 / S00","jicf0/jicf0.f00000_S00.csv",128)]

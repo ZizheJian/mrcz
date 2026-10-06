@@ -4,9 +4,8 @@
 #SBATCH --partition=shared
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=5
 #SBATCH --hint=nomultithread
-#SBATCH --mem=8G
 #SBATCH --time=00:10:00
 #SBATCH --output=results/RD/slurm-%x-%j.out
 #SBATCH --error=results/RD/slurm-%x-%j.err
