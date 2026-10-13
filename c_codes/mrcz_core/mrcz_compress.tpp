@@ -23,15 +23,15 @@ namespace mrcz
         T inv_2_eb=1/(2*abs_eb);
         vector<double> forward_time(measure_phase_time?partitions.size():0,0),coeff_quant_time(measure_phase_time?partitions.size():0,0),inverse_time(measure_phase_time?partitions.size():0,0),residual_quant_time(measure_phase_time?partitions.size():0,0),coeff_huffman_time(measure_phase_time?partitions.size():0,0),residual_huffman_time(measure_phase_time?partitions.size():0,0),zstd_time(measure_phase_time?partitions.size():0,0);
         vector<uint64_t> coeff_zstd_bytes_by_block(if_analyze_mrcz_stream_sizes?partitions.size():0,0),residual_zstd_bytes_by_block(if_analyze_mrcz_stream_sizes?partitions.size():0,0);
-        vector<int64_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
+        vector<int32_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
         vector<uint64_t> qb_capacity_by_thread(max_cpus,0);
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
         for (uint64_t block_id=0;block_id<partitions.size();block_id++)
         {
             int thread_id=omp_get_thread_num();
-            int64_t *&coeff_qb=coeff_qb_by_thread[thread_id];
-            int64_t *&err_qb=err_qb_by_thread[thread_id];
+            int32_t *&coeff_qb=coeff_qb_by_thread[thread_id];
+            int32_t *&err_qb=err_qb_by_thread[thread_id];
             uint64_t &qb_capacity=qb_capacity_by_thread[thread_id];
             auto &block=partitions[block_id];
             uint64_t begin_index=block.begin_index;
@@ -42,8 +42,8 @@ namespace mrcz
             {
                 delete[] coeff_qb;
                 delete[] err_qb;
-                coeff_qb=new int64_t[block_value_num];
-                err_qb=new int64_t[block_value_num];
+                coeff_qb=new int32_t[block_value_num];
+                err_qb=new int32_t[block_value_num];
                 qb_capacity=block_value_num;
             }
             double phase_start_time=0;
@@ -52,8 +52,8 @@ namespace mrcz
             {
                 T *element=data.data()+element_id*n012;
                 uint64_t local_element_id=element_id-begin_index;
-                int64_t *element_coeff_qb=coeff_qb+local_element_id*n012;
-                int64_t *element_err_qb=err_qb+local_element_id*n012;
+                int32_t *element_coeff_qb=coeff_qb+local_element_id*n012;
+                int32_t *element_err_qb=err_qb+local_element_id*n012;
                 if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
                 forward_transform(temp_element1,temp_element2,element,n0,n1,n2,n12,n012,L0,L1,L2);
                 if constexpr(measure_phase_time) forward_time[block_id]+=omp_get_wtime()-phase_start_time;
@@ -75,7 +75,7 @@ namespace mrcz
             if constexpr(measure_phase_time) coeff_huffman_time[block_id]=omp_get_wtime()-phase_start_time;
             uint64_t coeff_huffman_bs_len=huffman_bs-huffman_bs_vec.data();
             if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
-            huffman_encoder_class<int64_t> err_encoder;
+            fast_huffman_encoder_class<int32_t> err_encoder;
             err_encoder.preprocess_encode(err_qb,block_value_num);
             err_encoder.save(huffman_bs);
             err_encoder.encode(err_qb,block_value_num,huffman_bs);

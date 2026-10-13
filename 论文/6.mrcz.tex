@@ -1,6 +1,6 @@
 \section{Representation-Based Compression: MRCZ}\label{sec:mrcz}
 
-This section presents MRCZ, a representation-based compressor with a strict pointwise error guarantee. Section~\ref{sec:mrcz:overview} provides an overview of its compression workflow and explains how residual quantization enforces the user-specified error bound. Section~\ref{sec:mrcz:transform} examines the selection of the transform and coefficient error bound, including why MRCZ applies DChT rather than the conventional DLT to data sampled on GLL nodes. Section~\ref{sec:mrcz:transpose} presents mode-major coefficient ordering and its cache-efficient tiled implementation.
+This section presents MRCZ, a representation-based compressor with a strict pointwise error guarantee. Section~\ref{sec:mrcz:overview} provides an overview of its compression workflow and explains how residual quantization enforces the user-specified error bound. Section~\ref{sec:mrcz:transform} introduces DChT as an alternative to DLT for better compression of data sampled on GLL nodes. Section~\ref{sec:mrcz:transpose} describes how mode-major coefficient ordering improves lossless compression and how tiled transposition accelerates decompression.
 
 \subsection{Overview of MRCZ}\label{sec:mrcz:overview}
 
@@ -19,11 +19,11 @@ Finally, MRCZ forms its bitstream from two symbol streams: transform coefficient
 
 \subsection{DChT for Data on GLL Nodes}\label{sec:mrcz:transform}
 
-DLT is conventionally paired with data sampled on GLL nodes because the GLL nodes and their associated quadrature weights preserve the weighted orthogonality of distinct Legendre modes~\cite{marin2016spectral}. MRCZ, however, independently enforces the final reconstruction bound through residual correction, so its transform needs only to be invertible and numerically stable. It need not be orthogonal under the GLL quadrature weights. This freedom allows MRCZ to select the transform according to the compressibility of its coefficients and residuals. We therefore examine whether another commonly used transform can yield better compression than DLT for data sampled on GLL nodes.
+We evaluate alternative transforms for MRCZ based on the compressibility of their coefficient and residual streams. DLT is conventionally paired with data sampled on GLL nodes because the GLL nodes and their associated quadrature weights preserve the weighted orthogonality of distinct Legendre modes~\cite{marin2016spectral}. This property, however, does not necessarily yield the best compression. Because MRCZ independently enforces the final reconstruction bound through residual correction, its transform needs only to be invertible and numerically stable. It need not be orthogonal under the GLL quadrature weights.
 
 We compare DLT, the discrete cosine transform (DCT), the discrete sine transform (DST), and DChT under two coordinate assumptions. The ``GLL'' variants construct the transform matrices using the GLL coordinates, whereas the ``Uniform'' variants treat the same values as samples at uniformly spaced coordinates.
 
-For each evaluated combination, we vary the internal coefficient error bound introduced in Section~\ref{sec:mrcz:overview}, since it changes prediction accuracy and hence compression. We parameterize this bound as $\varepsilon_{\mathrm{coeff}}=\alpha\varepsilon_{\mathrm{abs}}$, where $\alpha$ is the coefficient-bound ratio. The best $\alpha$ may differ across transforms. Decreasing $\alpha$ improves prediction and lowers the residual BR but raises the coefficient BR. If too small, both the coefficients and predicted values are more accurate than needed to satisfy the user-specified bound. Increasing $\alpha$ reverses this tradeoff, lowering the coefficient BR but raising the residual BR and reducing PSNR as prediction worsens. The user-specified bound always sets a lower bound on the final PSNR.
+For each evaluated combination, we vary the internal coefficient error bound introduced in Section~\ref{sec:mrcz:overview}, since it changes prediction accuracy and hence compression. We parameterize this bound as $\varepsilon_{\mathrm{coeff}}=\alpha\varepsilon_{\mathrm{abs}}$, where $\alpha$ is the coefficient-bound ratio. The best $\alpha$ may differ across transforms. Decreasing $\alpha$ improves prediction and lowers the residual BR but raises the coefficient BR. If too small, both the coefficients and predicted values are more accurate than needed to satisfy the user-specified bound. Increasing $\alpha$ reverses this tradeoff, lowering the coefficient BR but raising the residual BR and reducing PSNR as prediction worsens. At sufficiently large $\alpha$, this decline is limited by the user-specified error bound, which imposes a lower bound on the final PSNR.
 
 \begin{figure}[htb]
     \centering
@@ -37,11 +37,11 @@ Figure~\ref{fig:transform} presents a sensitivity study on 7P. For each transfor
 \begin{figure}[htb]
     \centering
     \includegraphics[width=1\linewidth]{figs/raster300/transform-mode-statistics.png}
-    \caption{Comparison of DLT and DChT at the GLL coordinates on the $P$ field of Dataset~7. (a) DChT's smaller coefficient stream accounts for its compression advantage. (b)--(c) DChT produces smaller high-order coefficients and lower entropy of the quantized coefficients. Shading in (b) indicates the interquartile range.}
+    \caption{Comparison of DLT and DChT at the GLL coordinates on 7P. (a) DChT's smaller coefficient stream accounts for its compression advantage. (b)--(c) DChT produces smaller high-order coefficients and lower entropy of the quantized coefficients. Shading in (b) indicates the interquartile range.}
     \label{fig:transform-mode-statistics}
 \end{figure}
 
-Figure~\ref{fig:transform-mode-statistics}(a) compares the independently compressed coefficient and residual streams of DLT and DChT, both evaluated at the GLL coordinates. The DLT coefficient BR is 1.25$\times$ that of DChT on average. In contrast, the ratio between the residual BRs is unstable, with DLT ranging from 0.52$\times$ to 1.37$\times$ that of DChT. Despite this relative variation, the coefficient BR is 67.7--2002$\times$ the residual BR and therefore dominates the compressed representation. The rate--distortion advantage of DChT thus comes primarily from its smaller coefficient stream.
+DChT's compression advantage over DLT comes primarily from its smaller coefficient stream. Figure~\ref{fig:transform-mode-statistics}(a) compares the independently compressed coefficient and residual streams, with both transforms evaluated at the GLL coordinates. The DLT coefficient BR is 1.25$\times$ that of DChT on average. The residual BRs show no consistent advantage for either transform, with DLT ranging from 0.52$\times$ to 1.37$\times$ that of DChT. However, the coefficient BR is 67.7--2002$\times$ the residual BR and therefore dominates the compressed representation.
 
 Figures~\ref{fig:transform-mode-statistics}(b) and~\ref{fig:transform-mode-statistics}(c) explain this difference by grouping each coefficient with mode indices $(i,j,k)$ according to its total mode order $i+j+k$. DLT and DChT are similar at low orders, but DChT produces progressively smaller coefficients at higher orders. At total order~15, the DLT coefficients have 8.5$\times$ the median magnitude and 96.9$\times$ the entropy of the DChT coefficients.
 
@@ -49,16 +49,16 @@ Figures~\ref{fig:transform-mode-statistics}(b) and~\ref{fig:transform-mode-stati
 
 We next improve lossless encoding by reorganizing the quantized coefficient stream. Transform coefficients exhibit strongly mode-dependent distributions. As shown in Figures~\ref{fig:transform-mode-statistics}(b) and~\ref{fig:transform-mode-statistics}(c), lower-order modes have larger coefficient magnitudes and higher entropy. On the other hand, high-order coefficients remain close to zero across many elements and are frequently quantized to zero. The natural element-major layout therefore interleaves modes with different distributions and separates coefficients associated with the same mode.
 
-Within each partition, MRCZ views the coefficient layout as an element-by-mode array and transposes it so that the coefficients of the first mode from all elements are contiguous, followed by those of the second mode, then the third mode, and finally the remaining modes in order. The resulting mode-major layout produces longer regions with homogeneous symbol statistics and concentrates the near-zero coefficients of each high-order mode.
+To avoid this interleaving, MRCZ views each partition's coefficient layout as an element-by-mode array and transposes it so that the coefficients of the first mode from all elements are contiguous, followed by those of the second mode, then the third mode, and finally the remaining modes in order. The resulting mode-major layout produces longer regions with homogeneous symbol statistics and concentrates the near-zero coefficients of each high-order mode.
 
 The reordering preserves the coefficient histogram and therefore does not change the Huffman code lengths. Instead, it changes the order of the Huffman codewords presented to Zstandard, allowing repeated patterns in the mode-major coefficient stream to be compressed more effectively.
 
-A direct element-by-mode transpose has poor cache locality because it accesses one array dimension with a large stride. MRCZ implements the same global transpose in tiles, each covering up to 32 consecutive elements and 32 consecutive modes. Processing one tile at a time improves locality without changing the mode-major output or the resulting bitstream.
+However, a direct element-by-mode transpose has poor cache locality because it accesses one array dimension with a large stride. MRCZ implements the same global transpose in tiles, each covering up to 32 consecutive elements and 32 consecutive modes. Processing one tile at a time improves locality without changing the mode-major output or the resulting bitstream.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=\linewidth]{figs/raster300/mrcz-reordering-ablation.png}
-    \caption{Ablation of mode-major coefficient reordering on the $P$ field of Dataset~7. (a) Mode-major ordering improves the compression ratio by 31.9\% on average. (b) Compared with direct transposition, tiled transposition maintains nearly identical compression throughput and improves decompression throughput by 11.9\%.}
+    \caption{Ablation of mode-major coefficient reordering on 7P. (a) Mode-major ordering improves the compression ratio by 31.9\% on average. (b) Compared with direct transposition, tiled transposition maintains nearly identical compression throughput and improves decompression throughput by 11.9\%.}
     \label{fig:mrcz-reordering-ablation}
 \end{figure}
 

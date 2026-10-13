@@ -172,9 +172,10 @@ def main():
         entropy_ax.set_yscale("log")
 
     for ax in axes:
-        ax.grid(True,which="both",linestyle="--",linewidth=0.4,alpha=0.35)
+        ax.grid(True,which="major",linestyle="--",linewidth=0.4,alpha=0.35)
         style_plot_axis(ax,tick_length=2,tick_width=0.5,spine_width=0.6)
         ax.tick_params(axis="x",pad=2.5)
+        ax.tick_params(axis="x",which="minor",length=0)
     transform_handles=[Line2D([0],[0],color=colors[label],linewidth=0.8,label=label) for label in ("DLT","DChT")]
     stream_handles=[Line2D([0],[0],color="black",linestyle=linestyle,linewidth=0.8,label=label) for label,linestyle in (("Coefficients","-"),("Residuals","--"))]
     fig.legend(handles=transform_handles+stream_handles,loc="upper center",bbox_to_anchor=(0.5,0.99),ncol=4,frameon=False,handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)

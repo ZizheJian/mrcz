@@ -47,21 +47,21 @@ def draw_panel(axis,rows):
     axis.text(0.97,0.08,f"Spearman $\\rho={rank_correlation:.3f}$",transform=axis.transAxes,ha="right",va="bottom",fontsize=8.0)
     axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
     style_plot_axis(axis,spine_width=0.6)
-    axis.set_xlabel("Transferred Data (GiB)",labelpad=1.0)
+    axis.set_xlabel("Transferred Bitstream Size (GiB)",labelpad=1.0)
 
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     result_dir=os.path.join(project_root,"results","end_to_end")
     rows=read_rows(os.path.join(result_dir,"end_to_end_summary.csv"))
-    figure,axis=plt.subplots(1,1,figsize=(3.5,1.9))
+    figure,axis=plt.subplots(1,1,figsize=(3.5,1.65))
     draw_panel(axis,rows)
-    handles=[plt.Line2D([0],[0],marker="o",markersize=3.8,color=colors[method],markeredgecolor="black",markeredgewidth=0.3,linewidth=0,label=labels[method]) for method in methods]
-    figure.legend(handles=handles,loc="upper center",ncol=4,frameon=False,bbox_to_anchor=(0.5,0.99),handletextpad=0.12,columnspacing=0.45,borderaxespad=0)
+    method_handles=[plt.Line2D([0],[0],marker="o",markersize=3.8,color=colors[method],markeredgecolor="black",markeredgewidth=0.3,linewidth=0,label=labels[method]) for method in methods]
+    blank_handle=plt.Line2D([0],[0],linewidth=0,alpha=0,label="")
     dataset_handles=[plt.Line2D([0],[0],marker=marker,markersize=4.0,color="black",markerfacecolor="white",markeredgewidth=0.5,linewidth=0,label=f"Dataset {dataset_index}") for marker,dataset_index in (("o",7),("^",8))]
-    figure.legend(handles=dataset_handles,loc="upper center",ncol=2,frameon=False,bbox_to_anchor=(0.5,0.82),handletextpad=0.15,columnspacing=0.65,borderaxespad=0)
+    figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="upper center",ncol=5,frameon=False,bbox_to_anchor=(0.5,0.99),handletextpad=0.12,columnspacing=0.35,borderaxespad=0)
     axis.set_ylabel("Transfer Throughput (GiB/s)",labelpad=1.5)
-    figure.tight_layout(rect=(0,0,1,0.70),pad=0.2)
+    figure.tight_layout(rect=(0,0,1,0.82),pad=0.2)
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")
     pdf_output=os.path.join(project_root,"论文","figs","7","transfer-size-time.pdf")
     figure.savefig(svg_output,format="svg",metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)

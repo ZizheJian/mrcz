@@ -1,12 +1,12 @@
 \section{Performance Evaluation}\label{sec:performance evaluation}
 
-This section evaluates FDWZ and MRCZ in terms of rate--distortion performance, compression and decompression throughput, end-to-end data-movement time, and a visual comparison of reconstruction errors at a matched compression ratio. We compare them with six representative error-bounded lossy compressors across eight high-order element datasets produced by NekRS, MFEM, and Nektar++.
+This section evaluates FDWZ and MRCZ in terms of rate--distortion performance, compression and decompression throughput, end-to-end data-movement time, and a visual comparison of reconstruction errors at a matched compression ratio. We compare them with six representative error-bounded lossy compressors across 28 non-constant fields from high-order element datasets produced by NekRS, MFEM, and Nektar++.
 
 \subsection{Experimental Setup}\label{sec:performance evaluation:setup}
 
 \subsubsection{Evaluation Platform}\label{sec:evaluation-platform}\mbox{}
 
-The experiments were conducted on Purdue Anvil. Each compute node contains two 64-core AMD EPYC 7763 processors, for a total of 128 physical CPU cores, and approximately 256~GB of main memory. Unless stated otherwise, Datasets~1--6 use one CPU core and one partition, Dataset~7 uses 64 CPU cores and 64 partitions, and Dataset~8 uses 128 CPU cores and 128 partitions. For single-precision inputs, we promote values to double precision when $\varepsilon_{\mathrm{rel}}<10^{-4}$ so that arithmetic precision does not limit the requested error bound. All implementations other than SPERR were compiled with GCC 11.2.0 using \verb|-Ofast -march=native|. SPERR was built separately using its default configuration. For parallel runs, OpenMP threads were bound to physical cores using \verb|OMP_PLACES=cores| and \verb|OMP_PROC_BIND=spread|.
+The experiments were conducted on Purdue Anvil. Each compute node contains two 64-core AMD EPYC 7763 processors, for a total of 128 physical CPU cores, and approximately 256~GB of main memory. Unless stated otherwise, Datasets~1--6 use one CPU core and one partition, Dataset~7 uses 64 CPU cores and 64 partitions, and Dataset~8 uses 128 CPU cores and 128 partitions. For single-precision inputs, we promote values to double precision when $\varepsilon_{\mathrm{rel}}<10^{-4}$ so that arithmetic precision does not limit the requested error bound. The benchmark executables were compiled with GCC 11.2.0 using \verb|-Ofast -march=native|. SPERR and MGARD-X were built separately in Release mode using their official CMake build systems. For parallel runs, OpenMP threads were bound to physical cores using \verb|OMP_PLACES=cores| and \verb|OMP_PROC_BIND=spread|.
 
 \subsubsection{High-Order Element Datasets}\mbox{}
 
@@ -32,7 +32,7 @@ Table~\ref{tab:datasets} summarizes the eight datasets used in our evaluation. T
 
 \subsubsection{Baseline Compressors}\mbox{}
 
-We evaluate the official APIs of SZ3~\cite{liang2023sz3,zhao2021optimizing}, SZ2~\cite{tao2017significantly}, QoZ~\cite{liu2024high}, ZFP~\cite{lindstrom2014fixed}, SPERR~\cite{li2023lossy}, and MGARD~\cite{gong2023mgard}. Together, they represent prediction-, transform-, and multilevel-decomposition-based compression. Because these APIs operate on multidimensional arrays, their performance on high-order element data depends on how the element tensors are presented to them.
+We evaluate the official APIs of SZ3~\cite{liang2023sz3,zhao2021optimizing}, SZ2~\cite{tao2017significantly}, QoZ~\cite{liu2024high}, ZFP~\cite{lindstrom2014fixed}, SPERR~\cite{li2023lossy}, and MGARD-X~\cite{gong2023mgard}. For MGARD-X 1.6.0, we use the official high-level API with its serial CPU backend. Together, these baselines represent prediction-, transform-, and multilevel-decomposition-based compression. Because their APIs operate on multidimensional arrays, performance on high-order element data depends on how the element tensors are presented to them.
 
 Under the logical representation in Equation~\ref{eq:logical-representation}, a partition of $E_p$ consecutive elements has shape $[E_p,n_x,n_y,n_z]$. Table~\ref{tab:baseline-layouts} defines six candidate representations for presenting this partition to a general-purpose compressor. All except per-element 3D invoke the compressor once per partition. Per-element 3D invokes it once per element and concatenates the resulting bitstreams.
 
@@ -56,45 +56,43 @@ Although these layouts preserve the stored value order and represent the same fi
     \end{tabular}
 \end{table}
 
-SZ3, SZ2, QoZ, and ZFP support the first five representations. The 4D+GLL representation is included specifically for MGARD. It uses the same array shape as 4D but supplies the GLL coordinates of the three element-local axes through MGARD's nonuniform-grid API. SPERR has no 1D or 4D API and is therefore evaluated with only the 2D and two 3D layouts.
+SZ3, SZ2, QoZ, and ZFP support the first five representations. SPERR has no 1D or 4D API and is therefore evaluated with only the 2D and two 3D layouts. The 4D+GLL representation is included specifically for MGARD-X. It uses the same array shape as 4D but supplies the GLL coordinates of the three element-local axes through MGARD-X's nonuniform-grid API.
 
-Although Section~\ref{sec:FDWZ:element-index-dimension} shows that element-index interpolation is weaker than FDWZ's element-local predictor, we still evaluate the 2D and 4D layouts. The element-local alternative in that comparison is GLL-aware, which only MGARD can express through an unmodified baseline API, so the result does not determine whether exposing the element dimension helps the other baselines. Regularity across consecutively stored elements need not improve prediction or transformation directly. It may instead make the resulting symbols or coefficients more compressible during subsequent lossless encoding. We therefore retain both layouts as candidates. When supported by a baseline API, its sampling-based tuning can adapt how the element dimension is used.
+We retain the 2D and 4D layouts as candidates for three reasons. First, Section~\ref{sec:FDWZ:element-index-dimension} compares element-index interpolation with FDWZ's element-local predictor using the GLL spacing, but does not evaluate an element-local predictor that assumes uniform spacing. Baseline compressors that make this assumption may therefore still benefit from the element dimension. Second, correlations among consecutively stored elements may improve the lossless compression of symbols or coefficients even when they do not benefit prediction or transformation. Finally, sampling-based tuning within a baseline API may avoid using the element dimension when it is detrimental.
 
-We exclude SZ2 from the multicore timing evaluations because its official API modifies mutable process-wide state. In our tests, concurrent SZ2 calls across CPU cores produced nondeterministic compressed bitstreams and occasional decompression failures. We nevertheless retain SZ2 in the rate--distortion evaluation because the same number of partitions can be processed serially, yielding deterministic compressed bitstreams and reliable BR and PSNR measurements.
+In addition, we note that SZ2 is excluded from the multicore timing evaluations because its official API modifies mutable process-wide state. In our tests, concurrent SZ2 calls across CPU cores produced nondeterministic compressed bitstreams and occasional decompression failures. We nevertheless retain SZ2 in the rate--distortion evaluation because the same number of partitions can be processed serially, yielding deterministic compressed bitstreams and reliable BR and PSNR measurements.
 
 \subsection{Storage Reduction Evaluation}
 
-We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a lower BR indicates better storage reduction, while at a fixed BR, a higher PSNR indicates better reconstruction quality. For each field, we linearly interpolate $\log(\mathrm{BR})$ at the midpoint of the PSNR range common to curves with at least two finite points. We compare FDWZ with the lowest-BR baseline spanning this midpoint and geometrically average the per-field CR ratios. The evaluation proceeds in two stages. First, we evaluate every supported baseline layout on Datasets~1--6 and compare BR over the common PSNR range of the resulting curves. For each baseline, we select the layout that generally yields the lowest BR at matched PSNRs across these datasets. We fix this layout and evaluate all compressors on the two large-scale datasets, Datasets~7 and~8.
+We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a lower BR indicates better storage reduction, while at a fixed BR, a higher PSNR indicates better reconstruction quality. The evaluation proceeds in two stages. First, we evaluate every supported baseline layout on Datasets~1--6 and compare BR over the common PSNR range of the resulting curves. For each baseline, we select the layout that generally yields the lowest BR at matched PSNRs across these datasets. We fix this overall best layout for each baseline compressor and evaluate all compressors on the two large-scale datasets, Datasets~7 and~8.
 
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figs/raster300/small-rd.png}
-    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Color identifies the compressor family, and line style identifies the input representation. MGARD's per-element 3D results are omitted because they reproduce the inputs exactly while producing bitstreams larger than the uncompressed inputs. Across fields, the geometric-mean CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-1D.}
+    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Across the 18 fields, the average CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D.}
     \label{fig:small-rate-distortion}
 \end{figure*}
 
-Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection results. We exclude 2UZ from the aggregate statistics because multiple compressors produce nonmonotonic RD curves on this field, preventing reliable interpolation at matched PSNRs. For most baseline compressors, the per-element 3D layout ranks last. This degradation arises because it creates many independent bitstreams, repeats metadata, and cannot exploit redundancy across elements. The selected layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-1D.
-
-The selected configurations span 1D, 2D, fused 3D, and 4D layouts, showing that no single dimensional representation is best for every compressor. A layout determines the neighborhoods and blocks exposed to a compressor, so its effectiveness depends on the compressor's internal model.
+Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection results. The selected layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D. The selected configurations span multiple dimensionalities, showing that no single layout is best for every compressor. For most baseline compressors, the per-element 3D layout ranks last. This degradation arises because it creates many independent bitstreams, repeats metadata, and cannot exploit redundancy across elements. We exclude 2UZ from the aggregate statistics because multiple compressors produce nonmonotonic RD curves on this field, preventing reliable interpolation at matched PSNRs.
 
 \begin{figure*}[t]
     \centering
     \includegraphics[width=0.8333\textwidth]{figs/raster300/large-rd.png}
-    \caption{Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets~7 and~8. Across fields, the geometric-mean CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ.}
+    \caption{Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets~7 and~8. Across the 10 fields, the average CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ.}
     \label{fig:large-rate-distortion}
 \end{figure*}
 
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figs/raster300/combined-throughput.png}
-    \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8. The bottom row uses 64 and 128 CPU cores, respectively. Solid curves are measurements. Brown dashed curves are ideal linear projections from MGARD's eight-thread measurements. FDWZ ranks among the two fastest methods in 38 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.}
+    \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 35 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.}
     \label{fig:throughput}
 \end{figure*}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{figs/raster300/e2e-time.png}
-    \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time. Hatched MGARD codec segments use ideal projections, while its transfer times are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. FDWZ matches the fastest method on Dataset~7 and is fastest on Dataset~8.}
+    \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time. The diagonally striped MGARD-X compression and decompression segments are ideal projections, while its transfer segments are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. FDWZ matches the fastest method on Dataset~7 and is fastest on Dataset~8.}
     \label{fig:transfer}
 \end{figure}
 
@@ -108,35 +106,33 @@ The selected configurations span 1D, 2D, fused 3D, and 4D layouts, showing that 
 \begin{figure*}[!t]
     \centering
     \includegraphics[width=0.95\textwidth]{figs/raster300/visualization-cr33.png}
-    \caption{Visualization of an $x=0$ slice of 7T at matched compression ratios near 33.184. Panel (a) shows the original field and the region enlarged in panels (b)--(h), which show pointwise reconstruction errors. MRCZ and FDWZ exhibit the smallest errors.}
+    \caption{Visualization of a slice of 7T at matched compression ratios $\sim$33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The enlarged panels show pointwise reconstruction errors; MRCZ and FDWZ exhibit the smallest errors.}
     \label{fig:distortion}
 \end{figure*}
 
-Figure~\ref{fig:large-rate-distortion} presents the resulting rate--distortion curves for the ten fields of Datasets~7 and~8, including MGARD with its selected 1D layout. Although its curve spans the target PSNR, MGARD is not the best baseline for any field. Combining results from all datasets, the geometric-mean CR improvements are 60.8\% for FDWZ over the best baseline and 93.3\% for MRCZ over FDWZ.
+In Figure~\ref{fig:large-rate-distortion}, at matched PSNRs on Datasets~7 and~8, FDWZ improves the compression ratio over the best baseline by 77.6\% on average, and MRCZ further improves it over FDWZ by 104.8\%. Combining results from all datasets, the average CR improvements are 60.8\% for FDWZ over the best baseline and 93.3\% for MRCZ over FDWZ.
 
 These gains are consistent with the design analyses in Sections~\ref{sec:SZ3-HOHS} and~\ref{sec:mrcz}. FDWZ's GLL-aware interpolation reduces prediction error, and its multi-tree Huffman encoding exploits the distinct quantization-symbol distributions across prediction levels. MRCZ's DChT representation produces smaller high-order coefficients, while mode-major ordering groups coefficients with similar statistics for more effective lossless coding.
 
 \subsection{Codec Throughput}\label{sec:parallel-throughput}
 
-We evaluate aggregate codec throughput on Datasets~7 and~8 at five relative error bounds using the baseline layouts selected in Figure~\ref{fig:small-rate-distortion}. Aggregate throughput is the total uncompressed size of the five fields divided by their summed compression or decompression time. Dataset~7 uses 64 partitions with 8 or 64 CPU cores, and Dataset~8 uses 128 partitions with 16 or 128 CPU cores. MGARD could not run at the intended concurrency because each concurrent partition call requires a large temporary workspace. Its 64-thread Dataset~7 run exceeded the 235~GiB available on a standard Anvil node, while its 16-thread Dataset~8 run exceeded 128~GiB. We therefore measure MGARD with eight threads and project its throughput at $p$ threads as $\widehat{T}(p)=(p/8)T(8)$, which assumes ideal linear scaling. Figure~\ref{fig:throughput} presents the lower core counts in the top row and the higher core counts in the bottom row.
+We evaluate aggregate codec throughput on Datasets~7 and~8 at five relative error bounds using the baseline layouts selected in Figure~\ref{fig:small-rate-distortion}. Aggregate throughput is the total uncompressed size of the five fields divided by their summed compression or decompression time. Dataset~7 uses 64 partitions with 8 or 64 CPU cores, and Dataset~8 uses 128 partitions with 16 or 128 CPU cores. MGARD-X could not run at the intended concurrency because each concurrent partition call requires a large temporary workspace. At higher thread counts, its memory consumption exceeded the 235~GiB available on a standard Anvil node. We therefore measure MGARD-X with eight threads for both datasets and project its throughput at $p$ threads as $\widehat{T}(p)=(p/8)T(8)$, which assumes ideal linear scaling. Figure~\ref{fig:throughput} presents the lower core counts in the top row and the higher core counts in the bottom row.
 
-The MGARD projection is deliberately optimistic. At $\varepsilon_{\mathrm{rel}}=10^{-6}$ on Dataset~8, its measured eight-thread aggregate compression and decompression throughputs are 0.068 and 0.073~GiB/s. Preserving these per-thread rates through 128 threads gives ideal projections of 1.09 and 1.17~GiB/s. In practice, increasing concurrency introduces additional memory traffic and resource contention, so these ideal values cannot be attained. Even these projections remain below FDWZ in every setting.
-
-Across all 40 cases shown in Figure~\ref{fig:throughput}, FDWZ ranks among the two fastest methods in 38 cases. At the lower core counts, it ranks first in 18 of 20 cases. At the higher core counts, it ranks first in four cases and second in 15. MRCZ prioritizes storage reduction over throughput but is not the slowest method under either allocation.
+Across all 40 cases shown in Figure~\ref{fig:throughput}, FDWZ ranks among the two fastest methods in 35 cases. At the lower core counts, it ranks first in 18 of 20 cases. At the higher core counts, it ranks first in four cases and second in 13. MRCZ prioritizes storage reduction over throughput but is not the slowest method under either allocation.
 
 \subsection{End-to-End Workflow Evaluation}
 
 Having evaluated storage reduction and codec performance, we next examine how these properties translate into end-to-end cross-facility data-movement time. We transfer data from ACCESS Anvil to the Argonne LCRC Improv DTN using Globus~\cite{chard2017globus}, with relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8.
 
-Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end time as the sum of compression, Globus transfer, and decompression time. We repeat each transfer three times and report the median total. For MGARD, the transfer component is measured, while the codec components use the ideal projections from its eight-thread measurements described in Section~\ref{sec:parallel-throughput}.
+Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end time as the sum of compression, Globus transfer, and decompression time. We repeat each transfer three times and report the median total. For MGARD-X, the transfer component is measured, while the codec components use the ideal projections from its eight-thread measurements described in Section~\ref{sec:parallel-throughput}.
 
-Figure~\ref{fig:transfer} shows that all evaluated compressors except MGARD on Dataset~7 reduce end-to-end time relative to direct transfer. MGARD increases the payload there by 8.9\%, and its projected codec time raises the total above direct transfer. The fastest methods reduce end-to-end time by 79.2\% and 88.3\% on Datasets~7 and~8, respectively. ZFP and FDWZ perform nearly identically on the former, whereas FDWZ is 19.2\% faster than ZFP on the latter. MRCZ produces the smallest compressed payloads, while its end-to-end time is at most 1.91$\times$ the minimum on each dataset.
+Figure~\ref{fig:transfer} shows that most evaluated compressors reduce end-to-end time relative to direct transfer. The fastest methods reduce end-to-end time by 79.2\% and 88.3\% on Datasets~7 and~8, respectively. ZFP and FDWZ perform nearly identically on Dataset~7, whereas FDWZ is 19.2\% faster than ZFP on Dataset~8. MRCZ produces the smallest compressed payloads, while its end-to-end time is at most 1.36$\times$ the minimum on each dataset.
 
-Because the Globus transfer times in Figure~\ref{fig:transfer} do not scale proportionally with compressed payload size, Figure~\ref{fig:transfer-size-time} plots effective transfer throughput against payload size. The monotonic association remains strong across the 14 compressed workflows even with MGARD's substantially larger payloads (Spearman's $\rho=0.996$). This size dependence partially offsets the cost of moving more data, narrowing the transfer-time advantage of stronger compression and making the evaluation conservative for FDWZ. Even so, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
+We find that the Globus transfer times in Figure~\ref{fig:transfer} do not scale proportionally with compressed payload size. Figure~\ref{fig:transfer-size-time} therefore plots effective transfer throughput against payload size. The monotonic association remains strong across the 14 compressed workflows (Spearman's $\rho=0.996$). This size dependence partially offsets the cost of moving more data, narrowing the transfer-time advantage of stronger compression. Even so, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
 
 \subsection{Visualization}\label{sec:performance evaluation:visualization}
 
-We visually compare pointwise reconstruction errors on an $x=0$ slice of the temperature field from Dataset~7 at matched compression ratios near 33.184. MGARD is omitted because it cannot attain this target ratio. At a relative error bound of 100, it reaches a compression ratio of only 30.754 while its PSNR falls to 1.43~dB. Table~\ref{tab:error-bound-visualization} reports the selected relative error bounds and resulting compression ratios.
+To examine spatial error patterns at comparable storage costs, we visually compare pointwise reconstruction errors on a slice of 7T at matched compression ratios near 33.184. MGARD-X is omitted because it cannot attain this target ratio. Table~\ref{tab:error-bound-visualization} reports the selected relative error bounds and resulting compression ratios for the other compressors.
 
 \begin{table}[htb]
     \centering

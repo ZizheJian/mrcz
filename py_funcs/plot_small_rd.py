@@ -67,8 +67,8 @@ def focus_rd_axes(axis,method_points):
 
 def finish_figure(figure,xlabel,ylabel,output_path,paper_output):
     family_handles=[]
-    for family in ["MRCZ","FDWZ","SZ3","SZ2","QoZ","ZFP","MGARD","SPERR"]:
-        family_handles.append(plt.Line2D([0],[0],color=family_colors[family],linestyle="-",linewidth=0.8,label=family))
+    for family in ["MRCZ","FDWZ","SZ3","SZ2","QoZ","ZFP","SPERR","MGARD"]:
+        family_handles.append(plt.Line2D([0],[0],color=family_colors[family],linestyle="-",linewidth=0.8,label="MGARD-X" if family=="MGARD" else family))
     layout_handles=[plt.Line2D([0],[0],color="#4b5563",linestyle=layout_styles[layout],linewidth=0.8,label=layout) for layout in layouts]
     figure.legend(handles=family_handles,loc="upper center",ncol=8,frameon=False,bbox_to_anchor=(0.5,0.995),handlelength=1.0,handletextpad=0.25,columnspacing=0.6,borderaxespad=0)
     figure.legend(handles=layout_handles,loc="upper center",ncol=6,frameon=False,bbox_to_anchor=(0.5,0.945),handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)
@@ -97,10 +97,11 @@ def plot_rd(result_dir):
             axis.plot([point[0] for point in points],[point[1] for point in points],color=color,linestyle=linestyle,linewidth=linewidth,zorder=1)
         focus_rd_axes(axis,method_points)
         axis.set_xlabel(f"({chr(ord('a')+panel_index)}) {title}",labelpad=1.5)
-        axis.grid(True,which="both",alpha=0.25,linewidth=0.35)
+        axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
         axis.xaxis.set_major_locator(LogLocator(base=10,numticks=4))
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
         style_plot_axis(axis)
+        axis.tick_params(axis="x",which="minor",length=0)
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     finish_figure(figure,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.pdf"))
 

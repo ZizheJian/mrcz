@@ -68,7 +68,7 @@ def plot_dataset(result_dir,dataset,project_root):
         focus_axes(axis,method_points)
         axis.set_title(field)
         axis.grid(True,alpha=0.25,linewidth=0.5)
-    handles=[plt.Line2D([0],[0],color=colors[method],linewidth=1.6,label=method) for method in methods]
+    handles=[plt.Line2D([0],[0],color=colors[method],linewidth=1.6,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
     figure.legend(handles=handles,loc="upper center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,0.99),fontsize=9)
     figure.suptitle(f"{dataset} rate-distortion",fontsize=16,y=0.9)
     figure.supxlabel("Bit rate")
@@ -100,11 +100,12 @@ def plot_combined(result_dir,project_root):
             axis.plot([point[0] for point in points],[point[1] for point in points],color=colors[method],linewidth=0.8,label=method,zorder=1)
         focus_axes(axis,method_points)
         axis.set_xlabel(f"({chr(ord('a')+panel_index)}) {title}",labelpad=1.5)
-        axis.grid(True,alpha=0.25,linewidth=0.35)
+        axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
         axis.xaxis.set_major_locator(LogLocator(base=10,numticks=4))
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
         style_plot_axis(axis)
-    handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label=method) for method in methods]
+        axis.tick_params(axis="x",which="minor",length=0)
+    handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
     figure.legend(handles=handles,loc="upper center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,0.995),handlelength=1.0,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)
     figure.supxlabel("Bit rate (log scale)",x=0.53,y=0.025)
     figure.supylabel("PSNR (dB)",x=0.008,y=0.47)

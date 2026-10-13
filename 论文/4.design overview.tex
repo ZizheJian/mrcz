@@ -4,9 +4,7 @@ This section describes the partitioning and parallelization strategy shared by a
 
 \subsection{Partitioned Parallel Execution}
 
-All evaluated methods use a common partitioned processing layer. It divides either a complete field or a selected contiguous element range into partitions and assigns each partition to an OpenMP thread, which invokes the selected compressor.
-
-Each compressor invocation produces an independently decodable partition payload. The field bitstream records the payload sizes followed by the payloads in partition order, allowing the decoder to locate each partition. This independence enables parallel execution at different CPU allocations, whose throughput we evaluate in Section~\ref{sec:parallel-throughput}.
+All evaluated methods use a common partitioned processing layer. It divides either a complete field or a selected contiguous element range into partitions and assigns each partition to an OpenMP thread, which invokes the selected compressor. Each partition is compressed and decompressed independently.
 
 \subsection{Element-local Design of FDWZ and MRCZ}
 
@@ -18,4 +16,4 @@ FDWZ and MRCZ both adopt an element-local design for their main modeling steps. 
 \item \textit{Transform Locality}: The transform used by MRCZ operates naturally on the tensor-product arrangement within each element. This arrangement is not preserved across element boundaries, making an element-local transform the natural design.
 \end{enumerate}
 
-Here, element-local describes the scope of prediction and transformation, not bitstream granularity: each FDWZ or MRCZ partition produces one payload for many elements. Both methods therefore avoid cross-element numerical dependencies while still exploiting cross-element statistical redundancy during lossless encoding.
+Here, element-local describes the scope of prediction and transformation, not bitstream granularity: each FDWZ or MRCZ partition produces one payload for many elements. Both methods therefore avoid cross-element numerical dependencies while still exploiting cross-element statistical redundancy during lossless encoding, as described in Sections~\ref{sec:FDWZ:multi-tree} and~\ref{sec:mrcz:transpose}.

@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <bit>
 #include "huffman.hpp"
+#include "fast_huffman.hpp"
 #include <zstd.h>
 #include <mfem.hpp>
 #include <tinyxml2.h>
@@ -146,15 +147,15 @@ namespace mrcz
 
             // MRCZ coefficient QB无损编解码
             template<bool ablation>
-            void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
+            void lossless_compress_coeff_qb(uint64_t begin_index,uint64_t end_index,int32_t *coeff_qb,unsigned char *&huffman_bs,uint32_t n012);
             template<bool ablation>
-            void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
+            void lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int32_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n012);
 
             // 通用量化
-            void quantize_and_overwrite(T &x,int64_t &y,T eb,T inv_2_eb);
-            void quantize_and_overwrite_array(T *data,int64_t *qb,uint32_t size,T eb,T inv_2_eb);
-            void quantize_and_overwrite_err(T &pred,T &truth,int64_t &qb,T eb,T inv_2_eb);
-            void quantize_array(T *pred,T *truth,int64_t *qb,uint32_t size,T eb,T inv_2_eb);
+            void quantize_and_overwrite(T &x,int32_t &y,T eb,T inv_2_eb);
+            void quantize_and_overwrite_array(T *data,int32_t *qb,uint32_t size,T eb,T inv_2_eb);
+            void quantize_and_overwrite_err(T &pred,T &truth,int32_t &qb,T eb,T inv_2_eb);
+            void quantize_array(T *pred,T *truth,int32_t *qb,uint32_t size,T eb,T inv_2_eb);
 
             void default_init()
             {

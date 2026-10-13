@@ -14,8 +14,10 @@ colors=METHOD_COLORS
 tasks=("Compression","Decompression")
 
 
-def maximum(aggregate):
-    return max(value for task in aggregate.values() for method_values in task.values() for value in method_values)
+def group_limit(aggregate,extra_aggregate):
+    maximum_value=max(value for task in tasks for values in aggregate[task].values() for value in values)
+    maximum_value=max(maximum_value,max(value for task in tasks for value in extra_aggregate[task]))
+    return math.ceil(maximum_value*1.05*2)/2
 
 
 def mgard_8core(project_root,dataset,error_bounds):
@@ -46,11 +48,12 @@ def main():
         mgard_aggregate=mgard_8core(project_root,dataset,error_bounds)
         data[(0,dataset)]=(small_cpus,error_bounds,small_aggregate,mgard_aggregate)
         data[(1,dataset)]=(large_cpus,large_error_bounds,large_aggregate,mgard_aggregate)
-        limits[(0,dataset)]=math.ceil(maximum(small_aggregate))+0.5
-        limits[(1,dataset)]=18 if dataset_index==7 else 12
+        limits[(0,dataset)]=group_limit(small_aggregate,mgard_aggregate)
+        projected_mgard={task:[value*large_cpus/8 for value in mgard_aggregate[task]] for task in tasks}
+        limits[(1,dataset)]=group_limit(large_aggregate,projected_mgard)
 
     columns=[("pb0",7,"Compression"),("pb0",7,"Decompression"),("jicf0",8,"Compression"),("jicf0",8,"Decompression")]
-    figure,axes=plt.subplots(2,4,figsize=(7.16,3.25))
+    figure,axes=plt.subplots(2,4,figsize=(7.16,2.99))
     for row in range(2):
         for column,(dataset,dataset_index,task) in enumerate(columns):
             axis=axes[row,column]
@@ -62,14 +65,14 @@ def main():
             axis.invert_xaxis()
             axis.xaxis.set_minor_locator(NullLocator())
             axis.set_ylim(0,limits[(row,dataset)])
-            axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-            axis.grid(True,which="major",alpha=0.25,linewidth=0.35)
+            axis.yaxis.set_major_locator(MaxNLocator(nbins=4,integer=True))
+            axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
             style_plot_axis(axis)
             panel=chr(ord("a")+row*4+column)
             axis.set_xlabel(f"({panel}) Dataset {dataset_index}, {task}\n{cpus} cores",labelpad=1.0)
 
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label=method) for method in methods]
-    handles.extend([plt.Line2D([0],[0],color=colors["MGARD-1D"],linewidth=1.0,label="MGARD measured"),plt.Line2D([0],[0],color=colors["MGARD-1D"],linestyle="--",linewidth=1.0,label="MGARD ideal")])
+    handles.extend([plt.Line2D([0],[0],color=colors["MGARD-1D"],linewidth=1.0,label="MGARD-X-1D measured"),plt.Line2D([0],[0],color=colors["MGARD-1D"],linestyle="--",linewidth=1.0,label="MGARD-X-1D ideal")])
     figure.legend(handles=handles,loc="upper center",ncol=4,frameon=False,bbox_to_anchor=(0.5,0.995),handlelength=1.0,handletextpad=0.25,columnspacing=0.75,borderaxespad=0,fontsize=8.0)
     figure.supxlabel("Relative Error Bound",x=0.515,y=0.018)
     figure.supylabel("Aggregate Throughput (GiB/s)",x=0.007,y=0.47)

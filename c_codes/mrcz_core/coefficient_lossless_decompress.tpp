@@ -4,7 +4,7 @@ namespace mrcz
 {
     template<typename T>
     template<bool ablation>
-    inline void param_class<T>::lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int64_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n000)
+    inline void param_class<T>::lossless_decompress_coeff_qb(uint64_t begin_index,uint64_t end_index,int32_t *coeff_qb,const unsigned char *&huffman_bs,uint32_t n000)
     {
         bool coefficient_transpose=true,tiled_coefficient_transpose=true;
         if constexpr(ablation)
@@ -15,8 +15,8 @@ namespace mrcz
         if (coefficient_transpose)
         {
             uint64_t block_element_num=end_index-begin_index;
-            int64_t *temp_coeff_qb=new int64_t[n000*block_element_num];
-            huffman_encoder_class<int64_t> coeff_encoder;
+            int32_t *temp_coeff_qb=new int32_t[n000*block_element_num];
+            fast_huffman_encoder_class<int32_t> coeff_encoder;
             coeff_encoder.load(huffman_bs);
             coeff_encoder.decode(huffman_bs,temp_coeff_qb,n000*block_element_num);
             if (tiled_coefficient_transpose)
@@ -36,7 +36,7 @@ namespace mrcz
         }
         else
         {
-            huffman_encoder_class<int64_t> coeff_encoder;
+            fast_huffman_encoder_class<int32_t> coeff_encoder;
             coeff_encoder.load(huffman_bs);
             coeff_encoder.decode(huffman_bs,coeff_qb+n000*begin_index,n000*(end_index-begin_index));
         }

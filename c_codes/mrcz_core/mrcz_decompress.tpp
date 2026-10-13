@@ -19,15 +19,15 @@ namespace mrcz
         decompressed_data.resize(element_num_to_process*n012);
         vector<double> zstd_time_by_block(measure_phase_time?partitions.size():0,0),coeff_huffman_time_by_block(measure_phase_time?partitions.size():0,0),residual_huffman_time_by_block(measure_phase_time?partitions.size():0,0);
         vector<double> coeff_reconstruct_time_by_block(measure_phase_time?partitions.size():0,0),inverse_time_by_block(measure_phase_time?partitions.size():0,0),residual_reconstruct_time_by_block(measure_phase_time?partitions.size():0,0);
-        vector<int64_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
+        vector<int32_t*> coeff_qb_by_thread(max_cpus,nullptr),err_qb_by_thread(max_cpus,nullptr);
         vector<uint64_t> qb_capacity_by_thread(max_cpus,0);
         double start_time=omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(max_cpus)
         for (uint64_t block_id=0;block_id<partitions.size();block_id++)
         {
             int thread_id=omp_get_thread_num();
-            int64_t *&coeff_qb=coeff_qb_by_thread[thread_id];
-            int64_t *&err_qb=err_qb_by_thread[thread_id];
+            int32_t *&coeff_qb=coeff_qb_by_thread[thread_id];
+            int32_t *&err_qb=err_qb_by_thread[thread_id];
             uint64_t &qb_capacity=qb_capacity_by_thread[thread_id];
             uint64_t begin_index=partitions[block_id].begin_index;
             uint64_t end_index=partitions[block_id].end_index;
@@ -37,8 +37,8 @@ namespace mrcz
             {
                 delete[] coeff_qb;
                 delete[] err_qb;
-                coeff_qb=new int64_t[block_value_num];
-                err_qb=new int64_t[block_value_num];
+                coeff_qb=new int32_t[block_value_num];
+                err_qb=new int32_t[block_value_num];
                 qb_capacity=block_value_num;
             }
             double phase_start_time=0;
@@ -54,7 +54,7 @@ namespace mrcz
             lossless_decompress_coeff_qb<ablation>(0,block_element_num,coeff_qb,huffman_bs,n012);
             if constexpr(measure_phase_time) coeff_huffman_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
             if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
-            huffman_encoder_class<int64_t> err_encoder;
+            fast_huffman_encoder_class<int32_t> err_encoder;
             err_encoder.load(huffman_bs);
             err_encoder.decode(huffman_bs,err_qb,block_value_num);
             if constexpr(measure_phase_time) residual_huffman_time_by_block[block_id]=omp_get_wtime()-phase_start_time;
@@ -65,8 +65,8 @@ namespace mrcz
             {
                 T *element=decompressed_data.data()+element_id*n012;
                 uint64_t local_element_id=element_id-begin_index;
-                int64_t *element_coeff_qb=coeff_qb+local_element_id*n012;
-                int64_t *element_err_qb=err_qb+local_element_id*n012;
+                int32_t *element_coeff_qb=coeff_qb+local_element_id*n012;
+                int32_t *element_err_qb=err_qb+local_element_id*n012;
                 if constexpr(measure_phase_time) phase_start_time=omp_get_wtime();
                 for (uint32_t i=0;i<n012;i++)
                     temp_element1[i]=element_coeff_qb[i]*2*coeff_eb;

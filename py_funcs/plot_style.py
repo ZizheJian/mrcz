@@ -18,7 +18,7 @@ METHOD_LABELS={
     "QoZ-4D":"QoZ",
     "ZFP-3D-fused":"ZFP",
     "SPERR-2D":"SPERR",
-    "MGARD-1D":"MGARD"}
+    "MGARD-1D":"MGARD-X"}
 METHOD_MARKERS={"MRCZ":"*","FDWZ":"o","SZ3-4D":"^","QoZ-4D":"D","ZFP-3D-fused":"v","SPERR-2D":"P"}
 TIMING_METHODS=("MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D")
 RD_METHODS=("MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D")

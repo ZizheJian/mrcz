@@ -275,11 +275,14 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
                             command_list=[f"{command} -fields {fields_argument}" for command in command_list] # type: ignore
                         command_list=add_extra_parameters(command_list,extra_parameters)
                         compression_output=run_command(command_list[0])
+                        constant_fields={field for field in fields if f"Field {field} is compressed as constant:" in compression_output}
                         if prediction_locality_csv_path is not None:
                             if len(fields)!=1 or eb_mode!="REL":
                                 raise ValueError("prediction locality CSV要求单个field和REL EB")
                             write_fdwz_prediction_locality(prediction_locality_csv_path,compression_output,fields[0],partition_num,eb)
                         if compression_only:
+                            if cleanup_after_each_test:
+                                cleanup_test_outputs(data_path,method,fields)
                             continue
                         decompression_output=run_command(command_list[1])
                         if write_to_csv:
@@ -287,7 +290,6 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
                             decompression_throughput=parse_field_throughput(decompression_output,"decompression")
                             stream_bitrates=parse_mrcz_stream_bitrates(compression_output)
                             rate_distortion=parse_rate_distortion(decompression_output)
-                            constant_fields={field for field in fields if f"Field {field} is compressed as constant:" in compression_output}
                             result_context=f"{task_name}/{method}/EB={eb}/max_cpus={max_cpus}/trial={trial}"
                             validate_parsed_fields(compression_throughput,fields,f"{result_context}的compression throughput",constant_fields)
                             validate_parsed_fields(decompression_throughput,fields,f"{result_context}的decompression throughput",constant_fields)
@@ -325,9 +327,10 @@ if __name__=="__main__":
     parser=argparse.ArgumentParser(description="运行configs目录中的MRCZ实验配置")
     parser.add_argument("json",help="configs中的JSON配置名称，或JSON文件路径")
     parser.add_argument("--skip-build",action="store_true",help="使用现有安装而不重新构建")
+    parser.add_argument("--cleanup-after-each-test",action="store_true",help="每次测试后删除压缩和解压临时文件")
     arguments=parser.parse_args()
     try:
         json_path=resolve_json_path(arguments.json)
     except FileNotFoundError as error:
         parser.error(str(error))
-    run_experiment(json_path=json_path,build_before_test=not arguments.skip_build)
+    run_experiment(json_path=json_path,build_before_test=not arguments.skip_build,cleanup_after_each_test=arguments.cleanup_after_each_test)
