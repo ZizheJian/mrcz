@@ -161,8 +161,8 @@ def make_qb_figure(mode,output_paths):
     right_axes=figure.add_axes([0.735,0.34,0.255,0.48])
     draw_tree_distribution(left_axes,read_tree_distributions(tree_distribution_path),mode)
     draw_rate_distortion(right_axes)
-    figure.text(0.365,0.015,"(a) QB distributions",ha="center",va="bottom",fontsize=9)
-    figure.text(0.8625,0.015,"(b) Rate-distortion",ha="center",va="bottom",fontsize=9)
+    figure.text(0.365,0.015,"(a) QB distributions",ha="center",va="bottom",fontsize=8)
+    figure.text(0.8625,0.015,"(b) Rate-distortion",ha="center",va="bottom",fontsize=8)
     for output_path in output_paths:
         figure.savefig(output_path,format="pdf",dpi=300)
     plt.close(figure)

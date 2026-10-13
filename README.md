@@ -132,7 +132,7 @@ baseline通过未经修改的官方API接入。设一个partition包含`E`个ele
 | 4D | 作为`[E,N0,N1,N2]`调用一次 |
 | 4D+GLL | MGARD-X的4D nonuniform-coordinate接口 |
 
-论文中的正式大数据baseline布局为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused、SPERR-2D和MGARD-1D。SZ2的官方API使用进程级可变状态，不能安全执行并发调用，因此不参与多核throughput实验。MGARD-X的内存需求不允许其在大规模数据上运行与其他方法相同的高核数配置，相关图中只保留实测的小核结果和理想线性扩展上界。
+论文中的正式大数据baseline布局为SZ3-4D、SZ2-3D-fused、QoZ-4D、ZFP-3D-fused、SPERR-2D和MGARD-X-1D。SZ2的官方API使用进程级可变状态，不能安全执行并发调用，因此不参与多核throughput实验。MGARD-X的内存需求不允许其在大规模数据上运行与其他方法相同的高核数配置，相关图中只保留实测的小核结果和理想线性扩展上界。
 
 ## 实验与绘图
 

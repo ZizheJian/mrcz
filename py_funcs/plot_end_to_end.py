@@ -31,12 +31,12 @@ def draw_panel(axis,rows,dataset):
     style_plot_axis(axis,tick_length=2,tick_width=0.5,tick_pad=0.8,spine_width=0.6)
     axis.set_xlim(*x_limits[dataset])
     axis.set_yticks(y)
-    axis.set_yticklabels(["MGARD-X-1D" if method=="MGARD-1D" else method for method in ordered_methods],fontsize=7)
+    axis.set_yticklabels(["MGARD-X-1D" if method=="MGARD-1D" else method for method in ordered_methods],fontsize=8)
     axis.set_xlabel("Time (s)",labelpad=1.0)
     axis.text(0.5,-0.22,titles[dataset],transform=axis.transAxes,ha="center",va="top",fontsize=8)
     for row,y_position in zip(ordered,y):
         total=float(row["End-to-end Time Median"])
-        axis.annotate(f"{total:.1f}",(total,y_position),xytext=(2,0),textcoords="offset points",ha="left",va="center",fontsize=7)
+        axis.annotate(f"{total:.1f}",(total,y_position),xytext=(2,0),textcoords="offset points",ha="left",va="center",fontsize=8)
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

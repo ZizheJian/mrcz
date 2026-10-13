@@ -101,7 +101,7 @@ def main():
         style_plot_axis(ax,tick_length=2,tick_width=0.5,tick_pad=1.5,spine_width=0.6)
     for label,ax in zip(("(a) Rate–Distortion","(b) Throughput"),axes):
         position=ax.get_position()
-        fig.text((position.x0+position.x1)/2,0.04,label,ha="center",va="bottom",fontsize=8.4)
+        fig.text((position.x0+position.x1)/2,0.04,label,ha="center",va="bottom",fontsize=8)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
     fig.savefig(args.output)
     fig.savefig(os.path.splitext(args.output)[0]+".png",dpi=300)

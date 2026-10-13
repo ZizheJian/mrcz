@@ -9,7 +9,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.colors import LinearSegmentedColormap,Normalize
 from plot_style import METHOD_LABELS,RD_METHODS,apply_paper_style
 
-apply_paper_style(tick_size=7.0)
+apply_paper_style()
 
 methods=RD_METHODS[:-1]
 labels=METHOD_LABELS

@@ -6,7 +6,7 @@ This section evaluates FDWZ and MRCZ in terms of rate--distortion performance, c
 
 \subsubsection{Evaluation Platform}\label{sec:evaluation-platform}\mbox{}
 
-The experiments were conducted on Purdue Anvil. Each compute node contains two 64-core AMD EPYC 7763 processors, for a total of 128 physical CPU cores, and approximately 256~GB of main memory. Unless stated otherwise, Datasets~1--6 use one CPU core and one partition, Dataset~7 uses 64 CPU cores and 64 partitions, and Dataset~8 uses 128 CPU cores and 128 partitions. For single-precision inputs, we promote values to double precision when $\varepsilon_{\mathrm{rel}}<10^{-4}$ so that arithmetic precision does not limit the requested error bound. The benchmark executables were compiled with GCC 11.2.0 using \verb|-Ofast -march=native|. SPERR and MGARD-X were built separately in Release mode using their official CMake build systems. For parallel runs, OpenMP threads were bound to physical cores using \verb|OMP_PLACES=cores| and \verb|OMP_PROC_BIND=spread|.
+The experiments were conducted on Purdue Anvil. Each standard compute node provides two 64-core AMD EPYC 7763 processors, for a total of 128 physical CPU cores, and 235~GiB of memory available to jobs. Unless stated otherwise, Datasets~1--6 use one CPU core and one partition, Dataset~7 uses 64 CPU cores and 64 partitions, and Dataset~8 uses 128 CPU cores and 128 partitions. For single-precision inputs, we promote values to double precision when $\varepsilon_{\mathrm{rel}}<10^{-4}$ so that arithmetic precision does not limit the requested error bound. The benchmark executables were compiled with GCC 11.2.0 using \verb|-Ofast -march=native|. SPERR and MGARD-X were built separately in Release mode using their official CMake build systems. For parallel runs, OpenMP threads were bound to physical cores using \verb|OMP_PLACES=cores| and \verb|OMP_PROC_BIND=spread|.
 
 \subsubsection{High-Order Element Datasets}\mbox{}
 
@@ -14,6 +14,7 @@ The experiments were conducted on Purdue Anvil. Each compute node contains two 6
     \centering
     \caption{High-order element datasets used for evaluating FDWZ, MRCZ, and the baseline compressors.}
     \label{tab:datasets}
+    \footnotesize
     \begin{tabular}{c|ccclc}\toprule
          \textbf{Index} & \textbf{Framework} & \textbf{Element Shape} & \textbf{Number of Elements} & \textbf{Non-Constant Fields} & \textbf{Data Type} \\
          \midrule
@@ -42,6 +43,7 @@ Although these layouts preserve the stored value order and represent the same fi
     \centering
     \caption{Candidate layouts for the baseline compressors.}
     \label{tab:baseline-layouts}
+    \footnotesize
     \begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}
         \toprule
         Layout & Arrays Passed to the Compressor \\
@@ -69,7 +71,7 @@ We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a 
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figs/raster300/small-rd.png}
-    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Across the 18 fields, the average CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D.}
+    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Across the 17 fields included in the aggregate statistics, the average CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D.}
     \label{fig:small-rate-distortion}
 \end{figure*}
 
@@ -82,41 +84,20 @@ Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection re
     \label{fig:large-rate-distortion}
 \end{figure*}
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{figs/raster300/combined-throughput.png}
-    \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 35 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.}
-    \label{fig:throughput}
-\end{figure*}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\linewidth]{figs/raster300/e2e-time.png}
-    \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time. The diagonally striped MGARD-X compression and decompression segments are ideal projections, while its transfer segments are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. FDWZ matches the fastest method on Dataset~7 and is fastest on Dataset~8.}
-    \label{fig:transfer}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\linewidth]{figs/raster300/transfer-size-time.png}
-    \caption{Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets~7 and~8, and each error bar spans the three transfer trials. Across the 14 compressed workflows, larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.}
-    \label{fig:transfer-size-time}
-\end{figure}
-
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figs/raster300/visualization-cr33.png}
-    \caption{Visualization of a slice of 7T at matched compression ratios $\sim$33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The enlarged panels show pointwise reconstruction errors; MRCZ and FDWZ exhibit the smallest errors.}
-    \label{fig:distortion}
-\end{figure*}
-
-In Figure~\ref{fig:large-rate-distortion}, at matched PSNRs on Datasets~7 and~8, FDWZ improves the compression ratio over the best baseline by 77.6\% on average, and MRCZ further improves it over FDWZ by 104.8\%. Combining results from all datasets, the average CR improvements are 60.8\% for FDWZ over the best baseline and 93.3\% for MRCZ over FDWZ.
+In Figure~\ref{fig:large-rate-distortion}, at matched PSNRs on Datasets~7 and~8, FDWZ improves the compression ratio over the best baseline by 77.6\% on average, and MRCZ further improves it over FDWZ by 104.8\%. Across the 27 fields retained in the aggregate statistics from all datasets, the average CR improvements are 60.8\% for FDWZ over the best baseline and 93.3\% for MRCZ over FDWZ.
 
 These gains are consistent with the design analyses in Sections~\ref{sec:SZ3-HOHS} and~\ref{sec:mrcz}. FDWZ's GLL-aware interpolation reduces prediction error, and its multi-tree Huffman encoding exploits the distinct quantization-symbol distributions across prediction levels. MRCZ's DChT representation produces smaller high-order coefficients, while mode-major ordering groups coefficients with similar statistics for more effective lossless coding.
 
 \subsection{Codec Throughput}\label{sec:parallel-throughput}
 
 We evaluate aggregate codec throughput on Datasets~7 and~8 at five relative error bounds using the baseline layouts selected in Figure~\ref{fig:small-rate-distortion}. Aggregate throughput is the total uncompressed size of the five fields divided by their summed compression or decompression time. Dataset~7 uses 64 partitions with 8 or 64 CPU cores, and Dataset~8 uses 128 partitions with 16 or 128 CPU cores. MGARD-X could not run at the intended concurrency because each concurrent partition call requires a large temporary workspace. At higher thread counts, its memory consumption exceeded the 235~GiB available on a standard Anvil node. We therefore measure MGARD-X with eight threads for both datasets and project its throughput at $p$ threads as $\widehat{T}(p)=(p/8)T(8)$, which assumes ideal linear scaling. Figure~\ref{fig:throughput} presents the lower core counts in the top row and the higher core counts in the bottom row.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figs/raster300/combined-throughput.png}
+    \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 35 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.}
+    \label{fig:throughput}
+\end{figure*}
 
 Across all 40 cases shown in Figure~\ref{fig:throughput}, FDWZ ranks among the two fastest methods in 35 cases. At the lower core counts, it ranks first in 18 of 20 cases. At the higher core counts, it ranks first in four cases and second in 13. MRCZ prioritizes storage reduction over throughput but is not the slowest method under either allocation.
 
@@ -126,7 +107,21 @@ Having evaluated storage reduction and codec performance, we next examine how th
 
 Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end time as the sum of compression, Globus transfer, and decompression time. We repeat each transfer three times and report the median total. For MGARD-X, the transfer component is measured, while the codec components use the ideal projections from its eight-thread measurements described in Section~\ref{sec:parallel-throughput}.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figs/raster300/e2e-time.png}
+    \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time. The diagonally striped MGARD-X compression and decompression segments are ideal projections, while its transfer segments are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. FDWZ matches the fastest method on Dataset~7 and is fastest on Dataset~8.}
+    \label{fig:transfer}
+\end{figure}
+
 Figure~\ref{fig:transfer} shows that most evaluated compressors reduce end-to-end time relative to direct transfer. The fastest methods reduce end-to-end time by 79.2\% and 88.3\% on Datasets~7 and~8, respectively. ZFP and FDWZ perform nearly identically on Dataset~7, whereas FDWZ is 19.2\% faster than ZFP on Dataset~8. MRCZ produces the smallest compressed payloads, while its end-to-end time is at most 1.36$\times$ the minimum on each dataset.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figs/raster300/transfer-size-time.png}
+    \caption{Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets~7 and~8, and each error bar spans the three transfer trials. Across the 14 compressed workflows, larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.}
+    \label{fig:transfer-size-time}
+\end{figure}
 
 We find that the Globus transfer times in Figure~\ref{fig:transfer} do not scale proportionally with compressed payload size. Figure~\ref{fig:transfer-size-time} therefore plots effective transfer throughput against payload size. The monotonic association remains strong across the 14 compressed workflows (Spearman's $\rho=0.996$). This size dependence partially offsets the cost of moving more data, narrowing the transfer-time advantage of stronger compression. Even so, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
 
@@ -138,6 +133,7 @@ To examine spatial error patterns at comparable storage costs, we visually compa
     \centering
     \caption{Relative error bounds and achieved compression ratios used for the visualization comparison on 7T.}
     \label{tab:error-bound-visualization}
+    \footnotesize
     \setlength{\tabcolsep}{3pt}
     \begin{tabular}{lcccc}
         \toprule
@@ -151,5 +147,12 @@ To examine spatial error patterns at comparable storage costs, we visually compa
         \bottomrule
     \end{tabular}
 \end{table}
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=\textwidth]{figs/raster300/visualization-cr33.png}
+    \caption{Visualization of a slice of 7T at matched compression ratios $\sim$33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The enlarged panels show pointwise reconstruction errors; MRCZ and FDWZ exhibit the smallest errors.}
+    \label{fig:distortion}
+\end{figure*}
 
 Figure~\ref{fig:distortion} reveals a clear ordering of visual reconstruction error at comparable compression ratios. The errors produced by MRCZ and FDWZ are nearly imperceptible, followed by the relatively small errors of ZFP and SZ3. Although ZFP uses the largest relative error bound in Table~\ref{tab:error-bound-visualization}, most of its pointwise errors remain far below the corresponding bound, with only sparse extreme values approaching it. SZ2, QoZ, and SPERR exhibit progressively more pronounced error patterns.

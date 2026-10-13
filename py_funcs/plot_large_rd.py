@@ -69,7 +69,7 @@ def plot_dataset(result_dir,dataset,project_root):
         axis.set_title(field)
         axis.grid(True,alpha=0.25,linewidth=0.5)
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=1.6,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
-    figure.legend(handles=handles,loc="upper center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,0.99),fontsize=9)
+    figure.legend(handles=handles,loc="upper center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,0.99),fontsize=8)
     figure.suptitle(f"{dataset} rate-distortion",fontsize=16,y=0.9)
     figure.supxlabel("Bit rate")
     figure.supylabel("PSNR (dB)")

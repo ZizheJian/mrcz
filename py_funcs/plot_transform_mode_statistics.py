@@ -150,7 +150,7 @@ def main():
     residual_ax.set_yticks([0.02,0.04])
     residual_ax.set_xticks([1e-2,1e-4,1e-6])
     residual_ax.set_xlabel("Relative Error Bound",labelpad=1)
-    fig.text(0.025,(coefficient_ax.get_position().y1+residual_ax.get_position().y0)/2,"BR",ha="center",va="center",rotation=90,fontsize=8.4)
+    fig.text(0.025,(coefficient_ax.get_position().y1+residual_ax.get_position().y0)/2,"BR",ha="center",va="center",rotation=90,fontsize=8)
 
     for label,stats in (("DLT",dlt),("DChT",dcht)):
         median,lower,upper,_=stats
@@ -182,7 +182,7 @@ def main():
     panel_labels=[("(a) BR Breakdown",coefficient_ax,0.04),("(b) Magnitudes",magnitude_ax,0.04),("(c) Entropy",entropy_ax,0.04)]
     for label,ax,y in panel_labels:
         position=ax.get_position()
-        fig.text((position.x0+position.x1)/2,y,label,ha="center",va="bottom",fontsize=8.4,linespacing=0.9)
+        fig.text((position.x0+position.x1)/2,y,label,ha="center",va="bottom",fontsize=8,linespacing=0.9)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
     for ax in axes:ax.set_rasterization_zorder(1.5)
     fig.savefig(args.output,dpi=300)

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  12 OCT 2026 23:35
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  13 OCT 2026 00:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -436,28 +436,28 @@ Package pdftex.def Info: figs/raster300/cubic-interpolation.png  used on input
 line 31.
 (pdftex.def)             Requested size: 201.60077pt x 62.69882pt.
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 4
-6.
+7.
 
 (/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/tex/late
 x/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-<figs/raster300/fdwz-tree-ablation.png, id=33, 251.9814pt x 97.3236pt>
+<figs/raster300/fdwz-tree-ablation.png, id=33, 253.67255pt x 97.97678pt>
 File: figs/raster300/fdwz-tree-ablation.png Graphic file (type png)
 <use figs/raster300/fdwz-tree-ablation.png>
 Package pdftex.def Info: figs/raster300/fdwz-tree-ablation.png  used on input l
-ine 66.
-(pdftex.def)             Requested size: 252.0pt x 97.3352pt.
+ine 67.
+(pdftex.def)             Requested size: 252.0pt x 97.33067pt.
 <figs/raster300/cross-element.png, id=34, 251.9814pt x 78.2925pt>
 File: figs/raster300/cross-element.png Graphic file (type png)
 <use figs/raster300/cross-element.png>
 Package pdftex.def Info: figs/raster300/cross-element.png  used on input line 7
-7.
+8.
 (pdftex.def)             Requested size: 252.0pt x 78.30185pt.
  [5 <./figs/raster300/cubic-interpolation.png (PNG copy)> <./figs/raster300/fdw
 z-tree-ablation.png (PNG copy)> <./figs/raster300/cross-element.png (PNG copy)>
 ]) (./6.mrcz.tex
-Underfull \hbox (badness 1668) in paragraph at lines 125--1
+Underfull \hbox (badness 1668) in paragraph at lines 128--1
 \OT1/ptm/m/n/10 33.3$\OMS/cmsy/m/n/10 ^^B$ \OT1/ptm/m/n/10 the NRMSE, 126$\OMS/
 cmsy/m/n/10 ^^B$ \OT1/ptm/m/n/10 the NMAE, and 12.3$\OMS/cmsy/m/n/10 ^^B$ \OT1/
 ptm/m/n/10 the
@@ -491,12 +491,13 @@ input line 39.
 (pdftex.def)             Requested size: 252.0pt x 106.48744pt.
  [7 <./figs/raster300/transform-comparison-stacked.png (PNG copy)> <./figs/rast
 er300/transform-mode-statistics.png (PNG copy)>]
-<figs/raster300/mrcz-reordering-ablation.png, id=54, 251.9814pt x 119.0046pt>
+<figs/raster300/mrcz-reordering-ablation.png, id=54, 253.67255pt x 119.80328pt>
+
 File: figs/raster300/mrcz-reordering-ablation.png Graphic file (type png)
 <use figs/raster300/mrcz-reordering-ablation.png>
 Package pdftex.def Info: figs/raster300/mrcz-reordering-ablation.png  used on i
 nput line 60.
-(pdftex.def)             Requested size: 252.0pt x 119.01881pt.
+(pdftex.def)             Requested size: 252.0pt x 119.01326pt.
 ) (./7.evaluation.tex
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 .
@@ -508,50 +509,48 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 <figs/raster300/small-rd.png, id=59, 514.05339pt x 272.99332pt>
 File: figs/raster300/small-rd.png Graphic file (type png)
 <use figs/raster300/small-rd.png>
-Package pdftex.def Info: figs/raster300/small-rd.png  used on input line 71.
+Package pdftex.def Info: figs/raster300/small-rd.png  used on input line 73.
 (pdftex.def)             Requested size: 516.0pt x 274.05486pt.
 <figs/raster300/large-rd.png, id=60, 429.7656pt x 183.084pt>
 File: figs/raster300/large-rd.png Graphic file (type png)
 <use figs/raster300/large-rd.png>
-Package pdftex.def Info: figs/raster300/large-rd.png  used on input line 80.
+Package pdftex.def Info: figs/raster300/large-rd.png  used on input line 82.
 (pdftex.def)             Requested size: 429.98163pt x 183.1813pt.
-<figs/raster300/combined-throughput.png, id=61, 517.49187pt x 214.63464pt>
+<figs/raster300/combined-throughput.png, id=61, 515.7669pt x 214.6419pt>
 File: figs/raster300/combined-throughput.png Graphic file (type png)
 <use figs/raster300/combined-throughput.png>
 Package pdftex.def Info: figs/raster300/combined-throughput.png  used on input 
-line 87.
-(pdftex.def)             Requested size: 516.0pt x 214.03476pt.
-<figs/raster300/e2e-time.png, id=62, 251.9814pt x 162.3666pt>
+line 97.
+(pdftex.def)             Requested size: 516.0pt x 214.74289pt.
+
+Underfull \vbox (badness 1199) has occurred while \output is active []
+
+ [9]
+<figs/raster300/e2e-time.png, id=66, 248.66585pt x 156.18878pt>
 File: figs/raster300/e2e-time.png Graphic file (type png)
 <use figs/raster300/e2e-time.png>
-Package pdftex.def Info: figs/raster300/e2e-time.png  used on input line 94.
-(pdftex.def)             Requested size: 252.0pt x 162.386pt.
-<figs/raster300/transfer-size-time.png, id=63, 253.67255pt x 121.01587pt>
-File: figs/raster300/transfer-size-time.png Graphic file (type png)
-<use figs/raster300/transfer-size-time.png>
-Package pdftex.def Info: figs/raster300/transfer-size-time.png  used on input l
-ine 101.
-(pdftex.def)             Requested size: 252.0pt x 120.21785pt.
-<figs/raster300/visualization-cr33.png, id=64, 515.7669pt x 170.0754pt>
-File: figs/raster300/visualization-cr33.png Graphic file (type png)
-<use figs/raster300/visualization-cr33.png>
-Package pdftex.def Info: figs/raster300/visualization-cr33.png  used on input l
-ine 108.
-(pdftex.def)             Requested size: 490.19843pt x 161.64854pt.
- [9]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
+Package pdftex.def Info: figs/raster300/e2e-time.png  used on input line 112.
+(pdftex.def)             Requested size: 252.0pt x 158.28801pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [10 <./figs/raster300/small-rd.png (PNG copy)> <./figs/raster300/large-rd.png 
 (PNG copy)>]
-Underfull \vbox (badness 1701) has occurred while \output is active []
-
-)
-(./8.conclusion.tex [11 <./figs/raster300/combined-throughput.png (PNG copy)> <
-./figs/raster300/e2e-time.png (PNG copy)> <./figs/raster300/transfer-size-time.
-png (PNG copy)>]
+<figs/raster300/transfer-size-time.png, id=70, 253.67255pt x 121.01587pt>
+File: figs/raster300/transfer-size-time.png Graphic file (type png)
+<use figs/raster300/transfer-size-time.png>
+Package pdftex.def Info: figs/raster300/transfer-size-time.png  used on input l
+ine 121.
+(pdftex.def)             Requested size: 252.0pt x 120.21785pt.
+<figs/raster300/visualization-cr33.png, id=71, 515.7669pt x 169.5936pt>
+File: figs/raster300/visualization-cr33.png Graphic file (type png)
+<use figs/raster300/visualization-cr33.png>
+Package pdftex.def Info: figs/raster300/visualization-cr33.png  used on input l
+ine 153.
+(pdftex.def)             Requested size: 516.0pt x 169.67339pt.
+) (./8.conclusion.tex [11 <./figs/raster300/combined-throughput.png (PNG copy)>
+ <./figs/raster300/e2e-time.png (PNG copy)> <./figs/raster300/transfer-size-tim
+e.png (PNG copy)>]
 Underfull \hbox (badness 2486) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Experiments on 28 non-constant fields from NekRS,
  []
@@ -570,10 +569,10 @@ Before submitting the final camera ready copy, remember to:
 
 [13] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 5281 strings out of 480608
- 85475 string characters out of 5886422
- 332672 words of memory out of 5000000
- 21062 multiletter control sequences out of 15000+600000
+ 5282 strings out of 480608
+ 85486 string characters out of 5886422
+ 330672 words of memory out of 5000000
+ 21063 multiletter control sequences out of 15000+600000
  575541 words of font info for 117 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  48i,14n,46p,1190b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -611,7 +610,7 @@ ps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a
 .pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2
 .0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4045268 bytes).
+Output written on main.pdf (13 pages, 4029694 bytes).
 PDF statistics:
  157 PDF objects out of 1000 (max. 8388607)
  101 compressed objects within 2 object streams
