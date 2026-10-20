@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 19:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 19:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -471,22 +471,22 @@ Package pdftex.def Info: figs/raster300/mrcz-diagram.png  used on input line 11
 .
 (pdftex.def)             Requested size: 252.0pt x 88.66179pt.
 
-Underfull \hbox (badness 1377) in paragraph at lines 33--34
+Underfull \hbox (badness 1377) in paragraph at lines 30--31
 []\OT1/ptm/m/n/10 Finally, MRCZ forms its bit-stream from two sym-bol
  []
 
 [6 <./figs/raster300/mrcz-diagram.png (PNG copy)>]
-<figs/6/transform-comparison-stacked.pdf, id=53, 259.61261pt x 133.91536pt>
+<figs/6/transform-comparison-stacked.pdf, id=52, 259.61261pt x 133.91536pt>
 File: figs/6/transform-comparison-stacked.pdf Graphic file (type pdf)
 <use figs/6/transform-comparison-stacked.pdf>
 Package pdftex.def Info: figs/6/transform-comparison-stacked.pdf  used on input
- line 47.
+ line 54.
 (pdftex.def)             Requested size: 252.0pt x 129.98969pt.
-<figs/6/transform-mode-statistics.pdf, id=54, 265.2309pt x 112.0185pt>
+<figs/6/transform-mode-statistics.pdf, id=53, 265.2309pt x 112.0185pt>
 File: figs/6/transform-mode-statistics.pdf Graphic file (type pdf)
 <use figs/6/transform-mode-statistics.pdf>
 Package pdftex.def Info: figs/6/transform-mode-statistics.pdf  used on input li
-ne 56.
+ne 63.
 (pdftex.def)             Requested size: 252.0pt x 106.43404pt.
  [7 <./figs/6/transform-comparison-stacked.pdf> <./figs/6/transform-mode-statis
 tics.pdf>]
@@ -494,7 +494,7 @@ tics.pdf>]
 File: figs/6/mrcz-reordering-ablation.pdf Graphic file (type pdf)
 <use figs/6/mrcz-reordering-ablation.pdf>
 Package pdftex.def Info: figs/6/mrcz-reordering-ablation.pdf  used on input lin
-e 77.
+e 84.
 (pdftex.def)             Requested size: 252.0pt x 118.80304pt.
 )
 (./7.evaluation.tex
@@ -601,7 +601,7 @@ m/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></apps/spack/anvil/apps/texlive
 w/times/utmbi8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm
 /texmf-dist/fonts/type1/urw/times/utmr8a.pfb></apps/spack/anvil/apps/texlive/20
 200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 3824028 bytes).
+Output written on main.pdf (13 pages, 3823389 bytes).
 PDF statistics:
  234 PDF objects out of 1000 (max. 8388607)
  142 compressed objects within 2 object streams
