@@ -13,15 +13,32 @@ Before presenting the MRCZ workflow, we briefly revisit the transform-based comp
     \label{fig:mrcz_diagram}
 \end{figure}
 
-As illustrated in Figure~\ref{fig:mrcz_diagram}, MRCZ likewise represents each element in transform coefficient space, but treats the inverse transform of the quantized coefficients as a prediction rather than the final reconstruction. During compression, MRCZ computes the residual between this prediction and the original data and quantizes it under the user-specified error bound. During decompression, the same prediction is reproduced and corrected using the reconstructed residual. The final reconstruction error therefore equals the residual quantization error, providing a strict pointwise guarantee. Because this guarantee is enforced through residual quantization, the transform coefficients can be quantized under a separate internal error bound $\varepsilon_{\mathrm{coeff}}$ that need not equal the user-specified absolute error bound.
+As illustrated in Figure~\ref{fig:mrcz_diagram}, MRCZ uses the inverse transform of quantized coefficients as a prediction. For a one-dimensional line $\mathbf{x}$ sampled at coordinates $\xi_j$, DChT forms $[V]_{jm}=T_m(\xi_j)$, while DLT uses $[V]_{jm}=P_m(\xi_j)$, where $T_m$ and $P_m$ are order-$m$ Chebyshev and Legendre polynomials. MRCZ computes $\mathbf{c}=V^{-1}\mathbf{x}$ and quantizes each coefficient as
+\begin{equation}
+\widetilde{c}_m=2\alpha\varepsilon_{\mathrm{abs}}\operatorname{round}\!\left(\frac{c_m}{2\alpha\varepsilon_{\mathrm{abs}}}\right).
+\label{eq:mrcz-workflow}
+\end{equation}
+It applies this operation successively along the three axes and inverse transforms the quantized coefficients to obtain a prediction $p_{ijk}$. The final correction is
+\begin{equation}
+\begin{aligned}
+r_{ijk}&=x_{ijk}-p_{ijk},\\
+\widetilde{r}_{ijk}&=2\varepsilon_{\mathrm{abs}}\operatorname{round}\!\left(\frac{r_{ijk}}{2\varepsilon_{\mathrm{abs}}}\right),\\
+\widehat{x}_{ijk}&=p_{ijk}+\widetilde{r}_{ijk},\\
+|x_{ijk}-\widehat{x}_{ijk}|&=|r_{ijk}-\widetilde{r}_{ijk}|\leq\varepsilon_{\mathrm{abs}}.
+\end{aligned}
+\label{eq:mrcz-error-guarantee}
+\end{equation}
+The last inequality follows because nearest-integer rounding changes a residual by at most half of its quantization step. Thus, $\alpha$ balances the coefficient and residual streams, while residual quantization enforces the requested error bound.
 
 Finally, MRCZ forms its bitstream from two symbol streams: transform coefficients quantized under the internal coefficient error bound and prediction residuals quantized under the user-specified absolute error bound. Both streams are losslessly encoded using Huffman coding followed by Zstandard. Before encoding, MRCZ reorganizes the coefficient stream from element-major to mode-major order to improve its compressibility, as discussed in Section~\ref{sec:mrcz:transpose}.
+
+Let $N=n_xn_yn_z$ be the number of values per element. Each dense separable transform requires $O(N(n_x+n_y+n_z))$ multiply--adds. Compression performs one forward and one inverse transform, while decompression performs one inverse transform. FDWZ instead predicts each non-corner value from at most four references and requires $O(N)$ prediction work, explaining its lower arithmetic cost.
 
 \subsection{DChT for Data on GLL Nodes}\label{sec:mrcz:transform}
 
 We evaluate alternative transforms for MRCZ based on the compressibility of their coefficient and residual streams. DLT is conventionally paired with data sampled on GLL nodes because the GLL nodes and their associated quadrature weights preserve the weighted orthogonality of distinct Legendre modes~\cite{marin2016spectral}. This property, however, does not necessarily yield the best compression. Because MRCZ independently enforces the final reconstruction bound through residual correction, its transform needs only to be invertible and numerically stable. It need not be orthogonal under the GLL quadrature weights.
 
-We compare DLT, the discrete cosine transform (DCT), the discrete sine transform (DST), and DChT under two coordinate assumptions. The ``GLL'' variants construct the transform matrices using the GLL coordinates, whereas the ``Uniform'' variants treat the same values as samples at uniformly spaced coordinates.
+The ``GLL'' variants use the actual GLL coordinates, namely the ordered roots of $(1-\xi^2)P'_{n-1}(\xi)$ on $[-1,1]$. The ``Uniform'' variants assign the evenly spaced coordinates $\xi_j=-1+2j/(n-1)$ to the same stored values. Thus, these variants differ only in the coordinates used to construct $V$ and do not resample the data. We also compare DCT and DST under these coordinate assumptions.
 
 For each evaluated combination, we vary the internal coefficient error bound introduced in Section~\ref{sec:mrcz:overview}, since it changes prediction accuracy and hence compression. We parameterize this bound as $\varepsilon_{\mathrm{coeff}}=\alpha\varepsilon_{\mathrm{abs}}$, where $\alpha$ is the coefficient-bound ratio. The best $\alpha$ may differ across transforms. Decreasing $\alpha$ improves prediction and lowers the residual BR but raises the coefficient BR. If too small, both the coefficients and predicted values are more accurate than needed to satisfy the user-specified bound. Increasing $\alpha$ reverses this tradeoff, lowering the coefficient BR but raising the residual BR and reducing PSNR as prediction worsens. At sufficiently large $\alpha$, this decline is limited by the user-specified error bound, which imposes a lower bound on the final PSNR.
 
