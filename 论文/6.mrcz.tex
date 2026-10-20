@@ -13,41 +13,17 @@ Before presenting the MRCZ workflow, we briefly revisit the transform-based comp
     \label{fig:mrcz_diagram}
 \end{figure}
 
-Figure~\ref{fig:mrcz_diagram} summarizes MRCZ as two stages. It first transforms the data and quantizes the coefficients to produce a compact prediction. It then stores a quantized correction for the difference between this prediction and the original data. During decompression, MRCZ reproduces the prediction and adds the correction.
-
-Let $x_{ijk}$ be an original value and $p_{ijk}$ its prediction. MRCZ computes
-\begin{equation}
-\begin{aligned}
-r_{ijk}&=x_{ijk}-p_{ijk},\\
-\widetilde{r}_{ijk}&=2\varepsilon_{\mathrm{abs}}\operatorname{round}\!\left(\frac{r_{ijk}}{2\varepsilon_{\mathrm{abs}}}\right),\\
-\widehat{x}_{ijk}&=p_{ijk}+\widetilde{r}_{ijk},\\
-|x_{ijk}-\widehat{x}_{ijk}|&=|r_{ijk}-\widetilde{r}_{ijk}|\leq\varepsilon_{\mathrm{abs}}.
-\end{aligned}
-\label{eq:mrcz-error-guarantee}
-\end{equation}
-Nearest-integer rounding changes a residual by at most half of its quantization step, which gives the final inequality and the requested pointwise error bound.
+As illustrated in Figure~\ref{fig:mrcz_diagram}, MRCZ likewise represents each element in transform coefficient space, but treats the inverse transform of the quantized coefficients as a prediction rather than the final reconstruction. During compression, MRCZ computes the residual between this prediction and the original data and quantizes it under the user-specified error bound. During decompression, the same prediction is reproduced and corrected using the reconstructed residual. The final reconstruction error therefore equals the residual quantization error, providing a strict pointwise guarantee. Because this guarantee is enforced through residual quantization, the transform coefficients can be quantized under a separate internal error bound $\varepsilon_{\mathrm{coeff}}$ that need not equal the user-specified absolute error bound.
 
 Finally, MRCZ forms its bitstream from two symbol streams: transform coefficients quantized under the internal coefficient error bound and prediction residuals quantized under the user-specified absolute error bound. Both streams are losslessly encoded using Huffman coding followed by Zstandard. Before encoding, MRCZ reorganizes the coefficient stream from element-major to mode-major order to improve its compressibility, as discussed in Section~\ref{sec:mrcz:transpose}.
-
-Let $N=n_xn_yn_z$ be the number of values per element. Each dense separable transform requires $O(N(n_x+n_y+n_z))$ multiply--adds. Compression performs one forward and one inverse transform, while decompression performs one inverse transform. FDWZ instead predicts each non-corner value from at most four references and requires $O(N)$ prediction work, explaining its lower arithmetic cost.
 
 \subsection{DChT for Data on GLL Nodes}\label{sec:mrcz:transform}
 
 We evaluate alternative transforms for MRCZ based on the compressibility of their coefficient and residual streams. DLT is conventionally paired with data sampled on GLL nodes because the GLL nodes and their associated quadrature weights preserve the weighted orthogonality of distinct Legendre modes~\cite{marin2016spectral}. This property, however, does not necessarily yield the best compression. Because MRCZ independently enforces the final reconstruction bound through residual correction, its transform needs only to be invertible and numerically stable. It need not be orthogonal under the GLL quadrature weights.
 
-The three-dimensional transform applies a one-dimensional transform successively along each axis. For a line of values $\mathbf{x}$ at reference coordinates $\xi_j$, the transform and coefficient quantization are
-\begin{equation}
-\begin{aligned}
-{[V]}_{jm}&=\phi_m(\xi_j),\qquad \mathbf{c}=V^{-1}\mathbf{x},\\
-\widetilde{c}_m&=2\alpha\varepsilon_{\mathrm{abs}}\operatorname{round}\!\left(\frac{c_m}{2\alpha\varepsilon_{\mathrm{abs}}}\right).
-\end{aligned}
-\label{eq:mrcz-workflow}
-\end{equation}
-Here, the basis polynomial $\phi_m$ is the order-$m$ Chebyshev polynomial $T_m$ for DChT and the Legendre polynomial $P_m$ for DLT.
+We compare DLT, the discrete cosine transform (DCT), the discrete sine transform (DST), and DChT under two coordinate assumptions. The ``GLL'' variants construct the transform matrices using the GLL coordinates, whereas the ``Uniform'' variants treat the same values as samples at uniformly spaced coordinates.
 
-The ``GLL'' variants use the actual GLL coordinates, namely the ordered roots of $(1-\xi^2)P'_{n-1}(\xi)$ on $[-1,1]$. The ``Uniform'' variants assign the evenly spaced coordinates $\xi_j=-1+2j/(n-1)$ to the same stored values. Thus, these variants differ only in the coordinates used to construct $V$ and do not resample the data. We also compare DCT and DST under these coordinate assumptions.
-
-For each transform--coordinate combination, we sweep the coefficient-bound ratio $\alpha$ because it balances the two encoded streams. A smaller $\alpha$ improves the prediction and reduces residual BR at the cost of a larger coefficient BR, while a larger $\alpha$ reverses this tradeoff. Residual correction retains the final pointwise error bound for every $\alpha$.
+For each evaluated combination, we vary the internal coefficient error bound introduced in Section~\ref{sec:mrcz:overview}, since it changes prediction accuracy and hence compression. We parameterize this bound as $\varepsilon_{\mathrm{coeff}}=\alpha\varepsilon_{\mathrm{abs}}$, where $\alpha$ is the coefficient-bound ratio. The best $\alpha$ may differ across transforms. Decreasing $\alpha$ improves prediction and lowers the residual BR but raises the coefficient BR. If too small, both the coefficients and predicted values are more accurate than needed to satisfy the user-specified bound. Increasing $\alpha$ reverses this tradeoff, lowering the coefficient BR but raising the residual BR and reducing PSNR as prediction worsens. At sufficiently large $\alpha$, this decline is limited by the user-specified error bound, which imposes a lower bound on the final PSNR.
 
 \begin{figure}[htb]
     \centering

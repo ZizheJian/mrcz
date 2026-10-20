@@ -99,7 +99,7 @@ We evaluate aggregate codec throughput on Datasets~7 and~8 at five relative erro
     \label{fig:throughput}
 \end{figure*}
 
-Across all 40 cases shown in Figure~\ref{fig:throughput}, FDWZ ranks among the two fastest methods in 35 cases. At the lower core counts, it ranks first in 18 of 20 cases. At the higher core counts, it ranks first in four cases and second in 13. Consistent with Section~\ref{sec:mrcz:overview}, MRCZ's dense separable transforms reduce its throughput relative to FDWZ's stencils of at most four points. MRCZ prioritizes storage reduction over throughput but is not the slowest method under either allocation.
+Across all 40 cases shown in Figure~\ref{fig:throughput}, FDWZ ranks among the two fastest methods in 35 cases. At the lower core counts, it ranks first in 18 of 20 cases. At the higher core counts, it ranks first in four cases and second in 13. MRCZ prioritizes storage reduction over throughput but is not the slowest method under either allocation.
 
 \subsection{End-to-End Workflow Evaluation}
 
