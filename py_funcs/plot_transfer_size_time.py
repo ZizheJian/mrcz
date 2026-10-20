@@ -3,7 +3,7 @@ import csv,os
 import matplotlib.pyplot as plt
 from plot_style import METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,style_plot_axis
 
-apply_paper_style("mrcz-transfer-size-time")
+apply_paper_style("mrcz-transfer-size-time",serif_fonts=["STIXGeneral"])
 
 methods=TRANSFER_METHODS
 colors=METHOD_COLORS

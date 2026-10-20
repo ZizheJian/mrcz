@@ -123,7 +123,7 @@ def main():
     order_label="Maximum mode order" if args.mode_order=="maximum" else "Total mode order"
     axis_order_label="Maximum Order" if args.mode_order=="maximum" else "Total Order"
 
-    apply_paper_style(font_size=8.4)
+    apply_paper_style(font_size=8.4,serif_fonts=["STIXGeneral"])
     fig=plt.figure(figsize=(3.67,1.55))
     outer_grid=fig.add_gridspec(1,3,left=0.115,right=0.995,bottom=0.31,top=0.84,wspace=0.62)
     stream_grid=outer_grid[0,0].subgridspec(2,1,hspace=0.10)
@@ -184,9 +184,7 @@ def main():
         position=ax.get_position()
         fig.text((position.x0+position.x1)/2,y,label,ha="center",va="bottom",fontsize=8,linespacing=0.9)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
-    for ax in axes:ax.set_rasterization_zorder(1.5)
     fig.savefig(args.output,dpi=300)
-    fig.savefig(os.path.splitext(args.output)[0]+".png",dpi=300)
     os.makedirs(os.path.dirname(args.csv_output) or ".",exist_ok=True)
     with open(args.csv_output,"w",newline="") as file_obj:
         writer=csv.writer(file_obj,lineterminator="\n")

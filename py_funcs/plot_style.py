@@ -1,6 +1,12 @@
+import os,sys
 import matplotlib.pyplot as plt
 
-PAPER_FONT_SIZE=8.0
+project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+paperfig_source=os.path.join(project_root,"third_party/paperfig/src")
+if paperfig_source not in sys.path:sys.path.insert(0,paperfig_source)
+
+from paperfig import DEFAULT_PANEL_ASPECT_RATIO,MPL_POINTS_PER_INCH,PAPER_COLUMN_WIDTH_PT,PAPER_FONT_SIZE,PAPER_TEXT_WIDTH_IN,PAPER_TEXT_WIDTH_PT,RASTER_DPI,TEX_POINTS_PER_INCH,PaperFigureSpec,add_panel_captions,add_shared_xlabel,align_xlabels,apply_paper_style as _apply_paper_style,layout_panel_row,legend_above,panel_aspect_ratios,paper_subplots,save_paper_png,save_paper_png_vertical_crop,style_plot_axis,validate_figure_bounds
+
 METHOD_COLORS={
     "MRCZ":"#111827",
     "FDWZ":"#e15759",
@@ -25,14 +31,10 @@ RD_METHODS=("MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR
 TRANSFER_METHODS=("MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D")
 
 def apply_paper_style(svg_hashsalt=None,font_size=PAPER_FONT_SIZE,tick_size=None,legend_size=None,serif_fonts=None):
-    if tick_size is None:tick_size=font_size
-    if legend_size is None:legend_size=font_size
     if serif_fonts is None:serif_fonts=["Nimbus Roman"]
-    if svg_hashsalt is not None:plt.rcParams["svg.hashsalt"]=svg_hashsalt
-    plt.rcParams.update({"font.family":"serif","font.serif":serif_fonts,"mathtext.fontset":"stix","font.size":font_size,"axes.labelsize":font_size,"axes.titlesize":font_size,"xtick.labelsize":tick_size,"ytick.labelsize":tick_size,"legend.fontsize":legend_size,"pdf.fonttype":42,"ps.fonttype":42})
+    return _apply_paper_style(svg_hashsalt,font_size,tick_size,legend_size,serif_fonts)
 
-def style_plot_axis(axis,tick_length=1.8,tick_width=0.45,tick_pad=1,spine_width=0.5,minor_tick_length=None,minor_tick_width=None):
-    axis.tick_params(direction="in",length=tick_length,width=tick_width,pad=tick_pad)
-    if minor_tick_length is not None:
-        axis.tick_params(axis="both",which="minor",direction="in",length=minor_tick_length,width=minor_tick_width if minor_tick_width is not None else tick_width)
-    for spine in axis.spines.values():spine.set_linewidth(spine_width)
+def save_svg(figure,path,**kwargs):
+    figure.savefig(path,format="svg",**kwargs)
+    with open(path,encoding="utf-8") as file_obj:content=file_obj.read()
+    with open(path,"w",encoding="utf-8",newline="\n") as file_obj:file_obj.write("\n".join(line.rstrip() for line in content.splitlines())+"\n")

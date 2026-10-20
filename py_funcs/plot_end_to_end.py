@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from plot_style import TRANSFER_METHODS,apply_paper_style,style_plot_axis
 
-apply_paper_style("mrcz-end-to-end")
+apply_paper_style("mrcz-end-to-end",serif_fonts=["STIXGeneral"])
 
 methods=("Direct",)+TRANSFER_METHODS
 components=[("Compression Time","Compression","#e3427a"),("Transfer Time Median","Transfer","#4bacc6"),("Decompression Time","Decompression","#f5aa36")]

@@ -94,7 +94,7 @@ def main():
     write_alpha_summary(args.alpha_csv,rows_by_alpha)
     write_rd_summary(args.rd_summary,rows_by_eb)
 
-    apply_paper_style(font_size=8.4)
+    apply_paper_style(font_size=8.4,serif_fonts=["STIXGeneral"])
     fig,ax=plt.subplots(figsize=(3.67,2.08) if args.legend_layout=="stacked" else (3.5,1.55))
     for key,_,color in CONFIGS:
         alpha_br,alpha_psnr=alpha_curves[key]
@@ -141,11 +141,9 @@ def main():
     if args.legend_layout=="stacked":
         fig.subplots_adjust(left=0.12,right=0.98,bottom=0.24,top=0.72)
         fig.savefig(args.output,bbox_inches="tight",pad_inches=0.01)
-        fig.savefig(os.path.splitext(args.output)[0]+".png",dpi=300,bbox_inches="tight",pad_inches=0.01)
     else:
         fig.tight_layout(pad=0.25)
         fig.savefig(args.output,bbox_inches="tight",bbox_extra_artists=(config_legend,style_legend))
-        fig.savefig(os.path.splitext(args.output)[0]+".png",dpi=300,bbox_inches="tight",bbox_extra_artists=(config_legend,style_legend))
 
 if __name__=="__main__":
     main()

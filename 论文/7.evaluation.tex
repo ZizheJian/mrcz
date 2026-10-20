@@ -70,7 +70,7 @@ We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a 
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=\textwidth]{figs/raster300/small-rd.png}
+    \includegraphics[width=\textwidth]{figs/7/small-rd.png}
     \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Across the 17 fields included in the aggregate statistics, the average CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D.}
     \label{fig:small-rate-distortion}
 \end{figure*}
@@ -79,7 +79,7 @@ Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection re
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=0.8333\textwidth]{figs/raster300/large-rd.png}
+    \includegraphics[width=0.8333\textwidth]{figs/7/large-rd.png}
     \caption{Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets~7 and~8. Across the 10 fields, the average CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ.}
     \label{fig:large-rate-distortion}
 \end{figure*}
@@ -94,7 +94,7 @@ We evaluate aggregate codec throughput on Datasets~7 and~8 at five relative erro
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=\textwidth]{figs/raster300/combined-throughput.png}
+    \includegraphics[width=\textwidth]{figs/7/combined-throughput.pdf}
     \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 35 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.}
     \label{fig:throughput}
 \end{figure*}
@@ -109,7 +109,7 @@ Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end t
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\linewidth]{figs/raster300/e2e-time.png}
+    \includegraphics[width=\linewidth]{figs/7/e2e_time.pdf}
     \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time. The diagonally striped MGARD-X compression and decompression segments are ideal projections, while its transfer segments are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. FDWZ matches the fastest method on Dataset~7 and is fastest on Dataset~8.}
     \label{fig:transfer}
 \end{figure}
@@ -118,7 +118,7 @@ Figure~\ref{fig:transfer} shows that most evaluated compressors reduce end-to-en
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\linewidth]{figs/raster300/transfer-size-time.png}
+    \includegraphics[width=\linewidth]{figs/7/transfer-size-time.pdf}
     \caption{Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets~7 and~8, and each error bar spans the three transfer trials. Across the 14 compressed workflows, larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.}
     \label{fig:transfer-size-time}
 \end{figure}

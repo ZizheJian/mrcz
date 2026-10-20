@@ -47,3 +47,6 @@
 [submodule "third_party/MGARD"]
 	path = third_party/MGARD
 	url = https://github.com/CODARcode/MGARD.git
+[submodule "third_party/paperfig"]
+	path = third_party/paperfig
+	url = git@github.com:ZizheJian/paperfig.git

@@ -5,11 +5,11 @@
     "format":"nekrs",
     "field_list":["UX","UY","UZ","P","S00"],
     "eb_mode":"REL",
-    "eb_list":[0.0001,0.00001,0.0000001,0.00000001],
+    "eb_list":[0.0001,0.00001,0.000001,0.0000001,0.00000001],
     "method_list":["ZFP-3D-fused"],
     "max_cpus_list":[16],
     "partition_num":128,
     "extra_parameters":{"compute-precision":"auto","constant-compression":false},
-    "csv_path":"results/small_core_throughput/jicf0_split/zfp"
+    "csv_path":"results/small_core_throughput/jicf0"
   }
 ]

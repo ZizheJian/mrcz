@@ -1,9 +1,9 @@
 import csv,math,os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LogLocator,MaxNLocator
-from plot_style import METHOD_COLORS,apply_paper_style,style_plot_axis
+from plot_style import METHOD_COLORS,PAPER_TEXT_WIDTH_IN,apply_paper_style,save_svg,style_plot_axis
 
-apply_paper_style("mrcz-small-rd")
+apply_paper_style("mrcz-small-rd",serif_fonts=["STIXGeneral"])
 
 array_layouts=["1D","2D","3D-fused","3D-per-element","4D"]
 layouts=array_layouts+["4D+GLL"]
@@ -28,7 +28,7 @@ def read_method_rows(result_dir,relative_path,method,default_rows):
     return read_rows(path),stored_method
 
 def prepare_axes():
-    figure,axes=plt.subplots(3,6,figsize=(7.16,3.85))
+    figure,axes=plt.subplots(3,6,figsize=(PAPER_TEXT_WIDTH_IN,3.85))
     return figure,axes.flat
 
 def method_style(method):
@@ -75,10 +75,9 @@ def finish_figure(figure,xlabel,ylabel,output_path,paper_output):
     figure.supxlabel(xlabel,x=0.53,y=0.025)
     figure.supylabel(ylabel,x=0.008,y=0.48)
     figure.tight_layout(rect=(0.015,0.045,1,0.88),pad=0.25,w_pad=0.2,h_pad=0.55)
-    figure.savefig(output_path,format="svg",metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
+    save_svg(figure,output_path,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
-    for axis in figure.axes:axis.set_rasterization_zorder(1.5)
-    figure.savefig(paper_output,format="pdf",dpi=300,bbox_inches="tight",pad_inches=0.02)
+    figure.savefig(paper_output,format="png",dpi=300)
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:
         figure.savefig(os.path.join(preview_dir,"small_rd.png"),format="png",dpi=160,bbox_inches="tight")
@@ -103,7 +102,7 @@ def plot_rd(result_dir):
         style_plot_axis(axis)
         axis.tick_params(axis="x",which="minor",length=0)
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    finish_figure(figure,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.pdf"))
+    finish_figure(figure,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.png"))
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

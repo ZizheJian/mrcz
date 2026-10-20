@@ -145,7 +145,7 @@ JSON配置保存在`configs/`，实验CSV和绘图中间结果保存在`results/
 | `py_funcs/summarize_rd.py` | 在共同PSNR区间汇总逐field rate-distortion结果 |
 | `py_funcs/summarize_end_to_end.py` | 合并codec时间与Globus传输记录 |
 | `py_funcs/plot_style.py` | 统一论文图的字体、方法顺序、配色、marker和坐标轴样式 |
-| `py_funcs/rasterize_paper_figures.py` | 按最终物理尺寸将源图转换为300 dpi PNG |
+| `py_funcs/rasterize_paper_figures.py` | 按最终物理尺寸将复杂源图转换为300 dpi PNG |
 
 主要论文图可由以下命令重新生成：
 
@@ -168,7 +168,7 @@ sbatch run_visualization_cr33_reconstruct.sbatch
 sbatch run_visualization_cr33_render.sbatch
 ```
 
-源图生成后，按论文中的最终尺寸统一栅格化：
+尚无真正矢量源文件的流程／几何示意图和场可视化按论文中的最终尺寸栅格化。rate-distortion图按论文宽度和8 pt字号直接生成300 dpi PNG，其余统计图直接使用矢量PDF：
 
 ```bash
 python3 py_funcs/rasterize_paper_figures.py

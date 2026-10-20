@@ -68,7 +68,7 @@ def main():
     }
     write_summary(args.summary,element_br,mode_br,throughputs)
 
-    apply_paper_style(font_size=8.4)
+    apply_paper_style(font_size=8.4,serif_fonts=["STIXGeneral"])
     fig=plt.figure(figsize=(3.5,1.65))
     rd_ax=fig.add_axes([0.12,0.28,0.25,0.50])
     throughput_ax=fig.add_axes([0.48,0.28,0.49,0.50])
@@ -104,7 +104,6 @@ def main():
         fig.text((position.x0+position.x1)/2,0.04,label,ha="center",va="bottom",fontsize=8)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
     fig.savefig(args.output)
-    fig.savefig(os.path.splitext(args.output)[0]+".png",dpi=300)
 
 if __name__=="__main__":
     main()

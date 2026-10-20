@@ -1,9 +1,9 @@
 import argparse,csv,math,os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LogLocator,MaxNLocator
-from plot_style import METHOD_COLORS,RD_METHODS,apply_paper_style,style_plot_axis
+from plot_style import METHOD_COLORS,PAPER_TEXT_WIDTH_IN,RD_METHODS,apply_paper_style,save_svg,style_plot_axis
 
-apply_paper_style("mrcz-large-rd")
+apply_paper_style("mrcz-large-rd",serif_fonts=["STIXGeneral"])
 
 methods=RD_METHODS
 colors=METHOD_COLORS
@@ -75,7 +75,7 @@ def plot_dataset(result_dir,dataset,project_root):
     figure.supylabel("PSNR (dB)")
     figure.tight_layout(rect=(0.015,0.04,1,0.82))
     output_path=os.path.join(result_dir,f"{dataset}_rd.svg")
-    figure.savefig(output_path,format="svg",bbox_inches="tight",metadata={"Date":None})
+    save_svg(figure,output_path,bbox_inches="tight",metadata={"Date":None})
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:
         figure.savefig(os.path.join(preview_dir,f"{dataset}_rd.png"),format="png",dpi=160,bbox_inches="tight")
@@ -84,7 +84,7 @@ def plot_dataset(result_dir,dataset,project_root):
 
 # 将两个大数据集绘制为论文中的2x5双栏图。
 def plot_combined(result_dir,project_root):
-    figure,axes=plt.subplots(2,5,figsize=(7.16*5/6,2.56))
+    figure,axes=plt.subplots(2,5,figsize=(PAPER_TEXT_WIDTH_IN*0.8333,2.56))
     panels=[]
     for dataset_index,dataset in ((7,"pb0"),(8,"jicf0")):
         directory,fields,prefix=datasets[dataset]
@@ -110,11 +110,10 @@ def plot_combined(result_dir,project_root):
     figure.supxlabel("Bit rate (log scale)",x=0.53,y=0.025)
     figure.supylabel("PSNR (dB)",x=0.008,y=0.47)
     figure.tight_layout(rect=(0.015,0.05,1,0.92),pad=0.25,w_pad=0.3,h_pad=0.65)
-    figure.savefig(os.path.join(result_dir,"large_rd.svg"),format="svg",metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
-    paper_output=os.path.join(project_root,"论文","figs","7","large-rd.pdf")
+    save_svg(figure,os.path.join(result_dir,"large_rd.svg"),metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
+    paper_output=os.path.join(project_root,"论文","figs","7","large-rd.png")
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
-    for axis in figure.axes:axis.set_rasterization_zorder(1.5)
-    figure.savefig(paper_output,format="pdf",dpi=300,bbox_inches="tight",pad_inches=0.02)
+    figure.savefig(paper_output,format="png",dpi=300)
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:figure.savefig(os.path.join(preview_dir,"large_rd.png"),format="png",dpi=180)
     plt.close(figure)

@@ -156,7 +156,9 @@ interfaceSurfaceColor = RGBColor[0.72, 0.84, 0.97];
 (*按IEEE单栏的最终物理尺寸直接生成图片，避免LaTeX再次缩放legend*)
 exportResolution = 300;
 columnWidthPoints = 252;
-exportWidthPixels = Round[columnWidthPoints*exportResolution/72];
+pointsPerInch = 72.27;
+exportWidthPixels =
+  Round[columnWidthPoints*exportResolution/pointsPerInch];
 legendFontSize = 8;
 
 pointLegend =
@@ -220,14 +222,8 @@ crossBoundaryReferenceColor, Specularity[White, 18],
    Method -> {"SpherePoints" -> 60},
    Background -> White];
 
-(*legend独立放在三维图右侧，使整幅图保持宽而扁*)
-predictionStencilFigure =
-  Legended[predictionStencilPlot, Placed[pointLegend, Right]];
-
-predictionStencilFigure
-
-(*导出PDF到当前Notebook所在目录*)
-pdfPath = FileNameJoin[{NotebookDirectory[], "cross-element.pdf"}];
+(*直接导出PNG到当前Notebook所在目录*)
+pngPath = FileNameJoin[{NotebookDirectory[], "cross-element.png"}];
 
 (*直接使用Notebook中的原始Graphics3D取景，不在导出阶段重写相机、PlotRange或画布比例*)
 exportPlot = Show[predictionStencilPlot, Background -> None];
@@ -283,8 +279,14 @@ croppedExportImage =
    exportImage, {{horizontalPadding, horizontalPadding}, {
      verticalPadding, verticalPadding}}, White];
 
-Export[pdfPath, croppedExportImage, "PDF",
+(*精确固定为IEEE单栏宽度。Notebook显示内容与导出内容完全相同*)
+finalImage =
+  ImageResize[croppedExportImage, {exportWidthPixels, Automatic}];
+
+finalImage
+
+Export[pngPath, finalImage, "PNG",
  ImageResolution -> exportResolution];
 
 (*显示实际输出路径*)
-pdfPath
+pngPath

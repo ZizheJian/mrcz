@@ -8,7 +8,6 @@ apply_paper_style("mrcz-small-core-throughput")
 methods=TIMING_METHODS
 colors=METHOD_COLORS
 datasets=[("pb0",7,8,64,[1e-2,1e-3,1e-4,1e-5,1e-6]),("jicf0",8,16,128,[1e-4,1e-5,1e-6,1e-7,1e-8])]
-split_names={"FDWZ":"fdwz","SZ3-4D":"sz3","QoZ-4D":"qoz","ZFP-3D-fused":"zfp","SPERR-2D":"sperr"}
 
 def read_rows(path):
     with open(path,newline="") as input_file:return list(csv.DictReader(input_file))
@@ -16,25 +15,13 @@ def read_rows(path):
 def harmonic_mean(values):
     return len(values)/sum(1/value for value in values)
 
-def supplemental_dir(project_root,dataset,method):
-    root=os.path.join(project_root,"results","small_core_throughput")
-    if dataset=="pb0":return os.path.join(root,"pb0")
-    if method=="MRCZ":return os.path.join(root,"jicf0")
-    return os.path.join(root,"jicf0_split",split_names[method])
-
 def aggregate_dataset(project_root,dataset,cpus,partition_num,error_bounds):
-    middle_dir=os.path.join(project_root,"results","strong_scaling","fixed_rel_eb",dataset)
-    field_files=[os.path.basename(path) for path in sorted(glob.glob(os.path.join(middle_dir,"*_throughput.csv")))]
+    source_dir=os.path.join(project_root,"results","small_core_throughput",dataset)
+    field_files=sorted(glob.glob(os.path.join(source_dir,"*_throughput.csv")))
     if len(field_files)!=5:raise RuntimeError(f"{dataset} requires five field throughput files,found {len(field_files)}")
     aggregate={task:{method:[] for method in methods} for task in ("Compression","Decompression")}
     for method in methods:
-        source_dir=supplemental_dir(project_root,dataset,method)
-        tables=[]
-        for field_file in field_files:
-            supplement_path=os.path.join(source_dir,field_file)
-            middle_path=os.path.join(middle_dir,field_file)
-            if not os.path.isfile(supplement_path):raise RuntimeError(f"missing {supplement_path}")
-            tables.append(read_rows(supplement_path)+read_rows(middle_path))
+        tables=[read_rows(field_file) for field_file in field_files]
         for error_bound in error_bounds:
             for task in aggregate:
                 field_values=[]

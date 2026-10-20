@@ -7,7 +7,7 @@ import plot_aggregate_throughput as large
 import plot_small_core_throughput as small
 from plot_style import METHOD_COLORS,TIMING_METHODS,apply_paper_style,style_plot_axis
 
-apply_paper_style("mrcz-combined-throughput")
+apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 
 methods=TIMING_METHODS
 colors=METHOD_COLORS

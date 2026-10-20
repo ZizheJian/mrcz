@@ -18,21 +18,9 @@ def pixels(width_pt):
 
 
 figures=[
-    ("d3-three-elements.png","figs/3/three_elements.pdf",pixels(column_width_pt)),
-    ("d3-end-to-end.png","figs/3/End to End.pdf",pixels(column_width_pt)),
-    ("fdwz-diagram.png","figs/5/fdwz diagram.pdf",pixels(column_width_pt)),
     ("cubic-interpolation.png","figs/5/cubic interpolation.pdf",pixels(0.8*column_width_pt)),
-    ("fdwz-tree-ablation.png","figs/5/fdwz-tree-ablation.pdf",pixels(column_width_pt)),
     ("cross-element.png","figs/5/cross-element.pdf",pixels(column_width_pt)),
     ("mrcz-diagram.png","figs/6/mrcz diagram.pdf",pixels(column_width_pt)),
-    ("transform-comparison-stacked.png","figs/6/transform-comparison-stacked.pdf",pixels(column_width_pt)),
-    ("transform-mode-statistics.png","figs/6/transform-mode-statistics.pdf",pixels(column_width_pt)),
-    ("mrcz-reordering-ablation.png","figs/6/mrcz-reordering-ablation.pdf",pixels(column_width_pt)),
-    ("small-rd.png","figs/7/small-rd.pdf",pixels(text_width_pt)),
-    ("large-rd.png","figs/7/large-rd.pdf",pixels(0.8333*text_width_pt)),
-    ("combined-throughput.png","figs/7/combined-throughput.pdf",pixels(text_width_pt)),
-    ("e2e-time.png","figs/7/e2e_time.pdf",pixels(column_width_pt)),
-    ("transfer-size-time.png","figs/7/transfer-size-time.pdf",pixels(column_width_pt)),
     ("visualization-cr33.png","figs/7/pb0-T-cr33-visualization.pdf",pixels(text_width_pt)),
 ]
 

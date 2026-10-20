@@ -20,3 +20,9 @@ __pycache__/
 slurm-*.out
 slurm-*.err
 *_raw.log
+/论文/*.aux
+/论文/*.bbl
+/论文/*.blg
+/论文/*.fdb_latexmk
+/论文/*.fls
+/论文/*.log

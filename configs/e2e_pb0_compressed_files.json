@@ -1,0 +1,14 @@
+[
+  {
+    "name":"e2e_pb0_compressed_files",
+    "data_path":"/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001",
+    "format":"nekrs",
+    "field_list":["UX","UY","UZ","P","T"],
+    "eb_mode":"REL",
+    "eb_list":[0.0001],
+    "method_list":["MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D"],
+    "max_cpus_list":[64],
+    "partition_num":64,
+    "compression_only":true
+  }
+]
