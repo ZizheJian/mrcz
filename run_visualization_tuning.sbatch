@@ -22,5 +22,5 @@ conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
 export OMP_DYNAMIC=false
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
-config_name="${CONFIG_NAME:-visualization_cr_tuning.json}"
+config_name="${CONFIG_NAME:-visualization_cr33_tuning_T.json}"
 srun --ntasks=1 --cpus-per-task="${SLURM_CPUS_PER_TASK}" --cpu-bind=cores python3 -u t1_start_c_code.py "${config_name}"

@@ -56,11 +56,11 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Partitioned Parallel Execution}{4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Element-local Design of FDWZ and MRCZ}{4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {V}Interpolation-Based Compression: FDWZ}{4}\protected@file@percent }
-\newlabel{sec:SZ3-HOHS}{{V}{4}}
+\newlabel{sec:fdwz}{{V}{4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Comparison of standard SZ3 compression on tensor data (left) and FDWZ compression on a high-order element partition (right). FDWZ replaces uniform-grid interpolation with distance-weighted interpolation and single-tree Huffman encoding with multi-tree encoding.\relax }}{4}\protected@file@percent }
 \newlabel{fig:fdwz-workflow}{{3}{4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}SZ Compression Framework}{4}\protected@file@percent }
-\newlabel{sec:SZ3-HOHS:sz3 interpolation}{{\mbox  {V-A}}{4}}
+\newlabel{sec:FDWZ:sz-framework}{{\mbox  {V-A}}{4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Distance-Weighted Multilevel Interpolation}{4}\protected@file@percent }
 \newlabel{sec:FDWZ:distance-weighted}{{\mbox  {V-B}}{4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of cubic interpolation stencils in SZ3 and FDWZ. The distribution of GLL points within an element differs substantially from a uniform grid, producing different interpolation weights. The coordinates and weights are reported in Table\nobreakspace  {}I\hbox {}.\relax }}{5}\protected@file@percent }
@@ -73,7 +73,6 @@
 \newlabel{fig:fdwz-tree-ablation}{{5}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Prediction Across Shared Element Interfaces}{5}\protected@file@percent }
 \newlabel{sec:FDWZ:cross-interface}{{\mbox  {V-D}}{5}}
-\newlabel{sec:SZ3-HOHS:cross_element}{{\mbox  {V-D}}{5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Cubic prediction stencils across and along a shared element interface. The blue surface denotes the shared interface. The regions above and below it belong to the two adjacent elements.\relax }}{5}\protected@file@percent }
 \newlabel{fig:cross-element}{{6}{5}}
 \citation{liu2024high}
@@ -83,7 +82,6 @@
 \newlabel{tab:cross-interface-prediction}{{II}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-E}}Prediction Along the Element-Index Dimension}{6}\protected@file@percent }
 \newlabel{sec:FDWZ:element-index-dimension}{{\mbox  {V-E}}{6}}
-\newlabel{sec:SZ3-HOHS:element_dimension}{{\mbox  {V-E}}{6}}
 \@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Element-local and element-index prediction errors on 7P. \textbf  {Element-local} is used by FDWZ. Shuffled element-index uses a fixed random permutation within each partition. Entropy uses $\varepsilon _{\mathrm  {rel}}=10^{-4}$.\relax }}{6}\protected@file@percent }
 \newlabel{tab:element-index-prediction}{{III}{6}}
 \@writefile{toc}{\contentsline {section}{\numberline {VI}Representation-Based Compression: MRCZ}{6}\protected@file@percent }

@@ -1,6 +1,6 @@
-\section{Interpolation-Based Compression: FDWZ}\label{sec:SZ3-HOHS}
+\section{Interpolation-Based Compression: FDWZ}\label{sec:fdwz}
 
-FDWZ adapts the SZ compression framework to high-order element data. Section~\ref{sec:SZ3-HOHS:sz3 interpolation} briefly reviews its prediction--quantization pipeline. Section~\ref{sec:FDWZ:distance-weighted} introduces GLL-aware interpolation for more accurate prediction, while Section~\ref{sec:FDWZ:multi-tree} uses multi-tree Huffman encoding for more effective lossless compression, as summarized in Figure~\ref{fig:fdwz-workflow}. Finally, Sections~\ref{sec:FDWZ:cross-interface} and~\ref{sec:FDWZ:element-index-dimension} assess whether prediction across shared element interfaces or along the element-index dimension offers an advantage over element-local prediction.
+FDWZ adapts the SZ compression framework to high-order element data. Section~\ref{sec:FDWZ:sz-framework} briefly reviews its prediction--quantization pipeline. Section~\ref{sec:FDWZ:distance-weighted} introduces GLL-aware interpolation for more accurate prediction, while Section~\ref{sec:FDWZ:multi-tree} uses multi-tree Huffman encoding for more effective lossless compression, as summarized in Figure~\ref{fig:fdwz-workflow}. Finally, Sections~\ref{sec:FDWZ:cross-interface} and~\ref{sec:FDWZ:element-index-dimension} assess whether prediction across shared element interfaces or along the element-index dimension offers an advantage over element-local prediction.
 
 \begin{figure}[htb]
     \centering
@@ -9,7 +9,7 @@ FDWZ adapts the SZ compression framework to high-order element data. Section~\re
     \label{fig:fdwz-workflow}
 \end{figure}
 
-\subsection{SZ Compression Framework}\label{sec:SZ3-HOHS:sz3 interpolation}
+\subsection{SZ Compression Framework}\label{sec:FDWZ:sz-framework}
 
 The SZ framework follows a prediction--quantization--encoding pipeline~\cite{tao2017significantly,liang2023sz3}. For each target value, it predicts from previously reconstructed values and quantizes the prediction error under a user-specified error bound. Using reconstructed references keeps the compressor and decompressor synchronized while preserving the pointwise error guarantee. The resulting quantization symbols are encoded using a single Huffman tree followed by Zstandard~\cite{ycollet2021zstd}. Within this pipeline, SZ3 applies multilevel interpolation to a multidimensional array, predicting points level by level.
 
@@ -69,7 +69,7 @@ Figure~\ref{fig:fdwz-tree-ablation}(a) compares prediction-error distributions a
     \label{fig:fdwz-tree-ablation}
 \end{figure}
 
-\subsection{Prediction Across Shared Element Interfaces}\label{sec:FDWZ:cross-interface}\label{sec:SZ3-HOHS:cross_element}
+\subsection{Prediction Across Shared Element Interfaces}\label{sec:FDWZ:cross-interface}
 
 We next examine whether cross-interface prediction can improve upon the element-local interpolation used by FDWZ. For a controlled comparison, both predictors are evaluated at the same target points on faces shared by adjacent elements. As illustrated in Figure~\ref{fig:cross-element}, the cross-interface predictor uses two interior reference points from each adjacent element, whereas the element-local predictor uses four reference points along either reference-space direction of the shared face.
 
@@ -102,7 +102,7 @@ We therefore evaluate 7P on randomly selected internal faces, each shared by two
 
 Table~\ref{tab:cross-interface-prediction} shows that face-parallel prediction has lower NRMSE and NMAE, while cross-interface prediction produces quantized errors with 2.67$\times$ the entropy. Thus, the shorter reference distances enabled by GLL clustering do not compensate for geometric misalignment across elements. Cross-interface prediction also requires mesh connectivity and consistent face orientations. We therefore retain element-local prediction in FDWZ.
 
-\subsection{Prediction Along the Element-Index Dimension}\label{sec:FDWZ:element-index-dimension}\label{sec:SZ3-HOHS:element_dimension}
+\subsection{Prediction Along the Element-Index Dimension}\label{sec:FDWZ:element-index-dimension}
 
 We next examine whether prediction along the element-index dimension can outperform the element-local distance-weighted interpolation used by FDWZ. Section~\ref{sec:problem formulation:data characteristics} represents each scalar field as the four-dimensional logical array $X=\{x_{e,i,j,k}\}$, where $e$ enumerates the stored elements and $(i,j,k)$ identifies an element-local position. FDWZ does not exploit predictability along the dimension indexed by $e$.
 

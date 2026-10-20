@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 18:57
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 19:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -414,7 +414,7 @@ Underfull \hbox (badness 3240) in paragraph at lines 46--1
 []\OT1/ptm/m/n/10 Our sec-ond ob-jec-tive is to re-duce end-to-end data-
  []
 
-) (./5.sz3-hohs.tex
+) (./5.fdwz.tex
 <figs/5/fdwz_diagram.png, id=31, 2421.045pt x 1457.445pt>
 File: figs/5/fdwz_diagram.png Graphic file (type png)
 <use figs/5/fdwz_diagram.png>
@@ -569,10 +569,10 @@ Before submitting the final camera ready copy, remember to:
 
 [13] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 5275 strings out of 480608
- 85000 string characters out of 5886422
- 330672 words of memory out of 5000000
- 21057 multiletter control sequences out of 15000+600000
+ 5273 strings out of 480608
+ 84911 string characters out of 5886422
+ 330646 words of memory out of 5000000
+ 21055 multiletter control sequences out of 15000+600000
  572918 words of font info for 110 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  48i,14n,46p,1190b,339s stack positions out of 5000i,500n,10000p,200000b,80000s

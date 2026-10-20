@@ -17,8 +17,6 @@ results/visualization/pb0.f00001_T.*
 /third_party/flow-stability-cylinder/
 __pycache__/
 *.py[cod]
-slurm-*.out
-slurm-*.err
 *_raw.log
 /论文/*.aux
 /论文/*.bbl

@@ -141,6 +141,8 @@ JSON配置保存在`configs/`，实验CSV和绘图中间结果保存在`results/
 | 文件 | 用途 |
 |---|---|
 | `t1_start_c_code.py` | 构建并运行rate-distortion、throughput和重建实验 |
+| `t2_find_three_irregular_elements.py` | 在NekRS网格中寻找三个两两共享面的非平面element，并生成用于论文几何示意图的Plotly HTML |
+| `t3_test_cubic_face_prediction.py` | 比较共享面上的跨element与面内cubic预测，汇总误差和量化符号熵；由prediction-entropy Slurm脚本调用 |
 | `generate_mfem_and_nektar_data.py` | 生成MFEM与Nektar++验证数据 |
 | `py_funcs/summarize_rd.py` | 在共同PSNR区间汇总逐field rate-distortion结果 |
 | `py_funcs/summarize_end_to_end.py` | 合并codec时间与Globus传输记录 |
