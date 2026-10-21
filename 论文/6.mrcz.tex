@@ -4,9 +4,9 @@ This section presents MRCZ, a representation-based compressor with a strict poin
 
 \subsection{Overview of MRCZ}\label{sec:mrcz:overview}
 
-Before presenting the MRCZ workflow, we briefly revisit the transform-based compressor of Marin et al.~\cite{marin2016spectral}. During compression, it applies a basis-matched transform to each element, discards information by setting selected coefficients to zero, and encodes the resulting coefficient stream. Simply inverse-transforming this lossy representation during decompression therefore generally does not reproduce the original data exactly. Moreover, the compressor provides no mechanism for enforcing a pointwise error bound.
+Physical fields are often smooth within each element. Analogous to the DCT in JPEG~\cite{wallace1991jpeg}, which represents a smooth image block with a small number of low-frequency coefficients, an element-wise polynomial transform captures the dominant variation of an element in a few low-order coefficients. The remaining high-order coefficients are typically small and therefore compress well.
 
-This representation exploits the fact that physical fields are often smooth within each element. Analogous to the DCT in JPEG~\cite{wallace1991jpeg}, which represents a smooth image block with a small number of low-frequency coefficients, an element-wise polynomial transform captures the dominant variation in low-order modes. The remaining high-order coefficients are typically small and therefore compress well.
+Marin et al.~\cite{marin2016spectral} exploit this property in a transform-based compressor. During compression, it applies a basis-matched transform to each element, discards information by setting selected coefficients to zero, and encodes the resulting coefficient stream. Simply inverse-transforming this lossy representation during decompression therefore generally does not reproduce the original data exactly. Moreover, the compressor provides no mechanism for enforcing a pointwise error bound.
 
 \begin{figure}[htb]
     \centering
