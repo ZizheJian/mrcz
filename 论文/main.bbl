@@ -24,9 +24,9 @@
 \bibitem{fischer2022nekrs}
 \BIBentryALTinterwordspacing
 P.~Fischer, S.~Kerkemeier, M.~Min, Y.-H. Lan, M.~Phillips, T.~Rathnayake,
-  E.~Merzari, A.~Tomboulides, A.~Karakus, N.~Chalmers \emph{et~al.}, ``Nekrs, a
-  gpu-accelerated spectral element navier--stokes solver,'' \emph{Parallel
-  Computing}, vol. 114, p. 102982, 2022. [Online]. Available:
+  E.~Merzari, A.~Tomboulides, A.~Karakus, N.~Chalmers \emph{et~al.}, ``{NekRS},
+  a {GPU}-accelerated spectral element {Navier--Stokes} solver,''
+  \emph{Parallel Computing}, vol. 114, p. 102982, 2022. [Online]. Available:
   \url{https://doi.org/10.1016/j.parco.2022.102982}
 \BIBentrySTDinterwordspacing
 
@@ -71,7 +71,7 @@ X.~Liang, K.~Zhao, S.~Di, S.~Li, R.~Underwood, A.~M. Gok, J.~Tian, J.~Deng,
 \bibitem{lindstrom2014fixed}
 \BIBentryALTinterwordspacing
 P.~Lindstrom, ``Fixed-rate compressed floating-point arrays,'' \emph{IEEE
-  transactions on visualization and computer graphics}, vol.~20, no.~12, pp.
+  Transactions on Visualization and Computer Graphics}, vol.~20, no.~12, pp.
   2674--2683, 2014. [Online]. Available:
   \url{https://doi.org/10.1109/TVCG.2014.2346458}
 \BIBentrySTDinterwordspacing
@@ -79,9 +79,9 @@ P.~Lindstrom, ``Fixed-rate compressed floating-point arrays,'' \emph{IEEE
 \bibitem{li2023lossy}
 \BIBentryALTinterwordspacing
 S.~Li, P.~Lindstrom, and J.~Clyne, ``Lossy scientific data compression with
-  sperr,'' in \emph{2023 IEEE International Parallel and Distributed Processing
-  Symposium (IPDPS)}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2023, pp.
-  1007--1017. [Online]. Available:
+  {SPERR},'' in \emph{2023 IEEE International Parallel and Distributed
+  Processing Symposium (IPDPS)}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE,
+  2023, pp. 1007--1017. [Online]. Available:
   \url{https://doi.org/10.1109/IPDPS54959.2023.00104}
 \BIBentrySTDinterwordspacing
 
@@ -89,7 +89,7 @@ S.~Li, P.~Lindstrom, and J.~Clyne, ``Lossy scientific data compression with
 \BIBentryALTinterwordspacing
 S.~Di, J.~Liu, K.~Zhao, X.~Liang, R.~Underwood, Z.~Zhang, M.~Shah, Y.~Huang,
   J.~Huang, X.~Yu \emph{et~al.}, ``A survey on error-bounded lossy compression
-  for scientific datasets,'' \emph{ACM computing surveys}, vol.~57, no.~11, pp.
+  for scientific datasets,'' \emph{ACM Computing Surveys}, vol.~57, no.~11, pp.
   1--38, 2025. [Online]. Available: \url{https://doi.org/10.1145/3733104}
 \BIBentrySTDinterwordspacing
 
@@ -106,10 +106,10 @@ D.~Tao, S.~Di, Z.~Chen, and F.~Cappello, ``Significantly improving lossy
 \bibitem{gong2023mgard}
 \BIBentryALTinterwordspacing
 Q.~Gong, J.~Chen, B.~Whitney, X.~Liang, V.~Reshniak, T.~Banerjee, J.~Lee,
-  A.~Rangarajan, L.~Wan, N.~Vidal \emph{et~al.}, ``Mgard: A multigrid framework
-  for high-performance, error-controlled data compression and refactoring,''
-  \emph{SoftwareX}, vol.~24, p. 101590, 2023. [Online]. Available:
-  \url{https://doi.org/10.1016/j.softx.2023.101590}
+  A.~Rangarajan, L.~Wan, N.~Vidal \emph{et~al.}, ``{MGARD}: A multigrid
+  framework for high-performance, error-controlled data compression and
+  refactoring,'' \emph{SoftwareX}, vol.~24, p. 101590, 2023. [Online].
+  Available: \url{https://doi.org/10.1016/j.softx.2023.101590}
 \BIBentrySTDinterwordspacing
 
 \bibitem{wu2025enabling}
