@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 20:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 20:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -566,10 +566,10 @@ Before submitting the final camera ready copy, remember to:
 
 [13] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 5273 strings out of 480608
- 84911 string characters out of 5886422
- 330646 words of memory out of 5000000
- 21055 multiletter control sequences out of 15000+600000
+ 5274 strings out of 480608
+ 84928 string characters out of 5886422
+ 330650 words of memory out of 5000000
+ 21056 multiletter control sequences out of 15000+600000
  572918 words of font info for 110 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  48i,14n,46p,1190b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -603,7 +603,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 3812701 bytes).
+Output written on main.pdf (13 pages, 3812838 bytes).
 PDF statistics:
  230 PDF objects out of 1000 (max. 8388607)
  139 compressed objects within 2 object streams

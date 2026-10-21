@@ -212,4 +212,11 @@ Y.~Collet and M.~Kucherawy, ``Zstandard compression and the 'application/zstd'
   2021. [Online]. Available: \url{https://www.rfc-editor.org/info/rfc8878}
 \BIBentrySTDinterwordspacing
 
+\bibitem{wallace1991jpeg}
+\BIBentryALTinterwordspacing
+G.~K. Wallace, ``The {JPEG} still picture compression standard,''
+  \emph{Communications of the ACM}, vol.~34, no.~4, pp. 30--44, 1991. [Online].
+  Available: \url{https://doi.org/10.1145/103085.103089}
+\BIBentrySTDinterwordspacing
+
 \end{thebibliography}
