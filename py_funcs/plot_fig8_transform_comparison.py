@@ -25,9 +25,9 @@ PLOT_ASPECT_RATIO=3.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=24.0
-STYLE_LEGEND_GAP_PT=0.0
+STYLE_LEGEND_GAP_PT=1.0
 CONFIG_LEGEND_GAP_PT=1.0
-CONFIG_LEGEND_ROW_GAP_PT=0.8
+CONFIG_LEGEND_ROW_GAP_PT=1.0
 CONFIG_HANDLE_LENGTH_PT=2.8
 CONFIG_HANDLE_TEXT_GAP_PT=1.2
 CONFIG_COLUMN_GAP_PT=5.2
@@ -117,12 +117,18 @@ def add_legends(figure,axes):
     ]
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     axes_position=axes.get_position()
-    center_x=0.5
-    style_legend=figure.legend(handles=style_handles,loc="lower center",bbox_to_anchor=(center_x,axes_position.y1+STYLE_LEGEND_GAP_PT/figure_height_pt),bbox_transform=figure.transFigure,ncol=2,frameon=False,borderpad=0,handlelength=STYLE_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=STYLE_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=STYLE_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=0)
+    style_y=axes_position.y1+STYLE_LEGEND_GAP_PT/figure_height_pt
+    style_legends=[figure.legend(handles=[handle],loc="lower left",bbox_to_anchor=(0,style_y),bbox_transform=figure.transFigure,ncol=1,frameon=False,borderpad=0,handlelength=STYLE_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=STYLE_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=STYLE_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=0) for handle in style_handles]
+    config_legend=figure.legend(handles=config_handles,loc="lower center",bbox_to_anchor=(0.5,style_y),bbox_transform=figure.transFigure,ncol=4,frameon=False,borderpad=0,handlelength=CONFIG_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=CONFIG_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=CONFIG_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=CONFIG_LEGEND_ROW_GAP_PT/PAPER_FONT_SIZE)
     figure.canvas.draw()
     renderer=figure.canvas.get_renderer()
-    style_top=figure.transFigure.inverted().transform((0,style_legend.get_window_extent(renderer).y1))[1]
-    figure.legend(handles=config_handles,loc="lower center",bbox_to_anchor=(center_x,style_top+CONFIG_LEGEND_GAP_PT/figure_height_pt),bbox_transform=figure.transFigure,ncol=4,frameon=False,borderpad=0,handlelength=CONFIG_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=CONFIG_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=CONFIG_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=CONFIG_LEGEND_ROW_GAP_PT/PAPER_FONT_SIZE)
+    rendered_handles=getattr(config_legend,"legend_handles",None) or config_legend.legendHandles
+    column_lefts=[figure.transFigure.inverted().transform((rendered_handles[index].get_window_extent(renderer).x0,0))[0] for index in [0,4]]
+    for legend,left in zip(style_legends,column_lefts):legend.set_bbox_to_anchor((left,style_y),transform=figure.transFigure)
+    figure.canvas.draw()
+    renderer=figure.canvas.get_renderer()
+    style_top=max(figure.transFigure.inverted().transform((0,legend.get_window_extent(renderer).y1))[1] for legend in style_legends)
+    config_legend.set_bbox_to_anchor((0.5,style_top+CONFIG_LEGEND_GAP_PT/figure_height_pt),transform=figure.transFigure)
 
 def make_figure(alpha_curves,rd_curves,output_path):
     spec=PaperFigureSpec.column(1)

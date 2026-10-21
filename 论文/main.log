@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 00:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 00:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -476,12 +476,12 @@ Underfull \hbox (badness 1377) in paragraph at lines 20--21
  []
 
 [6 <./figs/raster300/mrcz-diagram.png>]
-<figs/6/transform-comparison-stacked.png, id=53, 251.9814pt x 120.6909pt>
+<figs/6/transform-comparison-stacked.png, id=53, 251.9814pt x 121.6545pt>
 File: figs/6/transform-comparison-stacked.png Graphic file (type png)
 <use figs/6/transform-comparison-stacked.png>
 Package pdftex.def Info: figs/6/transform-comparison-stacked.png  used on input
  line 32.
-(pdftex.def)             Requested size: 252.0pt x 120.70532pt.
+(pdftex.def)             Requested size: 252.0pt x 121.66904pt.
 <figs/6/transform-mode-statistics.pdf, id=54, 265.2309pt x 112.0185pt>
 File: figs/6/transform-mode-statistics.pdf Graphic file (type pdf)
 <use figs/6/transform-mode-statistics.pdf>
@@ -601,7 +601,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 3952547 bytes).
+Output written on main.pdf (13 pages, 3952585 bytes).
 PDF statistics:
  217 PDF objects out of 1000 (max. 8388607)
  130 compressed objects within 2 object streams
