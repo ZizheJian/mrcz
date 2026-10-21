@@ -86,7 +86,9 @@ Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection re
 
 In Figure~\ref{fig:large-rate-distortion}, at matched PSNRs on Datasets~7 and~8, FDWZ improves the compression ratio over the best baseline by 77.6\% on average, and MRCZ further improves it over FDWZ by 104.8\%. Across the 27 fields retained in the aggregate statistics from all datasets, the average CR improvements are 60.8\% for FDWZ over the best baseline and 93.3\% for MRCZ over FDWZ.
 
-These gains are consistent with the design analyses in Sections~\ref{sec:fdwz} and~\ref{sec:mrcz}. FDWZ's GLL-aware interpolation reduces prediction error, and its multi-tree Huffman encoding exploits the distinct quantization-symbol distributions across prediction levels. MRCZ's DChT representation produces smaller high-order coefficients, while mode-major ordering groups coefficients with similar statistics for more effective lossless coding.
+FDWZ's gain over the baselines is consistent with the design analyses in Section~\ref{sec:fdwz}. Its GLL-aware interpolation reduces prediction error, and its multi-tree Huffman encoding exploits the distinct quantization-symbol distributions across prediction levels.
+
+The additional gain of MRCZ over FDWZ reflects two effects of its element-wise transform. First, the polynomial basis concentrates the smooth variation of an element in a few lower-order coefficients, leaving most higher-order coefficients small. Second, the inverse transform predicts each value from a representation derived from the entire element, whereas each FDWZ prediction uses at most four nearby references. MRCZ therefore requires only small correction residuals. Figure~\ref{fig:transform-mode-statistics} shows both the small higher-order coefficients and the negligible size of the residual stream. This advantage comes with greater computation because each transform output combines all values along an axis, helping explain MRCZ's lower throughput (Section~\ref{sec:parallel-throughput}).
 
 \subsection{Codec Throughput}\label{sec:parallel-throughput}
 
