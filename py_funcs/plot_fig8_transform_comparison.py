@@ -137,6 +137,7 @@ def make_figure(alpha_curves,rd_curves,output_path):
     axes.set_ylabel("PSNR (dB)")
     axes.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
     style_plot_axis(axes)
+    axes.get_xticklabels()[0].set_horizontalalignment("left")
     layout_panel_row(figure,[axes],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     add_legends(figure,axes)
     save_paper_png_vertical_crop(figure,output_path,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
