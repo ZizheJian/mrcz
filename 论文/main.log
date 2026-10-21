@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 21:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 21:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -279,7 +279,7 @@ e \nobreakspace #2}\ifdim \wd \@tempboxa >\hsize \setbox \@tempboxa \hbox {\nor
 malfont \footnotesize {#1.}\nobreakspace \nobreakspace }\parbox [t]{\hsize }{\n
 ormalfont \footnotesize \noindent \unhbox \@tempboxa #2}\else \ifCLASSOPTIONcon
 ference \hbox to\hsize {\normalfont \footnotesize \hfil \box \@tempboxa \hfil }
-\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi \fi 
+\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi \fi
 \fi  on input line 1082.
 )
 
@@ -515,45 +515,45 @@ File: figs/7/large-rd.png Graphic file (type png)
 <use figs/7/large-rd.png>
 Package pdftex.def Info: figs/7/large-rd.png  used on input line 82.
 (pdftex.def)             Requested size: 429.98163pt x 185.10954pt.
-<figs/7/combined-throughput.pdf, id=103, 514.71436pt x 214.00809pt>
+ [9]
+<figs/7/combined-throughput.pdf, id=107, 514.71436pt x 214.00809pt>
 File: figs/7/combined-throughput.pdf Graphic file (type pdf)
 <use figs/7/combined-throughput.pdf>
 Package pdftex.def Info: figs/7/combined-throughput.pdf  used on input line 99.
 
 (pdftex.def)             Requested size: 516.0pt x 214.5529pt.
- [9]
-<figs/7/e2e_time.pdf, id=108, 247.90932pt x 155.20184pt>
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [10 <./figs/7/small-rd.png> <./figs/7/large-rd.png>]
+<figs/7/e2e_time.pdf, id=113, 247.90932pt x 155.20184pt>
 File: figs/7/e2e_time.pdf Graphic file (type pdf)
 <use figs/7/e2e_time.pdf>
 Package pdftex.def Info: figs/7/e2e_time.pdf  used on input line 114.
 (pdftex.def)             Requested size: 252.0pt x 157.76381pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 1953) has occurred while \output is active []
 
- [10 <./figs/7/small-rd.png> <./figs/7/large-rd.png>]
 <figs/7/transfer-size-time.pdf, id=114, 252.82204pt x 119.88614pt>
 File: figs/7/transfer-size-time.pdf Graphic file (type pdf)
 <use figs/7/transfer-size-time.pdf>
 Package pdftex.def Info: figs/7/transfer-size-time.pdf  used on input line 123.
 
 (pdftex.def)             Requested size: 252.0pt x 119.49985pt.
-
-Underfull \vbox (badness 1953) has occurred while \output is active []
-
-<figs/raster300/visualization-cr33.png, id=115, 515.7669pt x 169.5936pt>
+ [11 <./figs/7/combined-throughput.pdf> <./figs/7/e2e_time.pdf> <./figs/7/trans
+fer-size-time.pdf>]
+<figs/raster300/visualization-cr33.png, id=157, 515.7669pt x 169.5936pt>
 File: figs/raster300/visualization-cr33.png Graphic file (type png)
 <use figs/raster300/visualization-cr33.png>
 Package pdftex.def Info: figs/raster300/visualization-cr33.png  used on input l
 ine 155.
 (pdftex.def)             Requested size: 516.0pt x 169.67339pt.
-)
-(./8.conclusion.tex [11 <./figs/7/combined-throughput.pdf> <./figs/7/e2e_time.p
-df> <./figs/7/transfer-size-time.pdf>]
+) (./8.conclusion.tex
 Underfull \hbox (badness 2486) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Experiments on 28 non-constant fields from NekRS,
  []
 
-) [12 <./figs/raster300/visualization-cr33.png (PNG copy)>] (./main.bbl)
+) (./main.bbl [12] [13 <./figs/raster300/visualization-cr33.png (PNG copy)>])
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -565,49 +565,51 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[13] (./main.aux) ) 
+[14
+
+] (./main.aux) )
 Here is how much of TeX's memory you used:
  5274 strings out of 480608
  84928 string characters out of 5886422
- 330650 words of memory out of 5000000
+ 329650 words of memory out of 5000000
  21056 multiletter control sequences out of 15000+600000
  572918 words of font info for 110 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 48i,14n,46p,1190b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/
-texmf-dist/fonts/enc/dvips/base/8r.enc}</apps/spack/anvil/apps/texlive/20200406
--gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></apps
-/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmmi10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0
--eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></apps/spack/anvil
-/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmmi6.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></apps/spack/anvil/apps/texlive
-/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pf
-b></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc
--11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></apps/spack
-/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr7.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></apps/spack/anvil/apps/tex
-live/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
-10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmsy6.pfb></apps/spack/anvil/apps/texlive/2020040
-6-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></apps
-/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmsy8.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-
-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></apps/spack/
-anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/couri
-er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
--dist/fonts/type1/urw/times/utmb8a.pfb></apps/spack/anvil/apps/texlive/20200406
--gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></apps/spack/a
-nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
-utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
-st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 3813265 bytes).
+ 48i,14n,46p,1221b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/tex
+mf-dist/fonts/enc/dvips/base/8r.enc}</apps/spack/anvil/apps/texlive/20200406-gc
+c-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></apps/sp
+ack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-ee
+avxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></apps/spack/anvil/ap
+ps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmmi6.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></apps/spack/anvil/apps/texlive/20
+200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><
+/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmr10.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11
+.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></apps/spack/an
+vil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmr7.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></apps/spack/anvil/apps/texliv
+e/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.
+pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy6.pfb></apps/spack/anvil/apps/texlive/20200406-g
+cc-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></apps/sp
+ack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmsy8.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eea
+vxnm/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></apps/spack/anv
+il/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/courier/
+ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
+st/fonts/type1/urw/times/utmb8a.pfb></apps/spack/anvil/apps/texlive/20200406-gc
+c-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></apps/spack/anvi
+l/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utm
+r8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/
+fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (14 pages, 3813967 bytes).
 PDF statistics:
- 230 PDF objects out of 1000 (max. 8388607)
- 139 compressed objects within 2 object streams
+ 233 PDF objects out of 1000 (max. 8388607)
+ 141 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  81 words of extra memory for PDF output out of 10000 (max. 10000000)
 
