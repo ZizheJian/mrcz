@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 11:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 11:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -504,18 +504,18 @@ LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 x/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-<figs/7/small-rd.png, id=62, 515.7669pt x 239.2137pt>
+<figs/7/small-rd.png, id=62, 515.7669pt x 242.3454pt>
 File: figs/7/small-rd.png Graphic file (type png)
 <use figs/7/small-rd.png>
 Package pdftex.def Info: figs/7/small-rd.png  used on input line 34.
-(pdftex.def)             Requested size: 516.0pt x 239.32625pt.
-<figs/7/large-rd.png, id=63, 429.7656pt x 158.2713pt>
+(pdftex.def)             Requested size: 516.0pt x 242.45943pt.
+<figs/7/large-rd.png, id=63, 429.7656pt x 160.4394pt>
 File: figs/7/large-rd.png Graphic file (type png)
 <use figs/7/large-rd.png>
 Package pdftex.def Info: figs/7/large-rd.png  used on input line 41.
-(pdftex.def)             Requested size: 430.0pt x 158.36267pt.
+(pdftex.def)             Requested size: 430.0pt x 160.53203pt.
  [8 <./figs/6/mrcz-reordering-ablation.png>]
-Underfull \vbox (badness 6188) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -532,13 +532,13 @@ File: figs/7/e2e_time.png Graphic file (type png)
 <use figs/7/e2e_time.png>
 Package pdftex.def Info: figs/7/e2e_time.png  used on input line 114.
 (pdftex.def)             Requested size: 252.0pt x 131.78804pt.
-<figs/7/transfer-size-time.png, id=76, 251.9814pt x 114.6684pt>
+ [10]
+<figs/7/transfer-size-time.png, id=80, 251.9814pt x 114.6684pt>
 File: figs/7/transfer-size-time.png Graphic file (type png)
 <use figs/7/transfer-size-time.png>
 Package pdftex.def Info: figs/7/transfer-size-time.png  used on input line 123.
 
 (pdftex.def)             Requested size: 252.0pt x 114.6821pt.
- [10]
 <figs/raster300/visualization-cr33.png, id=81, 515.7669pt x 169.5936pt>
 File: figs/raster300/visualization-cr33.png Graphic file (type png)
 <use figs/raster300/visualization-cr33.png>
@@ -602,7 +602,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4319493 bytes).
+Output written on main.pdf (13 pages, 4319574 bytes).
 PDF statistics:
  159 PDF objects out of 1000 (max. 8388607)
  93 compressed objects within 1 object stream
