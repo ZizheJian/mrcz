@@ -29,6 +29,20 @@ The experiments were conducted on Purdue Anvil. Each standard compute node provi
     \end{tabular}
 \end{table*}
 
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figs/7/small-rd.png}
+    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Across the 17 fields included in the aggregate statistics, the average CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D.}
+    \label{fig:small-rate-distortion}
+\end{figure*}
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=0.8333\textwidth]{figs/7/large-rd.png}
+    \caption{Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets~7 and~8. Across the 10 fields, the average CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ.}
+    \label{fig:large-rate-distortion}
+\end{figure*}
+
 Table~\ref{tab:datasets} summarizes the eight datasets used in our evaluation. The five datasets generated with NekRS~\cite{fischer2022nekrs} were provided by domain scientists. Dataset~7 models coolant flow through a pebble-bed reactor, while Dataset~8 models a jet in crossflow. The MFEM~\cite{anderson2021mfem} and Nektar++~\cite{moxey2020nektar++} datasets were generated from examples distributed with the respective frameworks. For brevity, a field is denoted by its dataset index followed by its name. For example, 7T denotes the $T$ field of Dataset~7.
 
 \subsubsection{Baseline Compressors}\mbox{}
@@ -68,21 +82,7 @@ In addition, we note that SZ2 is excluded from the multicore timing evaluations 
 
 We evaluate storage reduction using rate--distortion curves. At a fixed PSNR, a lower BR indicates better storage reduction, while at a fixed BR, a higher PSNR indicates better reconstruction quality. The evaluation proceeds in two stages. First, we evaluate every supported baseline layout on Datasets~1--6 and compare BR over the common PSNR range of the resulting curves. For each baseline, we select the layout that generally yields the lowest BR at matched PSNRs across these datasets. We fix this overall best layout for each baseline compressor and evaluate all compressors on the two large-scale datasets, Datasets~7 and~8.
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{figs/7/small-rd.png}
-    \caption{Rate--distortion curves on Datasets~1--6 for baseline-layout selection. Across the 17 fields included in the aggregate statistics, the average CR improvements are 51.6\% for FDWZ over the best baseline and 86.9\% for MRCZ over FDWZ. The selected baseline layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D.}
-    \label{fig:small-rate-distortion}
-\end{figure*}
-
 Figure~\ref{fig:small-rate-distortion} presents the baseline-layout selection results. The selected layouts are SZ3-4D, SZ2-3D-fused, QoZ-4D, ZFP-3D-fused, SPERR-2D, and MGARD-X-1D. The selected configurations span multiple dimensionalities, showing that no single layout is best for every compressor. For most baseline compressors, the per-element 3D layout ranks last. This degradation arises because it creates many independent bitstreams, repeats metadata, and cannot exploit redundancy across elements. We exclude 2UZ from the aggregate statistics because multiple compressors produce nonmonotonic RD curves on this field, preventing reliable interpolation at matched PSNRs.
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=0.8333\textwidth]{figs/7/large-rd.png}
-    \caption{Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets~7 and~8. Across the 10 fields, the average CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ.}
-    \label{fig:large-rate-distortion}
-\end{figure*}
 
 In Figure~\ref{fig:large-rate-distortion}, at matched PSNRs on Datasets~7 and~8, FDWZ improves the compression ratio over the best baseline by 77.6\% on average, and MRCZ further improves it over FDWZ by 104.8\%. Across the 27 fields retained in the aggregate statistics from all datasets, the average CR improvements are 60.8\% for FDWZ over the best baseline and 93.3\% for MRCZ over FDWZ.
 
@@ -127,6 +127,13 @@ Figure~\ref{fig:transfer} shows that most evaluated compressors reduce end-to-en
 
 We find that the Globus transfer times in Figure~\ref{fig:transfer} do not scale proportionally with compressed payload size. Figure~\ref{fig:transfer-size-time} therefore plots effective transfer throughput against payload size. The monotonic association remains strong across the 14 compressed workflows (Spearman's $\rho=0.996$). This size dependence partially offsets the cost of moving more data, narrowing the transfer-time advantage of stronger compression. Even so, FDWZ matches the fastest end-to-end method on Dataset~7 and is the fastest on Dataset~8.
 
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=\textwidth]{figs/raster300/visualization-cr33.png}
+    \caption{Visualization of a slice of 7T at matched compression ratios $\sim$33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The enlarged panels show pointwise reconstruction errors; MRCZ and FDWZ exhibit the smallest errors.}
+    \label{fig:distortion}
+\end{figure*}
+
 \subsection{Visualization}\label{sec:performance evaluation:visualization}
 
 To examine spatial error patterns at comparable storage costs, we visually compare pointwise reconstruction errors on a slice of 7T at matched compression ratios near 33.184. MGARD-X is omitted because it cannot attain this target ratio. Table~\ref{tab:error-bound-visualization} reports the selected relative error bounds and resulting compression ratios for the other compressors.
@@ -149,12 +156,5 @@ To examine spatial error patterns at comparable storage costs, we visually compa
         \bottomrule
     \end{tabular}
 \end{table}
-
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[width=\textwidth]{figs/raster300/visualization-cr33.png}
-    \caption{Visualization of a slice of 7T at matched compression ratios $\sim$33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The enlarged panels show pointwise reconstruction errors; MRCZ and FDWZ exhibit the smallest errors.}
-    \label{fig:distortion}
-\end{figure*}
 
 Figure~\ref{fig:distortion} reveals a clear ordering of visual reconstruction error at comparable compression ratios. The errors produced by MRCZ and FDWZ are nearly imperceptible, followed by the relatively small errors of ZFP and SZ3. Although ZFP uses the largest relative error bound in Table~\ref{tab:error-bound-visualization}, most of its pointwise errors remain far below the corresponding bound, with only sparse extreme values approaching it. SZ2, QoZ, and SPERR exhibit progressively more pronounced error patterns.
