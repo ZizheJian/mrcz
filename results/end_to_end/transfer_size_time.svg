@@ -1720,9 +1720,9 @@ z
   </g>
   <g id="legend_1">
    <g id="line2d_59">
-    <path d="M 13.45114 4.24
-L 21.45114 4.24
-L 29.45114 4.24
+    <path d="M 16.65114 4.24
+L 24.65114 4.24
+L 32.65114 4.24
 " style="fill: none"/>
     <defs>
      <path id="m4514601384" d="M 0 1.9
@@ -1738,12 +1738,12 @@ z
 " style="stroke: #000000; stroke-width: 0.3"/>
     </defs>
     <g>
-     <use xlink:href="#m4514601384" x="21.45114" y="4.24" style="fill: #111827; stroke: #000000; stroke-width: 0.3"/>
+     <use xlink:href="#m4514601384" x="24.65114" y="4.24" style="fill: #111827; stroke: #000000; stroke-width: 0.3"/>
     </g>
    </g>
    <g id="text_12">
     <!-- MRCZ -->
-    <g transform="translate(30.41114 7.04) scale(0.08 -0.08)">
+    <g transform="translate(33.61114 7.04) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-4d" d="M 5530 0
 L 3738 0
@@ -1867,9 +1867,9 @@ z
     </g>
    </g>
    <g id="line2d_60">
-    <path d="M 13.45114 12.35
-L 21.45114 12.35
-L 29.45114 12.35
+    <path d="M 16.65114 12.35
+L 24.65114 12.35
+L 32.65114 12.35
 " style="fill: none"/>
     <defs>
      <path id="mec6170bc13" d="M 0 1.9
@@ -1885,12 +1885,12 @@ z
 " style="stroke: #000000; stroke-width: 0.3"/>
     </defs>
     <g>
-     <use xlink:href="#mec6170bc13" x="21.45114" y="12.35" style="fill: #e15759; stroke: #000000; stroke-width: 0.3"/>
+     <use xlink:href="#mec6170bc13" x="24.65114" y="12.35" style="fill: #e15759; stroke: #000000; stroke-width: 0.3"/>
     </g>
    </g>
    <g id="text_13">
     <!-- FDWZ -->
-    <g transform="translate(30.41114 15.15) scale(0.08 -0.08)">
+    <g transform="translate(33.61114 15.15) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-46" d="M 3494 3322
 L 3334 3322
@@ -1999,9 +1999,9 @@ z
     </g>
    </g>
    <g id="line2d_61">
-    <path d="M 54.69239 4.24
-L 62.69239 4.24
-L 70.69239 4.24
+    <path d="M 56.29239 4.24
+L 64.29239 4.24
+L 72.29239 4.24
 " style="fill: none"/>
     <defs>
      <path id="m7af667a203" d="M 0 1.9
@@ -2017,21 +2017,21 @@ z
 " style="stroke: #000000; stroke-width: 0.3"/>
     </defs>
     <g>
-     <use xlink:href="#m7af667a203" x="62.69239" y="4.24" style="fill: #4e79a7; stroke: #000000; stroke-width: 0.3"/>
+     <use xlink:href="#m7af667a203" x="64.29239" y="4.24" style="fill: #4e79a7; stroke: #000000; stroke-width: 0.3"/>
     </g>
    </g>
    <g id="text_14">
     <!-- SZ3 -->
-    <g transform="translate(71.65239 7.04) scale(0.08 -0.08)">
+    <g transform="translate(73.25239 7.04) scale(0.08 -0.08)">
      <use xlink:href="#STIXGeneral-Regular-53"/>
      <use xlink:href="#STIXGeneral-Regular-5a" transform="translate(55.599991 0)"/>
      <use xlink:href="#STIXGeneral-Regular-33" transform="translate(116.799988 0)"/>
     </g>
    </g>
    <g id="line2d_62">
-    <path d="M 54.69239 12.35
-L 62.69239 12.35
-L 70.69239 12.35
+    <path d="M 56.29239 12.35
+L 64.29239 12.35
+L 72.29239 12.35
 " style="fill: none"/>
     <defs>
      <path id="mbd21b5f79e" d="M 0 1.9
@@ -2047,12 +2047,12 @@ z
 " style="stroke: #000000; stroke-width: 0.3"/>
     </defs>
     <g>
-     <use xlink:href="#mbd21b5f79e" x="62.69239" y="12.35" style="fill: #59a14f; stroke: #000000; stroke-width: 0.3"/>
+     <use xlink:href="#mbd21b5f79e" x="64.29239" y="12.35" style="fill: #59a14f; stroke: #000000; stroke-width: 0.3"/>
     </g>
    </g>
    <g id="text_15">
     <!-- QoZ -->
-    <g transform="translate(71.65239 15.15) scale(0.08 -0.08)">
+    <g transform="translate(73.25239 15.15) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-51" d="M 4486 -1133
 L 4179 -1133
@@ -2230,9 +2230,9 @@ z
     </g>
    </g>
    <g id="line2d_65">
-    <path d="M 130.94864 4.24
-L 138.94864 4.24
-L 146.94864 4.24
+    <path d="M 129.34864 4.24
+L 137.34864 4.24
+L 145.34864 4.24
 " style="fill: none"/>
     <defs>
      <path id="ma96728c810" d="M 0 1.9
@@ -2248,12 +2248,12 @@ z
 " style="stroke: #000000; stroke-width: 0.3"/>
     </defs>
     <g>
-     <use xlink:href="#ma96728c810" x="138.94864" y="4.24" style="fill: #9c755f; stroke: #000000; stroke-width: 0.3"/>
+     <use xlink:href="#ma96728c810" x="137.34864" y="4.24" style="fill: #9c755f; stroke: #000000; stroke-width: 0.3"/>
     </g>
    </g>
    <g id="text_18">
     <!-- MGARD-X -->
-    <g transform="translate(147.90864 7.04) scale(0.08 -0.08)">
+    <g transform="translate(146.30864 7.04) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-41" d="M 4525 0
 L 2893 0
@@ -2353,15 +2353,15 @@ z
     </g>
    </g>
    <g id="line2d_66">
-    <path d="M 130.94864 12.35
-L 138.94864 12.35
-L 146.94864 12.35
+    <path d="M 129.34864 12.35
+L 137.34864 12.35
+L 145.34864 12.35
 " style="fill: none"/>
    </g>
    <g id="line2d_67">
-    <path d="M 187.72614 4.24
-L 195.72614 4.24
-L 203.72614 4.24
+    <path d="M 184.52614 4.24
+L 192.52614 4.24
+L 200.52614 4.24
 " style="fill: none"/>
     <defs>
      <path id="m6678f5b1a0" d="M 0 2
@@ -2377,12 +2377,12 @@ z
 " style="stroke: #000000; stroke-width: 0.5"/>
     </defs>
     <g>
-     <use xlink:href="#m6678f5b1a0" x="195.72614" y="4.24" style="fill: #ffffff; stroke: #000000; stroke-width: 0.5"/>
+     <use xlink:href="#m6678f5b1a0" x="192.52614" y="4.24" style="fill: #ffffff; stroke: #000000; stroke-width: 0.5"/>
     </g>
    </g>
    <g id="text_19">
     <!-- Dataset 7 -->
-    <g transform="translate(204.68614 7.04) scale(0.08 -0.08)">
+    <g transform="translate(201.48614 7.04) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-37" d="M 2874 4134
 L 1517 -51
@@ -2410,9 +2410,9 @@ z
     </g>
    </g>
    <g id="line2d_68">
-    <path d="M 187.72614 12.35
-L 195.72614 12.35
-L 203.72614 12.35
+    <path d="M 184.52614 12.35
+L 192.52614 12.35
+L 200.52614 12.35
 " style="fill: none"/>
     <defs>
      <path id="mffdd35ac9d" d="M 0 -2
@@ -2422,12 +2422,12 @@ z
 " style="stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
     </defs>
     <g>
-     <use xlink:href="#mffdd35ac9d" x="195.72614" y="12.35" style="fill: #ffffff; stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#mffdd35ac9d" x="192.52614" y="12.35" style="fill: #ffffff; stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="text_20">
     <!-- Dataset 8 -->
-    <g transform="translate(204.68614 15.15) scale(0.08 -0.08)">
+    <g transform="translate(201.48614 15.15) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-38" d="M 2848 992
 Q 2848 499 2505 204
