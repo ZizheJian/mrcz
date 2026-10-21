@@ -5,18 +5,33 @@ import argparse
 import csv
 import os
 import sys
+import matplotlib
+matplotlib.use("Agg")
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-from plot_style import apply_paper_style,style_plot_axis
+from plot_style import DEFAULT_LEGEND_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,add_panel_captions,align_xlabels,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,style_plot_axis
 
 sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from py_funcs.read_nekrs_header import read_nekrs_header
 
 DEFAULT_DATA_PATH="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001"
-DEFAULT_OUTPUT="论文/figs/6/transform-mode-statistics.pdf"
+DEFAULT_OUTPUT="论文/figs/6/transform-mode-statistics.png"
 DEFAULT_CSV_OUTPUT="results/RD/transform_mode_statistics.csv"
 DEFAULT_STREAM_ROOT="results/fig9/stream_breakdown"
+
+X_TICK_GAP_PT=1.5
+Y_TICK_GAP_PT=1.0
+X_LABEL_GAP_PT=1.0
+Y_LABEL_GAP_PT=1.0
+OUTER_PANEL_ASPECT_RATIOS=(1.0,1.0,1.0)
+PANEL_GAP_PT=9.0
+STREAM_AXES_GAP_PT=2.0
+LEFT_EDGE_GAP_PT=3.0
+RIGHT_EDGE_GAP_PT=3.0
+PANEL_CAPTION_GAP_PT=2.0
+BOTTOM_PT=30.0
+VERTICAL_EDGE_GAP_PT=3.0
 
 def parse_args():
     parser=argparse.ArgumentParser()
@@ -123,14 +138,13 @@ def main():
     order_label="Maximum mode order" if args.mode_order=="maximum" else "Total mode order"
     axis_order_label="Maximum Order" if args.mode_order=="maximum" else "Total Order"
 
-    apply_paper_style(font_size=8.4,serif_fonts=["STIXGeneral"])
-    fig=plt.figure(figsize=(3.67,1.55))
-    outer_grid=fig.add_gridspec(1,3,left=0.115,right=0.995,bottom=0.31,top=0.84,wspace=0.62)
-    stream_grid=outer_grid[0,0].subgridspec(2,1,hspace=0.10)
-    coefficient_ax=fig.add_subplot(stream_grid[0])
-    residual_ax=fig.add_subplot(stream_grid[1],sharex=coefficient_ax)
-    magnitude_ax=fig.add_subplot(outer_grid[0,1])
-    entropy_ax=fig.add_subplot(outer_grid[0,2])
+    apply_paper_style(serif_fonts=["STIXGeneral"])
+    spec=PaperFigureSpec.column(1)
+    fig=plt.figure(figsize=spec.size_in,dpi=spec.dpi)
+    coefficient_ax=fig.add_axes([0.1,0.1,0.2,0.2])
+    residual_ax=fig.add_axes([0.1,0.1,0.2,0.2],sharex=coefficient_ax)
+    magnitude_ax=fig.add_axes([0.4,0.1,0.2,0.2])
+    entropy_ax=fig.add_axes([0.7,0.1,0.2,0.2])
     axes=(coefficient_ax,residual_ax,magnitude_ax,entropy_ax)
     colors={"DLT":"#ff5a5a","DChT":"#3b7ded"}
     mode_marker="o" if args.mode_order=="maximum" else None
@@ -149,21 +163,27 @@ def main():
     residual_ax.set_ylim(0,0.045)
     residual_ax.set_yticks([0.02,0.04])
     residual_ax.set_xticks([1e-2,1e-4,1e-6])
-    residual_ax.set_xlabel("Relative Error Bound",labelpad=1)
-    fig.text(0.025,(coefficient_ax.get_position().y1+residual_ax.get_position().y0)/2,"BR",ha="center",va="center",rotation=90,fontsize=8)
+    residual_ax.set_xlabel("Relative Error Bound")
+    residual_ax.set_ylabel("BR")
 
     for label,stats in (("DLT",dlt),("DChT",dcht)):
         median,lower,upper,_=stats
         magnitude_ax.plot(orders,median,marker=mode_marker,linewidth=0.8,markersize=1.8,label=label,color=colors[label],zorder=1)
         magnitude_ax.fill_between(orders,lower,upper,color=colors[label],alpha=0.16,linewidth=0,zorder=1)
     magnitude_ax.set_yscale("log")
-    magnitude_ax.set_xlabel(axis_order_label,labelpad=1)
-    magnitude_ax.set_ylabel("Normalized $|c|$",labelpad=1)
+    magnitude_ax.set_xlim(0,orders[-1])
+    magnitude_ax.set_xticks([0,10,20])
+    magnitude_ax.set_ylim(1e-10,1)
+    magnitude_ax.set_yticks([1e-9,1e-5,1e-1])
+    magnitude_ax.set_xlabel(axis_order_label)
+    magnitude_ax.set_ylabel("Normalized $|c|$")
 
     entropy_ax.plot(orders,dlt[3],marker=mode_marker,linewidth=0.8,markersize=1.8,label="DLT",color=colors["DLT"],zorder=1)
     entropy_ax.plot(orders,dcht[3],marker=mode_marker,linewidth=0.8,markersize=1.8,label="DChT",color=colors["DChT"],zorder=1)
-    entropy_ax.set_xlabel(axis_order_label,labelpad=1)
-    entropy_ax.set_ylabel("Entropy (bits/value)",labelpad=1)
+    entropy_ax.set_xlim(0,orders[-1])
+    entropy_ax.set_xticks([0,10,20])
+    entropy_ax.set_xlabel(axis_order_label)
+    entropy_ax.set_ylabel("Entropy (bits/value)")
     if args.mode_order=="total":
         entropy_ax.set_yscale("symlog",linthresh=1e-3,linscale=0.5)
         entropy_ax.set_ylim(-3e-4,20)
@@ -173,18 +193,31 @@ def main():
 
     for ax in axes:
         ax.grid(True,which="major",linestyle="--",linewidth=0.4,alpha=0.35)
-        style_plot_axis(ax,tick_length=2,tick_width=0.5,spine_width=0.6)
-        ax.tick_params(axis="x",pad=2.5)
+        style_plot_axis(ax,tick_length=2,tick_width=0.5,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=X_LABEL_GAP_PT,y_label_pad=Y_LABEL_GAP_PT,spine_width=0.6)
         ax.tick_params(axis="x",which="minor",length=0)
+    layout_panel_row(fig,[residual_ax,magnitude_ax,entropy_ax],OUTER_PANEL_ASPECT_RATIOS,bottom_pt=BOTTOM_PT,panel_gap_pt=PANEL_GAP_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    figure_height_pt=fig.get_figheight()*MPL_POINTS_PER_INCH
+    stream_position=residual_ax.get_position()
+    stream_gap=STREAM_AXES_GAP_PT/figure_height_pt
+    stream_height=(stream_position.height-stream_gap)/2
+    residual_ax.set_position([stream_position.x0,stream_position.y0,stream_position.width,stream_height])
+    coefficient_ax.set_position([stream_position.x0,stream_position.y0+stream_height+stream_gap,stream_position.width,stream_height])
+    fig.canvas.draw()
+    renderer=fig.canvas.get_renderer()
+    br_label=residual_ax.yaxis.label
+    br_label_bbox=br_label.get_window_extent(renderer)
+    br_label_center_x=fig.transFigure.inverted().transform(((br_label_bbox.x0+br_label_bbox.x1)/2,0))[0]
+    br_label.set_visible(False)
+    fig.text(br_label_center_x,(coefficient_ax.get_position().y1+residual_ax.get_position().y0)/2,"BR",ha="center",va="center",rotation=90)
+    align_xlabels(fig,[residual_ax,magnitude_ax,entropy_ax],gap_pt=X_LABEL_GAP_PT)
+    add_panel_captions(fig,[residual_ax,magnitude_ax,entropy_ax],["(a) BR Breakdown","(b) Magnitudes","(c) Entropy"],gap_pt=PANEL_CAPTION_GAP_PT)
     transform_handles=[Line2D([0],[0],color=colors[label],linewidth=0.8,label=label) for label in ("DLT","DChT")]
     stream_handles=[Line2D([0],[0],color="black",linestyle=linestyle,linewidth=0.8,label=label) for label,linestyle in (("Coefficients","-"),("Residuals","--"))]
-    fig.legend(handles=transform_handles+stream_handles,loc="upper center",bbox_to_anchor=(0.5,0.99),ncol=4,frameon=False,handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)
-    panel_labels=[("(a) BR Breakdown",coefficient_ax,0.04),("(b) Magnitudes",magnitude_ax,0.04),("(c) Entropy",entropy_ax,0.04)]
-    for label,ax,y in panel_labels:
-        position=ax.get_position()
-        fig.text((position.x0+position.x1)/2,y,label,ha="center",va="bottom",fontsize=8,linespacing=0.9)
+    axes_top=max(coefficient_ax.get_position().y1,magnitude_ax.get_position().y1,entropy_ax.get_position().y1)
+    fig.legend(handles=transform_handles+stream_handles,loc="lower center",bbox_to_anchor=(0.5,axes_top+DEFAULT_LEGEND_GAP_PT/figure_height_pt),bbox_transform=fig.transFigure,ncol=4,frameon=False,borderpad=0,handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
-    fig.savefig(args.output,dpi=300)
+    save_paper_png_vertical_crop(fig,args.output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    plt.close(fig)
     os.makedirs(os.path.dirname(args.csv_output) or ".",exist_ok=True)
     with open(args.csv_output,"w",newline="") as file_obj:
         writer=csv.writer(file_obj,lineterminator="\n")
