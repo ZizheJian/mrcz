@@ -17,10 +17,6 @@ CONFIGS=[
     ("DST_uniform","DST (Uniform)","#12afc7"),
 ]
 
-X_TICK_GAP_PT=1.5
-Y_TICK_GAP_PT=1.0
-X_LABEL_GAP_PT=1.0
-Y_LABEL_GAP_PT=1.0
 PLOT_ASPECT_RATIO=3.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
@@ -143,7 +139,7 @@ def make_figure(alpha_curves,rd_curves,output_path):
     axes.set_xlabel("Bit rate")
     axes.set_ylabel("PSNR (dB)")
     axes.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
-    style_plot_axis(axes,tick_length=2.5,tick_width=0.6,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=X_LABEL_GAP_PT,y_label_pad=Y_LABEL_GAP_PT,spine_width=0.7)
+    style_plot_axis(axes)
     layout_panel_row(figure,[axes],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     add_legends(figure,axes)
     save_paper_png_vertical_crop(figure,output_path,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)

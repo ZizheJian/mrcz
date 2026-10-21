@@ -20,16 +20,11 @@ DEFAULT_OUTPUT="论文/figs/6/transform-mode-statistics.png"
 DEFAULT_CSV_OUTPUT="results/RD/transform_mode_statistics.csv"
 DEFAULT_STREAM_ROOT="results/fig9/stream_breakdown"
 
-X_TICK_GAP_PT=1.5
-Y_TICK_GAP_PT=1.0
-X_LABEL_GAP_PT=1.0
-Y_LABEL_GAP_PT=1.0
 OUTER_PANEL_ASPECT_RATIOS=(1.0,1.0,1.0)
 PANEL_GAP_PT=9.0
 STREAM_AXES_GAP_PT=2.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
-PANEL_CAPTION_GAP_PT=2.0
 BOTTOM_PT=30.0
 VERTICAL_EDGE_GAP_PT=3.0
 
@@ -193,7 +188,7 @@ def main():
 
     for ax in axes:
         ax.grid(True,which="major",linestyle="--",linewidth=0.4,alpha=0.35)
-        style_plot_axis(ax,tick_length=2,tick_width=0.5,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=X_LABEL_GAP_PT,y_label_pad=Y_LABEL_GAP_PT,spine_width=0.6)
+        style_plot_axis(ax)
         ax.tick_params(axis="x",which="minor",length=0)
     layout_panel_row(fig,[residual_ax,magnitude_ax,entropy_ax],OUTER_PANEL_ASPECT_RATIOS,bottom_pt=BOTTOM_PT,panel_gap_pt=PANEL_GAP_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     figure_height_pt=fig.get_figheight()*MPL_POINTS_PER_INCH
@@ -209,8 +204,8 @@ def main():
     br_label_center_x=fig.transFigure.inverted().transform(((br_label_bbox.x0+br_label_bbox.x1)/2,0))[0]
     br_label.set_visible(False)
     fig.text(br_label_center_x,(coefficient_ax.get_position().y1+residual_ax.get_position().y0)/2,"BR",ha="center",va="center",rotation=90)
-    align_xlabels(fig,[residual_ax,magnitude_ax,entropy_ax],gap_pt=X_LABEL_GAP_PT)
-    add_panel_captions(fig,[residual_ax,magnitude_ax,entropy_ax],["(a) BR Breakdown","(b) Magnitudes","(c) Entropy"],gap_pt=PANEL_CAPTION_GAP_PT)
+    align_xlabels(fig,[residual_ax,magnitude_ax,entropy_ax])
+    add_panel_captions(fig,[residual_ax,magnitude_ax,entropy_ax],["(a) BR Breakdown","(b) Magnitudes","(c) Entropy"])
     transform_handles=[Line2D([0],[0],color=colors[label],linewidth=0.8,label=label) for label in ("DLT","DChT")]
     stream_handles=[Line2D([0],[0],color="black",linestyle=linestyle,linewidth=0.8,label=label) for label,linestyle in (("Coefficients","-"),("Residuals","--"))]
     axes_top=max(coefficient_ax.get_position().y1,magnitude_ax.get_position().y1,entropy_ax.get_position().y1)

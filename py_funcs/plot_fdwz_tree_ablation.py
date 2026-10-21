@@ -9,15 +9,10 @@ tree_count_paths=[os.path.join(project_root,f"results/RD/pb0_fdwz_tree_count/tre
 prediction_error_distribution_path=os.path.join(project_root,"results/RD/pb0_fdwz_tree_prediction_error_distribution_1e-3.csv")
 canonical_output_path=os.path.join(project_root,"论文/figs/5/fdwz-tree-ablation.png")
 
-X_TICK_GAP_PT=1.5
-Y_TICK_GAP_PT=1.0
-X_LABEL_GAP_PT=1.0
-Y_LABEL_GAP_PT=1.0
 PLOT_ASPECT_RATIOS=panel_aspect_ratios(2,1)
 PANEL_GAP_PT=9.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
-PANEL_CAPTION_GAP_PT=2.0
 VERTICAL_EDGE_GAP_PT=3.0
 
 tree_colors=["#000000","#0072B2","#D55E00","#009E73","#CC79A7"]
@@ -44,7 +39,7 @@ def read_prediction_error_distributions(path):
     return distributions,totals,bin_width
 
 def configure_common_axes(axes):
-    style_plot_axis(axes,tick_length=2.5,tick_width=0.6,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=X_LABEL_GAP_PT,y_label_pad=Y_LABEL_GAP_PT,spine_width=0.6,minor_tick_length=1.5,minor_tick_width=0.5)
+    style_plot_axis(axes)
 
 def draw_tree_count_bars(axes):
     tree_nums=list(range(1,6))
@@ -96,8 +91,8 @@ def make_ablation_figure(output_path):
     for axis in axes:
         axis.set_axisbelow(True)
         axis.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
-    align_xlabels(figure,axes,gap_pt=X_LABEL_GAP_PT)
-    add_panel_captions(figure,axes,["(a) Prediction-Error Density","(b) Tree Count"],gap_pt=PANEL_CAPTION_GAP_PT)
+    align_xlabels(figure,axes)
+    add_panel_captions(figure,axes,["(a) Prediction-Error Density","(b) Tree Count"])
     save_paper_png_vertical_crop(figure,output_path,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     plt.close(figure)
 

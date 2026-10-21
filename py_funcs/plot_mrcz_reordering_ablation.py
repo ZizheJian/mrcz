@@ -11,15 +11,10 @@ DEFAULT_ROOT="results/mrcz_reordering"
 DEFAULT_OUTPUT="论文/figs/6/mrcz-reordering-ablation.png"
 DEFAULT_SUMMARY="results/mrcz_reordering/summary.csv"
 
-X_TICK_GAP_PT=1.5
-Y_TICK_GAP_PT=1.0
-X_LABEL_GAP_PT=1.0
-Y_LABEL_GAP_PT=1.0
 PLOT_ASPECT_RATIOS=panel_aspect_ratios(1,2)
 PANEL_GAP_PT=9.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
-PANEL_CAPTION_GAP_PT=2.0
 BOTTOM_PT=40.0
 VERTICAL_EDGE_GAP_PT=3.0
 
@@ -112,11 +107,11 @@ def main():
 
     for ax in axes:
         ax.grid(True,axis="y",linestyle="--",linewidth=0.4,alpha=0.35)
-        style_plot_axis(ax,tick_length=2,tick_width=0.5,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=X_LABEL_GAP_PT,y_label_pad=Y_LABEL_GAP_PT,spine_width=0.6)
+        style_plot_axis(ax)
     layout_panel_row(fig,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PT,panel_gap_pt=PANEL_GAP_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     legend_above(rd_ax,rd_legend_handles,rd_legend_labels,ncol=1,frameon=False,handlelength=1.0,handletextpad=0.25)
     legend_above(throughput_ax,throughput_legend_handles,throughput_legend_labels,ncol=2,frameon=False,handlelength=0.7,handletextpad=0.2,columnspacing=0.55)
-    captions=add_panel_captions(fig,[rd_ax],["(a) Rate–Distortion"],gap_pt=PANEL_CAPTION_GAP_PT,source="xlabel")+add_panel_captions(fig,[throughput_ax],["(b) Throughput"],gap_pt=PANEL_CAPTION_GAP_PT,source="ticks")
+    captions=add_panel_captions(fig,[rd_ax],["(a) Rate–Distortion"],source="xlabel")+add_panel_captions(fig,[throughput_ax],["(b) Throughput"],source="ticks")
     caption_y=min(caption.get_position()[1] for caption in captions)
     for caption in captions:caption.set_y(caption_y)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
