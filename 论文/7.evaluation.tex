@@ -94,9 +94,9 @@ The additional gain of MRCZ over FDWZ reflects a tradeoff between local and elem
 
 We evaluate aggregate codec throughput on Datasets~7 and~8 at five relative error bounds using the baseline layouts selected in Figure~\ref{fig:small-rate-distortion}. Aggregate throughput is the total uncompressed size of the five fields divided by their summed compression or decompression time. Dataset~7 uses 64 partitions with 8 or 64 CPU cores, and Dataset~8 uses 128 partitions with 16 or 128 CPU cores. MGARD-X could not run at the intended concurrency because each concurrent partition call requires a large temporary workspace. At higher thread counts, its memory consumption exceeded the 235~GiB available on a standard Anvil node. We therefore measure MGARD-X with eight threads for both datasets and project its throughput at $p$ threads as $\widehat{T}(p)=(p/8)T(8)$, which assumes ideal linear scaling. Figure~\ref{fig:throughput} presents the lower core counts in the top row and the higher core counts in the bottom row.
 
-\begin{figure*}[t]
+\begin{figure*}[htb]
     \centering
-    \includegraphics[width=\textwidth]{figs/7/combined-throughput.pdf}
+    \includegraphics[width=0.94281\textwidth]{figs/7/combined-throughput.png}
     \caption{Aggregate compression and decompression throughput on Datasets~7 and~8. The top row uses 8 CPU cores for Dataset~7 and 16 for Dataset~8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 35 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.}
     \label{fig:throughput}
 \end{figure*}

@@ -1,17 +1,27 @@
 import glob,math,os
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator,NullLocator
 
 import plot_aggregate_throughput as large
 import plot_small_core_throughput as small
-from plot_style import METHOD_COLORS,TIMING_METHODS,apply_paper_style,style_plot_axis
+from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,TIMING_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
 
 apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 
 methods=TIMING_METHODS
 colors=METHOD_COLORS
 tasks=("Compression","Decompression")
+PLOT_ASPECT_RATIOS=(2.0,2.0,2.0,2.0)
+WIDTH_FRACTION=2*math.sqrt(2)/3
+PANEL_GAP_PT=4.0
+ROW_CONTENT_GAP_PT=6.0
+OUTER_EDGE_GAP_PT=3.0
+BOTTOM_PLOT_PT=42.0
+VERTICAL_EDGE_GAP_PT=3.0
+SHARED_YLABEL_GAP_PT=1.0
 
 
 def group_limit(aggregate,extra_aggregate):
@@ -36,6 +46,24 @@ def mgard_8core(project_root,dataset,error_bounds):
     return aggregate
 
 
+def visible_bboxes(artists,renderer):
+    return [artist.get_window_extent(renderer) for artist in artists if artist.get_visible() and artist.get_text()]
+
+
+def place_shared_ylabel(figure,axes,label):
+    figure.canvas.draw()
+    renderer=figure.canvas.get_renderer()
+    tick_left=min(bbox.x0 for axis in axes[:,0] for bbox in visible_bboxes(axis.get_yticklabels(which="both"),renderer))
+    grid_bottom=min(axis.get_position().y0 for axis in axes.flat)
+    grid_top=max(axis.get_position().y1 for axis in axes.flat)
+    text=figure.text(0,(grid_bottom+grid_top)/2,label,rotation=90,ha="center",va="center")
+    figure.canvas.draw()
+    bbox=text.get_window_extent(figure.canvas.get_renderer())
+    text.set_x((tick_left-SHARED_YLABEL_GAP_PT*figure.dpi/MPL_POINTS_PER_INCH-bbox.width/2)/figure.bbox.width)
+    figure.canvas.draw()
+    return text
+
+
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     large_result_dir=os.path.join(project_root,"results","RD")
@@ -53,7 +81,8 @@ def main():
         limits[(1,dataset)]=group_limit(large_aggregate,projected_mgard)
 
     columns=[("pb0",7,"Compression"),("pb0",7,"Decompression"),("jicf0",8,"Compression"),("jicf0",8,"Decompression")]
-    figure,axes=plt.subplots(2,4,figsize=(7.16,2.99))
+    spec=PaperFigureSpec.text(1,width_fraction=WIDTH_FRACTION)
+    figure,axes=plt.subplots(2,4,figsize=spec.size_in,dpi=spec.dpi)
     for row in range(2):
         for column,(dataset,dataset_index,task) in enumerate(columns):
             axis=axes[row,column]
@@ -69,24 +98,33 @@ def main():
             axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
             style_plot_axis(axis)
             panel=chr(ord("a")+row*4+column)
-            axis.set_xlabel(f"({panel}) Dataset {dataset_index}, {task}\n{cpus} cores",labelpad=1.0)
+            axis.set_xlabel(f"({panel}) Dataset {dataset_index}, {task}\n{cpus} cores")
+            axis.xaxis.labelpad=DEFAULT_PANEL_CAPTION_GAP_PT
 
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label=method) for method in methods]
     handles.extend([plt.Line2D([0],[0],color=colors["MGARD-1D"],linewidth=1.0,label="MGARD-X-1D measured"),plt.Line2D([0],[0],color=colors["MGARD-1D"],linestyle="--",linewidth=1.0,label="MGARD-X-1D ideal")])
-    figure.legend(handles=handles,loc="upper center",ncol=4,frameon=False,bbox_to_anchor=(0.5,0.995),handlelength=1.0,handletextpad=0.25,columnspacing=0.75,borderaxespad=0,fontsize=8.0)
-    figure.supxlabel("Relative Error Bound",x=0.515,y=0.018)
-    figure.supylabel("Aggregate Throughput (GiB/s)",x=0.007,y=0.47)
-    figure.tight_layout(rect=(0.025,0.045,1,0.86),pad=0.25,w_pad=0.45,h_pad=0.75)
+    provisional_ylabel=figure.text(0,0,"Aggregate Throughput (GiB/s)",rotation=90,ha="center",va="center")
+    figure.canvas.draw()
+    ylabel_width_pt=provisional_ylabel.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
+    provisional_ylabel.remove()
+    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
+    add_shared_xlabel(figure,axes[-1,:],"Relative Error Bound",source_artists=[axis.xaxis.label for axis in axes[-1,:]])
+    place_shared_ylabel(figure,axes,"Aggregate Throughput (GiB/s)")
+    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
+    top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
+    legend=figure.legend(handles=handles,loc="lower center",ncol=4,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),handlelength=1.0,handletextpad=0.25,columnspacing=0.75,borderaxespad=0,borderpad=0)
+    set_legend_row_gap(legend)
+    figure.canvas.draw()
 
     result_dir=os.path.join(project_root,"results","RD")
     svg_output=os.path.join(result_dir,"combined_throughput.svg")
     png_output=os.path.join(result_dir,"combined_throughput.png")
-    pdf_output=os.path.join(project_root,"论文","figs","7","combined-throughput.pdf")
-    figure.savefig(svg_output,format="svg",metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
-    figure.savefig(png_output,format="png",dpi=240,bbox_inches="tight",pad_inches=0.02)
-    figure.savefig(pdf_output,format="pdf",bbox_inches="tight",pad_inches=0.02)
+    paper_output=os.path.join(project_root,"论文","figs","7","combined-throughput.png")
+    save_svg(figure,svg_output,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
+    save_paper_png_vertical_crop(figure,png_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     plt.close(figure)
-    print(pdf_output)
+    print(paper_output)
     print(png_output)
 
 
