@@ -109,9 +109,9 @@ Having evaluated storage reduction and codec performance, we next examine how th
 
 Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end time as the sum of compression, Globus transfer, and decompression time. We repeat each transfer three times and report the median total. For MGARD-X, the transfer component is measured, while the codec components use the ideal projections from its eight-thread measurements described in Section~\ref{sec:parallel-throughput}.
 
-\begin{figure}[t]
+\begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/7/e2e_time.pdf}
+    \includegraphics[width=\linewidth]{figs/7/e2e_time.png}
     \caption{End-to-end time at relative error bounds of $10^{-4}$ for Dataset~7 and $10^{-6}$ for Dataset~8, decomposed into compression, Globus transfer, and decompression time. The diagonally striped MGARD-X compression and decompression segments are ideal projections, while its transfer segments are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset~7 and 88.3\% on Dataset~8. FDWZ matches the fastest method on Dataset~7 and is fastest on Dataset~8.}
     \label{fig:transfer}
 \end{figure}
