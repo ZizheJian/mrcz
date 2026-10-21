@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 21:37
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 21:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -575,7 +575,7 @@ Here is how much of TeX's memory you used:
  21056 multiletter control sequences out of 15000+600000
  572918 words of font info for 110 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 48i,14n,46p,1190b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 48i,14n,46p,1200b,339s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/tex
 mf-dist/fonts/enc/dvips/base/8r.enc}</apps/spack/anvil/apps/texlive/20200406-gc
 c-11.2.0-eeavxnm/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></apps/sp
@@ -606,7 +606,7 @@ c-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></apps/spack/anvi
 l/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/utm
 r8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/
 fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (14 pages, 3813945 bytes).
+Output written on main.pdf (14 pages, 3813949 bytes).
 PDF statistics:
  233 PDF objects out of 1000 (max. 8388607)
  141 compressed objects within 2 object streams
