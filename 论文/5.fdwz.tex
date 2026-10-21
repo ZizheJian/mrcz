@@ -24,7 +24,7 @@ FDWZ adapts this cubic interpolation to the nonuniform spacing of GLL points wit
 \item \textit{Modified Prediction Order}: SZ3 constructs its multilevel hierarchy by repeatedly selecting the array-index midpoint between two reconstructed endpoints. On a uniform grid, this point is also their geometric midpoint. FDWZ instead selects the unpredicted GLL point closest to the midpoint of the two endpoints in reference space. This choice helps limit the propagation of compression errors to later prediction levels. This order is also computed once per polynomial order and reused across elements.
 \end{enumerate}
 
-For a controlled ablation, we use 7P---the $P$ field of Dataset~7 listed in Table~\ref{tab:datasets}---and compare the three predictor configurations at matched PSNRs. Replacing SZ3's uniform-grid weights with GLL weights improves the compression ratio by 62.7\% on average. With the GLL weights fixed, the modified prediction order provides a further 6.8\% average improvement.
+For a controlled ablation, we use 7P---the $P$ field of Dataset~7 listed in Table~\ref{tab:datasets}---and compare the three predictor configurations at matched PSNRs of 67.0, 86.5, and 105.7~dB. Replacing SZ3's uniform-grid weights with GLL weights improves the compression ratio by 60.2\% on average. With the GLL weights fixed, the modified prediction order provides a further 6.8\% average improvement.
 
 \begin{figure}[htb]
     \centering
