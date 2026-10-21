@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
-from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,RD_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
+from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,RD_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
 
 PANEL_GAP_PT=4.0
 ROW_CONTENT_GAP_PT=6.0
@@ -136,7 +136,7 @@ def plot_combined(result_dir,project_root):
     shared_ylabel.set_x((tick_left-SHARED_YLABEL_GAP_PT*figure.dpi/MPL_POINTS_PER_INCH-ylabel_bbox.width/2)/figure.bbox.width)
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
-    figure.legend(handles=handles,loc="lower center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),handlelength=1.0,handletextpad=0.25,columnspacing=0.65,borderaxespad=0,borderpad=0)
+    figure.legend(handles=handles,loc="lower center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
     figure.canvas.draw()
     save_svg(figure,os.path.join(result_dir,"large_rd.svg"),metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     paper_output=os.path.join(project_root,"论文","figs","7","large-rd.png")

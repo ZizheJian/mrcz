@@ -3316,14 +3316,14 @@ z
   </g>
   <g id="legend_1">
    <g id="line2d_157">
-    <path d="M 122.178473 4.24
-L 126.178473 4.24
-L 130.178473 4.24
+    <path d="M 124.678473 4.24
+L 128.678473 4.24
+L 132.678473 4.24
 " style="fill: none; stroke: #111827; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_61">
     <!-- MRCZ -->
-    <g transform="translate(132.178473 7.04) scale(0.08 -0.08)">
+    <g transform="translate(134.178473 7.04) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-4d" d="M 5530 0
 L 3738 0
@@ -3389,14 +3389,14 @@ z
     </g>
    </g>
    <g id="line2d_158">
-    <path d="M 122.178473 12.35
-L 126.178473 12.35
-L 130.178473 12.35
+    <path d="M 124.678473 12.35
+L 128.678473 12.35
+L 132.678473 12.35
 " style="fill: none; stroke: #e15759; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_62">
     <!-- FDWZ -->
-    <g transform="translate(132.178473 15.15) scale(0.08 -0.08)">
+    <g transform="translate(134.178473 15.15) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-46" d="M 3494 3322
 L 3334 3322
@@ -3476,14 +3476,14 @@ z
     </g>
    </g>
    <g id="line2d_159">
-    <path d="M 160.859723 4.24
-L 164.859723 4.24
-L 168.859723 4.24
+    <path d="M 161.859723 4.24
+L 165.859723 4.24
+L 169.859723 4.24
 " style="fill: none; stroke: #4e79a7; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_63">
     <!-- SZ3-4D -->
-    <g transform="translate(170.859723 7.04) scale(0.08 -0.08)">
+    <g transform="translate(171.359723 7.04) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-53" d="M 3002 2963
 L 2842 2963
@@ -3539,14 +3539,14 @@ z
     </g>
    </g>
    <g id="line2d_160">
-    <path d="M 160.859723 12.35
-L 164.859723 12.35
-L 168.859723 12.35
+    <path d="M 161.859723 12.35
+L 165.859723 12.35
+L 169.859723 12.35
 " style="fill: none; stroke: #59a14f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_64">
     <!-- QoZ-4D -->
-    <g transform="translate(170.859723 15.15) scale(0.08 -0.08)">
+    <g transform="translate(171.359723 15.15) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-51" d="M 4486 -1133
 L 4179 -1133
@@ -3592,14 +3592,14 @@ z
     </g>
    </g>
    <g id="line2d_161">
-    <path d="M 203.972223 4.24
-L 207.972223 4.24
-L 211.972223 4.24
+    <path d="M 203.472223 4.24
+L 207.472223 4.24
+L 211.472223 4.24
 " style="fill: none; stroke: #f28e2b; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_65">
     <!-- ZFP-3D-fused -->
-    <g transform="translate(213.972223 7.04) scale(0.08 -0.08)">
+    <g transform="translate(212.972223 7.04) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-50" d="M 102 4237
 L 1760 4237
@@ -3649,14 +3649,14 @@ z
     </g>
    </g>
    <g id="line2d_162">
-    <path d="M 203.972223 12.35
-L 207.972223 12.35
-L 211.972223 12.35
+    <path d="M 203.472223 12.35
+L 207.472223 12.35
+L 211.472223 12.35
 " style="fill: none; stroke: #b07aa1; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_66">
     <!-- SPERR-2D -->
-    <g transform="translate(213.972223 15.15) scale(0.08 -0.08)">
+    <g transform="translate(212.972223 15.15) scale(0.08 -0.08)">
      <use xlink:href="#STIXGeneral-Regular-53"/>
      <use xlink:href="#STIXGeneral-Regular-50" transform="translate(55.599991 0)"/>
      <use xlink:href="#STIXGeneral-Regular-45" transform="translate(111.299988 0)"/>
@@ -3668,14 +3668,14 @@ L 211.972223 12.35
     </g>
    </g>
    <g id="line2d_163">
-    <path d="M 266.204723 4.24
-L 270.204723 4.24
-L 274.204723 4.24
+    <path d="M 264.204723 4.24
+L 268.204723 4.24
+L 272.204723 4.24
 " style="fill: none; stroke: #9c755f; stroke-linecap: square"/>
    </g>
    <g id="text_67">
     <!-- MGARD-X-1D measured -->
-    <g transform="translate(276.204723 7.04) scale(0.08 -0.08)">
+    <g transform="translate(273.704723 7.04) scale(0.08 -0.08)">
      <defs>
       <path id="STIXGeneral-Regular-58" d="M 4506 0
 L 2611 0
@@ -3750,14 +3750,14 @@ z
     </g>
    </g>
    <g id="line2d_164">
-    <path d="M 266.204723 12.35
-L 270.204723 12.35
-L 274.204723 12.35
+    <path d="M 264.204723 12.35
+L 268.204723 12.35
+L 272.204723 12.35
 " style="fill: none; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #9c755f"/>
    </g>
    <g id="text_68">
     <!-- MGARD-X-1D ideal -->
-    <g transform="translate(276.204723 15.15) scale(0.08 -0.08)">
+    <g transform="translate(273.704723 15.15) scale(0.08 -0.08)">
      <use xlink:href="#STIXGeneral-Regular-4d"/>
      <use xlink:href="#STIXGeneral-Regular-47" transform="translate(88.899994 0)"/>
      <use xlink:href="#STIXGeneral-Regular-41" transform="translate(161.099976 0)"/>

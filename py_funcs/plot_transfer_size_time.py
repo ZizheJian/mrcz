@@ -3,7 +3,7 @@ import csv,os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from plot_style import MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
+from plot_style import MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
 
 apply_paper_style("mrcz-transfer-size-time",serif_fonts=["STIXGeneral"])
 
@@ -71,7 +71,7 @@ def main():
     layout_panel_row(figure,[axis],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     top_plot_pt=axis.get_position().y1*figure_height_pt
-    legend=figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="lower center",ncol=5,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),handlelength=0.75,handletextpad=0.05,columnspacing=1.00,borderaxespad=0,borderpad=0)
+    legend=figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="lower center",ncol=5,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(6))
     set_legend_row_gap(legend)
     figure.canvas.draw()
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")

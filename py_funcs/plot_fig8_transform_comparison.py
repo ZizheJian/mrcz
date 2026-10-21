@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-from plot_style import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,set_legend_row_gap,style_plot_axis
+from plot_style import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,set_legend_row_gap,style_plot_axis
 
 CONFIGS=[
     ("DLT_GLL","DLT (GLL)","#ff4d4d"),
@@ -22,11 +22,7 @@ LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=24.0
 CONFIG_HANDLE_LENGTH_PT=2.8
-CONFIG_HANDLE_TEXT_GAP_PT=1.2
-CONFIG_COLUMN_GAP_PT=5.2
 STYLE_HANDLE_LENGTH_PT=9.6
-STYLE_HANDLE_TEXT_GAP_PT=2.4
-STYLE_COLUMN_GAP_PT=16.0
 VERTICAL_EDGE_GAP_PT=3.0
 
 def parse_args():
@@ -111,12 +107,13 @@ def add_legends(figure,axes):
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     axes_position=axes.get_position()
     style_y=axes_position.y1+DEFAULT_LEGEND_GAP_PT/figure_height_pt
-    style_legends=[figure.legend(handles=[handle],loc="lower left",bbox_to_anchor=(0,style_y),bbox_transform=figure.transFigure,ncol=1,frameon=False,borderpad=0,handlelength=STYLE_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=STYLE_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=STYLE_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=0) for handle in style_handles]
-    config_legend=figure.legend(handles=config_handles,loc="lower center",bbox_to_anchor=(0.5,style_y),bbox_transform=figure.transFigure,ncol=4,frameon=False,borderpad=0,handlelength=CONFIG_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=CONFIG_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=CONFIG_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=DEFAULT_LEGEND_ROW_GAP_PT/PAPER_FONT_SIZE)
+    style_legends=[figure.legend(handles=[handle],loc="lower left",bbox_to_anchor=(0,style_y),bbox_transform=figure.transFigure,ncol=1,frameon=False,borderpad=0,borderaxespad=0,labelspacing=0,**legend_spacing_kwargs(STYLE_HANDLE_LENGTH_PT,column_gap_pt=0)) for handle in style_handles]
+    config_legend=figure.legend(handles=config_handles,loc="lower center",bbox_to_anchor=(0.5,style_y),bbox_transform=figure.transFigure,ncol=4,frameon=False,borderpad=0,borderaxespad=0,labelspacing=DEFAULT_LEGEND_ROW_GAP_PT/PAPER_FONT_SIZE,**legend_spacing_kwargs(CONFIG_HANDLE_LENGTH_PT))
     set_legend_row_gap(config_legend)
     figure.canvas.draw()
     renderer=figure.canvas.get_renderer()
     rendered_handles=getattr(config_legend,"legend_handles",None) or config_legend.legendHandles
+    # 线型图标分别对齐颜色legend的第一列与第三列，其相互距离由颜色legend决定。
     column_lefts=[figure.transFigure.inverted().transform((rendered_handles[index].get_window_extent(renderer).x0,0))[0] for index in [0,4]]
     for legend,left in zip(style_legends,column_lefts):legend.set_bbox_to_anchor((left,style_y),transform=figure.transFigure)
     figure.canvas.draw()

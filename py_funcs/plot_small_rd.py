@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
-from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,add_shared_xlabel,apply_paper_style,layout_panel_grid,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
+from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
 
 PANEL_GAP_PT=4.0
 ROW_CONTENT_GAP_PT=6.0
@@ -107,10 +107,10 @@ def finish_figure(figure,axes,spec,xlabel,ylabel,output_path,paper_output):
     shared_ylabel=place_shared_ylabel(figure,axes,ylabel)
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
-    layout_legend=figure.legend(handles=layout_handles,loc="lower center",ncol=6,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0,borderpad=0)
+    layout_legend=figure.legend(handles=layout_handles,loc="lower center",ncol=6,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(9.6))
     figure.canvas.draw()
     layout_top_pt=layout_legend.get_window_extent(figure.canvas.get_renderer()).y1*MPL_POINTS_PER_INCH/figure.dpi
-    family_legend=figure.legend(handles=family_handles,loc="lower center",ncol=8,frameon=False,bbox_to_anchor=(0.5,(layout_top_pt+LEGEND_GAP_PT)/figure_height_pt),handlelength=1.0,handletextpad=0.25,columnspacing=0.6,borderaxespad=0,borderpad=0)
+    family_legend=figure.legend(handles=family_handles,loc="lower center",ncol=8,frameon=False,bbox_to_anchor=(0.5,(layout_top_pt+LEGEND_GAP_PT)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
     figure.canvas.draw()
     save_svg(figure,output_path,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)

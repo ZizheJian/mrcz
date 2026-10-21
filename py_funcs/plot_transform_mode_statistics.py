@@ -10,7 +10,7 @@ matplotlib.use("Agg")
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-from plot_style import DEFAULT_LEGEND_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,add_panel_captions,align_xlabels,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,style_plot_axis
+from plot_style import DEFAULT_LEGEND_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,add_panel_captions,align_xlabels,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
 
 sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from py_funcs.read_nekrs_header import read_nekrs_header
@@ -209,7 +209,7 @@ def main():
     transform_handles=[Line2D([0],[0],color=colors[label],linewidth=0.8,label=label) for label in ("DLT","DChT")]
     stream_handles=[Line2D([0],[0],color="black",linestyle=linestyle,linewidth=0.8,label=label) for label,linestyle in (("Coefficients","-"),("Residuals","--"))]
     axes_top=max(coefficient_ax.get_position().y1,magnitude_ax.get_position().y1,entropy_ax.get_position().y1)
-    fig.legend(handles=transform_handles+stream_handles,loc="lower center",bbox_to_anchor=(0.5,axes_top+DEFAULT_LEGEND_GAP_PT/figure_height_pt),bbox_transform=fig.transFigure,ncol=4,frameon=False,borderpad=0,handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)
+    fig.legend(handles=transform_handles+stream_handles,loc="lower center",bbox_to_anchor=(0.5,axes_top+DEFAULT_LEGEND_GAP_PT/figure_height_pt),bbox_transform=fig.transFigure,ncol=4,frameon=False,borderpad=0,borderaxespad=0,**legend_spacing_kwargs(9.6))
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
     save_paper_png_vertical_crop(fig,args.output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     plt.close(fig)

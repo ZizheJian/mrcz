@@ -7,7 +7,7 @@ from matplotlib.ticker import MaxNLocator,NullLocator
 
 import plot_aggregate_throughput as large
 import plot_small_core_throughput as small
-from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,TIMING_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
+from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,TIMING_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
 
 apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 
@@ -112,7 +112,7 @@ def main():
     place_shared_ylabel(figure,axes,"Aggregate Throughput (GiB/s)")
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
-    legend=figure.legend(handles=handles,loc="lower center",ncol=4,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),handlelength=1.0,handletextpad=0.25,columnspacing=0.75,borderaxespad=0,borderpad=0)
+    legend=figure.legend(handles=handles,loc="lower center",ncol=4,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
     set_legend_row_gap(legend)
     figure.canvas.draw()
 
