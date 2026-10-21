@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 11:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 11:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -504,20 +504,17 @@ LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 x/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-<figs/7/small-rd.png, id=62, 515.7669pt x 242.3454pt>
+<figs/7/small-rd.png, id=62, 515.7669pt x 241.3818pt>
 File: figs/7/small-rd.png Graphic file (type png)
 <use figs/7/small-rd.png>
 Package pdftex.def Info: figs/7/small-rd.png  used on input line 34.
-(pdftex.def)             Requested size: 516.0pt x 242.45943pt.
-<figs/7/large-rd.png, id=63, 429.7656pt x 160.4394pt>
+(pdftex.def)             Requested size: 516.0pt x 241.49538pt.
+<figs/7/large-rd.png, id=63, 429.7656pt x 159.9576pt>
 File: figs/7/large-rd.png Graphic file (type png)
 <use figs/7/large-rd.png>
 Package pdftex.def Info: figs/7/large-rd.png  used on input line 41.
-(pdftex.def)             Requested size: 430.0pt x 160.53203pt.
+(pdftex.def)             Requested size: 430.0pt x 160.04994pt.
  [8 <./figs/6/mrcz-reordering-ablation.png>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [9 <./figs/7/small-rd.png> <./figs/7/large-rd.png>]
@@ -602,7 +599,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4319574 bytes).
+Output written on main.pdf (13 pages, 4319512 bytes).
 PDF statistics:
  159 PDF objects out of 1000 (max. 8388607)
  93 compressed objects within 1 object stream
