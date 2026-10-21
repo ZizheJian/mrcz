@@ -7,8 +7,6 @@ from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,RD_METH
 
 PANEL_GAP_PT=4.0
 ROW_CONTENT_GAP_PT=6.0
-X_TICK_GAP_PT=1.5
-Y_TICK_GAP_PT=1.0
 PANEL_CAPTION_GAP_PT=1.0
 SHARED_XLABEL_GAP_PT=2.0
 SHARED_YLABEL_GAP_PT=1.0
@@ -119,7 +117,7 @@ def plot_combined(result_dir,project_root):
         axis.xaxis.set_major_locator(FixedLocator([tick for tick in log_locator.tick_values(x_left,x_right) if x_left<=tick<=x_right]))
         axis.xaxis.set_minor_locator(NullLocator())
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        style_plot_axis(axis,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=PANEL_CAPTION_GAP_PT)
+        style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
     provisional_ylabel=figure.text(0,0,"PSNR (dB)",rotation=90,ha="center",va="center")
     figure.canvas.draw()
