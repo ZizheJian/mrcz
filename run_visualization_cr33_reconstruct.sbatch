@@ -4,9 +4,9 @@
 #SBATCH --partition=shared
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=64
+#SBATCH --cpus-per-task=16
 #SBATCH --hint=nomultithread
-#SBATCH --time=00:20:00
+#SBATCH --time=00:10:00
 #SBATCH --output=results/visualization/slurm-%x-%j.out
 #SBATCH --error=results/visualization/slurm-%x-%j.err
 

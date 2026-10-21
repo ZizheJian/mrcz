@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 11:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 12:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -536,11 +536,11 @@ File: figs/7/transfer-size-time.png Graphic file (type png)
 Package pdftex.def Info: figs/7/transfer-size-time.png  used on input line 123.
 
 (pdftex.def)             Requested size: 252.0pt x 114.6821pt.
-<figs/raster300/visualization-cr33.png, id=81, 515.7669pt x 169.5936pt>
-File: figs/raster300/visualization-cr33.png Graphic file (type png)
-<use figs/raster300/visualization-cr33.png>
-Package pdftex.def Info: figs/raster300/visualization-cr33.png  used on input l
-ine 132.
+<figs/7/visualization-cr33.png, id=81, 515.7669pt x 169.5936pt>
+File: figs/7/visualization-cr33.png Graphic file (type png)
+<use figs/7/visualization-cr33.png>
+Package pdftex.def Info: figs/7/visualization-cr33.png  used on input line 132.
+
 (pdftex.def)             Requested size: 516.0pt x 169.67339pt.
 ) (./8.conclusion.tex [11 <./figs/7/combined-throughput.png> <./figs/7/e2e_time
 .png> <./figs/7/transfer-size-time.png>]
@@ -548,7 +548,7 @@ Underfull \hbox (badness 2486) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Experiments on 28 non-constant fields from NekRS,
  []
 
-) (./main.bbl [12 <./figs/raster300/visualization-cr33.png (PNG copy)>])
+) (./main.bbl [12 <./figs/7/visualization-cr33.png (PNG copy)>])
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -563,7 +563,7 @@ Before submitting the final camera ready copy, remember to:
 [13] (./main.aux) ) 
 Here is how much of TeX's memory you used:
  5273 strings out of 480608
- 84773 string characters out of 5886422
+ 84733 string characters out of 5886422
  331650 words of memory out of 5000000
  21055 multiletter control sequences out of 15000+600000
  572918 words of font info for 110 fonts, out of 8000000 for 9000
@@ -599,7 +599,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4319722 bytes).
+Output written on main.pdf (13 pages, 4319683 bytes).
 PDF statistics:
  159 PDF objects out of 1000 (max. 8388607)
  93 compressed objects within 1 object stream

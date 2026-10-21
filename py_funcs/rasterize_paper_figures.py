@@ -9,7 +9,6 @@ project_root=Path(__file__).resolve().parents[1]
 paper_root=project_root/"论文"
 output_root=paper_root/"figs"/"raster300"
 column_width_pt=252
-text_width_pt=516
 points_per_inch=72.27
 
 
@@ -18,10 +17,7 @@ def pixels(width_pt):
 
 
 figures=[
-    ("cubic-interpolation.png","figs/5/cubic interpolation.pdf",pixels(0.8*column_width_pt)),
     ("cross-element.png","figs/5/cross-element.pdf",pixels(column_width_pt)),
-    ("mrcz-diagram.png","figs/6/mrcz diagram.pdf",pixels(column_width_pt)),
-    ("visualization-cr33.png","figs/7/pb0-T-cr33-visualization.pdf",pixels(text_width_pt)),
 ]
 
 

@@ -1,4 +1,4 @@
-import argparse,csv,math,os
+import csv,math,os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -63,35 +63,6 @@ def focus_axes(axis,method_points):
     axis.set_xlim(br_left,br_right)
     axis.set_ylim(psnr_bottom-padding,psnr_top+padding)
 
-# 为一个大数据集的五个field绘制rate-distortion曲线。
-def plot_dataset(result_dir,dataset,project_root):
-    directory,fields,prefix=datasets[dataset]
-    figure,axes=plt.subplots(1,len(fields),figsize=(19,4.5))
-    for axis,field in zip(axes,fields):
-        rows=read_rows(os.path.join(result_dir,directory,f"{prefix}_{field}.csv"))
-        method_points={}
-        for method in methods:
-            source_rows=method_rows(project_root,dataset,os.path.join(result_dir,directory,f"{prefix}_{field}.csv"),method,rows)
-            points=sorted(point for row in source_rows if (point:=finite_pair(row.get(f"{method}_BR"),row.get(f"{method}_PSNR"))) is not None)
-            method_points[method]=points
-            axis.plot([point[0] for point in points],[point[1] for point in points],color=colors[method],linewidth=1.6,label=method)
-        focus_axes(axis,method_points)
-        axis.set_title(field)
-        axis.grid(True,alpha=0.25,linewidth=0.5)
-    handles=[plt.Line2D([0],[0],color=colors[method],linewidth=1.6,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
-    figure.legend(handles=handles,loc="upper center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,0.99),fontsize=8)
-    figure.suptitle(f"{dataset} rate-distortion",fontsize=16,y=0.9)
-    figure.supxlabel("Bit rate")
-    figure.supylabel("PSNR (dB)")
-    figure.tight_layout(rect=(0.015,0.04,1,0.82))
-    output_path=os.path.join(result_dir,f"{dataset}_rd.svg")
-    save_svg(figure,output_path,bbox_inches="tight",metadata={"Date":None})
-    preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
-    if preview_dir:
-        figure.savefig(os.path.join(preview_dir,f"{dataset}_rd.png"),format="png",dpi=160,bbox_inches="tight")
-    plt.close(figure)
-    print(output_path)
-
 # 将两个大数据集绘制为论文中的2x5双栏图。
 def plot_combined(result_dir,project_root):
     spec=PaperFigureSpec.text(1,width_fraction=5/6)
@@ -147,16 +118,11 @@ def plot_combined(result_dir,project_root):
     plt.close(figure)
     print(paper_output)
 
-# 选择并绘制一个大数据集。
 def main():
-    parser=argparse.ArgumentParser()
-    parser.add_argument("dataset",nargs="?",choices=["combined"]+sorted(datasets),default="combined")
-    args=parser.parse_args()
     apply_paper_style("mrcz-large-rd",serif_fonts=["STIXGeneral"])
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     result_dir=os.path.join(project_root,"results","RD")
-    if args.dataset=="combined":plot_combined(result_dir,project_root)
-    else:plot_dataset(result_dir,args.dataset,project_root)
+    plot_combined(result_dir,project_root)
 
 if __name__=="__main__":
     main()

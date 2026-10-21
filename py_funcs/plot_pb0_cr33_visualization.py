@@ -7,13 +7,24 @@ import matplotlib.tri as mtri
 import numpy as np
 from matplotlib.patches import Rectangle
 from matplotlib.colors import LinearSegmentedColormap,Normalize
-from plot_style import METHOD_LABELS,RD_METHODS,apply_paper_style
+from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,PaperFigureSpec,METHOD_LABELS,RD_METHODS,apply_paper_style,save_paper_png_vertical_crop,style_plot_axis
 
 apply_paper_style()
 
 methods=RD_METHODS[:-1]
 labels=METHOD_LABELS
 crop_fractions=(1/6,1/2,1/3,2/3)
+SMALL_SIDE_PT=70.0
+ROW_GAP_PT=12.0
+LARGE_SIDE_PT=2*SMALL_SIDE_PT+ROW_GAP_PT
+BOTTOM_PT=16.0
+ORIGINAL_LEFT_PT=4.0
+ORIGINAL_COLORBAR_LEFT_PT=162.0
+ERROR_LEFT_PT=181.0
+PANEL_GAP_PT=5.0
+ERROR_COLORBAR_LEFT_PT=485.0
+COLORBAR_WIDTH_PT=4.0
+VERTICAL_EDGE_GAP_PT=3.0
 
 def load_slice(path):
     data=np.load(path)
@@ -34,7 +45,14 @@ def style_axis(axis):
     axis.set_aspect("equal")
     axis.set_xticks([])
     axis.set_yticks([])
-    for spine in axis.spines.values():spine.set_linewidth(0.45)
+    style_plot_axis(axis,x_label_pad=DEFAULT_PANEL_CAPTION_GAP_PT)
+
+def add_axis_pt(figure,spec,left,bottom,width,height):
+    return figure.add_axes([left/spec.width_pt,bottom/spec.height_pt,width/spec.width_pt,height/spec.height_pt])
+
+def style_colorbar(colorbar):
+    colorbar.ax.tick_params(axis="y",direction="in",length=1.8,width=0.45,pad=1.0)
+    for spine in colorbar.ax.spines.values():spine.set_linewidth(0.5)
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -66,58 +84,48 @@ def main():
     error_colormap=LinearSegmentedColormap.from_list("neutral-gray-diverging",[(0.0,"#000000"),(0.5-threshold_offset,"#2166ac"),(0.5,"#d9d9d9"),(0.5+threshold_offset,"#b2182b"),(1.0,"#000000")],N=4097)
     error_norm=Normalize(vmin=-error_limit,vmax=error_limit,clip=True)
 
-    figure_width=7.16
-    figure_height=2.55
-    small_side=0.98
-    bottom=0.25
-    row_gap=0.17
-    large_side=2*small_side+row_gap
-    original_left=0.06
-    original_bottom=bottom
-    error_left=2.52
-    panel_gap=0.07
-    figure=plt.figure(figsize=(figure_width,figure_height))
-    original_axis=figure.add_axes([original_left/figure_width,original_bottom/figure_height,large_side/figure_width,large_side/figure_height])
+    spec=PaperFigureSpec.text(1)
+    figure=plt.figure(figsize=spec.size_in,dpi=spec.dpi)
+    original_axis=add_axis_pt(figure,spec,ORIGINAL_LEFT_PT,BOTTOM_PT,LARGE_SIDE_PT,LARGE_SIDE_PT)
     original_image=original_axis.tripcolor(triangulation,original_values,shading="gouraud",cmap="viridis",rasterized=True)
     original_axis.add_patch(Rectangle((crop[0],crop[2]),crop[1]-crop[0],crop[3]-crop[2],fill=False,edgecolor="#d62728",linewidth=0.8))
     original_axis.set_xlim(horizontal_min,horizontal_max)
     original_axis.set_ylim(vertical_min,vertical_max)
     style_axis(original_axis)
-    original_axis.set_xlabel("(a) Original 7T",labelpad=1)
-    original_colorbar_axis=figure.add_axes([2.25/figure_width,original_bottom/figure_height,0.055/figure_width,large_side/figure_height])
+    original_axis.set_xlabel("(a) Original 7T")
+    original_colorbar_axis=add_axis_pt(figure,spec,ORIGINAL_COLORBAR_LEFT_PT,BOTTOM_PT,COLORBAR_WIDTH_PT,LARGE_SIDE_PT)
     original_colorbar=figure.colorbar(original_image,cax=original_colorbar_axis)
-    original_colorbar.ax.tick_params(length=2,width=0.4,pad=1)
+    style_colorbar(original_colorbar)
 
     error_axes=[]
     for index,method in enumerate(methods):
         row=0 if index<4 else 1
         column=index if index<4 else index-4
-        left=error_left+column*(small_side+panel_gap)
-        panel_bottom=bottom+small_side+row_gap if row==0 else bottom
-        axis=figure.add_axes([left/figure_width,panel_bottom/figure_height,small_side/figure_width,small_side/figure_height])
+        left=ERROR_LEFT_PT+column*(SMALL_SIDE_PT+PANEL_GAP_PT)
+        panel_bottom=BOTTOM_PT+SMALL_SIDE_PT+ROW_GAP_PT if row==0 else BOTTOM_PT
+        axis=add_axis_pt(figure,spec,left,panel_bottom,SMALL_SIDE_PT,SMALL_SIDE_PT)
         image=axis.tripcolor(triangulation,errors[method],shading="gouraud",cmap=error_colormap,norm=error_norm,rasterized=True)
         axis.set_xlim(crop[0],crop[1])
         axis.set_ylim(crop[2],crop[3])
         style_axis(axis)
-        axis.set_xlabel(f"({chr(ord('b')+index)}) {labels[method]}",labelpad=1)
+        axis.set_xlabel(f"({chr(ord('b')+index)}) {labels[method]}")
         error_axes.append(axis)
 
-    error_colorbar_bottom=bottom
-    error_colorbar_axis=figure.add_axes([6.78/figure_width,error_colorbar_bottom/figure_height,0.055/figure_width,large_side/figure_height])
+    error_colorbar_axis=add_axis_pt(figure,spec,ERROR_COLORBAR_LEFT_PT,BOTTOM_PT,COLORBAR_WIDTH_PT,LARGE_SIDE_PT)
     error_colorbar=figure.colorbar(image,cax=error_colorbar_axis)
     error_colorbar.set_ticks([-error_limit,-color_threshold,0,color_threshold,error_limit])
     error_colorbar.set_ticklabels([f"{-error_limit:.3f}",f"{-color_threshold:.2f}","0",f"{color_threshold:.2f}",f"{error_limit:.3f}"])
     error_colorbar.ax.axhline(-color_threshold,color="black",linewidth=0.35)
     error_colorbar.ax.axhline(color_threshold,color="black",linewidth=0.35)
-    error_colorbar.ax.tick_params(length=2,width=0.4,pad=1)
+    style_colorbar(error_colorbar)
 
-    pdf_output=os.path.join(project_root,"论文","figs","7","pb0-T-cr33-visualization.pdf")
-    png_output=os.path.join(output_dir,"pb0_T_cr33_visualization.png")
-    figure.savefig(pdf_output,format="pdf",dpi=300,bbox_inches="tight",pad_inches=0.02)
-    figure.savefig(png_output,format="png",dpi=300,bbox_inches="tight",pad_inches=0.02)
+    result_output=os.path.join(output_dir,"pb0_T_cr33_visualization.png")
+    paper_output=os.path.join(project_root,"论文","figs","7","visualization-cr33.png")
+    save_paper_png_vertical_crop(figure,result_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     plt.close(figure)
     print(f"Shared symmetric linear error range: [{-error_limit:.9g},{error_limit:.9g}]")
-    print(pdf_output)
-    print(png_output)
+    print(result_output)
+    print(paper_output)
 
 if __name__=="__main__":main()

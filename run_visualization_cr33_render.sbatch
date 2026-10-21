@@ -4,9 +4,9 @@
 #SBATCH --partition=shared
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=18
+#SBATCH --cpus-per-task=16
 #SBATCH --hint=nomultithread
-#SBATCH --time=00:20:00
+#SBATCH --time=00:10:00
 #SBATCH --output=results/visualization/slurm-%x-%j.out
 #SBATCH --error=results/visualization/slurm-%x-%j.err
 
@@ -22,7 +22,7 @@ export PB0_FIELD=T
 unset PB0_FIELD_VALUES_FILE
 export PB0_SELECTED_ELEMENTS_OUTPUT="${output_dir}/pb0_T_x0_selected.npy"
 export PB0_X0_SLICE_DATA="${output_dir}/pb0_T_x0_original.npz"
-srun --ntasks=1 --cpus-per-task=8 --cpu-bind=cores pvbatch py_funcs/render_pb0_x0_subset.py
+srun --ntasks=1 --cpus-per-task="${SLURM_CPUS_PER_TASK}" --cpu-bind=cores pvbatch py_funcs/render_pb0_x0_subset.py
 unset PB0_SELECTED_ELEMENTS_OUTPUT
 export PB0_SELECTED_ELEMENTS_INPUT="${output_dir}/pb0_T_x0_selected.npy"
 methods=(MRCZ FDWZ SZ3-4D SZ2-3D-fused QoZ-4D ZFP-3D-fused SPERR-2D)
@@ -34,7 +34,7 @@ for method in "${methods[@]}";do
     fi
     export PB0_FIELD_VALUES_FILE="${raw_path}"
     export PB0_X0_SLICE_DATA="${output_dir}/pb0_T_x0_${method}.npz"
-    srun --ntasks=1 --cpus-per-task=8 --cpu-bind=cores pvbatch py_funcs/render_pb0_x0_subset.py
+    srun --ntasks=1 --cpus-per-task="${SLURM_CPUS_PER_TASK}" --cpu-bind=cores pvbatch py_funcs/render_pb0_x0_subset.py
     rm -f "${raw_path}"
 done
 module purge

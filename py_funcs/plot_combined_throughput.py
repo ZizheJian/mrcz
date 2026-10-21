@@ -1,12 +1,10 @@
-import glob,math,os
+import csv,glob,math,os
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator,NullLocator
 
-import plot_aggregate_throughput as large
-import plot_small_core_throughput as small
 from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,TIMING_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
 
 apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
@@ -14,6 +12,7 @@ apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 methods=TIMING_METHODS
 colors=METHOD_COLORS
 tasks=("Compression","Decompression")
+datasets=[("pb0",7,8,64,[1e-2,1e-3,1e-4,1e-5,1e-6]),("jicf0",8,16,128,[1e-4,1e-5,1e-6,1e-7,1e-8])]
 PLOT_ASPECT_RATIOS=(2.0,2.0,2.0,2.0)
 WIDTH_FRACTION=2*math.sqrt(2)/3
 PANEL_GAP_PT=4.0
@@ -24,6 +23,48 @@ VERTICAL_EDGE_GAP_PT=3.0
 SHARED_YLABEL_GAP_PT=1.0
 
 
+def read_rows(path):
+    with open(path,newline="") as input_file:return list(csv.DictReader(input_file))
+
+
+def harmonic_mean(values):
+    return len(values)/sum(1/value for value in values)
+
+
+def aggregate_small_dataset(project_root,dataset,cpus,partition_num,error_bounds):
+    source_dir=os.path.join(project_root,"results","small_core_throughput",dataset)
+    tables=[read_rows(path) for path in sorted(glob.glob(os.path.join(source_dir,"*_throughput.csv")))]
+    if len(tables)!=5:raise RuntimeError(f"{dataset} requires five field throughput files,found {len(tables)}")
+    aggregate={task:{method:[] for method in methods} for task in tasks}
+    for error_bound in error_bounds:
+        for task in tasks:
+            for method in methods:
+                field_values=[]
+                for table in tables:
+                    column=f"{method} {task} Throughput"
+                    row=next((row for row in table if int(row["Max CPUs"])==cpus and int(row["Partition Num"])==partition_num and math.isclose(float(row["REL EB"]),error_bound,rel_tol=1e-12) and row.get(column)),None)
+                    if row is None:raise RuntimeError(f"missing {dataset}/{method}/{task}/{error_bound:g}")
+                    field_values.append(float(row[column]))
+                aggregate[task][method].append(harmonic_mean(field_values)*cpus/1024)
+    return aggregate
+
+
+def aggregate_large_dataset(result_dir,dataset,cpus):
+    tables=[read_rows(path) for path in sorted(glob.glob(os.path.join(result_dir,dataset,"*_throughput.csv")))]
+    if len(tables)!=5:raise RuntimeError(f"{dataset} requires five field throughput files,found {len(tables)}")
+    error_bounds=sorted({float(row["REL EB"]) for table in tables for row in table if int(row["Max CPUs"])==cpus},reverse=True)
+    aggregate={task:{method:[] for method in methods} for task in tasks}
+    for error_bound in error_bounds:
+        for task in tasks:
+            for method in methods:
+                field_values=[]
+                for table in tables:
+                    row=next(row for row in table if int(row["Max CPUs"])==cpus and math.isclose(float(row["REL EB"]),error_bound,rel_tol=1e-12))
+                    field_values.append(float(row[f"{method} {task} Throughput"]))
+                aggregate[task][method].append(harmonic_mean(field_values)*cpus/1024)
+    return error_bounds,aggregate
+
+
 def group_limit(aggregate,extra_aggregate):
     maximum_value=max(value for task in tasks for values in aggregate[task].values() for value in values)
     maximum_value=max(maximum_value,max(value for task in tasks for value in extra_aggregate[task]))
@@ -32,7 +73,7 @@ def group_limit(aggregate,extra_aggregate):
 
 def mgard_8core(project_root,dataset,error_bounds):
     directory=os.path.join(project_root,"results","small_core_throughput",dataset)
-    tables=[small.read_rows(path) for path in sorted(glob.glob(os.path.join(directory,"*_throughput.csv")))]
+    tables=[read_rows(path) for path in sorted(glob.glob(os.path.join(directory,"*_throughput.csv")))]
     if len(tables)!=5:raise RuntimeError(f"{dataset} requires five MGARD throughput files,found {len(tables)}")
     aggregate={task:[] for task in tasks}
     for error_bound in error_bounds:
@@ -42,7 +83,7 @@ def mgard_8core(project_root,dataset,error_bounds):
                 row=next((row for row in table if int(row["Max CPUs"])==8 and math.isclose(float(row["REL EB"]),error_bound,rel_tol=1e-12)),None)
                 if row is None or not row.get(f"MGARD-1D {task} Throughput"):raise RuntimeError(f"missing {dataset}/MGARD-1D/{task}/{error_bound:g}")
                 field_values.append(float(row[f"MGARD-1D {task} Throughput"]))
-            aggregate[task].append(small.harmonic_mean(field_values)*8/1024)
+            aggregate[task].append(harmonic_mean(field_values)*8/1024)
     return aggregate
 
 
@@ -69,10 +110,10 @@ def main():
     large_result_dir=os.path.join(project_root,"results","RD")
     data={}
     limits={}
-    for dataset,dataset_index,small_cpus,partition_num,error_bounds in small.datasets:
-        small_aggregate=small.aggregate_dataset(project_root,dataset,small_cpus,partition_num,error_bounds)
+    for dataset,dataset_index,small_cpus,partition_num,error_bounds in datasets:
+        small_aggregate=aggregate_small_dataset(project_root,dataset,small_cpus,partition_num,error_bounds)
         large_cpus=partition_num
-        large_error_bounds,large_aggregate=large.aggregate_dataset(large_result_dir,dataset,large_cpus)
+        large_error_bounds,large_aggregate=aggregate_large_dataset(large_result_dir,dataset,large_cpus)
         mgard_aggregate=mgard_8core(project_root,dataset,error_bounds)
         data[(0,dataset)]=(small_cpus,error_bounds,small_aggregate,mgard_aggregate)
         data[(1,dataset)]=(large_cpus,large_error_bounds,large_aggregate,mgard_aggregate)

@@ -157,7 +157,7 @@ python3 py_funcs/plot_fig8_transform_comparison.py
 python3 py_funcs/plot_transform_mode_statistics.py
 python3 py_funcs/plot_mrcz_reordering_ablation.py
 python3 py_funcs/plot_small_rd.py
-python3 py_funcs/plot_large_rd.py combined
+python3 py_funcs/plot_large_rd.py
 python3 py_funcs/plot_combined_throughput.py
 python3 py_funcs/plot_end_to_end.py
 python3 py_funcs/plot_transfer_size_time.py
@@ -166,11 +166,11 @@ python3 py_funcs/plot_transfer_size_time.py
 可视化图还需要重建场和ParaView切片中间文件：
 
 ```bash
-sbatch run_visualization_cr33_reconstruct.sbatch
-sbatch run_visualization_cr33_render.sbatch
+reconstruct_job=$(sbatch --parsable run_visualization_cr33_reconstruct.sbatch)
+sbatch --dependency=afterok:${reconstruct_job} run_visualization_cr33_render.sbatch
 ```
 
-尚无真正矢量源文件的流程／几何示意图和场可视化按论文中的最终尺寸栅格化。rate-distortion图按论文宽度和8 pt字号直接生成300 dpi PNG，其余统计图直接使用矢量PDF：
+手工流程图直接使用定稿PNG，`cross-element.pdf`可按最终单栏宽度重新生成300 dpi PNG。Matplotlib统计图和场可视化按论文宽度和8 pt字号直接生成300 dpi PNG：
 
 ```bash
 python3 py_funcs/rasterize_paper_figures.py
