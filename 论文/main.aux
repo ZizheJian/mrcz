@@ -124,32 +124,32 @@
 \newlabel{fig:small-rate-distortion}{{11}{9}}
 \@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Rate--distortion comparison of FDWZ, MRCZ, and the selected baseline configurations on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. Across the 10 fields, the average CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ.\relax }}{9}\protected@file@percent }
 \newlabel{fig:large-rate-distortion}{{12}{9}}
-\citation{chard2017globus}
+\citation{gong2023mgard}
 \@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Candidate layouts for the baseline compressors.\relax }}{10}\protected@file@percent }
 \newlabel{tab:baseline-layouts}{{V}{10}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Storage Reduction Evaluation}{10}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}Codec Throughput}{10}\protected@file@percent }
 \newlabel{sec:parallel-throughput}{{\mbox  {VII-C}}{10}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}End-to-End Workflow Evaluation}{10}\protected@file@percent }
+\citation{chard2017globus}
 \@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Aggregate compression and decompression throughput on Datasets\nobreakspace  {}7 and\nobreakspace  {}8. The top row uses 8 CPU cores for Dataset\nobreakspace  {}7 and 16 for Dataset\nobreakspace  {}8. The bottom row uses 64 and 128 CPU cores, respectively. FDWZ ranks among the two fastest methods in 35 of the 40 cases and ranks first in 18 of the 20 lower-core-count cases.\relax }}{11}\protected@file@percent }
 \newlabel{fig:throughput}{{13}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}End-to-End Workflow Evaluation}{11}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces End-to-end time at relative error bounds of $10^{-4}$ for Dataset\nobreakspace  {}7 and $10^{-6}$ for Dataset\nobreakspace  {}8, decomposed into compression, Globus transfer, and decompression time. The diagonally striped MGARD-X compression and decompression segments are ideal projections, while its transfer segments are measured. The fastest compressed workflows reduce end-to-end time by 79.2\% on Dataset\nobreakspace  {}7 and 88.3\% on Dataset\nobreakspace  {}8. FDWZ matches the fastest method on Dataset\nobreakspace  {}7 and is fastest on Dataset\nobreakspace  {}8.\relax }}{11}\protected@file@percent }
 \newlabel{fig:transfer}{{14}{11}}
 \@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets\nobreakspace  {}7 and\nobreakspace  {}8, and each error bar spans the three transfer trials. Across the 14 compressed workflows, larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.\relax }}{11}\protected@file@percent }
 \newlabel{fig:transfer-size-time}{{15}{11}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{11}\protected@file@percent }
-\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{11}}
-\bibstyle{IEEEtran}
-\bibdata{reference}
-\bibcite{fischer2022nekrs}{1}
-\bibcite{liang2018error}{2}
 \@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Visualization of a slice of 7T at matched compression ratios $\sim $33.184. Panel (a) shows the original field and marks the region enlarged in panels (b)--(h). The enlarged panels show pointwise reconstruction errors; MRCZ and FDWZ exhibit the smallest errors.\relax }}{12}\protected@file@percent }
 \newlabel{fig:distortion}{{16}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Visualization}{12}\protected@file@percent }
+\newlabel{sec:performance evaluation:visualization}{{\mbox  {VII-E}}{12}}
 \@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Relative error bounds and achieved compression ratios used for the visualization comparison on 7T.\relax }}{12}\protected@file@percent }
 \newlabel{tab:error-bound-visualization}{{VI}{12}}
 \@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion and Future Work}{12}\protected@file@percent }
 \newlabel{sec:conclusion}{{VIII}{12}}
-\@writefile{toc}{\contentsline {section}{References}{12}\protected@file@percent }
+\bibstyle{IEEEtran}
+\bibdata{reference}
+\bibcite{fischer2022nekrs}{1}
+\bibcite{liang2018error}{2}
 \bibcite{liu2024high}{3}
 \bibcite{zhao2021optimizing}{4}
 \bibcite{liang2023sz3}{5}
@@ -170,3 +170,4 @@
 \bibcite{moxey2020nektar++}{20}
 \bibcite{ycollet2021zstd}{21}
 \bibcite{wallace1991jpeg}{22}
+\@writefile{toc}{\contentsline {section}{References}{13}\protected@file@percent }
