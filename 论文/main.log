@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 02:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 02:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -509,16 +509,16 @@ File: figs/7/small-rd.png Graphic file (type png)
 <use figs/7/small-rd.png>
 Package pdftex.def Info: figs/7/small-rd.png  used on input line 34.
 (pdftex.def)             Requested size: 516.0pt x 237.63916pt.
-<figs/7/large-rd.png, id=63, 429.7656pt x 185.0112pt>
+<figs/7/large-rd.png, id=63, 429.7656pt x 159.9576pt>
 File: figs/7/large-rd.png Graphic file (type png)
 <use figs/7/large-rd.png>
 Package pdftex.def Info: figs/7/large-rd.png  used on input line 41.
-(pdftex.def)             Requested size: 429.98163pt x 185.10954pt.
+(pdftex.def)             Requested size: 430.0pt x 160.04994pt.
  [8 <./figs/6/mrcz-reordering-ablation.png>]
+Underfull \vbox (badness 6188) has occurred while \output is active []
+
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-Underfull \vbox (badness 2142) has occurred while \output is active []
 
  [9 <./figs/7/small-rd.png> <./figs/7/large-rd.png>]
 <figs/7/combined-throughput.pdf, id=74, 514.71436pt x 214.00809pt>
@@ -539,15 +539,15 @@ File: figs/7/transfer-size-time.pdf Graphic file (type pdf)
 Package pdftex.def Info: figs/7/transfer-size-time.pdf  used on input line 123.
 
 (pdftex.def)             Requested size: 252.0pt x 119.49985pt.
-
-Underfull \vbox (badness 1953) has occurred while \output is active []
-
 <figs/raster300/visualization-cr33.png, id=81, 515.7669pt x 169.5936pt>
 File: figs/raster300/visualization-cr33.png Graphic file (type png)
 <use figs/raster300/visualization-cr33.png>
 Package pdftex.def Info: figs/raster300/visualization-cr33.png  used on input l
 ine 132.
 (pdftex.def)             Requested size: 516.0pt x 169.67339pt.
+
+Underfull \vbox (badness 1953) has occurred while \output is active []
+
 )
 (./8.conclusion.tex [11 <./figs/7/combined-throughput.pdf> <./figs/7/e2e_time.p
 df> <./figs/7/transfer-size-time.pdf>]
@@ -606,7 +606,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4036383 bytes).
+Output written on main.pdf (13 pages, 4030566 bytes).
 PDF statistics:
  196 PDF objects out of 1000 (max. 8388607)
  116 compressed objects within 2 object streams

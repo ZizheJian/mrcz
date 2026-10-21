@@ -1,9 +1,19 @@
 import argparse,csv,math,os
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import LogLocator,MaxNLocator
-from plot_style import METHOD_COLORS,PAPER_TEXT_WIDTH_IN,RD_METHODS,apply_paper_style,save_svg,style_plot_axis
+from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
+from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,RD_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
 
-apply_paper_style("mrcz-large-rd",serif_fonts=["STIXGeneral"])
+PANEL_GAP_PT=4.0
+ROW_CONTENT_GAP_PT=6.0
+PANEL_CAPTION_GAP_PT=1.0
+SHARED_XLABEL_GAP_PT=2.0
+SHARED_YLABEL_GAP_PT=1.0
+LEGEND_GAP_PT=1.0
+OUTER_EDGE_GAP_PT=3.0
+BOTTOM_PLOT_PT=30.0
+VERTICAL_EDGE_GAP_PT=3.0
 
 methods=RD_METHODS
 colors=METHOD_COLORS
@@ -84,7 +94,8 @@ def plot_dataset(result_dir,dataset,project_root):
 
 # 将两个大数据集绘制为论文中的2x5双栏图。
 def plot_combined(result_dir,project_root):
-    figure,axes=plt.subplots(2,5,figsize=(PAPER_TEXT_WIDTH_IN*0.8333,2.56))
+    spec=PaperFigureSpec.text(1,width_fraction=5/6)
+    figure,axes=plt.subplots(2,5,figsize=spec.size_in,dpi=spec.dpi)
     panels=[]
     for dataset_index,dataset in ((7,"pb0"),(8,"jicf0")):
         directory,fields,prefix=datasets[dataset]
@@ -99,21 +110,38 @@ def plot_combined(result_dir,project_root):
             method_points[method]=points
             axis.plot([point[0] for point in points],[point[1] for point in points],color=colors[method],linewidth=0.8,label=method,zorder=1)
         focus_axes(axis,method_points)
-        axis.set_xlabel(f"({chr(ord('a')+panel_index)}) {title}",labelpad=1.5)
+        axis.set_xlabel(f"({chr(ord('a')+panel_index)}) {title}")
         axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
-        axis.xaxis.set_major_locator(LogLocator(base=10,numticks=4))
+        log_locator=LogLocator(base=10,numticks=4)
+        x_left,x_right=axis.get_xlim()
+        axis.xaxis.set_major_locator(FixedLocator([tick for tick in log_locator.tick_values(x_left,x_right) if x_left<=tick<=x_right]))
+        axis.xaxis.set_minor_locator(NullLocator())
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        style_plot_axis(axis)
-        axis.tick_params(axis="x",which="minor",length=0)
+        style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
-    figure.legend(handles=handles,loc="upper center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,0.995),handlelength=1.0,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)
-    figure.supxlabel("Bit rate (log scale)",x=0.53,y=0.025)
-    figure.supylabel("PSNR (dB)",x=0.008,y=0.47)
-    figure.tight_layout(rect=(0.015,0.05,1,0.92),pad=0.25,w_pad=0.3,h_pad=0.65)
+    provisional_ylabel=figure.text(0,0,"PSNR (dB)",rotation=90,ha="center",va="center")
+    figure.canvas.draw()
+    ylabel_width_pt=provisional_ylabel.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
+    provisional_ylabel.remove()
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
+    add_shared_xlabel(figure,axes[-1,:],"Bit rate (log scale)",gap_pt=SHARED_XLABEL_GAP_PT,source_artists=[axis.xaxis.label for axis in axes[-1,:]])
+    figure.canvas.draw()
+    renderer=figure.canvas.get_renderer()
+    tick_left=min(bbox.x0 for axis in axes[:,0] for bbox in [label.get_window_extent(renderer) for label in axis.get_yticklabels(which="both") if label.get_visible() and label.get_text()])
+    grid_bottom=min(axis.get_position().y0 for axis in axes.flat)
+    grid_top=max(axis.get_position().y1 for axis in axes.flat)
+    shared_ylabel=figure.text(0,(grid_bottom+grid_top)/2,"PSNR (dB)",rotation=90,ha="center",va="center")
+    figure.canvas.draw()
+    ylabel_bbox=shared_ylabel.get_window_extent(figure.canvas.get_renderer())
+    shared_ylabel.set_x((tick_left-SHARED_YLABEL_GAP_PT*figure.dpi/MPL_POINTS_PER_INCH-ylabel_bbox.width/2)/figure.bbox.width)
+    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
+    top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
+    figure.legend(handles=handles,loc="lower center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),handlelength=1.0,handletextpad=0.25,columnspacing=0.65,borderaxespad=0,borderpad=0)
+    figure.canvas.draw()
     save_svg(figure,os.path.join(result_dir,"large_rd.svg"),metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     paper_output=os.path.join(project_root,"论文","figs","7","large-rd.png")
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
-    figure.savefig(paper_output,format="png",dpi=300)
+    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:figure.savefig(os.path.join(preview_dir,"large_rd.png"),format="png",dpi=180)
     plt.close(figure)
@@ -124,6 +152,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("dataset",nargs="?",choices=["combined"]+sorted(datasets),default="combined")
     args=parser.parse_args()
+    apply_paper_style("mrcz-large-rd",serif_fonts=["STIXGeneral"])
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     result_dir=os.path.join(project_root,"results","RD")
     if args.dataset=="combined":plot_combined(result_dir,project_root)

@@ -3,9 +3,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
-from plot_style import DEFAULT_PANEL_ASPECT_RATIO,METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,add_shared_xlabel,apply_paper_style,save_paper_png_vertical_crop,save_svg,style_plot_axis
+from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,add_shared_xlabel,apply_paper_style,layout_panel_grid,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
 
-PANEL_ASPECT_RATIO=DEFAULT_PANEL_ASPECT_RATIO
 PANEL_GAP_PT=4.0
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
@@ -80,59 +79,6 @@ def focus_rd_axes(axis,method_points):
 def visible_bboxes(artists,renderer):
     return [artist.get_window_extent(renderer) for artist in artists if artist.get_visible() and artist.get_text()]
 
-def layout_grid(figure,axes,ylabel_width_pt):
-    figure_width_pt=figure.get_figwidth()*MPL_POINTS_PER_INCH
-    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
-    left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT
-    for _ in range(2):
-        figure.canvas.draw()
-        renderer=figure.canvas.get_renderer()
-        decoration_widths=[]
-        right_decoration_width_pt=0
-        for column in range(axes.shape[1]):
-            column_left_width_pt=0
-            for axis in axes[:,column]:
-                axis_bbox=axis.get_window_extent(renderer)
-                candidates=visible_bboxes(axis.get_xticklabels(which="both"),renderer)+visible_bboxes(axis.get_yticklabels(which="both"),renderer)
-                leftmost=min((bbox.x0 for bbox in candidates),default=axis_bbox.x0)
-                column_left_width_pt=max(column_left_width_pt,max(0,(axis_bbox.x0-leftmost)*MPL_POINTS_PER_INCH/figure.dpi))
-                if column==axes.shape[1]-1:
-                    rightmost=max((bbox.x1 for bbox in candidates),default=axis_bbox.x1)
-                    right_decoration_width_pt=max(right_decoration_width_pt,max(0,(rightmost-axis_bbox.x1)*MPL_POINTS_PER_INCH/figure.dpi))
-            decoration_widths.append(column_left_width_pt)
-        available_width_pt=figure_width_pt-left_edge_gap_pt-OUTER_EDGE_GAP_PT-sum(decoration_widths)-right_decoration_width_pt-(axes.shape[1]-1)*PANEL_GAP_PT
-        plot_width_pt=available_width_pt/axes.shape[1]
-        plot_height_pt=plot_width_pt/PANEL_ASPECT_RATIO
-        if plot_height_pt<=0:raise ValueError("Panel decorations and gaps leave no width for plot areas")
-        left_pt=left_edge_gap_pt
-        for column,decoration_width_pt in enumerate(decoration_widths):
-            left_pt+=decoration_width_pt
-            for row in range(axes.shape[0]):
-                bottom_pt=BOTTOM_PLOT_PT+(axes.shape[0]-1-row)*(plot_height_pt+40)
-                axes[row,column].set_position([left_pt/figure_width_pt,bottom_pt/figure_height_pt,plot_width_pt/figure_width_pt,plot_height_pt/figure_height_pt])
-            left_pt+=plot_width_pt
-            if column<axes.shape[1]-1:left_pt+=PANEL_GAP_PT
-    figure.canvas.draw()
-    renderer=figure.canvas.get_renderer()
-    below_heights_pt=[]
-    for row in range(axes.shape[0]):
-        row_height_pt=0
-        for axis in axes[row,:]:
-            axis_bbox=axis.get_window_extent(renderer)
-            candidates=visible_bboxes(axis.get_xticklabels(which="both"),renderer)+[axis.xaxis.label.get_window_extent(renderer)]
-            bottom=min(bbox.y0 for bbox in candidates)
-            row_height_pt=max(row_height_pt,(axis_bbox.y0-bottom)*MPL_POINTS_PER_INCH/figure.dpi)
-        below_heights_pt.append(row_height_pt)
-    row_bottoms_pt=[0.0]*axes.shape[0]
-    row_bottoms_pt[-1]=BOTTOM_PLOT_PT
-    for row in range(axes.shape[0]-2,-1,-1):row_bottoms_pt[row]=row_bottoms_pt[row+1]+plot_height_pt+ROW_CONTENT_GAP_PT+below_heights_pt[row]
-    for row in range(axes.shape[0]):
-        for axis in axes[row,:]:
-            position=axis.get_position()
-            axis.set_position([position.x0,row_bottoms_pt[row]/figure_height_pt,position.width,plot_height_pt/figure_height_pt])
-    figure.canvas.draw()
-    return plot_height_pt
-
 def place_shared_ylabel(figure,axes,label):
     figure.canvas.draw()
     renderer=figure.canvas.get_renderer()
@@ -156,7 +102,7 @@ def finish_figure(figure,axes,spec,xlabel,ylabel,output_path,paper_output):
     figure.canvas.draw()
     ylabel_width_pt=ylabel_artist.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
     ylabel_artist.remove()
-    layout_grid(figure,axes,ylabel_width_pt)
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
     shared_xlabel=add_shared_xlabel(figure,axes[-1,:],xlabel,gap_pt=SHARED_XLABEL_GAP_PT,source_artists=[axis.xaxis.label for axis in axes[-1,:]])
     shared_ylabel=place_shared_ylabel(figure,axes,ylabel)
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
