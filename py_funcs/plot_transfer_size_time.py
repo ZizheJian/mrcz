@@ -71,7 +71,7 @@ def main():
     layout_panel_row(figure,[axis],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     top_plot_pt=axis.get_position().y1*figure_height_pt
-    legend=figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="lower center",ncol=5,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),handletextpad=0.12,columnspacing=0.00,borderaxespad=0,borderpad=0)
+    legend=figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="lower center",ncol=5,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),handletextpad=0.00,columnspacing=0.00,borderaxespad=0,borderpad=0)
     set_legend_row_gap(legend)
     figure.canvas.draw()
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")
