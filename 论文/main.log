@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 01:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 02:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -529,9 +529,6 @@ File: figs/7/e2e_time.pdf Graphic file (type pdf)
 <use figs/7/e2e_time.pdf>
 Package pdftex.def Info: figs/7/e2e_time.pdf  used on input line 114.
 (pdftex.def)             Requested size: 252.0pt x 157.76381pt.
-
-Underfull \vbox (badness 1953) has occurred while \output is active []
-
 <figs/7/transfer-size-time.pdf, id=87, 252.82204pt x 119.88614pt>
 File: figs/7/transfer-size-time.pdf Graphic file (type pdf)
 <use figs/7/transfer-size-time.pdf>
@@ -544,16 +541,16 @@ File: figs/raster300/visualization-cr33.png Graphic file (type png)
 Package pdftex.def Info: figs/raster300/visualization-cr33.png  used on input l
 ine 132.
 (pdftex.def)             Requested size: 516.0pt x 169.67339pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
  [11 <./figs/7/combined-throughput.pdf> <./figs/7/e2e_time.pdf> <./figs/7/trans
 fer-size-time.pdf>]) (./8.conclusion.tex
 Underfull \hbox (badness 2486) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Experiments on 28 non-constant fields from NekRS,
  []
 
-) (./main.bbl
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [12 <./figs/raster300/visualization-cr33.png (PNG copy)>])
+) (./main.bbl [12 <./figs/raster300/visualization-cr33.png (PNG copy)>])
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -604,7 +601,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4006145 bytes).
+Output written on main.pdf (13 pages, 4003440 bytes).
 PDF statistics:
  203 PDF objects out of 1000 (max. 8388607)
  121 compressed objects within 2 object streams

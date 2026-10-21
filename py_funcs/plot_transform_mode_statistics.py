@@ -183,7 +183,7 @@ def main():
     entropy_ax.set_xlim(0,orders[-1])
     entropy_ax.set_xticks([0,10,20])
     entropy_ax.set_xlabel(axis_order_label)
-    entropy_ax.set_ylabel("Entropy (bits/value)")
+    entropy_ax.set_ylabel("Entropy")
     if args.mode_order=="total":
         entropy_ax.set_yscale("symlog",linthresh=1e-3,linscale=0.5)
         entropy_ax.set_ylim(-3e-4,20)
