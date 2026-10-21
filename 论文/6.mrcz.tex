@@ -6,7 +6,7 @@ This section presents MRCZ, a representation-based compressor with a strict poin
 
 Before presenting the MRCZ workflow, we briefly revisit the transform-based compressor of Marin et al.~\cite{marin2016spectral}. It builds on the observation that physical fields are often smooth within each element. Just as the discrete cosine transform (DCT) in JPEG~\cite{wallace1991jpeg} represents a smooth image block with a few low-frequency coefficients, a suitable element-wise transform concentrates most of the variation of an element in a few lower-order coefficients, leaving the higher-order coefficients small and therefore easy to compress. Accordingly, Marin et al. transform each element using a basis matched to its nodes, namely DLT for GLL nodes and DChT for Chebyshev nodes. They then discard information by setting selected coefficients to zero and encode the resulting coefficient stream.
 
-However, inverse-transforming this lossy representation does not reproduce the original data exactly. Moreover, their compressor provides no mechanism for bounding the resulting pointwise error.
+However, inverse-transforming Marin et al.'s lossy representation does not reproduce the original data exactly. Moreover, their compressor provides no mechanism for bounding the resulting pointwise error.
 
 \begin{figure}[htb]
     \centering

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 21:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 21:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -464,11 +464,6 @@ cmsy/m/n/10 ^^B$ \OT1/ptm/m/n/10 the NMAE, and 12.3$\OMS/cmsy/m/n/10 ^^B$ \OT1/
 ptm/m/n/10 the
  []
 
-
-Underfull \hbox (badness 1533) in paragraph at lines 9--10
-[]\OT1/ptm/m/n/10 However, inverse-transforming this lossy rep-re-sen-ta-tion
- []
-
 <figs/raster300/mrcz-diagram.png, id=48, 251.9814pt x 88.6512pt>
 File: figs/raster300/mrcz-diagram.png Graphic file (type png)
 <use figs/raster300/mrcz-diagram.png>
@@ -573,7 +568,7 @@ Before submitting the final camera ready copy, remember to:
 Here is how much of TeX's memory you used:
  5274 strings out of 480608
  84928 string characters out of 5886422
- 330650 words of memory out of 5000000
+ 329650 words of memory out of 5000000
  21056 multiletter control sequences out of 15000+600000
  572918 words of font info for 110 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -608,7 +603,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 3812851 bytes).
+Output written on main.pdf (13 pages, 3812867 bytes).
 PDF statistics:
  230 PDF objects out of 1000 (max. 8388607)
  139 compressed objects within 2 object streams
