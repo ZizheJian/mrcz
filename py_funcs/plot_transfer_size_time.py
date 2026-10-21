@@ -1,7 +1,9 @@
 import csv,os
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from plot_style import METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,style_plot_axis
+from plot_style import MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
 
 apply_paper_style("mrcz-transfer-size-time",serif_fonts=["STIXGeneral"])
 
@@ -9,6 +11,11 @@ methods=TRANSFER_METHODS
 colors=METHOD_COLORS
 labels=METHOD_LABELS
 datasets=(("pb0",7),("jicf0",8))
+PLOT_ASPECT_RATIO=3.0
+LEFT_EDGE_GAP_PT=3.0
+RIGHT_EDGE_GAP_PT=3.0
+BOTTOM_PLOT_PT=24.0
+VERTICAL_EDGE_GAP_PT=3.0
 
 
 def read_rows(path):
@@ -46,32 +53,35 @@ def draw_panel(axis,rows):
     axis.set_yticks([0,0.3,0.6,0.9,1.2])
     axis.text(0.97,0.08,f"Spearman $\\rho={rank_correlation:.3f}$",transform=axis.transAxes,ha="right",va="bottom",fontsize=8.0)
     axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
-    style_plot_axis(axis,spine_width=0.6)
-    axis.set_xlabel("Transferred Bitstream Size (GiB)",labelpad=1.0)
+    style_plot_axis(axis)
+    axis.set_xlabel("Transferred Bitstream Size (GiB)")
 
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     result_dir=os.path.join(project_root,"results","end_to_end")
     rows=read_rows(os.path.join(result_dir,"end_to_end_summary.csv"))
-    figure,axis=plt.subplots(1,1,figsize=(3.5,1.65))
+    spec=PaperFigureSpec.column(1)
+    figure,axis=plt.subplots(1,1,figsize=spec.size_in,dpi=spec.dpi)
     draw_panel(axis,rows)
     method_handles=[plt.Line2D([0],[0],marker="o",markersize=3.8,color=colors[method],markeredgecolor="black",markeredgewidth=0.3,linewidth=0,label=labels[method]) for method in methods]
     blank_handle=plt.Line2D([0],[0],linewidth=0,alpha=0,label="")
     dataset_handles=[plt.Line2D([0],[0],marker=marker,markersize=4.0,color="black",markerfacecolor="white",markeredgewidth=0.5,linewidth=0,label=f"Dataset {dataset_index}") for marker,dataset_index in (("o",7),("^",8))]
-    figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="upper center",ncol=5,frameon=False,bbox_to_anchor=(0.5,0.99),handletextpad=0.12,columnspacing=0.35,borderaxespad=0)
-    axis.set_ylabel("Transfer Throughput (GiB/s)",labelpad=1.5)
-    figure.tight_layout(rect=(0,0,1,0.82),pad=0.2)
+    axis.set_ylabel("Transfer Throughput (GiB/s)")
+    layout_panel_row(figure,[axis],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
+    top_plot_pt=axis.get_position().y1*figure_height_pt
+    legend=figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="lower center",ncol=5,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),handletextpad=0.12,columnspacing=0.35,borderaxespad=0,borderpad=0)
+    set_legend_row_gap(legend)
+    figure.canvas.draw()
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")
-    pdf_output=os.path.join(project_root,"论文","figs","7","transfer-size-time.pdf")
-    figure.savefig(svg_output,format="svg",metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
-    with open(svg_output) as input_file:svg=input_file.read()
-    with open(svg_output,"w") as output_file:output_file.write("\n".join(line.rstrip() for line in svg.splitlines())+"\n")
-    figure.savefig(pdf_output,format="pdf",bbox_inches="tight",pad_inches=0.02)
-    preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
-    if preview_dir:figure.savefig(os.path.join(preview_dir,"transfer_size_time.png"),format="png",dpi=180,bbox_inches="tight",pad_inches=0.02)
+    png_output=os.path.join(result_dir,"transfer_size_time.png")
+    paper_output=os.path.join(project_root,"论文","figs","7","transfer-size-time.png")
+    save_svg(figure,svg_output,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
+    save_paper_png_vertical_crop(figure,png_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     plt.close(figure)
-    print(pdf_output)
+    print(paper_output)
 
 
 if __name__=="__main__":main()

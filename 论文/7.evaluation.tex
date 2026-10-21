@@ -118,9 +118,9 @@ Following the workflow in Figure~\ref{fig:end-to-end}, we calculate end-to-end t
 
 Figure~\ref{fig:transfer} shows that most evaluated compressors reduce end-to-end time relative to direct transfer. The fastest methods reduce end-to-end time by 79.2\% and 88.3\% on Datasets~7 and~8, respectively. ZFP and FDWZ perform nearly identically on Dataset~7, whereas FDWZ is 19.2\% faster than ZFP on Dataset~8. MRCZ produces the smallest compressed payloads, while its end-to-end time is at most 1.36$\times$ the minimum on each dataset.
 
-\begin{figure}[t]
+\begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/7/transfer-size-time.pdf}
+    \includegraphics[width=\linewidth]{figs/7/transfer-size-time.png}
     \caption{Effective Globus transfer throughput versus compressed payload size. Circles and triangles denote Datasets~7 and~8, and each error bar spans the three transfer trials. Across the 14 compressed workflows, larger payloads attain higher effective throughput, partially offsetting the transfer-time benefit of stronger compression.}
     \label{fig:transfer-size-time}
 \end{figure}
