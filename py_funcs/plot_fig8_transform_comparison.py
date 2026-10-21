@@ -1,9 +1,11 @@
 # 绘制固定relative error bound的alpha sweep与固定alpha的rate--distortion曲线。
 
 import argparse,csv,glob,os
+import matplotlib
+matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-from plot_style import apply_paper_style,style_plot_axis
+from plot_style import MPL_POINTS_PER_INCH,PaperFigureSpec,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,style_plot_axis
 
 CONFIGS=[
     ("DLT_GLL","DLT (GLL)","#ff4d4d"),
@@ -15,14 +17,25 @@ CONFIGS=[
     ("DST_uniform","DST (Uniform)","#12afc7"),
 ]
 
+X_TICK_GAP_PT=1.5
+Y_TICK_GAP_PT=1.0
+X_LABEL_GAP_PT=1.0
+Y_LABEL_GAP_PT=1.0
+PLOT_ASPECT_RATIO=3.0
+LEFT_EDGE_GAP_PT=3.0
+RIGHT_EDGE_GAP_PT=3.0
+BOTTOM_PT=24.0
+STYLE_LEGEND_GAP_PT=1.0
+CONFIG_LEGEND_GAP_PT=1.0
+VERTICAL_EDGE_GAP_PT=3.0
+
 def parse_args():
     parser=argparse.ArgumentParser()
     parser.add_argument("--alpha-root",default="results/fig8/alpha")
     parser.add_argument("--alpha-csv",default="results/fig8/pb0_fig8_alpha_sweep.csv")
     parser.add_argument("--rd-root",default="results/fig8/rd")
     parser.add_argument("--rd-summary",default="results/fig8/pb0_fig8_rd.csv")
-    parser.add_argument("--output",default="论文/figs/6/transform-comparison.pdf")
-    parser.add_argument("--legend-layout",choices=("side","stacked"),default="stacked")
+    parser.add_argument("--output",default="论文/figs/6/transform-comparison-stacked.png")
     return parser.parse_args()
 
 def read_alpha_curves(root):
@@ -87,6 +100,44 @@ def write_rd_summary(path,rows_by_eb):
                 row.extend(rows_by_eb[eb][key])
             writer.writerow(row)
 
+def add_legends(figure,axes):
+    config_by_key={key:Line2D([0],[0],color=color,linewidth=0.9,label=label) for key,label,color in CONFIGS}
+    blank_handle=Line2D([0],[0],linestyle="none",label=" ")
+    config_handles=[config_by_key["DLT_GLL"],config_by_key["DLT_uniform"],config_by_key["DChT_GLL"],config_by_key["DChT_uniform"],config_by_key["DCT_GLL"],config_by_key["DCT_uniform"],blank_handle,config_by_key["DST_uniform"]]
+    style_handles=[
+        Line2D([0],[0],color="black",linestyle="-",linewidth=0.8,label=r"Fixed $\varepsilon_{\mathrm{rel}}$, vary $\alpha$"),
+        Line2D([0],[0],color="black",linestyle="--",linewidth=0.8,label=r"Fixed $\alpha$, vary $\varepsilon_{\mathrm{rel}}$"),
+    ]
+    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
+    axes_position=axes.get_position()
+    center_x=0.5
+    style_legend=figure.legend(handles=style_handles,loc="lower center",bbox_to_anchor=(center_x,axes_position.y1+STYLE_LEGEND_GAP_PT/figure_height_pt),bbox_transform=figure.transFigure,ncol=2,frameon=False,handlelength=1.2,handletextpad=0.3,columnspacing=2.0,borderaxespad=0,labelspacing=0)
+    figure.canvas.draw()
+    renderer=figure.canvas.get_renderer()
+    style_top=figure.transFigure.inverted().transform((0,style_legend.get_window_extent(renderer).y1))[1]
+    figure.legend(handles=config_handles,loc="lower center",bbox_to_anchor=(center_x,style_top+CONFIG_LEGEND_GAP_PT/figure_height_pt),bbox_transform=figure.transFigure,ncol=4,frameon=False,handlelength=0.35,handletextpad=0.15,columnspacing=0.65,borderaxespad=0,labelspacing=0.1)
+
+def make_figure(alpha_curves,rd_curves,output_path):
+    spec=PaperFigureSpec.column(1)
+    figure,axes=plt.subplots(figsize=spec.size_in,dpi=spec.dpi)
+    for key,_,color in CONFIGS:
+        alpha_br,alpha_psnr=alpha_curves[key]
+        rd_br,rd_psnr=rd_curves[key]
+        linewidth=1.0 if key=="DChT_GLL" else 0.7
+        zorder=4 if key=="DChT_GLL" else 2
+        axes.plot(alpha_br,alpha_psnr,color=color,linestyle="-",linewidth=linewidth,zorder=zorder)
+        axes.plot(rd_br,rd_psnr,color=color,linestyle="--",linewidth=linewidth,zorder=zorder)
+    axes.set_xlim(0,3.5)
+    axes.set_ylim(80,115)
+    axes.set_xlabel("Bit rate")
+    axes.set_ylabel("PSNR (dB)")
+    axes.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
+    style_plot_axis(axes,tick_length=2.5,tick_width=0.6,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=X_LABEL_GAP_PT,y_label_pad=Y_LABEL_GAP_PT,spine_width=0.7)
+    layout_panel_row(figure,[axes],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    add_legends(figure,axes)
+    save_paper_png_vertical_crop(figure,output_path,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    plt.close(figure)
+
 def main():
     args=parse_args()
     alpha_curves,rows_by_alpha=read_alpha_curves(args.alpha_root)
@@ -94,56 +145,9 @@ def main():
     write_alpha_summary(args.alpha_csv,rows_by_alpha)
     write_rd_summary(args.rd_summary,rows_by_eb)
 
-    apply_paper_style(font_size=8.4,serif_fonts=["STIXGeneral"])
-    fig,ax=plt.subplots(figsize=(3.67,2.08) if args.legend_layout=="stacked" else (3.5,1.55))
-    for key,_,color in CONFIGS:
-        alpha_br,alpha_psnr=alpha_curves[key]
-        rd_br,rd_psnr=rd_curves[key]
-        linewidth=1.0 if key=="DChT_GLL" else 0.7
-        zorder=4 if key=="DChT_GLL" else 2
-        ax.plot(alpha_br,alpha_psnr,color=color,linestyle="-",linewidth=linewidth,zorder=zorder)
-        ax.plot(rd_br,rd_psnr,color=color,linestyle="--",linewidth=linewidth,zorder=zorder)
-
-    ax.set_xlim(0,3.5)
-    ax.set_ylim(80,115)
-    ax.set_xlabel("Bit rate",labelpad=1)
-    ax.set_ylabel("PSNR (dB)",labelpad=1)
-    ax.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
-    style_plot_axis(ax,tick_length=2.5,tick_width=0.6,tick_pad=3.5,spine_width=0.7)
-
-    config_handles=[Line2D([0],[0],color=color,linewidth=0.9,label=label) for _,label,color in CONFIGS]
-    if args.legend_layout=="stacked":
-        config_by_key={key:Line2D([0],[0],color=color,linewidth=0.9,label=label) for key,label,color in CONFIGS}
-        blank_handle=Line2D([0],[0],linestyle="none",label=" ")
-        config_columns=[
-            (0.045,[config_by_key["DLT_GLL"],config_by_key["DLT_uniform"]]),
-            (0.285,[config_by_key["DChT_GLL"],config_by_key["DChT_uniform"]]),
-            (0.53,[config_by_key["DCT_GLL"],config_by_key["DCT_uniform"]]),
-            (0.762,[blank_handle,config_by_key["DST_uniform"]]),
-        ]
-        config_legends=[fig.legend(handles=handles,loc="upper left",bbox_to_anchor=(x,0.995),ncol=1,frameon=False,handlelength=0.35,handletextpad=0.15,borderaxespad=0.0) for x,handles in config_columns]
-    else:
-        config_legend=ax.legend(handles=config_handles,loc="lower left",bbox_to_anchor=(-0.08,1.01),ncol=2,frameon=False,columnspacing=0.35,handlelength=0.9,handletextpad=0.2,borderaxespad=0.0)
-        ax.add_artist(config_legend)
-    style_handles=[
-        Line2D([0],[0],color="black",linestyle="-",linewidth=0.8,label=r"Fixed $\varepsilon_{\mathrm{rel}}$, vary $\alpha$"),
-        Line2D([0],[0],color="black",linestyle="--",linewidth=0.8,label=r"Fixed $\alpha$, vary $\varepsilon_{\mathrm{rel}}$"),
-    ]
-    if args.legend_layout=="stacked":
-        style_legends=[
-            fig.legend(handles=[style_handles[0]],loc="upper left",bbox_to_anchor=(0.045,0.83),ncol=1,frameon=False,handlelength=1.2,handletextpad=0.3,borderaxespad=0.0),
-            fig.legend(handles=[style_handles[1]],loc="upper left",bbox_to_anchor=(0.53,0.83),ncol=1,frameon=False,handlelength=1.2,handletextpad=0.3,borderaxespad=0.0),
-        ]
-    else:
-        style_legend=ax.legend(handles=style_handles,loc="lower right",bbox_to_anchor=(1.05,1.01),ncol=1,frameon=False,handlelength=1.2,handletextpad=0.25,borderaxespad=0.0)
-
+    apply_paper_style(serif_fonts=["STIXGeneral"])
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
-    if args.legend_layout=="stacked":
-        fig.subplots_adjust(left=0.12,right=0.98,bottom=0.24,top=0.72)
-        fig.savefig(args.output,bbox_inches="tight",pad_inches=0.01)
-    else:
-        fig.tight_layout(pad=0.25)
-        fig.savefig(args.output,bbox_inches="tight",bbox_extra_artists=(config_legend,style_legend))
+    make_figure(alpha_curves,rd_curves,args.output)
 
 if __name__=="__main__":
     main()

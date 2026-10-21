@@ -153,7 +153,7 @@ JSON配置保存在`configs/`，实验CSV和绘图中间结果保存在`results/
 
 ```bash
 python3 py_funcs/plot_fdwz_tree_ablation.py
-python3 py_funcs/plot_fig8_transform_comparison.py --legend-layout stacked --output 论文/figs/6/transform-comparison-stacked.pdf
+python3 py_funcs/plot_fig8_transform_comparison.py
 python3 py_funcs/plot_transform_mode_statistics.py
 python3 py_funcs/plot_mrcz_reordering_ablation.py
 python3 py_funcs/plot_small_rd.py
