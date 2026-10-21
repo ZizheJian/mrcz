@@ -44,4 +44,4 @@ conda activate "${SLURM_SUBMIT_DIR}/mrcz_env"
 plot_cache="${SLURM_TMPDIR:-/tmp}/matplotlib-${SLURM_JOB_ID}"
 mkdir -p "${plot_cache}"
 export MPLCONFIGDIR="${plot_cache}"
-python3 py_funcs/plot_pb0_cr33_visualization.py
+python3 py_funcs/plot_pb0_cr33_visualization.py --master-dpi 1200

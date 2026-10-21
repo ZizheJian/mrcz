@@ -170,6 +170,12 @@ reconstruct_job=$(sbatch --parsable run_visualization_cr33_reconstruct.sbatch)
 sbatch --dependency=afterok:${reconstruct_job} run_visualization_cr33_render.sbatch
 ```
 
+渲染任务会在`results/visualization/cr33_panel_masters/`保存原图和七种方法的1200 dpi单子图母版，并从这些母版缩小生成300 dpi论文图。以后只调整版式时可以跳过重建和ParaView切片：
+
+```bash
+python3 py_funcs/plot_pb0_cr33_visualization.py --compose-only
+```
+
 手工流程图直接使用定稿PNG，`cross-element.pdf`可按最终单栏宽度重新生成300 dpi PNG。Matplotlib统计图和场可视化按论文宽度和8 pt字号直接生成300 dpi PNG：
 
 ```bash
