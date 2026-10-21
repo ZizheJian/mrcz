@@ -5,7 +5,7 @@ project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 paperfig_source=os.path.join(project_root,"third_party/paperfig/src")
 if paperfig_source not in sys.path:sys.path.insert(0,paperfig_source)
 
-from paperfig import DEFAULT_PANEL_ASPECT_RATIO,MPL_POINTS_PER_INCH,PAPER_COLUMN_WIDTH_PT,PAPER_FONT_SIZE,PAPER_TEXT_WIDTH_IN,PAPER_TEXT_WIDTH_PT,RASTER_DPI,TEX_POINTS_PER_INCH,PaperFigureSpec,add_panel_captions,add_shared_xlabel,align_xlabels,apply_paper_style as _apply_paper_style,layout_panel_row,legend_above,panel_aspect_ratios,paper_subplots,save_paper_png,save_paper_png_vertical_crop,style_plot_axis,validate_figure_bounds
+from paperfig import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,DEFAULT_PANEL_ASPECT_RATIO,MPL_POINTS_PER_INCH,PAPER_COLUMN_WIDTH_PT,PAPER_FONT_SIZE,PAPER_TEXT_WIDTH_IN,PAPER_TEXT_WIDTH_PT,RASTER_DPI,TEX_POINTS_PER_INCH,PaperFigureSpec,add_panel_captions,add_shared_xlabel,align_xlabels,apply_paper_style as _apply_paper_style,layout_panel_row,legend_above,panel_aspect_ratios,paper_subplots,save_paper_png,save_paper_png_vertical_crop,set_legend_row_gap,style_plot_axis,validate_figure_bounds
 
 METHOD_COLORS={
     "MRCZ":"#111827",

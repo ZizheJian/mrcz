@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-from plot_style import MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,style_plot_axis
+from plot_style import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,apply_paper_style,layout_panel_row,save_paper_png_vertical_crop,set_legend_row_gap,style_plot_axis
 
 CONFIGS=[
     ("DLT_GLL","DLT (GLL)","#ff4d4d"),
@@ -25,9 +25,6 @@ PLOT_ASPECT_RATIO=3.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=24.0
-STYLE_LEGEND_GAP_PT=1.0
-CONFIG_LEGEND_GAP_PT=1.0
-CONFIG_LEGEND_ROW_GAP_PT=1.0
 CONFIG_HANDLE_LENGTH_PT=2.8
 CONFIG_HANDLE_TEXT_GAP_PT=1.2
 CONFIG_COLUMN_GAP_PT=5.2
@@ -117,9 +114,10 @@ def add_legends(figure,axes):
     ]
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     axes_position=axes.get_position()
-    style_y=axes_position.y1+STYLE_LEGEND_GAP_PT/figure_height_pt
+    style_y=axes_position.y1+DEFAULT_LEGEND_GAP_PT/figure_height_pt
     style_legends=[figure.legend(handles=[handle],loc="lower left",bbox_to_anchor=(0,style_y),bbox_transform=figure.transFigure,ncol=1,frameon=False,borderpad=0,handlelength=STYLE_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=STYLE_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=STYLE_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=0) for handle in style_handles]
-    config_legend=figure.legend(handles=config_handles,loc="lower center",bbox_to_anchor=(0.5,style_y),bbox_transform=figure.transFigure,ncol=4,frameon=False,borderpad=0,handlelength=CONFIG_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=CONFIG_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=CONFIG_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=CONFIG_LEGEND_ROW_GAP_PT/PAPER_FONT_SIZE)
+    config_legend=figure.legend(handles=config_handles,loc="lower center",bbox_to_anchor=(0.5,style_y),bbox_transform=figure.transFigure,ncol=4,frameon=False,borderpad=0,handlelength=CONFIG_HANDLE_LENGTH_PT/PAPER_FONT_SIZE,handletextpad=CONFIG_HANDLE_TEXT_GAP_PT/PAPER_FONT_SIZE,columnspacing=CONFIG_COLUMN_GAP_PT/PAPER_FONT_SIZE,borderaxespad=0,labelspacing=DEFAULT_LEGEND_ROW_GAP_PT/PAPER_FONT_SIZE)
+    set_legend_row_gap(config_legend)
     figure.canvas.draw()
     renderer=figure.canvas.get_renderer()
     rendered_handles=getattr(config_legend,"legend_handles",None) or config_legend.legendHandles
@@ -128,7 +126,7 @@ def add_legends(figure,axes):
     figure.canvas.draw()
     renderer=figure.canvas.get_renderer()
     style_top=max(figure.transFigure.inverted().transform((0,legend.get_window_extent(renderer).y1))[1] for legend in style_legends)
-    config_legend.set_bbox_to_anchor((0.5,style_top+CONFIG_LEGEND_GAP_PT/figure_height_pt),transform=figure.transFigure)
+    config_legend.set_bbox_to_anchor((0.5,style_top+DEFAULT_LEGEND_GAP_PT/figure_height_pt),transform=figure.transFigure)
 
 def make_figure(alpha_curves,rd_curves,output_path):
     spec=PaperFigureSpec.column(1)
