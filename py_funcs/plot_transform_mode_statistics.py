@@ -20,7 +20,7 @@ DEFAULT_OUTPUT="论文/figs/6/transform-mode-statistics.png"
 DEFAULT_CSV_OUTPUT="results/RD/transform_mode_statistics.csv"
 DEFAULT_STREAM_ROOT="results/fig9/stream_breakdown"
 
-OUTER_PANEL_ASPECT_RATIOS=(1.0,1.0,1.0)
+OUTER_PANEL_ASPECT_RATIOS=(1/1.2,1/1.2,1/1.2)
 PANEL_GAP_PT=9.0
 STREAM_AXES_GAP_PT=2.0
 LEFT_EDGE_GAP_PT=3.0

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 12:30
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 12:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -482,12 +482,12 @@ File: figs/6/transform-comparison-stacked.png Graphic file (type png)
 Package pdftex.def Info: figs/6/transform-comparison-stacked.png  used on input
  line 32.
 (pdftex.def)             Requested size: 252.0pt x 121.66904pt.
-<figs/6/transform-mode-statistics.png, id=54, 251.9814pt x 93.2283pt>
+<figs/6/transform-mode-statistics.png, id=54, 251.9814pt x 103.3461pt>
 File: figs/6/transform-mode-statistics.png Graphic file (type png)
 <use figs/6/transform-mode-statistics.png>
 Package pdftex.def Info: figs/6/transform-mode-statistics.png  used on input li
 ne 41.
-(pdftex.def)             Requested size: 252.0pt x 93.23944pt.
+(pdftex.def)             Requested size: 252.0pt x 103.35844pt.
  [7 <./figs/6/transform-comparison-stacked.png> <./figs/6/transform-mode-statis
 tics.png>]
 <figs/6/mrcz-reordering-ablation.png, id=61, 251.9814pt x 93.4692pt>
@@ -542,12 +542,8 @@ File: figs/7/visualization-cr33.png Graphic file (type png)
 Package pdftex.def Info: figs/7/visualization-cr33.png  used on input line 132.
 
 (pdftex.def)             Requested size: 516.0pt x 169.67339pt.
-
-Underfull \vbox (badness 7869) has occurred while \output is active []
-
-)
-(./8.conclusion.tex [11 <./figs/7/combined-throughput.png> <./figs/7/e2e_time.p
-ng> <./figs/7/transfer-size-time.png>]
+) (./8.conclusion.tex [11 <./figs/7/combined-throughput.png> <./figs/7/e2e_time
+.png> <./figs/7/transfer-size-time.png>]
 Underfull \hbox (badness 2486) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Experiments on 28 non-constant fields from NekRS,
  []
@@ -603,7 +599,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4321116 bytes).
+Output written on main.pdf (13 pages, 4325258 bytes).
 PDF statistics:
  159 PDF objects out of 1000 (max. 8388607)
  93 compressed objects within 1 object stream
