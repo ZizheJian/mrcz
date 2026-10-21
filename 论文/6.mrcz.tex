@@ -4,7 +4,7 @@ This section presents MRCZ, a representation-based compressor with a strict poin
 
 \subsection{Overview of MRCZ}\label{sec:mrcz:overview}
 
-Transform-based compression is well suited to high-order element data because physical fields are often smooth within each element. Analogous to the discrete cosine transform (DCT) in JPEG~\cite{wallace1991jpeg}, which represents a smooth image block with a small number of low-frequency coefficients, an element-wise transform may capture the dominant variation of an element in a few lower-order coefficients. The remaining higher-order coefficients are typically small and therefore compress well.
+MRCZ is motivated by the observation that physical fields are often smooth within each element. Just as the discrete cosine transform (DCT) in JPEG~\cite{wallace1991jpeg} represents a smooth image block with a few low-frequency coefficients, an element-wise transform concentrates most of the variation of an element in a few lower-order coefficients, leaving the higher-order coefficients small and therefore easy to compress.
 
 Marin et al.~\cite{marin2016spectral} exploit this property in a transform-based compressor. During compression, it applies a basis-matched transform to each element, discards information by setting selected coefficients to zero, and encodes the resulting coefficient stream. Simply inverse-transforming this lossy representation during decompression therefore generally does not reproduce the original data exactly. Moreover, the compressor provides no mechanism for enforcing a pointwise error bound.
 
