@@ -5,13 +5,13 @@ import matplotlib
 matplotlib.use("Agg")
 import numpy as np
 from matplotlib import pyplot as plt
-from plot_style import PaperFigureSpec,add_panel_captions,apply_paper_style,layout_panel_row,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,style_plot_axis
+from plot_style import PaperFigureSpec,add_panel_captions,apply_paper_style,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
 
 DEFAULT_ROOT="results/mrcz_reordering"
 DEFAULT_OUTPUT="论文/figs/6/mrcz-reordering-ablation.png"
 DEFAULT_SUMMARY="results/mrcz_reordering/summary.csv"
 
-PLOT_ASPECT_RATIOS=panel_aspect_ratios(1,2)
+PLOT_ASPECT_RATIOS=(1.2,2.4)
 PANEL_GAP_PT=9.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
