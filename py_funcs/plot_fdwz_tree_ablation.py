@@ -9,7 +9,7 @@ tree_count_paths=[os.path.join(project_root,f"results/RD/pb0_fdwz_tree_count/tre
 prediction_error_distribution_path=os.path.join(project_root,"results/RD/pb0_fdwz_tree_prediction_error_distribution_1e-3.csv")
 canonical_output_path=os.path.join(project_root,"论文/figs/5/fdwz-tree-ablation.png")
 
-PLOT_ASPECT_RATIOS=(2.0,1.0)
+PLOT_ASPECT_RATIOS=(2.4,1.2)
 PANEL_GAP_PT=9.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0

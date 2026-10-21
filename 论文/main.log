@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 12:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 12:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -439,11 +439,11 @@ LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 4
 x/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-<figs/5/fdwz-tree-ablation.png, id=37, 251.9814pt x 115.3911pt>
+<figs/5/fdwz-tree-ablation.png, id=37, 251.9814pt x 104.0688pt>
 File: figs/5/fdwz-tree-ablation.png Graphic file (type png)
 <use figs/5/fdwz-tree-ablation.png>
 Package pdftex.def Info: figs/5/fdwz-tree-ablation.png  used on input line 67.
-(pdftex.def)             Requested size: 252.0pt x 115.40489pt.
+(pdftex.def)             Requested size: 252.0pt x 104.08124pt.
 <figs/raster300/cross-element.png, id=38, 251.9814pt x 77.5698pt>
 File: figs/raster300/cross-element.png Graphic file (type png)
 <use figs/raster300/cross-element.png>
@@ -603,7 +603,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4323302 bytes).
+Output written on main.pdf (13 pages, 4321116 bytes).
 PDF statistics:
  159 PDF objects out of 1000 (max. 8388607)
  93 compressed objects within 1 object stream
