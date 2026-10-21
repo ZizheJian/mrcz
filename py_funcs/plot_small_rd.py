@@ -7,6 +7,8 @@ from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,add_sha
 
 PANEL_GAP_PT=4.0
 ROW_CONTENT_GAP_PT=6.0
+X_TICK_GAP_PT=1.5
+Y_TICK_GAP_PT=1.0
 PANEL_CAPTION_GAP_PT=1.0
 SHARED_XLABEL_GAP_PT=2.0
 SHARED_YLABEL_GAP_PT=1.0
@@ -140,7 +142,7 @@ def plot_rd(result_dir):
         axis.xaxis.set_major_locator(FixedLocator([tick for tick in log_locator.tick_values(x_left,x_right) if x_left<=tick<=x_right]))
         axis.xaxis.set_minor_locator(NullLocator())
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
+        style_plot_axis(axis,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=PANEL_CAPTION_GAP_PT)
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     finish_figure(figure,axes,spec,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.png"))
 
