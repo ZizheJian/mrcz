@@ -1,13 +1,27 @@
 # 绘制MRCZ系数重排的rate--distortion和throughput消融结果。
 
 import argparse,csv,os
+import matplotlib
+matplotlib.use("Agg")
 import numpy as np
 from matplotlib import pyplot as plt
-from plot_style import apply_paper_style,style_plot_axis
+from plot_style import PaperFigureSpec,add_panel_captions,align_xlabels,apply_paper_style,layout_panel_row,legend_above,panel_aspect_ratios,save_paper_png_vertical_crop,style_plot_axis
 
 DEFAULT_ROOT="results/mrcz_reordering"
-DEFAULT_OUTPUT="论文/figs/6/mrcz-reordering-ablation.pdf"
+DEFAULT_OUTPUT="论文/figs/6/mrcz-reordering-ablation.png"
 DEFAULT_SUMMARY="results/mrcz_reordering/summary.csv"
+
+X_TICK_GAP_PT=1.5
+Y_TICK_GAP_PT=1.0
+X_LABEL_GAP_PT=1.0
+Y_LABEL_GAP_PT=1.0
+PLOT_ASPECT_RATIOS=panel_aspect_ratios(1,2)
+PANEL_GAP_PT=9.0
+LEFT_EDGE_GAP_PT=3.0
+RIGHT_EDGE_GAP_PT=3.0
+PANEL_CAPTION_GAP_PT=2.0
+BOTTOM_PT=40.0
+VERTICAL_EDGE_GAP_PT=3.0
 
 def parse_args():
     parser=argparse.ArgumentParser()
@@ -68,20 +82,20 @@ def main():
     }
     write_summary(args.summary,element_br,mode_br,throughputs)
 
-    apply_paper_style(font_size=8.4,serif_fonts=["STIXGeneral"])
-    fig=plt.figure(figsize=(3.5,1.65))
-    rd_ax=fig.add_axes([0.12,0.28,0.25,0.50])
-    throughput_ax=fig.add_axes([0.48,0.28,0.49,0.50])
+    apply_paper_style(serif_fonts=["STIXGeneral"])
+    spec=PaperFigureSpec.column(1)
+    fig,axes=plt.subplots(1,2,figsize=spec.size_in,dpi=spec.dpi)
+    rd_ax,throughput_ax=axes
     axes=(rd_ax,throughput_ax)
     colors={"Element-major":"#ff5a5a","Mode-major":"#3b7ded"}
     rd_ax.plot(element_br,element_psnr,color=colors["Element-major"],linewidth=0.9,label="Element-major")
     rd_ax.plot(mode_br,mode_psnr,color=colors["Mode-major"],linewidth=0.9,label="Mode-major")
-    rd_ax.set_xlabel("Bit rate",labelpad=1)
-    rd_ax.set_ylabel("PSNR (dB)",labelpad=1)
+    rd_ax.set_xlabel("Bit rate")
+    rd_ax.set_ylabel("PSNR (dB)")
     rd_ax.set_xlim(0,3.0)
     rd_ax.set_ylim(60,135)
     rd_ax.set_xticks([0,1,2,3])
-    rd_ax.legend(loc="lower center",bbox_to_anchor=(0.5,1.02),ncol=1,frameon=False,handlelength=1.0,handletextpad=0.25,labelspacing=0.05,borderaxespad=0)
+    rd_legend_handles,rd_legend_labels=rd_ax.get_legend_handles_labels()
 
     labels=list(throughputs)
     x=np.arange(len(labels))
@@ -90,20 +104,23 @@ def main():
     decompression_mean=np.asarray([throughputs[label][1].mean() for label in labels])
     throughput_ax.bar(x-width/2,compression_mean,width,color="#e3912e",edgecolor="black",linewidth=0.4,label="Compression")
     throughput_ax.bar(x+width/2,decompression_mean,width,color="#4c91cf",edgecolor="black",linewidth=0.4,label="Decompression")
-    throughput_ax.set_ylabel("Throughput\n(MB/s per CPU)",labelpad=1)
+    throughput_ax.set_ylabel("Throughput\n(MB/s per CPU)")
     throughput_ax.set_xticks(x)
     throughput_ax.set_xticklabels(["Original","Direct\ntranspose","Tiled\ntranspose"])
     throughput_ax.set_ylim(0,70)
-    throughput_ax.legend(loc="lower center",bbox_to_anchor=(0.5,1.02),ncol=2,frameon=False,handlelength=0.7,handletextpad=0.2,columnspacing=0.55,borderaxespad=0)
+    throughput_legend_handles,throughput_legend_labels=throughput_ax.get_legend_handles_labels()
 
     for ax in axes:
         ax.grid(True,axis="y",linestyle="--",linewidth=0.4,alpha=0.35)
-        style_plot_axis(ax,tick_length=2,tick_width=0.5,tick_pad=1.5,spine_width=0.6)
-    for label,ax in zip(("(a) Rate–Distortion","(b) Throughput"),axes):
-        position=ax.get_position()
-        fig.text((position.x0+position.x1)/2,0.04,label,ha="center",va="bottom",fontsize=8)
+        style_plot_axis(ax,tick_length=2,tick_width=0.5,x_tick_pad=X_TICK_GAP_PT,y_tick_pad=Y_TICK_GAP_PT,x_label_pad=X_LABEL_GAP_PT,y_label_pad=Y_LABEL_GAP_PT,spine_width=0.6)
+    layout_panel_row(fig,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PT,panel_gap_pt=PANEL_GAP_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    legend_above(rd_ax,rd_legend_handles,rd_legend_labels,ncol=1,frameon=False,handlelength=1.0,handletextpad=0.25)
+    legend_above(throughput_ax,throughput_legend_handles,throughput_legend_labels,ncol=2,frameon=False,handlelength=0.7,handletextpad=0.2,columnspacing=0.55)
+    align_xlabels(fig,axes,gap_pt=X_LABEL_GAP_PT)
+    add_panel_captions(fig,axes,["(a) Rate–Distortion","(b) Throughput"],gap_pt=PANEL_CAPTION_GAP_PT)
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
-    fig.savefig(args.output)
+    save_paper_png_vertical_crop(fig,args.output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    plt.close(fig)
 
 if __name__=="__main__":
     main()
