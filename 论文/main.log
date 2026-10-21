@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 19:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  20 OCT 2026 20:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -467,11 +467,11 @@ ptm/m/n/10 the
 <figs/raster300/mrcz-diagram.png, id=48, 251.9814pt x 88.6512pt>
 File: figs/raster300/mrcz-diagram.png Graphic file (type png)
 <use figs/raster300/mrcz-diagram.png>
-Package pdftex.def Info: figs/raster300/mrcz-diagram.png  used on input line 11
+Package pdftex.def Info: figs/raster300/mrcz-diagram.png  used on input line 13
 .
 (pdftex.def)             Requested size: 252.0pt x 88.66179pt.
 
-Underfull \hbox (badness 1377) in paragraph at lines 18--19
+Underfull \hbox (badness 1377) in paragraph at lines 20--21
 []\OT1/ptm/m/n/10 Finally, MRCZ forms its bit-stream from two sym-bol
  []
 
@@ -480,22 +480,23 @@ Underfull \hbox (badness 1377) in paragraph at lines 18--19
 File: figs/6/transform-comparison-stacked.pdf Graphic file (type pdf)
 <use figs/6/transform-comparison-stacked.pdf>
 Package pdftex.def Info: figs/6/transform-comparison-stacked.pdf  used on input
- line 30.
+ line 32.
 (pdftex.def)             Requested size: 252.0pt x 129.98969pt.
 <figs/6/transform-mode-statistics.pdf, id=53, 265.2309pt x 112.0185pt>
 File: figs/6/transform-mode-statistics.pdf Graphic file (type pdf)
 <use figs/6/transform-mode-statistics.pdf>
 Package pdftex.def Info: figs/6/transform-mode-statistics.pdf  used on input li
-ne 39.
+ne 41.
 (pdftex.def)             Requested size: 252.0pt x 106.43404pt.
-<figs/6/mrcz-reordering-ablation.pdf, id=54, 252.945pt x 119.2455pt>
+ [7 <./figs/6/transform-comparison-stacked.pdf> <./figs/6/transform-mode-statis
+tics.pdf>]
+<figs/6/mrcz-reordering-ablation.pdf, id=88, 252.945pt x 119.2455pt>
 File: figs/6/mrcz-reordering-ablation.pdf Graphic file (type pdf)
 <use figs/6/mrcz-reordering-ablation.pdf>
 Package pdftex.def Info: figs/6/mrcz-reordering-ablation.pdf  used on input lin
-e 60.
+e 62.
 (pdftex.def)             Requested size: 252.0pt x 118.80304pt.
- [7 <./figs/6/transform-comparison-stacked.pdf> <./figs/6/transform-mode-statis
-tics.pdf>])
+)
 (./7.evaluation.tex
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 .
@@ -551,11 +552,7 @@ Underfull \hbox (badness 2486) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Experiments on 28 non-constant fields from NekRS,
  []
 
-)
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-(./main.bbl [12 <./figs/raster300/visualization-cr33.png (PNG copy)>])
+) (./main.bbl [12 <./figs/raster300/visualization-cr33.png (PNG copy)>])
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -606,7 +603,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 3812530 bytes).
+Output written on main.pdf (13 pages, 3812701 bytes).
 PDF statistics:
  230 PDF objects out of 1000 (max. 8388607)
  139 compressed objects within 2 object streams
