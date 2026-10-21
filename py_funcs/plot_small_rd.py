@@ -1,9 +1,20 @@
 import csv,math,os
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import LogLocator,MaxNLocator
-from plot_style import METHOD_COLORS,PAPER_TEXT_WIDTH_IN,apply_paper_style,save_svg,style_plot_axis
+from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
+from plot_style import DEFAULT_PANEL_ASPECT_RATIO,METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,add_shared_xlabel,apply_paper_style,save_paper_png_vertical_crop,save_svg,style_plot_axis
 
-apply_paper_style("mrcz-small-rd",serif_fonts=["STIXGeneral"])
+PANEL_ASPECT_RATIO=DEFAULT_PANEL_ASPECT_RATIO
+PANEL_GAP_PT=4.0
+ROW_CONTENT_GAP_PT=6.0
+PANEL_CAPTION_GAP_PT=1.0
+SHARED_XLABEL_GAP_PT=2.0
+SHARED_YLABEL_GAP_PT=1.0
+LEGEND_GAP_PT=1.0
+OUTER_EDGE_GAP_PT=3.0
+BOTTOM_PLOT_PT=30.0
+VERTICAL_EDGE_GAP_PT=3.0
 
 array_layouts=["1D","2D","3D-fused","3D-per-element","4D"]
 layouts=array_layouts+["4D+GLL"]
@@ -28,8 +39,9 @@ def read_method_rows(result_dir,relative_path,method,default_rows):
     return read_rows(path),stored_method
 
 def prepare_axes():
-    figure,axes=plt.subplots(3,6,figsize=(PAPER_TEXT_WIDTH_IN,3.85))
-    return figure,axes.flat
+    spec=PaperFigureSpec.text(1)
+    figure,axes=plt.subplots(3,6,figsize=spec.size_in,dpi=spec.dpi)
+    return figure,axes,spec
 
 def method_style(method):
     if method in ["MRCZ","FDWZ"]:
@@ -65,27 +77,107 @@ def focus_rd_axes(axis,method_points):
     axis.set_xlim(br_left,br_right)
     axis.set_ylim(psnr_bottom-psnr_padding,psnr_top+psnr_padding)
 
-def finish_figure(figure,xlabel,ylabel,output_path,paper_output):
+def visible_bboxes(artists,renderer):
+    return [artist.get_window_extent(renderer) for artist in artists if artist.get_visible() and artist.get_text()]
+
+def layout_grid(figure,axes,ylabel_width_pt):
+    figure_width_pt=figure.get_figwidth()*MPL_POINTS_PER_INCH
+    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
+    left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT
+    for _ in range(2):
+        figure.canvas.draw()
+        renderer=figure.canvas.get_renderer()
+        decoration_widths=[]
+        right_decoration_width_pt=0
+        for column in range(axes.shape[1]):
+            column_left_width_pt=0
+            for axis in axes[:,column]:
+                axis_bbox=axis.get_window_extent(renderer)
+                candidates=visible_bboxes(axis.get_xticklabels(which="both"),renderer)+visible_bboxes(axis.get_yticklabels(which="both"),renderer)
+                leftmost=min((bbox.x0 for bbox in candidates),default=axis_bbox.x0)
+                column_left_width_pt=max(column_left_width_pt,max(0,(axis_bbox.x0-leftmost)*MPL_POINTS_PER_INCH/figure.dpi))
+                if column==axes.shape[1]-1:
+                    rightmost=max((bbox.x1 for bbox in candidates),default=axis_bbox.x1)
+                    right_decoration_width_pt=max(right_decoration_width_pt,max(0,(rightmost-axis_bbox.x1)*MPL_POINTS_PER_INCH/figure.dpi))
+            decoration_widths.append(column_left_width_pt)
+        available_width_pt=figure_width_pt-left_edge_gap_pt-OUTER_EDGE_GAP_PT-sum(decoration_widths)-right_decoration_width_pt-(axes.shape[1]-1)*PANEL_GAP_PT
+        plot_width_pt=available_width_pt/axes.shape[1]
+        plot_height_pt=plot_width_pt/PANEL_ASPECT_RATIO
+        if plot_height_pt<=0:raise ValueError("Panel decorations and gaps leave no width for plot areas")
+        left_pt=left_edge_gap_pt
+        for column,decoration_width_pt in enumerate(decoration_widths):
+            left_pt+=decoration_width_pt
+            for row in range(axes.shape[0]):
+                bottom_pt=BOTTOM_PLOT_PT+(axes.shape[0]-1-row)*(plot_height_pt+40)
+                axes[row,column].set_position([left_pt/figure_width_pt,bottom_pt/figure_height_pt,plot_width_pt/figure_width_pt,plot_height_pt/figure_height_pt])
+            left_pt+=plot_width_pt
+            if column<axes.shape[1]-1:left_pt+=PANEL_GAP_PT
+    figure.canvas.draw()
+    renderer=figure.canvas.get_renderer()
+    below_heights_pt=[]
+    for row in range(axes.shape[0]):
+        row_height_pt=0
+        for axis in axes[row,:]:
+            axis_bbox=axis.get_window_extent(renderer)
+            candidates=visible_bboxes(axis.get_xticklabels(which="both"),renderer)+[axis.xaxis.label.get_window_extent(renderer)]
+            bottom=min(bbox.y0 for bbox in candidates)
+            row_height_pt=max(row_height_pt,(axis_bbox.y0-bottom)*MPL_POINTS_PER_INCH/figure.dpi)
+        below_heights_pt.append(row_height_pt)
+    row_bottoms_pt=[0.0]*axes.shape[0]
+    row_bottoms_pt[-1]=BOTTOM_PLOT_PT
+    for row in range(axes.shape[0]-2,-1,-1):row_bottoms_pt[row]=row_bottoms_pt[row+1]+plot_height_pt+ROW_CONTENT_GAP_PT+below_heights_pt[row]
+    for row in range(axes.shape[0]):
+        for axis in axes[row,:]:
+            position=axis.get_position()
+            axis.set_position([position.x0,row_bottoms_pt[row]/figure_height_pt,position.width,plot_height_pt/figure_height_pt])
+    figure.canvas.draw()
+    return plot_height_pt
+
+def place_shared_ylabel(figure,axes,label):
+    figure.canvas.draw()
+    renderer=figure.canvas.get_renderer()
+    tick_left=min(bbox.x0 for axis in axes[:,0] for bbox in visible_bboxes(axis.get_yticklabels(which="both"),renderer))
+    grid_bottom=min(axis.get_position().y0 for axis in axes.flat)
+    grid_top=max(axis.get_position().y1 for axis in axes.flat)
+    text=figure.text(0,(grid_bottom+grid_top)/2,label,rotation=90,ha="center",va="center")
+    figure.canvas.draw()
+    bbox=text.get_window_extent(figure.canvas.get_renderer())
+    center_x=tick_left-SHARED_YLABEL_GAP_PT*figure.dpi/MPL_POINTS_PER_INCH-bbox.width/2
+    text.set_x(center_x/figure.bbox.width)
+    figure.canvas.draw()
+    return text
+
+def finish_figure(figure,axes,spec,xlabel,ylabel,output_path,paper_output):
     family_handles=[]
     for family in ["MRCZ","FDWZ","SZ3","SZ2","QoZ","ZFP","SPERR","MGARD"]:
         family_handles.append(plt.Line2D([0],[0],color=family_colors[family],linestyle="-",linewidth=0.8,label="MGARD-X" if family=="MGARD" else family))
     layout_handles=[plt.Line2D([0],[0],color="#4b5563",linestyle=layout_styles[layout],linewidth=0.8,label=layout) for layout in layouts]
-    figure.legend(handles=family_handles,loc="upper center",ncol=8,frameon=False,bbox_to_anchor=(0.5,0.995),handlelength=1.0,handletextpad=0.25,columnspacing=0.6,borderaxespad=0)
-    figure.legend(handles=layout_handles,loc="upper center",ncol=6,frameon=False,bbox_to_anchor=(0.5,0.945),handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0)
-    figure.supxlabel(xlabel,x=0.53,y=0.025)
-    figure.supylabel(ylabel,x=0.008,y=0.48)
-    figure.tight_layout(rect=(0.015,0.045,1,0.88),pad=0.25,w_pad=0.2,h_pad=0.55)
+    ylabel_artist=figure.text(0,0,ylabel,rotation=90,ha="center",va="center")
+    figure.canvas.draw()
+    ylabel_width_pt=ylabel_artist.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
+    ylabel_artist.remove()
+    layout_grid(figure,axes,ylabel_width_pt)
+    shared_xlabel=add_shared_xlabel(figure,axes[-1,:],xlabel,gap_pt=SHARED_XLABEL_GAP_PT,source_artists=[axis.xaxis.label for axis in axes[-1,:]])
+    shared_ylabel=place_shared_ylabel(figure,axes,ylabel)
+    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
+    top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
+    layout_legend=figure.legend(handles=layout_handles,loc="lower center",ncol=6,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),handlelength=1.2,handletextpad=0.25,columnspacing=0.65,borderaxespad=0,borderpad=0)
+    figure.canvas.draw()
+    layout_top_pt=layout_legend.get_window_extent(figure.canvas.get_renderer()).y1*MPL_POINTS_PER_INCH/figure.dpi
+    family_legend=figure.legend(handles=family_handles,loc="lower center",ncol=8,frameon=False,bbox_to_anchor=(0.5,(layout_top_pt+LEGEND_GAP_PT)/figure_height_pt),handlelength=1.0,handletextpad=0.25,columnspacing=0.6,borderaxespad=0,borderpad=0)
+    figure.canvas.draw()
     save_svg(figure,output_path,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
-    figure.savefig(paper_output,format="png",dpi=300)
+    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:
         figure.savefig(os.path.join(preview_dir,"small_rd.png"),format="png",dpi=160,bbox_inches="tight")
     plt.close(figure)
 
 def plot_rd(result_dir):
-    figure,axes=prepare_axes()
-    for panel_index,(axis,(title,relative_path)) in enumerate(zip(axes,fields)):
+    apply_paper_style("mrcz-small-rd",serif_fonts=["STIXGeneral"])
+    figure,axes,spec=prepare_axes()
+    for panel_index,(axis,(title,relative_path)) in enumerate(zip(axes.flat,fields)):
         rows=read_rows(os.path.join(result_dir,relative_path))
         method_points={}
         for method in methods:
@@ -95,14 +187,16 @@ def plot_rd(result_dir):
             color,linestyle,linewidth=method_style(method)
             axis.plot([point[0] for point in points],[point[1] for point in points],color=color,linestyle=linestyle,linewidth=linewidth,zorder=1)
         focus_rd_axes(axis,method_points)
-        axis.set_xlabel(f"({chr(ord('a')+panel_index)}) {title}",labelpad=1.5)
+        axis.set_xlabel(f"({chr(ord('a')+panel_index)}) {title}")
         axis.grid(True,which="major",linestyle="--",linewidth=0.35,alpha=0.35)
-        axis.xaxis.set_major_locator(LogLocator(base=10,numticks=4))
+        log_locator=LogLocator(base=10,numticks=4)
+        x_left,x_right=axis.get_xlim()
+        axis.xaxis.set_major_locator(FixedLocator([tick for tick in log_locator.tick_values(x_left,x_right) if x_left<=tick<=x_right]))
+        axis.xaxis.set_minor_locator(NullLocator())
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        style_plot_axis(axis)
-        axis.tick_params(axis="x",which="minor",length=0)
+        style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    finish_figure(figure,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.png"))
+    finish_figure(figure,axes,spec,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.png"))
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
