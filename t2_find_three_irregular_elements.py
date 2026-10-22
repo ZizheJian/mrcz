@@ -6,8 +6,8 @@
 # 3. 如果需要重新搜索，将selected_element_ids设为None。程序顺序读取element，用量化后
 #    的面心代表面，并在每加入一个element后检查是否形成三角邻接关系，找到后立即停止。
 #    面心相同不一定严格表示两个面完全相同，因此应通过输出图人工确认搜索结果。
-# 4. 运行python3 t2_find_three_irregular_elements.py。图片写入fig目录：three_elements.html
-#    显示三个element，three_elements2.html显示中间的element，three_elements_ref.html
+# 4. 运行python3 t2_find_three_irregular_elements.py。图片写入fig目录：three_elements_(a).html
+#    显示三个element，three_elements_(b).html显示中间的element，three_elements_(c).html
 #    显示黑色reference element。
 #
 # 资源估计：
@@ -136,7 +136,7 @@ fig.update_layout(scene_camera=dict(eye=dict(x=0.6,y=2,z=0.7)),
     plot_bgcolor="rgba(0,0,0,0)",
     margin=dict(l=0,r=0,t=0,b=0)
 )
-fig.write_html("fig/three_elements.html")
+fig.write_html("fig/three_elements_(a).html")
 
 ######## 第二张图，主要显示一个element靠前的三个面的点 ########
 fig=go.Figure()
@@ -166,7 +166,7 @@ fig.update_layout(scene_camera=dict(eye=dict(x=0.6,y=2,z=2)),
     plot_bgcolor="rgba(0,0,0,0)",
     margin=dict(l=0,r=0,t=0,b=0)
 )
-fig.write_html(f"fig/three_elements2.html")
+fig.write_html("fig/three_elements_(b).html")
 
 ######## 第三张图，同样的方法画reference element ########
 gll=np.concatenate(([-1],np.polynomial.legendre.Legendre.basis(n-1).deriv().roots(),[1]))[::-1]
@@ -197,4 +197,4 @@ fig.update_layout(scene_camera=dict(eye=dict(x=1.5,y=2,z=1.5)),
     plot_bgcolor="rgba(0,0,0,0)",
     margin=dict(l=0,r=0,t=0,b=0)
 )
-fig.write_html("fig/three_elements_ref.html")
+fig.write_html("fig/three_elements_(c).html")
