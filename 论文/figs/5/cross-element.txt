@@ -111,6 +111,8 @@ normalStencilLine = Line[normalStencilPoints];
 (*将每个球心之间的线段两端截短到对应球面*)
 referenceMarkerPoints =
   Join[facePredictionPoints, normalPredictionPoints];
+facePredictionTubeRadius = 0.0075;
+normalPredictionTubeRadius = 0.0075;
 markerRadius[point_] :=
   Which[Norm[point - targetPoint] < 10^-12, 0.038,
    AnyTrue[referenceMarkerPoints, Norm[point - #] < 10^-12 &], 0.028,
@@ -118,20 +120,32 @@ markerRadius[point_] :=
 trimmedSegment[p1_, r1_, p2_, r2_] :=
   With[{direction = Normalize[p2 - p1]},
    Line[{p1 + r1*direction, p2 - r2*direction}]];
+trimmedTube[p1_, r1_, p2_, r2_, tubeRadius_] :=
+  With[{direction = Normalize[p2 - p1], clearance = tubeRadius/3},
+   Tube[{p1 + (r1 + clearance)*direction,
+     p2 - (r2 + clearance)*direction}, tubeRadius]];
 trimmedStencilSegments[points_] :=
   MapThread[
    trimmedSegment, {Most[points], markerRadius /@ Most[points],
     Rest[points], markerRadius /@ Rest[points]}];
+trimmedStencilTubes[points_, tubeRadius_] :=
+  MapThread[
+   trimmedTube, {Most[points], markerRadius /@ Most[points],
+    Rest[points], markerRadius /@ Rest[points],
+    ConstantArray[tubeRadius, Length[points] - 1]}];
 facePredictionPointSequences =
   facePredictionLines /. Line[points_] :> points;
 faceBackgroundPointSequences =
   faceBackgroundLines /. Line[points_] :> points;
-trimmedFacePredictionLines =
-  Flatten[trimmedStencilSegments /@ facePredictionPointSequences];
+trimmedFacePredictionTubes =
+  Flatten[
+   trimmedStencilTubes[#, facePredictionTubeRadius] & /@
+    facePredictionPointSequences];
 trimmedFaceBackgroundLines =
   Flatten[trimmedStencilSegments /@ faceBackgroundPointSequences];
-trimmedNormalStencilLines =
-  trimmedStencilSegments[normalStencilPoints];
+trimmedNormalStencilTubes =
+  trimmedStencilTubes[normalStencilPoints,
+   normalPredictionTubeRadius];
 
 (*显式给出所有可见几何的真实三维边界，使自动取景将Sphere半径计入包围盒*)
 facePatchPoints = transformA /@ facePatchReferencePoints;
@@ -186,6 +200,8 @@ viewTarget = targetPoint;
 viewPosition = viewTarget + viewDistance*Normalize[viewDirection];
 (*将-X法向固定为画面向上的方向*)
 viewUpDirection = {-1, 0, 0};
+viewProjection = "Orthographic";
+viewAngle = All;
 
 (*绘图*)
 predictionStencilPlot =
@@ -196,11 +212,10 @@ predictionStencilPlot =
      facePatchPolygons},(*不穿过目标的面内背景网格线*){GrayLevel[0.72],
      AbsoluteThickness[1], CapForm["Butt"],
      trimmedFaceBackgroundLines},(*穿过目标的两个面内cubic prediction \
-stencils*){interfaceReferenceColor, AbsoluteThickness[1.8],
-     CapForm["Butt"],
-     trimmedFacePredictionLines},(*连接两侧四个参考点和目标点的法向线*){RGBColor[0.65, 0.48,
-      0.05], AbsoluteThickness[1.8], CapForm["Butt"],
-     trimmedNormalStencilLines},(*公共面上参与两个切向cubic预测的8个参考点*){\
+stencils*){interfaceReferenceColor,
+     trimmedFacePredictionTubes},(*连接两侧四个参考点和目标点的法向线*){RGBColor[0.65, 0.48,
+      0.05],
+     trimmedNormalStencilTubes},(*公共面上参与两个切向cubic预测的8个参考点*){\
 interfaceReferenceColor, Specularity[White, 18],
      Sphere[#, 0.028] & /@
       facePredictionPoints},(*跨边界cubic预测使用的4个参考点*){\
@@ -210,8 +225,8 @@ crossBoundaryReferenceColor, Specularity[White, 18],
      Specularity[White, 18], Sphere[targetPoint, 0.038]}},
    Boxed -> False, Axes -> False,
    ViewVector -> {viewPosition, viewTarget},
-   ViewVertical -> viewUpDirection, ViewProjection -> "Orthographic",
-   ViewAngle -> All,
+   ViewVertical -> viewUpDirection, ViewProjection -> viewProjection,
+   ViewAngle -> viewAngle,
    SphericalRegion -> True, PlotRange -> All,
    PlotRangeClipping -> False, ImagePadding -> 30,
    ImageSize -> Large,
@@ -219,7 +234,7 @@ crossBoundaryReferenceColor, Specularity[White, 18],
       GrayLevel[0.72],
       ImageScaled[{0.20, 0.80, 2.0}]}, {"Directional",
       GrayLevel[0.32], ImageScaled[{0.80, 0.20, 2.0}]}},
-   Method -> {"SpherePoints" -> 60},
+   Method -> {"SpherePoints" -> 96},
    Background -> White];
 
 (*直接导出PNG到当前Notebook所在目录*)

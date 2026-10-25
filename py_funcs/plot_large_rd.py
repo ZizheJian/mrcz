@@ -3,9 +3,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
-from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PaperFigureSpec,RD_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
+from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,RD_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
 
-PANEL_GAP_PT=4.0
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
 SHARED_XLABEL_GAP_PT=2.0
@@ -94,7 +93,7 @@ def plot_combined(result_dir,project_root):
     figure.canvas.draw()
     ylabel_width_pt=provisional_ylabel.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
     provisional_ylabel.remove()
-    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
     add_shared_xlabel(figure,axes[-1,:],"Bit rate (log scale)",gap_pt=SHARED_XLABEL_GAP_PT,source_artists=[axis.xaxis.label for axis in axes[-1,:]])
     figure.canvas.draw()
     renderer=figure.canvas.get_renderer()

@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
-from plot_style import MPL_POINTS_PER_INCH,PaperFigureSpec,TRANSFER_METHODS,add_panel_captions,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
+from plot_style import MPL_POINTS_PER_INCH,PANEL_GAP_WITHOUT_Y_DECORATION_PT,PaperFigureSpec,TRANSFER_METHODS,add_panel_captions,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
 
 apply_paper_style("mrcz-end-to-end",serif_fonts=["STIXGeneral"])
 
@@ -12,7 +12,6 @@ components=[("Compression Time","Compression","#e3427a"),("Transfer Time Median"
 titles={"pb0":"(a) Dataset 7","jicf0":"(b) Dataset 8"}
 x_limits={"pb0":(0,78),"jicf0":(0,230)}
 PLOT_ASPECT_RATIOS=(1.0,1.0)
-PANEL_GAP_PT=9.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=34.0
@@ -56,7 +55,7 @@ def main():
     axes[0].invert_yaxis()
     axes[1].tick_params(axis="y",labelleft=False)
     handles=[Patch(facecolor=color,edgecolor="black",linewidth=0.45,label=label) for _,label,color in components]
-    layout_panel_row(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    layout_panel_row(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITHOUT_Y_DECORATION_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     add_panel_captions(figure,axes,[titles[dataset] for dataset in ("pb0","jicf0")])
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
     top_plot_pt=max(axis.get_position().y1 for axis in axes)*figure_height_pt

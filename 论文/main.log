@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  21 OCT 2026 15:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020 - Spack) (preloaded format=pdflatex 2021.10.6)  25 OCT 2026 11:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -439,11 +439,11 @@ LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 4
 x/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-<figs/5/fdwz-tree-ablation.png, id=37, 251.9814pt x 104.0688pt>
+<figs/5/fdwz-tree-ablation.png, id=37, 251.9814pt x 104.5506pt>
 File: figs/5/fdwz-tree-ablation.png Graphic file (type png)
 <use figs/5/fdwz-tree-ablation.png>
 Package pdftex.def Info: figs/5/fdwz-tree-ablation.png  used on input line 67.
-(pdftex.def)             Requested size: 252.0pt x 104.08124pt.
+(pdftex.def)             Requested size: 252.0pt x 104.5631pt.
 <figs/raster300/cross-element.png, id=38, 251.9814pt x 77.5698pt>
 File: figs/raster300/cross-element.png Graphic file (type png)
 <use figs/raster300/cross-element.png>
@@ -482,20 +482,20 @@ File: figs/6/transform-comparison-stacked.png Graphic file (type png)
 Package pdftex.def Info: figs/6/transform-comparison-stacked.png  used on input
  line 32.
 (pdftex.def)             Requested size: 252.0pt x 121.66904pt.
-<figs/6/transform-mode-statistics.png, id=54, 251.9814pt x 103.3461pt>
+<figs/6/transform-mode-statistics.png, id=54, 251.9814pt x 104.3097pt>
 File: figs/6/transform-mode-statistics.png Graphic file (type png)
 <use figs/6/transform-mode-statistics.png>
 Package pdftex.def Info: figs/6/transform-mode-statistics.png  used on input li
 ne 41.
-(pdftex.def)             Requested size: 252.0pt x 103.35844pt.
+(pdftex.def)             Requested size: 252.0pt x 104.32216pt.
  [7 <./figs/6/transform-comparison-stacked.png> <./figs/6/transform-mode-statis
 tics.png>]
-<figs/6/mrcz-reordering-ablation.png, id=61, 251.9814pt x 101.4189pt>
+<figs/6/mrcz-reordering-ablation.png, id=61, 251.9814pt x 101.6598pt>
 File: figs/6/mrcz-reordering-ablation.png Graphic file (type png)
 <use figs/6/mrcz-reordering-ablation.png>
 Package pdftex.def Info: figs/6/mrcz-reordering-ablation.png  used on input lin
 e 62.
-(pdftex.def)             Requested size: 252.0pt x 101.43102pt.
+(pdftex.def)             Requested size: 252.0pt x 101.67195pt.
 ) (./7.evaluation.tex
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
 .
@@ -528,11 +528,11 @@ Package pdftex.def Info: figs/7/combined-throughput.png  used on input line 101
 .
 (pdftex.def)             Requested size: 486.48999pt x 199.26941pt.
  [10]
-<figs/7/e2e_time.png, id=79, 251.9814pt x 131.7723pt>
+<figs/7/e2e_time.png, id=79, 251.9814pt x 135.3858pt>
 File: figs/7/e2e_time.png Graphic file (type png)
 <use figs/7/e2e_time.png>
 Package pdftex.def Info: figs/7/e2e_time.png  used on input line 116.
-(pdftex.def)             Requested size: 252.0pt x 131.78804pt.
+(pdftex.def)             Requested size: 252.0pt x 135.402pt.
 <figs/7/transfer-size-time.png, id=80, 251.9814pt x 114.6684pt>
 File: figs/7/transfer-size-time.png Graphic file (type png)
 <use figs/7/transfer-size-time.png>
@@ -545,9 +545,11 @@ File: figs/7/visualization-cr33.png Graphic file (type png)
 Package pdftex.def Info: figs/7/visualization-cr33.png  used on input line 134.
 
 (pdftex.def)             Requested size: 516.0pt x 170.15541pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
  [11 <./figs/7/combined-throughput.png> <./figs/7/e2e_time.png> <./figs/7/trans
-fer-size-time.png>])
-(./8.conclusion.tex
+fer-size-time.png>]) (./8.conclusion.tex
 Underfull \hbox (badness 2486) in paragraph at lines 7--8
 []\OT1/ptm/m/n/10 Experiments on 28 non-constant fields from NekRS,
  []
@@ -603,7 +605,7 @@ er/ucrr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf
 nvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></apps/spack/anvil/apps/texlive/20200406-gcc-11.2.0-eeavxnm/texmf-di
 st/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 4579504 bytes).
+Output written on main.pdf (13 pages, 4583949 bytes).
 PDF statistics:
  160 PDF objects out of 1000 (max. 8388607)
  93 compressed objects within 1 object stream

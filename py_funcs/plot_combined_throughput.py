@@ -5,7 +5,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator,NullLocator
 
-from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,TIMING_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
+from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,METHOD_COLORS,MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,TIMING_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
 
 apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 
@@ -15,7 +15,6 @@ tasks=("Compression","Decompression")
 datasets=[("pb0",7,8,64,[1e-2,1e-3,1e-4,1e-5,1e-6]),("jicf0",8,16,128,[1e-4,1e-5,1e-6,1e-7,1e-8])]
 PLOT_ASPECT_RATIOS=(2.0,2.0,2.0,2.0)
 WIDTH_FRACTION=2*math.sqrt(2)/3
-PANEL_GAP_PT=4.0
 ROW_CONTENT_GAP_PT=6.0
 OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=42.0
@@ -148,7 +147,7 @@ def main():
     figure.canvas.draw()
     ylabel_width_pt=provisional_ylabel.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
     provisional_ylabel.remove()
-    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
+    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
     add_shared_xlabel(figure,axes[-1,:],"Relative Error Bound",source_artists=[axis.xaxis.label for axis in axes[-1,:]])
     place_shared_ylabel(figure,axes,"Aggregate Throughput (GiB/s)")
     figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
