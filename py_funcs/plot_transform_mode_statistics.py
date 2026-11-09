@@ -16,7 +16,7 @@ sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from py_funcs.read_nekrs_header import read_nekrs_header
 
 DEFAULT_DATA_PATH="/anvil/projects/x-cis240192/x-zjian1-in-cis240192/element-data/hyuan/pb0.f00001"
-DEFAULT_OUTPUT="论文/figs/6/transform-mode-statistics.png"
+DEFAULT_OUTPUT="overleaf/figs/6/transform-mode-statistics.png"
 DEFAULT_CSV_OUTPUT="results/RD/transform_mode_statistics.csv"
 DEFAULT_STREAM_ROOT="results/fig9/stream_breakdown"
 

@@ -141,7 +141,7 @@ def plot_rd(result_dir):
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
         style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    finish_figure(figure,axes,spec,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"论文","figs","7","small-rd.png"))
+    finish_figure(figure,axes,spec,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"overleaf","figs","7","small-rd.png"))
 
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

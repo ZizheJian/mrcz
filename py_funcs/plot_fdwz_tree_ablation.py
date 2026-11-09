@@ -7,7 +7,7 @@ from plot_style import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captio
 project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tree_count_paths=[os.path.join(project_root,f"results/RD/pb0_fdwz_tree_count/tree{tree_num}/pb0.f00001_P.csv") for tree_num in range(1,6)]
 prediction_error_distribution_path=os.path.join(project_root,"results/RD/pb0_fdwz_tree_prediction_error_distribution_1e-3.csv")
-canonical_output_path=os.path.join(project_root,"论文/figs/5/fdwz-tree-ablation.png")
+canonical_output_path=os.path.join(project_root,"overleaf/figs/5/fdwz-tree-ablation.png")
 
 PLOT_ASPECT_RATIOS=(2.4,1.2)
 LEFT_EDGE_GAP_PT=3.0

@@ -182,9 +182,6 @@ python3 py_funcs/plot_pb0_cr33_visualization.py --compose-only
 python3 py_funcs/rasterize_paper_figures.py
 ```
 
-论文源码和最终PDF位于`论文/`：
-
-- [`论文/main.tex`](论文/main.tex)
-- [`论文/main.pdf`](论文/main.pdf)
+论文源码位于`overleaf/`，它是Overleaf项目的git克隆，不纳入本仓库。在其中运行`make`可用texlive/20200406编译出`overleaf/main.pdf`。
 
 最终性能数字、消融结果、实验平台和统计口径以论文为准，README不再重复维护这些内容。

@@ -1,9 +1,0 @@
-\begin{abstract}
-
-High-order finite and spectral element simulations can produce large volumes of data that are costly to store and transfer. Error-bounded lossy compression offers a potential way to reduce these costs while controlling reconstruction error. However, existing compressors are not well suited to high-order element data, whose elements have irregular connectivity but share a common arrangement of points. Specialized approaches may not provide strict pointwise error guarantees, while general-purpose error-bounded compressors do not jointly exploit geometry within elements and statistical regularities across elements.
-
-We introduce two complementary error-bounded compressors to address these limitations. FDWZ combines distance-weighted multilevel interpolation within each high-order element with a multi-tree Huffman encoding strategy to improve compression ratio while maintaining high throughput. MRCZ represents each element with transform coefficients and residuals, then groups corresponding coefficients across elements for more effective lossless coding.
-
-We evaluate FDWZ and MRCZ against SZ3, SZ2, QoZ, ZFP, SPERR, and MGARD-X on eight high-order element datasets. At matched PSNRs on the large-scale datasets, FDWZ improves the compression ratio over the best-performing baseline by 77.6\% on average. The corresponding gain of MRCZ over FDWZ is 104.8\%, making it suitable when storage reduction is the main concern. FDWZ ranks among the two fastest methods in 35 of 40 throughput cases. In end-to-end data-management experiments using Globus to transfer compressed fields between computing facilities, FDWZ matches or outperforms the fastest baseline, reducing total time by up to 19.2\%.
-
-\end{abstract}

@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument("--alpha-csv",default="results/fig8/pb0_fig8_alpha_sweep.csv")
     parser.add_argument("--rd-root",default="results/fig8/rd")
     parser.add_argument("--rd-summary",default="results/fig8/pb0_fig8_rd.csv")
-    parser.add_argument("--output",default="论文/figs/6/transform-comparison-stacked.png")
+    parser.add_argument("--output",default="overleaf/figs/6/transform-comparison-stacked.png")
     return parser.parse_args()
 
 def read_alpha_curves(root):

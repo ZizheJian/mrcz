@@ -1,9 +1,0 @@
-\section{Conclusion and Future Work}\label{sec:conclusion}
-
-High-order finite and spectral element data combine local tensor-product structure with globally unstructured connectivity, challenging existing error-bounded compressors to achieve high compression ratios, strict error control, and high throughput.
-
-To address these challenges, we develop two element-local compressors with strict pointwise error guarantees. FDWZ extends SZ with distance-weighted multilevel interpolation and multi-tree Huffman encoding for nonuniform nodes. MRCZ combines quantized transform coefficients, error-bounded residual correction, and mode-major ordering for effective lossless coding. Both process elements independently in parallel.
-
-Experiments on 28 non-constant fields from NekRS, MFEM, and Nektar++ demonstrate clear benefits for storage reduction and end-to-end data movement. At matched PSNRs on the large-scale datasets, the average CR improvements are 77.6\% for FDWZ over the best baseline and 104.8\% for MRCZ over FDWZ. Across the throughput experiments, FDWZ ranks among the two fastest methods in 35 of 40 cases. In the cross-facility end-to-end evaluation, it matches the fastest baseline on Dataset~7 and outperforms it by 19.2\% on Dataset~8. At matched compression ratios, MRCZ and FDWZ exhibit the smallest reconstruction errors in the visual comparison. These results show that adapting compression to element structure improves both storage reduction and data movement while preserving strict pointwise error control. FDWZ favors throughput, while MRCZ favors stronger storage reduction.
-
-Future work will investigate other invertible, numerically stable transforms beyond the current Chebyshev basis and develop GPU implementations of FDWZ and MRCZ for heterogeneous platforms. We will also study runtime selection between the two methods based on the desired throughput--storage tradeoff.

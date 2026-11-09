@@ -36,7 +36,7 @@ def parse_args(project_root):
     parser.add_argument("--input-dir",default=os.path.join(project_root,"results","visualization","cr33_slices"))
     parser.add_argument("--master-dir",default=os.path.join(project_root,"results","visualization","cr33_panel_masters"))
     parser.add_argument("--result-output",default=os.path.join(project_root,"results","visualization","pb0_T_cr33_visualization.png"))
-    parser.add_argument("--paper-output",default=os.path.join(project_root,"论文","figs","7","visualization-cr33.png"))
+    parser.add_argument("--paper-output",default=os.path.join(project_root,"overleaf","figs","7","visualization-cr33.png"))
     parser.add_argument("--master-dpi",type=int,default=MASTER_DPI)
     parser.add_argument("--compose-only",action="store_true")
     return parser.parse_args()

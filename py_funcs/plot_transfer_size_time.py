@@ -76,7 +76,7 @@ def main():
     figure.canvas.draw()
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")
     png_output=os.path.join(result_dir,"transfer_size_time.png")
-    paper_output=os.path.join(project_root,"论文","figs","7","transfer-size-time.png")
+    paper_output=os.path.join(project_root,"overleaf","figs","7","transfer-size-time.png")
     save_svg(figure,svg_output,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     save_paper_png_vertical_crop(figure,png_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)

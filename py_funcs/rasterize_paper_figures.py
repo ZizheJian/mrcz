@@ -6,7 +6,7 @@ from PIL import Image
 
 
 project_root=Path(__file__).resolve().parents[1]
-paper_root=project_root/"论文"
+paper_root=project_root/"overleaf"
 output_root=paper_root/"figs"/"raster300"
 column_width_pt=252
 points_per_inch=72.27

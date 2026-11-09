@@ -109,7 +109,7 @@ def plot_combined(result_dir,project_root):
     figure.legend(handles=handles,loc="lower center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
     figure.canvas.draw()
     save_svg(figure,os.path.join(result_dir,"large_rd.svg"),metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
-    paper_output=os.path.join(project_root,"论文","figs","7","large-rd.png")
+    paper_output=os.path.join(project_root,"overleaf","figs","7","large-rd.png")
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
     save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")

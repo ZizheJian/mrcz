@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from plot_style import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,apply_paper_style,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
 
 DEFAULT_ROOT="results/mrcz_reordering"
-DEFAULT_OUTPUT="论文/figs/6/mrcz-reordering-ablation.png"
+DEFAULT_OUTPUT="overleaf/figs/6/mrcz-reordering-ablation.png"
 DEFAULT_SUMMARY="results/mrcz_reordering/summary.csv"
 
 PLOT_ASPECT_RATIOS=(1.2,2.4)
