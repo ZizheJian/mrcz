@@ -52,7 +52,7 @@ function(add_mrcz_executable target source)
         ${CMAKE_BINARY_DIR}/sz3_build/include
         ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/SZ2/sz/include)
     target_compile_options(${target} PRIVATE -Wall -Ofast -march=native -Wno-dangling-else)
-    target_link_libraries(${target} PRIVATE mrcz::mrcz parsers::parsers zfp SZ3 SZ mrcz_qoz_bridge mgard::mgard ${SPERR_INSTALL_PATH}/lib64/libSPERR.a)
+    target_link_libraries(${target} PRIVATE mrcz::mrcz parsers zfp SZ3 SZ mrcz_qoz_bridge mgard::mgard ${SPERR_INSTALL_PATH}/lib64/libSPERR.a)
 endfunction()
 
 add_mrcz_executable(mrcz_compress compress.cpp)
