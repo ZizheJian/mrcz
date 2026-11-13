@@ -28,6 +28,7 @@ set(MGARD_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../install/mgard_install")
 find_package(MFEM CONFIG REQUIRED PATHS "${MFEM_INSTALL_PATH}/lib/cmake/mfem" NO_DEFAULT_PATH)
 
 add_subdirectory(../third_party/parsers/c_codes ${CMAKE_BINARY_DIR}/parsers_build)
+add_subdirectory(../third_party/get_max_cpus/c_codes ${CMAKE_BINARY_DIR}/get_max_cpus_build)
 add_subdirectory(../third_party/zstd ${CMAKE_BINARY_DIR}/zstd_build)
 add_library(PkgConfig::ZSTD ALIAS libzstd_static)
 find_package(mgard CONFIG REQUIRED PATHS "${MGARD_INSTALL_PATH}/lib64/cmake/mgard" NO_DEFAULT_PATH)

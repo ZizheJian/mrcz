@@ -75,6 +75,16 @@ def parse_field_throughput(output,task):
         throughput[field]=float(segments[1].strip()[len(marker):].split()[0])
     return throughput
 
+def parse_max_cpus(output):
+    # C++程序会把请求的CPU数截到实际可用的数量，并打印"Max CPUs= N, partition num= M"
+    values=set()
+    prefix="Max CPUs= "
+    for line in output.splitlines():
+        line=remove_ansi_color(line).strip()
+        if line.startswith(prefix):
+            values.add(int(line[len(prefix):].split(",")[0]))
+    return values
+
 def parse_mrcz_stream_bitrates(output):
     stream_bitrates={}
     prefix="MRCZ stream bit rates: Field= "
@@ -291,6 +301,12 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
                             stream_bitrates=parse_mrcz_stream_bitrates(compression_output)
                             rate_distortion=parse_rate_distortion(decompression_output)
                             result_context=f"{task_name}/{method}/EB={eb}/max_cpus={max_cpus}/trial={trial}"
+                            max_cpus_values=parse_max_cpus(compression_output)|parse_max_cpus(decompression_output)
+                            if len(max_cpus_values)!=1:
+                                raise ValueError(f"{result_context}的输出里应当恰好有一种Max CPUs，实际为{sorted(max_cpus_values)}")
+                            actual_max_cpus=max_cpus_values.pop()
+                            if actual_max_cpus!=max_cpus:
+                                print(f"警告: {result_context}请求了{max_cpus}个CPU，实际只用了{actual_max_cpus}个，CSV记录实际值")
                             validate_parsed_fields(compression_throughput,fields,f"{result_context}的compression throughput",constant_fields)
                             validate_parsed_fields(decompression_throughput,fields,f"{result_context}的decompression throughput",constant_fields)
                             validate_parsed_fields(rate_distortion,fields,f"{result_context}的rate-distortion results")
@@ -311,7 +327,7 @@ def run_experiment(json_path=None,name=None,data_path=None,mesh_path=None,format
                                     write_csv_item(rate_distortion_path,result_row,f"{csv_method_name}_Separately_Compressed_BR",separate_total_br)
 
                                 throughput_path=f"{csv_file_prefix}_{field}_throughput.csv"
-                                throughput_row={**result_row,"Max CPUs":max_cpus}
+                                throughput_row={**result_row,"Max CPUs":actual_max_cpus}
                                 if partition_num is not None:
                                     throughput_row["Partition Num"]=partition_num
                                 if field in compression_throughput:

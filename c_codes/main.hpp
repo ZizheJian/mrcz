@@ -8,5 +8,5 @@ using namespace std;
 #include <fstream>
 #include <sstream>
 #include "mrcz_core/mrcz.hpp"
-#include "../third_party/get_max_cpus/c_codes/get_max_cpus.hpp"
+#include <get_max_cpus.hpp>
 #include "mrcz_core/read_and_write_data.tpp"
