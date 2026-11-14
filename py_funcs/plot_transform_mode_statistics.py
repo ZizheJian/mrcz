@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from plot_style import apply_paper_style
-from paperfig import MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
+from paperfig import MPL_POINTS_PER_INCH,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
 sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from py_funcs.read_nekrs_header import read_nekrs_header
@@ -23,8 +23,6 @@ DEFAULT_STREAM_ROOT="results/fig9/stream_breakdown"
 
 OUTER_PANEL_ASPECT_RATIOS=(1/1.2,1/1.2,1/1.2)
 STREAM_AXES_GAP_PT=2.0
-LEFT_EDGE_GAP_PT=3.0
-RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=30.0
 
 def parse_args():
@@ -189,7 +187,7 @@ def main():
         ax.grid(True,which="major",linestyle="--",linewidth=0.4,alpha=0.35)
         style_plot_axis(ax)
         ax.tick_params(axis="x",which="minor",length=0)
-    layout_panel_row(fig,[residual_ax,magnitude_ax,entropy_ax],OUTER_PANEL_ASPECT_RATIOS,bottom_pt=BOTTOM_PT,panel_gap_pt=PANEL_GAP_WITH_YLABEL_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    layout_panel_row(fig,[residual_ax,magnitude_ax,entropy_ax],OUTER_PANEL_ASPECT_RATIOS,bottom_pt=BOTTOM_PT)
     figure_height_pt=fig.get_figheight()*MPL_POINTS_PER_INCH
     stream_position=residual_ax.get_position()
     stream_gap=STREAM_AXES_GAP_PT/figure_height_pt

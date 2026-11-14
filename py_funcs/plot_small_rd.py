@@ -4,11 +4,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
 from plot_style import METHOD_COLORS,apply_paper_style,save_svg
-from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png,style_plot_axis
+from paperfig import PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png,style_plot_axis
 
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
-OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=30.0
 
 array_layouts=["1D","2D","3D-fused","3D-per-element","4D"]
@@ -77,7 +76,7 @@ def finish_figure(figure,axes,spec,xlabel,ylabel,output_path,paper_output):
     for family in ["MRCZ","FDWZ","SZ3","SZ2","QoZ","ZFP","SPERR","MGARD"]:
         family_handles.append(plt.Line2D([0],[0],color=family_colors[family],linestyle="-",linewidth=0.8,label="MGARD-X" if family=="MGARD" else family))
     layout_handles=[plt.Line2D([0],[0],color="#4b5563",linestyle=layout_styles[layout],linewidth=0.8,label=layout) for layout in layouts]
-    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel=ylabel)
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,shared_ylabel=ylabel)
     add_shared_xlabel(figure,axes[-1,:],xlabel)
     layout_legend=legend_above(axes[0,:],handles=layout_handles,center="figure",ncol=6,**legend_spacing_kwargs(9.6))
     legend_above(axes[0,:],handles=family_handles,above=layout_legend,center="figure",ncol=8,**legend_spacing_kwargs(8))

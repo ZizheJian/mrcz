@@ -19,8 +19,6 @@ CONFIGS=[
 ]
 
 PLOT_ASPECT_RATIO=3.0
-LEFT_EDGE_GAP_PT=3.0
-RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=24.0
 CONFIG_HANDLE_LENGTH_PT=2.8
 STYLE_HANDLE_LENGTH_PT=9.6
@@ -138,7 +136,7 @@ def make_figure(alpha_curves,rd_curves,output_path):
     axes.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
     style_plot_axis(axes)
     axes.get_xticklabels()[0].set_horizontalalignment("left")
-    layout_panel_row(figure,[axes],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    layout_panel_row(figure,[axes],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PT)
     add_legends(figure,axes)
     save_paper_png(figure,output_path,spec)
     plt.close(figure)

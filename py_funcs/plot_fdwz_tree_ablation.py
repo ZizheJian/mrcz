@@ -3,7 +3,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,FixedFormatter
 from plot_style import apply_paper_style
-from paperfig import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
+from paperfig import PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
 project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tree_count_paths=[os.path.join(project_root,f"results/RD/pb0_fdwz_tree_count/tree{tree_num}/pb0.f00001_P.csv") for tree_num in range(1,6)]
@@ -11,8 +11,6 @@ prediction_error_distribution_path=os.path.join(project_root,"results/RD/pb0_fdw
 canonical_output_path=os.path.join(project_root,"overleaf/figs/5/fdwz-tree-ablation.png")
 
 PLOT_ASPECT_RATIOS=(2.4,1.2)
-LEFT_EDGE_GAP_PT=3.0
-RIGHT_EDGE_GAP_PT=3.0
 
 tree_colors=["#000000","#0072B2","#D55E00","#009E73","#CC79A7"]
 tree_styles=["-","--","-.",":",(0,(3,1,1,1))]
@@ -85,7 +83,7 @@ def make_ablation_figure(output_path):
     left_axes.get_xticklabels()[0].set_horizontalalignment("left")
     left_axes.get_xticklabels()[-1].set_horizontalalignment("right")
     draw_tree_count_bars(right_axes)
-    layout_panel_row(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=30,panel_gap_pt=PANEL_GAP_WITH_YLABEL_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    layout_panel_row(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=30)
     legend_above(left_axes,legend_handles,legend_labels,ncol=3,**legend_spacing_kwargs(8))
     for axis in axes:
         axis.set_axisbelow(True)

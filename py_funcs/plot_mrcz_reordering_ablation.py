@@ -6,15 +6,13 @@ matplotlib.use("Agg")
 import numpy as np
 from matplotlib import pyplot as plt
 from plot_style import apply_paper_style
-from paperfig import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
+from paperfig import PaperFigureSpec,add_panel_captions,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
 DEFAULT_ROOT="results/mrcz_reordering"
 DEFAULT_OUTPUT="overleaf/figs/6/mrcz-reordering-ablation.png"
 DEFAULT_SUMMARY="results/mrcz_reordering/summary.csv"
 
 PLOT_ASPECT_RATIOS=(1.2,2.4)
-LEFT_EDGE_GAP_PT=3.0
-RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=40.0
 
 def parse_args():
@@ -107,7 +105,7 @@ def main():
     for ax in axes:
         ax.grid(True,axis="y",linestyle="--",linewidth=0.4,alpha=0.35)
         style_plot_axis(ax)
-    layout_panel_row(fig,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PT,panel_gap_pt=PANEL_GAP_WITH_YLABEL_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    layout_panel_row(fig,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PT)
     legend_above(rd_ax,rd_legend_handles,rd_legend_labels,ncol=1,**legend_spacing_kwargs(8))
     legend_above(throughput_ax,throughput_legend_handles,throughput_legend_labels,ncol=2,**legend_spacing_kwargs(5.6))
     captions=add_panel_captions(fig,[rd_ax],["(a) Rate–Distortion"])+add_panel_captions(fig,[throughput_ax],["(b) Throughput"],below="ticks")

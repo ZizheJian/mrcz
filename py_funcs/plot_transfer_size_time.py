@@ -13,8 +13,6 @@ colors=METHOD_COLORS
 labels=METHOD_LABELS
 datasets=(("pb0",7),("jicf0",8))
 PLOT_ASPECT_RATIO=3.0
-LEFT_EDGE_GAP_PT=3.0
-RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=24.0
 
 
@@ -68,7 +66,7 @@ def main():
     blank_handle=plt.Line2D([0],[0],linewidth=0,alpha=0,label="")
     dataset_handles=[plt.Line2D([0],[0],marker=marker,markersize=4.0,color="black",markerfacecolor="white",markeredgewidth=0.5,linewidth=0,label=f"Dataset {dataset_index}") for marker,dataset_index in (("o",7),("^",8))]
     axis.set_ylabel("Transfer Throughput (GiB/s)")
-    layout_panel_row(figure,[axis],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
+    layout_panel_row(figure,[axis],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PLOT_PT)
     legend_above(axis,handles=method_handles+[blank_handle]+dataset_handles,center="figure",ncol=5,**legend_spacing_kwargs(6))
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")
     png_output=os.path.join(result_dir,"transfer_size_time.png")

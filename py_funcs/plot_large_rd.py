@@ -4,11 +4,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
 from plot_style import METHOD_COLORS,RD_METHODS,apply_paper_style,save_svg
-from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png,style_plot_axis
+from paperfig import PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png,style_plot_axis
 
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
-OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=30.0
 
 methods=RD_METHODS
@@ -86,7 +85,7 @@ def plot_combined(result_dir,project_root):
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
         style_plot_axis(axis,x_label_gap_pt=PANEL_CAPTION_GAP_PT)
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
-    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="PSNR (dB)")
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,shared_ylabel="PSNR (dB)")
     add_shared_xlabel(figure,axes[-1,:],"Bit rate (log scale)")
     legend_above(axes[0,:],handles=handles,center="figure",ncol=len(methods),**legend_spacing_kwargs(8))
     save_svg(figure,os.path.join(result_dir,"large_rd.svg"),metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)

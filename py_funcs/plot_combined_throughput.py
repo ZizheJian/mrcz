@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator,NullLocator
 
 from plot_style import METHOD_COLORS,TIMING_METHODS,apply_paper_style,save_svg
-from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
+from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
 apply_paper_style(svg_hashsalt="mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 
@@ -17,7 +17,6 @@ datasets=[("pb0",7,8,64,[1e-2,1e-3,1e-4,1e-5,1e-6]),("jicf0",8,16,128,[1e-4,1e-5
 PLOT_ASPECT_RATIOS=(2.0,2.0,2.0,2.0)
 WIDTH_FRACTION=2*math.sqrt(2)/3
 ROW_CONTENT_GAP_PT=6.0
-OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=42.0
 
 
@@ -124,7 +123,7 @@ def main():
 
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label=method) for method in methods]
     handles.extend([plt.Line2D([0],[0],color=colors["MGARD-1D"],linewidth=1.0,label="MGARD-X-1D measured"),plt.Line2D([0],[0],color=colors["MGARD-1D"],linestyle="--",linewidth=1.0,label="MGARD-X-1D ideal")])
-    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="Aggregate Throughput (GiB/s)")
+    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,shared_ylabel="Aggregate Throughput (GiB/s)")
     add_shared_xlabel(figure,axes[-1,:],"Relative Error Bound")
     legend_above(axes[0,:],handles=handles,center="figure",ncol=4,**legend_spacing_kwargs(8))
 
