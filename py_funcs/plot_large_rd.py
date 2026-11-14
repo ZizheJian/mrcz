@@ -3,13 +3,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
-from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,RD_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
+from plot_style import METHOD_COLORS,RD_METHODS,apply_paper_style,save_svg
+from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,style_plot_axis
 
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
-SHARED_XLABEL_GAP_PT=2.0
-SHARED_YLABEL_GAP_PT=1.0
-LEGEND_GAP_PT=1.0
 OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=30.0
 VERTICAL_EDGE_GAP_PT=3.0
@@ -89,25 +87,9 @@ def plot_combined(result_dir,project_root):
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
         style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
-    provisional_ylabel=figure.text(0,0,"PSNR (dB)",rotation=90,ha="center",va="center")
-    figure.canvas.draw()
-    ylabel_width_pt=provisional_ylabel.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
-    provisional_ylabel.remove()
-    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
-    add_shared_xlabel(figure,axes[-1,:],"Bit rate (log scale)",gap_pt=SHARED_XLABEL_GAP_PT,source_artists=[axis.xaxis.label for axis in axes[-1,:]])
-    figure.canvas.draw()
-    renderer=figure.canvas.get_renderer()
-    tick_left=min(bbox.x0 for axis in axes[:,0] for bbox in [label.get_window_extent(renderer) for label in axis.get_yticklabels(which="both") if label.get_visible() and label.get_text()])
-    grid_bottom=min(axis.get_position().y0 for axis in axes.flat)
-    grid_top=max(axis.get_position().y1 for axis in axes.flat)
-    shared_ylabel=figure.text(0,(grid_bottom+grid_top)/2,"PSNR (dB)",rotation=90,ha="center",va="center")
-    figure.canvas.draw()
-    ylabel_bbox=shared_ylabel.get_window_extent(figure.canvas.get_renderer())
-    shared_ylabel.set_x((tick_left-SHARED_YLABEL_GAP_PT*figure.dpi/MPL_POINTS_PER_INCH-ylabel_bbox.width/2)/figure.bbox.width)
-    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
-    top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
-    figure.legend(handles=handles,loc="lower center",ncol=len(methods),frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
-    figure.canvas.draw()
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="PSNR (dB)")
+    add_shared_xlabel(figure,axes[-1,:],"Bit rate (log scale)")
+    legend_above(axes[0,:],handles=handles,center="figure",ncol=len(methods),**legend_spacing_kwargs(8))
     save_svg(figure,os.path.join(result_dir,"large_rd.svg"),metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     paper_output=os.path.join(project_root,"overleaf","figs","7","large-rd.png")
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)

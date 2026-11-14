@@ -10,7 +10,8 @@ import numpy as np
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import LinearSegmentedColormap,Normalize
 from matplotlib.patches import Rectangle
-from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,PaperFigureSpec,METHOD_LABELS,RD_METHODS,TEX_POINTS_PER_INCH,apply_paper_style,save_paper_png_vertical_crop,style_plot_axis
+from plot_style import METHOD_LABELS,RD_METHODS,apply_paper_style
+from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PaperFigureSpec,TEX_POINTS_PER_INCH,save_paper_png_vertical_crop,style_plot_axis
 
 apply_paper_style()
 

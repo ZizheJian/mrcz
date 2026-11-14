@@ -3,7 +3,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
-from plot_style import MPL_POINTS_PER_INCH,PANEL_GAP_WITHOUT_Y_DECORATION_PT,PaperFigureSpec,TRANSFER_METHODS,add_panel_captions,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
+from plot_style import TRANSFER_METHODS,apply_paper_style,save_svg
+from paperfig import PANEL_GAP_WITHOUT_Y_DECORATION_PT,PaperFigureSpec,add_panel_captions,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
 
 apply_paper_style("mrcz-end-to-end",serif_fonts=["STIXGeneral"])
 
@@ -57,11 +58,7 @@ def main():
     handles=[Patch(facecolor=color,edgecolor="black",linewidth=0.45,label=label) for _,label,color in components]
     layout_panel_row(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITHOUT_Y_DECORATION_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     add_panel_captions(figure,axes,[titles[dataset] for dataset in ("pb0","jicf0")])
-    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
-    top_plot_pt=max(axis.get_position().y1 for axis in axes)*figure_height_pt
-    legend=figure.legend(handles=handles,loc="lower center",ncol=3,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
-    set_legend_row_gap(legend)
-    figure.canvas.draw()
+    legend_above(axes,handles=handles,center="figure",ncol=3,**legend_spacing_kwargs(8))
     output_path=os.path.join(result_dir,"end_to_end_total.svg")
     png_output=os.path.join(result_dir,"end_to_end_total.png")
     paper_output=os.path.join(project_root,"overleaf","figs","7","e2e_time.png")

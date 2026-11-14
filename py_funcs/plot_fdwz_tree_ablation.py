@@ -2,7 +2,8 @@ import csv,os
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,FixedFormatter
-from plot_style import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,apply_paper_style,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
+from plot_style import apply_paper_style
+from paperfig import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
 
 project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tree_count_paths=[os.path.join(project_root,f"results/RD/pb0_fdwz_tree_count/tree{tree_num}/pb0.f00001_P.csv") for tree_num in range(1,6)]
@@ -86,7 +87,7 @@ def make_ablation_figure(output_path):
     left_axes.get_xticklabels()[-1].set_horizontalalignment("right")
     draw_tree_count_bars(right_axes)
     layout_panel_row(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=30,panel_gap_pt=PANEL_GAP_WITH_YLABEL_PT,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
-    legend_above(left_axes,legend_handles,legend_labels,ncol=3,frameon=False,**legend_spacing_kwargs(8))
+    legend_above(left_axes,legend_handles,legend_labels,ncol=3,**legend_spacing_kwargs(8))
     for axis in axes:
         axis.set_axisbelow(True)
         axis.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)

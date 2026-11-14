@@ -5,7 +5,8 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-from plot_style import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,set_legend_row_gap,style_plot_axis
+from plot_style import apply_paper_style
+from paperfig import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,set_legend_row_gap,style_plot_axis
 
 CONFIGS=[
     ("DLT_GLL","DLT (GLL)","#ff4d4d"),

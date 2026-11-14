@@ -3,13 +3,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
-from plot_style import METHOD_COLORS,MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,save_svg,style_plot_axis
+from plot_style import METHOD_COLORS,apply_paper_style,save_svg
+from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,style_plot_axis
 
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
-SHARED_XLABEL_GAP_PT=2.0
-SHARED_YLABEL_GAP_PT=1.0
-LEGEND_GAP_PT=1.0
 OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=30.0
 VERTICAL_EDGE_GAP_PT=3.0
@@ -75,42 +73,15 @@ def focus_rd_axes(axis,method_points):
     axis.set_xlim(br_left,br_right)
     axis.set_ylim(psnr_bottom-psnr_padding,psnr_top+psnr_padding)
 
-def visible_bboxes(artists,renderer):
-    return [artist.get_window_extent(renderer) for artist in artists if artist.get_visible() and artist.get_text()]
-
-def place_shared_ylabel(figure,axes,label):
-    figure.canvas.draw()
-    renderer=figure.canvas.get_renderer()
-    tick_left=min(bbox.x0 for axis in axes[:,0] for bbox in visible_bboxes(axis.get_yticklabels(which="both"),renderer))
-    grid_bottom=min(axis.get_position().y0 for axis in axes.flat)
-    grid_top=max(axis.get_position().y1 for axis in axes.flat)
-    text=figure.text(0,(grid_bottom+grid_top)/2,label,rotation=90,ha="center",va="center")
-    figure.canvas.draw()
-    bbox=text.get_window_extent(figure.canvas.get_renderer())
-    center_x=tick_left-SHARED_YLABEL_GAP_PT*figure.dpi/MPL_POINTS_PER_INCH-bbox.width/2
-    text.set_x(center_x/figure.bbox.width)
-    figure.canvas.draw()
-    return text
-
 def finish_figure(figure,axes,spec,xlabel,ylabel,output_path,paper_output):
     family_handles=[]
     for family in ["MRCZ","FDWZ","SZ3","SZ2","QoZ","ZFP","SPERR","MGARD"]:
         family_handles.append(plt.Line2D([0],[0],color=family_colors[family],linestyle="-",linewidth=0.8,label="MGARD-X" if family=="MGARD" else family))
     layout_handles=[plt.Line2D([0],[0],color="#4b5563",linestyle=layout_styles[layout],linewidth=0.8,label=layout) for layout in layouts]
-    ylabel_artist=figure.text(0,0,ylabel,rotation=90,ha="center",va="center")
-    figure.canvas.draw()
-    ylabel_width_pt=ylabel_artist.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
-    ylabel_artist.remove()
-    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
-    shared_xlabel=add_shared_xlabel(figure,axes[-1,:],xlabel,gap_pt=SHARED_XLABEL_GAP_PT,source_artists=[axis.xaxis.label for axis in axes[-1,:]])
-    shared_ylabel=place_shared_ylabel(figure,axes,ylabel)
-    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
-    top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
-    layout_legend=figure.legend(handles=layout_handles,loc="lower center",ncol=6,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+LEGEND_GAP_PT)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(9.6))
-    figure.canvas.draw()
-    layout_top_pt=layout_legend.get_window_extent(figure.canvas.get_renderer()).y1*MPL_POINTS_PER_INCH/figure.dpi
-    family_legend=figure.legend(handles=family_handles,loc="lower center",ncol=8,frameon=False,bbox_to_anchor=(0.5,(layout_top_pt+LEGEND_GAP_PT)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
-    figure.canvas.draw()
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel=ylabel)
+    add_shared_xlabel(figure,axes[-1,:],xlabel)
+    layout_legend=legend_above(axes[0,:],handles=layout_handles,center="figure",ncol=6,**legend_spacing_kwargs(9.6))
+    legend_above(axes[0,:],handles=family_handles,above=layout_legend,center="figure",ncol=8,**legend_spacing_kwargs(8))
     save_svg(figure,output_path,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
     save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)

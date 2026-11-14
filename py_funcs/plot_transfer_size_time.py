@@ -3,7 +3,8 @@ import csv,os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from plot_style import MPL_POINTS_PER_INCH,PaperFigureSpec,METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
+from plot_style import METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,save_svg
+from paperfig import PaperFigureSpec,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
 
 apply_paper_style("mrcz-transfer-size-time",serif_fonts=["STIXGeneral"])
 
@@ -69,11 +70,7 @@ def main():
     dataset_handles=[plt.Line2D([0],[0],marker=marker,markersize=4.0,color="black",markerfacecolor="white",markeredgewidth=0.5,linewidth=0,label=f"Dataset {dataset_index}") for marker,dataset_index in (("o",7),("^",8))]
     axis.set_ylabel("Transfer Throughput (GiB/s)")
     layout_panel_row(figure,[axis],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
-    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
-    top_plot_pt=axis.get_position().y1*figure_height_pt
-    legend=figure.legend(handles=method_handles+[blank_handle]+dataset_handles,loc="lower center",ncol=5,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(6))
-    set_legend_row_gap(legend)
-    figure.canvas.draw()
+    legend_above(axis,handles=method_handles+[blank_handle]+dataset_handles,center="figure",ncol=5,**legend_spacing_kwargs(6))
     svg_output=os.path.join(result_dir,"transfer_size_time.svg")
     png_output=os.path.join(result_dir,"transfer_size_time.png")
     paper_output=os.path.join(project_root,"overleaf","figs","7","transfer-size-time.png")

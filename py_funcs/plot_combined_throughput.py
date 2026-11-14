@@ -5,7 +5,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator,NullLocator
 
-from plot_style import DEFAULT_PANEL_CAPTION_GAP_PT,METHOD_COLORS,MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,TIMING_METHODS,add_shared_xlabel,apply_paper_style,layout_panel_grid,legend_spacing_kwargs,save_paper_png_vertical_crop,save_svg,set_legend_row_gap,style_plot_axis
+from plot_style import METHOD_COLORS,TIMING_METHODS,apply_paper_style,save_svg
+from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
 
 apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 
@@ -19,7 +20,6 @@ ROW_CONTENT_GAP_PT=6.0
 OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=42.0
 VERTICAL_EDGE_GAP_PT=3.0
-SHARED_YLABEL_GAP_PT=1.0
 
 
 def read_rows(path):
@@ -86,24 +86,6 @@ def mgard_8core(project_root,dataset,error_bounds):
     return aggregate
 
 
-def visible_bboxes(artists,renderer):
-    return [artist.get_window_extent(renderer) for artist in artists if artist.get_visible() and artist.get_text()]
-
-
-def place_shared_ylabel(figure,axes,label):
-    figure.canvas.draw()
-    renderer=figure.canvas.get_renderer()
-    tick_left=min(bbox.x0 for axis in axes[:,0] for bbox in visible_bboxes(axis.get_yticklabels(which="both"),renderer))
-    grid_bottom=min(axis.get_position().y0 for axis in axes.flat)
-    grid_top=max(axis.get_position().y1 for axis in axes.flat)
-    text=figure.text(0,(grid_bottom+grid_top)/2,label,rotation=90,ha="center",va="center")
-    figure.canvas.draw()
-    bbox=text.get_window_extent(figure.canvas.get_renderer())
-    text.set_x((tick_left-SHARED_YLABEL_GAP_PT*figure.dpi/MPL_POINTS_PER_INCH-bbox.width/2)/figure.bbox.width)
-    figure.canvas.draw()
-    return text
-
-
 def main():
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     large_result_dir=os.path.join(project_root,"results","RD")
@@ -143,18 +125,9 @@ def main():
 
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label=method) for method in methods]
     handles.extend([plt.Line2D([0],[0],color=colors["MGARD-1D"],linewidth=1.0,label="MGARD-X-1D measured"),plt.Line2D([0],[0],color=colors["MGARD-1D"],linestyle="--",linewidth=1.0,label="MGARD-X-1D ideal")])
-    provisional_ylabel=figure.text(0,0,"Aggregate Throughput (GiB/s)",rotation=90,ha="center",va="center")
-    figure.canvas.draw()
-    ylabel_width_pt=provisional_ylabel.get_window_extent(figure.canvas.get_renderer()).width*MPL_POINTS_PER_INCH/figure.dpi
-    provisional_ylabel.remove()
-    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT+ylabel_width_pt+SHARED_YLABEL_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT)
-    add_shared_xlabel(figure,axes[-1,:],"Relative Error Bound",source_artists=[axis.xaxis.label for axis in axes[-1,:]])
-    place_shared_ylabel(figure,axes,"Aggregate Throughput (GiB/s)")
-    figure_height_pt=figure.get_figheight()*MPL_POINTS_PER_INCH
-    top_plot_pt=max(axis.get_position().y1 for axis in axes[0,:])*figure_height_pt
-    legend=figure.legend(handles=handles,loc="lower center",ncol=4,frameon=False,bbox_to_anchor=(0.5,(top_plot_pt+1)/figure_height_pt),borderaxespad=0,borderpad=0,**legend_spacing_kwargs(8))
-    set_legend_row_gap(legend)
-    figure.canvas.draw()
+    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="Aggregate Throughput (GiB/s)")
+    add_shared_xlabel(figure,axes[-1,:],"Relative Error Bound")
+    legend_above(axes[0,:],handles=handles,center="figure",ncol=4,**legend_spacing_kwargs(8))
 
     result_dir=os.path.join(project_root,"results","RD")
     svg_output=os.path.join(result_dir,"combined_throughput.svg")
