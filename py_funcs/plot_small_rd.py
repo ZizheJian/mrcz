@@ -4,13 +4,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
 from plot_style import METHOD_COLORS,apply_paper_style,save_svg
-from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png,style_plot_axis
 
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
 OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=30.0
-VERTICAL_EDGE_GAP_PT=3.0
 
 array_layouts=["1D","2D","3D-fused","3D-per-element","4D"]
 layouts=array_layouts+["4D+GLL"]
@@ -78,20 +77,20 @@ def finish_figure(figure,axes,spec,xlabel,ylabel,output_path,paper_output):
     for family in ["MRCZ","FDWZ","SZ3","SZ2","QoZ","ZFP","SPERR","MGARD"]:
         family_handles.append(plt.Line2D([0],[0],color=family_colors[family],linestyle="-",linewidth=0.8,label="MGARD-X" if family=="MGARD" else family))
     layout_handles=[plt.Line2D([0],[0],color="#4b5563",linestyle=layout_styles[layout],linewidth=0.8,label=layout) for layout in layouts]
-    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel=ylabel)
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel=ylabel)
     add_shared_xlabel(figure,axes[-1,:],xlabel)
     layout_legend=legend_above(axes[0,:],handles=layout_handles,center="figure",ncol=6,**legend_spacing_kwargs(9.6))
     legend_above(axes[0,:],handles=family_handles,above=layout_legend,center="figure",ncol=8,**legend_spacing_kwargs(8))
     save_svg(figure,output_path,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
-    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,paper_output,spec)
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:
         figure.savefig(os.path.join(preview_dir,"small_rd.png"),format="png",dpi=160,bbox_inches="tight")
     plt.close(figure)
 
 def plot_rd(result_dir):
-    apply_paper_style("mrcz-small-rd",serif_fonts=["STIXGeneral"])
+    apply_paper_style(svg_hashsalt="mrcz-small-rd",serif_fonts=["STIXGeneral"])
     figure,axes,spec=prepare_axes()
     for panel_index,(axis,(title,relative_path)) in enumerate(zip(axes.flat,fields)):
         rows=read_rows(os.path.join(result_dir,relative_path))
@@ -110,7 +109,7 @@ def plot_rd(result_dir):
         axis.xaxis.set_major_locator(FixedLocator([tick for tick in log_locator.tick_values(x_left,x_right) if x_left<=tick<=x_right]))
         axis.xaxis.set_minor_locator(NullLocator())
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
+        style_plot_axis(axis,x_label_gap_pt=PANEL_CAPTION_GAP_PT)
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     finish_figure(figure,axes,spec,"Bit rate (log scale)","PSNR (dB)",os.path.join(result_dir,"small_rd.svg"),os.path.join(project_root,"overleaf","figs","7","small-rd.png"))
 

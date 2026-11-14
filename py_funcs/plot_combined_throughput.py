@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator,NullLocator
 
 from plot_style import METHOD_COLORS,TIMING_METHODS,apply_paper_style,save_svg
-from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
-apply_paper_style("mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
+apply_paper_style(svg_hashsalt="mrcz-combined-throughput",serif_fonts=["STIXGeneral"])
 
 methods=TIMING_METHODS
 colors=METHOD_COLORS
@@ -19,7 +19,6 @@ WIDTH_FRACTION=2*math.sqrt(2)/3
 ROW_CONTENT_GAP_PT=6.0
 OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=42.0
-VERTICAL_EDGE_GAP_PT=3.0
 
 
 def read_rows(path):
@@ -125,7 +124,7 @@ def main():
 
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label=method) for method in methods]
     handles.extend([plt.Line2D([0],[0],color=colors["MGARD-1D"],linewidth=1.0,label="MGARD-X-1D measured"),plt.Line2D([0],[0],color=colors["MGARD-1D"],linestyle="--",linewidth=1.0,label="MGARD-X-1D ideal")])
-    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="Aggregate Throughput (GiB/s)")
+    layout_panel_grid(figure,axes,PLOT_ASPECT_RATIOS,bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="Aggregate Throughput (GiB/s)")
     add_shared_xlabel(figure,axes[-1,:],"Relative Error Bound")
     legend_above(axes[0,:],handles=handles,center="figure",ncol=4,**legend_spacing_kwargs(8))
 
@@ -134,8 +133,8 @@ def main():
     png_output=os.path.join(result_dir,"combined_throughput.png")
     paper_output=os.path.join(project_root,"overleaf","figs","7","combined-throughput.png")
     save_svg(figure,svg_output,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
-    save_paper_png_vertical_crop(figure,png_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
-    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,png_output,spec)
+    save_paper_png(figure,paper_output,spec)
     plt.close(figure)
     print(paper_output)
     print(png_output)

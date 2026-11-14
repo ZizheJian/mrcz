@@ -4,13 +4,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,LogLocator,MaxNLocator,NullLocator
 from plot_style import METHOD_COLORS,RD_METHODS,apply_paper_style,save_svg
-from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import PANEL_GAP_WITH_YTICKS_PT,PaperFigureSpec,add_shared_xlabel,layout_panel_grid,legend_above,legend_spacing_kwargs,panel_aspect_ratios,save_paper_png,style_plot_axis
 
 ROW_CONTENT_GAP_PT=6.0
 PANEL_CAPTION_GAP_PT=1.0
 OUTER_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=30.0
-VERTICAL_EDGE_GAP_PT=3.0
 
 methods=RD_METHODS
 colors=METHOD_COLORS
@@ -85,22 +84,22 @@ def plot_combined(result_dir,project_root):
         axis.xaxis.set_major_locator(FixedLocator([tick for tick in log_locator.tick_values(x_left,x_right) if x_left<=tick<=x_right]))
         axis.xaxis.set_minor_locator(NullLocator())
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        style_plot_axis(axis,x_label_pad=PANEL_CAPTION_GAP_PT)
+        style_plot_axis(axis,x_label_gap_pt=PANEL_CAPTION_GAP_PT)
     handles=[plt.Line2D([0],[0],color=colors[method],linewidth=0.8,label="MGARD-X-1D" if method=="MGARD-1D" else method) for method in methods]
-    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,column_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="PSNR (dB)")
+    layout_panel_grid(figure,axes,panel_aspect_ratios(1,1,1,1,1),bottom_pt=BOTTOM_PLOT_PT,panel_gap_pt=PANEL_GAP_WITH_YTICKS_PT,row_content_gap_pt=ROW_CONTENT_GAP_PT,left_edge_gap_pt=OUTER_EDGE_GAP_PT,right_edge_gap_pt=OUTER_EDGE_GAP_PT,shared_ylabel="PSNR (dB)")
     add_shared_xlabel(figure,axes[-1,:],"Bit rate (log scale)")
     legend_above(axes[0,:],handles=handles,center="figure",ncol=len(methods),**legend_spacing_kwargs(8))
     save_svg(figure,os.path.join(result_dir,"large_rd.svg"),metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
     paper_output=os.path.join(project_root,"overleaf","figs","7","large-rd.png")
     os.makedirs(os.path.dirname(paper_output),exist_ok=True)
-    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,paper_output,spec)
     preview_dir=os.environ.get("MRCZ_PLOT_PREVIEW_DIR")
     if preview_dir:figure.savefig(os.path.join(preview_dir,"large_rd.png"),format="png",dpi=180)
     plt.close(figure)
     print(paper_output)
 
 def main():
-    apply_paper_style("mrcz-large-rd",serif_fonts=["STIXGeneral"])
+    apply_paper_style(svg_hashsalt="mrcz-large-rd",serif_fonts=["STIXGeneral"])
     project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     result_dir=os.path.join(project_root,"results","RD")
     plot_combined(result_dir,project_root)

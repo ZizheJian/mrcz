@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from plot_style import apply_paper_style
-from paperfig import MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import MPL_POINTS_PER_INCH,PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
 sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from py_funcs.read_nekrs_header import read_nekrs_header
@@ -26,7 +26,6 @@ STREAM_AXES_GAP_PT=2.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=30.0
-VERTICAL_EDGE_GAP_PT=3.0
 
 def parse_args():
     parser=argparse.ArgumentParser()
@@ -210,7 +209,7 @@ def main():
     stream_handles=[Line2D([0],[0],color="black",linestyle=linestyle,linewidth=0.8,label=label) for label,linestyle in (("Coefficients","-"),("Residuals","--"))]
     legend_above([coefficient_ax,magnitude_ax,entropy_ax],handles=transform_handles+stream_handles,center="figure",ncol=4,**legend_spacing_kwargs(9.6))
     os.makedirs(os.path.dirname(args.output) or ".",exist_ok=True)
-    save_paper_png_vertical_crop(fig,args.output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(fig,args.output,spec)
     plt.close(fig)
     os.makedirs(os.path.dirname(args.csv_output) or ".",exist_ok=True)
     with open(args.csv_output,"w",newline="") as file_obj:

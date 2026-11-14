@@ -3,7 +3,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator,FixedFormatter
 from plot_style import apply_paper_style
-from paperfig import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import PANEL_GAP_WITH_YLABEL_PT,PaperFigureSpec,add_panel_captions,align_xlabels,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
 project_root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tree_count_paths=[os.path.join(project_root,f"results/RD/pb0_fdwz_tree_count/tree{tree_num}/pb0.f00001_P.csv") for tree_num in range(1,6)]
@@ -13,7 +13,6 @@ canonical_output_path=os.path.join(project_root,"overleaf/figs/5/fdwz-tree-ablat
 PLOT_ASPECT_RATIOS=(2.4,1.2)
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
-VERTICAL_EDGE_GAP_PT=3.0
 
 tree_colors=["#000000","#0072B2","#D55E00","#009E73","#CC79A7"]
 tree_styles=["-","--","-.",":",(0,(3,1,1,1))]
@@ -93,7 +92,7 @@ def make_ablation_figure(output_path):
         axis.grid(True,linestyle="--",linewidth=0.45,alpha=0.35)
     align_xlabels(figure,axes)
     add_panel_captions(figure,axes,["(a) Prediction-Error Density","(b) Tree Count"])
-    save_paper_png_vertical_crop(figure,output_path,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,output_path,spec)
     plt.close(figure)
 
 apply_paper_style(serif_fonts=["STIXGeneral"])

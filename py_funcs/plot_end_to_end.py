@@ -4,9 +4,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from plot_style import TRANSFER_METHODS,apply_paper_style,save_svg
-from paperfig import PANEL_GAP_WITHOUT_Y_DECORATION_PT,PaperFigureSpec,add_panel_captions,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import PANEL_GAP_WITHOUT_Y_DECORATION_PT,PaperFigureSpec,add_panel_captions,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
-apply_paper_style("mrcz-end-to-end",serif_fonts=["STIXGeneral"])
+apply_paper_style(svg_hashsalt="mrcz-end-to-end",serif_fonts=["STIXGeneral"])
 
 methods=("Direct",)+TRANSFER_METHODS
 components=[("Compression Time","Compression","#e3427a"),("Transfer Time Median","Transfer","#4bacc6"),("Decompression Time","Decompression","#f5aa36")]
@@ -16,7 +16,6 @@ PLOT_ASPECT_RATIOS=(1.0,1.0)
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=34.0
-VERTICAL_EDGE_GAP_PT=3.0
 
 def read_rows(path):
     with open(path,newline="") as input_file:
@@ -63,8 +62,8 @@ def main():
     png_output=os.path.join(result_dir,"end_to_end_total.png")
     paper_output=os.path.join(project_root,"overleaf","figs","7","e2e_time.png")
     save_svg(figure,output_path,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
-    save_paper_png_vertical_crop(figure,png_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
-    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,png_output,spec)
+    save_paper_png(figure,paper_output,spec)
     plt.close(figure)
     print(paper_output)
 

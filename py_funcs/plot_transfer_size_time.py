@@ -4,9 +4,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from plot_style import METHOD_COLORS,METHOD_LABELS,TRANSFER_METHODS,apply_paper_style,save_svg
-from paperfig import PaperFigureSpec,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import PaperFigureSpec,layout_panel_row,legend_above,legend_spacing_kwargs,save_paper_png,style_plot_axis
 
-apply_paper_style("mrcz-transfer-size-time",serif_fonts=["STIXGeneral"])
+apply_paper_style(svg_hashsalt="mrcz-transfer-size-time",serif_fonts=["STIXGeneral"])
 
 methods=TRANSFER_METHODS
 colors=METHOD_COLORS
@@ -16,7 +16,6 @@ PLOT_ASPECT_RATIO=3.0
 LEFT_EDGE_GAP_PT=3.0
 RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PLOT_PT=24.0
-VERTICAL_EDGE_GAP_PT=3.0
 
 
 def read_rows(path):
@@ -75,8 +74,8 @@ def main():
     png_output=os.path.join(result_dir,"transfer_size_time.png")
     paper_output=os.path.join(project_root,"overleaf","figs","7","transfer-size-time.png")
     save_svg(figure,svg_output,metadata={"Date":None},bbox_inches="tight",pad_inches=0.02)
-    save_paper_png_vertical_crop(figure,png_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
-    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,png_output,spec)
+    save_paper_png(figure,paper_output,spec)
     plt.close(figure)
     print(paper_output)
 

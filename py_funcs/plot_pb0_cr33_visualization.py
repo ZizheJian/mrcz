@@ -11,7 +11,7 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import LinearSegmentedColormap,Normalize
 from matplotlib.patches import Rectangle
 from plot_style import METHOD_LABELS,RD_METHODS,apply_paper_style
-from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PaperFigureSpec,TEX_POINTS_PER_INCH,save_paper_png_vertical_crop,style_plot_axis
+from paperfig import DEFAULT_PANEL_CAPTION_GAP_PT,PaperFigureSpec,TEX_POINTS_PER_INCH,save_paper_png,style_plot_axis
 
 apply_paper_style()
 
@@ -29,7 +29,6 @@ ERROR_LEFT_PT=181.0
 PANEL_GAP_PT=5.0
 ERROR_COLORBAR_LEFT_PT=485.0
 COLORBAR_WIDTH_PT=4.0
-VERTICAL_EDGE_GAP_PT=3.0
 COLOR_THRESHOLD=0.01
 
 def parse_args(project_root):
@@ -126,7 +125,7 @@ def style_axis(axis):
     axis.set_aspect("equal")
     axis.set_xticks([])
     axis.set_yticks([])
-    style_plot_axis(axis,x_label_pad=DEFAULT_PANEL_CAPTION_GAP_PT)
+    style_plot_axis(axis,x_label_gap_pt=DEFAULT_PANEL_CAPTION_GAP_PT)
 
 def add_axis_pt(figure,spec,left,bottom,width,height):
     return figure.add_axes([left/spec.width_pt,bottom/spec.height_pt,width/spec.width_pt,height/spec.height_pt])
@@ -170,8 +169,8 @@ def compose_figure(master_dir,metadata,result_output,paper_output):
     style_colorbar(error_colorbar)
     os.makedirs(os.path.dirname(result_output) or ".",exist_ok=True)
     os.makedirs(os.path.dirname(paper_output) or ".",exist_ok=True)
-    save_paper_png_vertical_crop(figure,result_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
-    save_paper_png_vertical_crop(figure,paper_output,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,result_output,spec)
+    save_paper_png(figure,paper_output,spec)
     plt.close(figure)
 
 def main():

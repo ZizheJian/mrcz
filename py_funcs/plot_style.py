@@ -30,9 +30,9 @@ TIMING_METHODS=("MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D")
 RD_METHODS=("MRCZ","FDWZ","SZ3-4D","SZ2-3D-fused","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D")
 TRANSFER_METHODS=("MRCZ","FDWZ","SZ3-4D","QoZ-4D","ZFP-3D-fused","SPERR-2D","MGARD-1D")
 
-def apply_paper_style(svg_hashsalt=None,font_size=PAPER_FONT_SIZE,tick_size=None,legend_size=None,serif_fonts=None):
+def apply_paper_style(*,svg_hashsalt=None,font_size=PAPER_FONT_SIZE,tick_size=None,legend_size=None,serif_fonts=None):
     if serif_fonts is None:serif_fonts=["Nimbus Roman"]
-    return _apply_paper_style(svg_hashsalt,font_size,tick_size,legend_size,serif_fonts)
+    return _apply_paper_style(svg_hashsalt=svg_hashsalt,font_size=font_size,tick_size=tick_size,legend_size=legend_size,serif_fonts=serif_fonts)
 
 def save_svg(figure,path,**kwargs):
     figure.savefig(path,format="svg",**kwargs)

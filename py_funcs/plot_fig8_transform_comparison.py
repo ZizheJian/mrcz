@@ -6,7 +6,7 @@ matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from plot_style import apply_paper_style
-from paperfig import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,layout_panel_row,legend_spacing_kwargs,save_paper_png_vertical_crop,set_legend_row_gap,style_plot_axis
+from paperfig import DEFAULT_LEGEND_GAP_PT,DEFAULT_LEGEND_ROW_GAP_PT,MPL_POINTS_PER_INCH,PAPER_FONT_SIZE,PaperFigureSpec,layout_panel_row,legend_spacing_kwargs,save_paper_png,set_legend_row_gap,style_plot_axis
 
 CONFIGS=[
     ("DLT_GLL","DLT (GLL)","#ff4d4d"),
@@ -24,7 +24,6 @@ RIGHT_EDGE_GAP_PT=3.0
 BOTTOM_PT=24.0
 CONFIG_HANDLE_LENGTH_PT=2.8
 STYLE_HANDLE_LENGTH_PT=9.6
-VERTICAL_EDGE_GAP_PT=3.0
 
 def parse_args():
     parser=argparse.ArgumentParser()
@@ -141,7 +140,7 @@ def make_figure(alpha_curves,rd_curves,output_path):
     axes.get_xticklabels()[0].set_horizontalalignment("left")
     layout_panel_row(figure,[axes],[PLOT_ASPECT_RATIO],bottom_pt=BOTTOM_PT,panel_gap_pt=0,left_edge_gap_pt=LEFT_EDGE_GAP_PT,right_edge_gap_pt=RIGHT_EDGE_GAP_PT)
     add_legends(figure,axes)
-    save_paper_png_vertical_crop(figure,output_path,spec,edge_gap_pt=VERTICAL_EDGE_GAP_PT)
+    save_paper_png(figure,output_path,spec)
     plt.close(figure)
 
 def main():
